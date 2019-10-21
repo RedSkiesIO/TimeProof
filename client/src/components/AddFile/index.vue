@@ -16,7 +16,8 @@
     <q-icon name="backup" class="text-grey-4" style="font-size: 100px">
     </q-icon>
     <span class="text-h6 text-weight-bold text-grey-6">Drag and Drop your file to sign</span>
-    <span class="text-body1 text-grey-7"> or browse to choose a file</span>
+    <span class="text-body1 text-grey-7">
+       or <span class="text-blue" @click="scope.pickFiles()">browse</span> to choose a file</span>
     </div>
     </template>
     </q-uploader>
@@ -51,5 +52,9 @@ export default {
 }
 .q-uploader__header {
     display: none;
+}
+
+.q-uploader--bordered {
+    border: 1px dashed rgba(0, 0, 0, 0.12);
 }
 </style>
