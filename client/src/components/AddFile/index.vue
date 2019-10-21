@@ -2,12 +2,24 @@
 <div class="q-pa-md">
     <q-uploader
       flat
-      dark
+      bordered
       label="Select your File"
       auto-upload
       hide-upload-btn
       :factory="factoryFn"
-    />
+    >
+    <template v-slot:list="scope">
+    <div
+    v-if="scope.files < 1"
+    class="q-pa-xl flex flex-center column text-center"
+    style="width:100%; height:100%;">
+    <q-icon name="backup" class="text-grey-4" style="font-size: 100px">
+    </q-icon>
+    <span class="text-h6 text-weight-bold text-grey-6">Drag and Drop your file to sign</span>
+    <span class="text-body1 text-grey-7"> or browse to choose a file</span>
+    </div>
+    </template>
+    </q-uploader>
   </div>
 </template>
 <script>
@@ -28,4 +40,16 @@ export default {
 };
 </script>
 <style lang="scss">
+.q-uploader {
+  width: inherit;
+}
+.q-uploader__subtitle {
+    display: none !important;
+}
+.q-uploader__file-status {
+    display: none;
+}
+.q-uploader__header {
+    display: none;
+}
 </style>
