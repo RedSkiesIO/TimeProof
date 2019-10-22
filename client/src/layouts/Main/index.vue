@@ -1,9 +1,12 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header flat unelevated>
+    <q-header
+      flat
+      unelevated
+    >
       <q-toolbar>
         <q-toolbar-title>
-          Document Signer
+          {{ $t('documentSigner') }}
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -17,11 +20,5 @@
 <script>
 export default {
   name: 'MainLayout',
-
-  data() {
-    return {
-      leftDrawerOpen: false,
-    };
-  },
 };
 </script>

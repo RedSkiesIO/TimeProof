@@ -3,7 +3,7 @@
     <q-uploader
       flat
       bordered
-      label="Select your File"
+      :label="$t('selectFile')"
       auto-upload
       hide-upload-btn
       :factory="factoryFn"
@@ -19,12 +19,12 @@
             class="text-grey-4"
             style="font-size: 100px"
           />
-          <span class="text-h6 text-weight-bold text-grey-6">Drag and Drop your file to sign</span>
+          <span class="text-h6 text-weight-bold text-grey-6">{{ $t('dragDrop') }}</span>
           <span class="text-body1 text-grey-7">
-            or <span
+            {{ $t('or') }} <span
               class="text-blue"
               @click="scope.pickFiles()"
-            >browse</span> to choose a file</span>
+            >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
         </div>
         <div
           v-else
@@ -38,9 +38,9 @@
           <span class="q-mt-md text-h6 text-primary">
             {{ file.name }}</span>
           <span class="text-body1 text-grey-7">
-            type: {{ file.type }}</span>
+            {{ $t('type') }}: {{ file.type }}</span>
           <span class="q-mb-lg text-body1 text-grey-7">
-            size: {{ file.size /1000000 }}mb</span>
+            {{ $t('size') }}: {{ file.size /1000000 }}mb</span>
           <q-btn
             unelevated
             size="lg"
@@ -49,8 +49,8 @@
           />
           <span
             class="q-mt-sm text-blue"
-            @click="scope.pickFiles()"
-          >choose a different file</span>
+            @click="scope.reset()"
+          >{{ $t('differentFile') }}</span>
         </div>
       </template>
     </q-uploader>
