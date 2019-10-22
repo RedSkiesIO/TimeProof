@@ -3,7 +3,7 @@ import tweetnacl from 'tweetnacl';
 
 const keypair = {
   new() {
-    return tweetnacl.sign.keypair();
+    return tweetnacl.sign.keyPair();
   },
 
   newFromSeed(seed) {
