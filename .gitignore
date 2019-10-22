@@ -11,8 +11,6 @@
 *.pem
 docs/_site
 
-src/Catalyst.Core.Modules.Cryptography.BulletProofs/Runtimes/*
-
 # User-specific files
 *.rsuser
 *.suo
