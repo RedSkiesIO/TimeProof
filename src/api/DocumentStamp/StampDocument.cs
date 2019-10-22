@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using DocumentStamp.Http.Request;
+using DocumentStamp.Http.Response;
 using DocumentStamp.Model;
-using DocumentStamp.Request;
-using DocumentStamp.Response;
 using DocumentStamp.Validator;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

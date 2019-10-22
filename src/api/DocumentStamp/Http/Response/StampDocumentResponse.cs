@@ -1,7 +1,7 @@
 ﻿using System;
 using DocumentStamp.Model;
 
-namespace DocumentStamp.Response
+namespace DocumentStamp.Http.Response
 {
     public class StampDocumentResponse
     {
