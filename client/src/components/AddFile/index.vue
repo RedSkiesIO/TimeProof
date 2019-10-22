@@ -67,7 +67,6 @@ export default {
 
   methods: {
     async factoryFn(files) {
-      console.log(files[0]);
       this.file = {
         name: files[0].name,
         type: files[0].type,
