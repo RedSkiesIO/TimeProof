@@ -60,6 +60,8 @@
   </div>
 </template>
 <script>
+import tweetnacl from 'tweetnacl';
+
 export default {
   name: 'AddFile',
   data() {
@@ -85,6 +87,10 @@ export default {
       }
       return null;
     },
+  },
+
+  mounted() {
+    console.log(tweetnacl);
   },
 
   methods: {
