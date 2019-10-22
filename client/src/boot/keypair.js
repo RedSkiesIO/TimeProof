@@ -11,11 +11,11 @@ const keypair = {
   },
 
   signMessage(message, secretKey) {
-    return tweetnacl.sign(message, secretKey);
+    return tweetnacl.sign.detached(message, secretKey);
   },
 
   verifyMessage(signedMessage, publicKey) {
-    return tweetnacl.sign.open(signedMessage, publicKey);
+    return tweetnacl.sign.detached.verify(signedMessage, publicKey);
   },
 
 };

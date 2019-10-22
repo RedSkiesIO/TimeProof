@@ -21,7 +21,7 @@ export default {
 
   computed: {
     user() {
-      if (User.all() > 0) {
+      if (User.all().length > 0) {
         return User.query().first();
       }
       return null;
