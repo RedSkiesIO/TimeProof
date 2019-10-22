@@ -1,6 +1,6 @@
 ﻿using DocumentStamp.Model;
 
-namespace DocumentStamp.Request
+namespace DocumentStamp.Http.Request
 {
     public class StampDocumentRequest : UserProof
     {

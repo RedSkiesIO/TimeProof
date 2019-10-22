@@ -1,4 +1,4 @@
-﻿namespace DocumentStamp.Response
+﻿namespace DocumentStamp.Http.Response
 {
     public class Result<T>
     {
