@@ -1,0 +1,3 @@
+[submodule "src/api/submodules/Catalyst.Framework"]
+	path = src/api/submodules/Catalyst.Framework
+	url = https://github.com/catalyst-network/Catalyst.Framework.git
