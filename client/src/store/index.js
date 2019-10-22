@@ -5,7 +5,6 @@ import VuexPersist from 'vuex-persist';
 
 import User from './User';
 
-// import example from './module-example'
 
 Vue.use(Vuex);
 
