@@ -60,6 +60,7 @@
   </div>
 </template>
 <script>
+
 export default {
   name: 'AddFile',
   data() {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
@@ -10,6 +11,7 @@ module.exports = function (ctx) {
       'i18n',
       'axios',
       'blake2b',
+      'keypair',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
