@@ -48,7 +48,8 @@
             unelevated
             size="lg"
             color="primary"
-            label="Sign"
+            :label="$t('sign')"
+            @click="signHash"
           />
           <span
             class="q-mt-sm text-blue"
@@ -60,6 +61,7 @@
   </div>
 </template>
 <script>
+import User from '../../store/User';
 
 export default {
   name: 'AddFile',
@@ -70,6 +72,13 @@ export default {
   },
 
   computed: {
+    user() {
+      if (User.all().length > 0) {
+        return User.query().first();
+      }
+      return null;
+    },
+
     getSize() {
       if (this.file.size) {
         const bytes = this.file.size;
@@ -99,9 +108,13 @@ export default {
       reader.onload = (evt) => {
         const input = Buffer.from(evt.target.result);
         const output = new Uint8Array(64);
-        this.file.hash = this.$blake2b(output.length).update(input).digest('hex');
+        this.file.hash = this.$blake2b(output.length).update(input).digest();
       };
       reader.readAsArrayBuffer(files[0]);
+    },
+
+    signHash() {
+      this.file.signature = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
     },
   },
 };

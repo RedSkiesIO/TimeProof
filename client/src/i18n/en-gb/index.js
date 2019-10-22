@@ -12,4 +12,5 @@ export default {
   type: 'type',
   size: 'size',
   differentFile: 'choose a different file',
+  sign: 'sign',
 };
