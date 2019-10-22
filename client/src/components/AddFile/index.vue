@@ -12,7 +12,7 @@
         <div
           v-if="scope.files < 1"
           class="q-pa-xl flex flex-center column text-center"
-          style="width:100%; height:100%;"
+          style="height: -webkit-fill-available;"
         >
           <q-icon
             name="backup"
@@ -37,10 +37,13 @@
           />
           <span class="q-mt-md text-h6 text-primary">
             {{ file.name }}</span>
-          <span class="text-body1 text-grey-7">
+          <span
+            v-if="file.type"
+            class="text-body1 text-grey-7"
+          >
             {{ $t('type') }}: {{ file.type }}</span>
           <span class="q-mb-lg text-body1 text-grey-7">
-            {{ $t('size') }}: {{ file.size /1000000 }}mb</span>
+            {{ $t('size') }}: {{ getSize }}</span>
           <q-btn
             unelevated
             size="lg"
@@ -65,6 +68,25 @@ export default {
     };
   },
 
+  computed: {
+    getSize() {
+      if (this.file.size) {
+        const bytes = this.file.size;
+        const decimals = 2;
+        if (bytes === 0) return '0 Bytes';
+
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        return `${parseFloat((bytes / (k ** i)).toFixed(dm))} ${sizes[i]}`;
+      }
+      return null;
+    },
+  },
+
   methods: {
     async factoryFn(files) {
       this.file = {
@@ -87,6 +109,8 @@ export default {
 .q-uploader {
   width: inherit;
   max-height: inherit;
+  min-width: 25rem;
+  min-height: 25rem;
 }
 .q-uploader__subtitle {
     display: none !important;
@@ -99,6 +123,6 @@ export default {
 }
 
 .q-uploader--bordered {
-    border: 1px dashed rgba(0, 0, 0, 0.12);
+    border: 2px dashed rgba(0, 0, 0, 0.12);
 }
 </style>
