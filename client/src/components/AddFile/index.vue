@@ -6,7 +6,7 @@
       :label="$t('selectFile')"
       auto-upload
       hide-upload-btn
-      :factory="factoryFn"
+      :factory="hashFile"
     >
       <template v-slot:list="scope">
         <div
@@ -88,7 +88,7 @@ export default {
   },
 
   methods: {
-    async factoryFn(files) {
+    async hashFile(files) {
       this.file = {
         name: files[0].name,
         type: files[0].type,
