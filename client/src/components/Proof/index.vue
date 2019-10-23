@@ -45,7 +45,7 @@
           {{ $t('signedBy') }}:
         </div>
         <div class="col-auto">
-          user@email.com
+          {{ user.name }} ({{ user.email }})
         </div>
       </div>
 
