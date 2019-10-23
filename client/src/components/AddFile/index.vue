@@ -27,7 +27,7 @@
             >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
         </div>
         <div
-          v-else
+          v-else-if="!confirmed"
           class="q-pa-xl flex flex-center column text-center"
         >
           <q-icon
@@ -56,18 +56,28 @@
             @click="scope.reset()"
           >{{ $t('differentFile') }}</span>
         </div>
+        <Proof
+          v-if="confirmed"
+          :proof="file"
+        />
       </template>
     </q-uploader>
   </div>
 </template>
 <script>
 import User from '../../store/User';
+import Proof from '../Proof';
 
 export default {
   name: 'AddFile',
+  components: {
+    Proof,
+  },
+
   data() {
     return {
       file: null,
+      confirmed: false,
     };
   },
 
@@ -114,7 +124,10 @@ export default {
     },
 
     signHash() {
-      this.file.signature = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
+      const sig = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
+      this.file.signature = this.$base32(sig);
+      this.file.base32Hash = this.$base32(this.file.hash);
+      this.confirmed = true;
     },
   },
 };

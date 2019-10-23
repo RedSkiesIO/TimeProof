@@ -9,16 +9,16 @@ const keypair = {
     const key = tweetnacl.sign.keyPair();
 
     return {
-      publicKey: encode(key.publicKey, 'RFC4648'),
-      secretKey: encode(key.secretKey, 'RFC4648'),
+      publicKey: encode(key.publicKey, 'RFC4648', { padding: false }),
+      secretKey: encode(key.secretKey, 'RFC4648', { padding: false }),
     };
   },
 
   newFromSeed(seed) {
     const key = tweetnacl.sign.keyPair.fromSeed(seed);
     return {
-      publicKey: encode(key.publicKey, 'RFC4648'),
-      secretKey: encode(key.secretKey, 'RFC4648'),
+      publicKey: encode(key.publicKey, 'RFC4648', { padding: false }),
+      secretKey: encode(key.secretKey, 'RFC4648', { padding: false }),
     };
   },
 
