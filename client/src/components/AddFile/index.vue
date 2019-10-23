@@ -43,7 +43,7 @@
           >
             {{ $t('type') }}: {{ file.type }}</span>
           <span class="q-mb-lg text-body1 text-grey-7">
-            {{ $t('size') }}: {{ getSize }}</span>
+            {{ $t('size') }}: {{ file.size }}</span>
           <q-btn
             unelevated
             size="lg"
@@ -89,30 +89,43 @@ export default {
       return null;
     },
 
-    getSize() {
-      if (this.file.size) {
-        const bytes = this.file.size;
-        const decimals = 2;
-        if (bytes === 0) return '0 Bytes';
+    // getSize() {
+    //   if (this.file.size) {
+    //     const bytes = this.file.size;
+    //     const decimals = 2;
+    //     if (bytes === 0) return '0 Bytes';
 
-        const k = 1024;
-        const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    //     const k = 1024;
+    //     const dm = decimals < 0 ? 0 : decimals;
+    //     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
 
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
+    //     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-        return `${parseFloat((bytes / (k ** i)).toFixed(dm))} ${sizes[i]}`;
-      }
-      return null;
-    },
+    //     return `${parseFloat((bytes / (k ** i)).toFixed(dm))} ${sizes[i]}`;
+    //   }
+    //   return null;
+    // },
   },
 
   methods: {
+    getSize(bytes) {
+      const decimals = 2;
+      if (bytes === 0) return '0 Bytes';
+
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      return `${parseFloat((bytes / (k ** i)).toFixed(dm))} ${sizes[i]}`;
+    },
+
     async hashFile(files) {
       this.file = {
         name: files[0].name,
         type: files[0].type,
-        size: files[0].size,
+        size: this.getSize(files[0].size),
       };
       const reader = await new FileReader();
       reader.onload = (evt) => {

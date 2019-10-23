@@ -6,10 +6,19 @@
         class="text-green"
         style="font-size: 100px"
       />
-      <span class="text-h6 q-mb-sm">Your proof has been confirmed!</span>
+      <span class="text-h6 q-my-sm">{{ $t('proofConfirmed') }}</span>
     </div>
 
     <div class="column">
+      <div class="row proof-item justify-between">
+        <div class="col-auto">
+          {{ $t('file') }}:
+        </div>
+        <div class="col-auto">
+          {{ proof.name }}
+        </div>
+      </div>
+
       <div
         v-if="proof.type"
         class="row proof-item justify-between"
@@ -32,11 +41,24 @@
       </div>
 
       <div class="row proof-item justify-between">
-        <div class="col-2">
-          id:
+        <div class="col-auto">
+          {{ $t('signedBy') }}:
         </div>
         <div class="col-auto">
-          {{ user.pubKey }}
+          user@email.com
+        </div>
+      </div>
+
+      <div class="row proof-item justify-between">
+        <div class="col">
+          <q-input
+            v-model="user.pubKey"
+            filled
+            readonly
+            stack-label
+            :label="$t('id')"
+            autogrow
+          />
         </div>
       </div>
 
@@ -47,7 +69,7 @@
             filled
             readonly
             stack-label
-            label="hash"
+            :label="$t('hash')"
             autogrow
           />
         </div>
@@ -60,7 +82,7 @@
             filled
             readonly
             stack-label
-            label="signature"
+            :label="$t('signature')"
             autogrow
           />
         </div>
@@ -103,7 +125,7 @@ export default {
     padding: 16px;
 }
 
-.q-textarea.q-field--labeled .q-field__native {
-    min-height: 0;
+.break {
+  word-break: break-all;
 }
 </style>
