@@ -8,6 +8,22 @@
       hide-upload-btn
       :factory="hashFile"
     >
+      <template v-slot:header="scope">
+        <q-tabs
+          v-model="tab"
+          dense
+          class="bg-white text-primary"
+        >
+          <q-tab
+            name="sign"
+            label="sign"
+          />
+          <q-tab
+            name="verify"
+            label="verify"
+          />
+        </q-tabs>
+      </template>
       <template v-slot:list="scope">
         <div
           v-if="scope.files < 1"
@@ -78,6 +94,7 @@ export default {
     return {
       file: null,
       confirmed: false,
+      tab: 'sign',
     };
   },
 
@@ -141,11 +158,11 @@ export default {
 .q-uploader__file-status {
     display: none;
 }
-.q-uploader__header {
-    display: none;
-}
+// .q-uploader__header {
+//     display: none;
+// }
 
 .q-uploader--bordered {
-    border: 2px dashed rgba(0, 0, 0, 0.12);
+    border: 2px solid rgba(0, 0, 0, 0.12);
 }
 </style>
