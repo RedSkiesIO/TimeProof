@@ -19,4 +19,6 @@ export default {
   signature: 'signature',
   hash: 'hash',
   proofConfirmed: 'Your proof has been confirmed!',
+  copy: 'copy',
+  copied: 'copied',
 };

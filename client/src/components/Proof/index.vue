@@ -58,7 +58,21 @@
             stack-label
             :label="$t('id')"
             autogrow
-          />
+          >
+            <q-btn
+              flat
+              rounded
+              size="sm"
+              color="grey"
+              icon="filter_none"
+              class="copy-button absolute-bottom-right"
+              @click="copy(user.pubKey)"
+            >
+              <q-tooltip anchor="top middle">
+                {{ copyLabel }}
+              </q-tooltip>
+            </q-btn>
+          </q-input>
         </div>
       </div>
 
@@ -71,7 +85,21 @@
             stack-label
             :label="$t('hash')"
             autogrow
-          />
+          >
+            <q-btn
+              flat
+              rounded
+              size="sm"
+              color="grey"
+              icon="filter_none"
+              class="copy-button absolute-bottom-right"
+              @click="copy(proof.base32Hash)"
+            >
+              <q-tooltip anchor="top middle">
+                {{ copyLabel }}
+              </q-tooltip>
+            </q-btn>
+          </q-input>
         </div>
       </div>
 
@@ -84,7 +112,21 @@
             stack-label
             :label="$t('signature')"
             autogrow
-          />
+          >
+            <q-btn
+              flat
+              rounded
+              size="sm"
+              color="grey"
+              icon="filter_none"
+              class="copy-button absolute-bottom-right"
+              @click="copy(proof.signature)"
+            >
+              <q-tooltip anchor="top middle">
+                {{ copyLabel }}
+              </q-tooltip>
+            </q-btn>
+          </q-input>
         </div>
       </div>
     </div>
@@ -105,7 +147,7 @@ export default {
 
   data() {
     return {
-      fileHash: this.proof.base32Hash,
+      copyLabel: this.$t('copy'),
     };
   },
 
@@ -115,6 +157,19 @@ export default {
         return User.query().first();
       }
       return null;
+    },
+  },
+
+  methods: {
+    copy(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.copyLabel = this.$t('copied');
+        setTimeout(() => {
+          this.copyLabel = this.$t('copy');
+        }, 1500);
+      }, (err) => {
+        console.error('Async: Could not copy text: ', err);
+      });
     },
   },
 };
@@ -127,5 +182,8 @@ export default {
 
 .break {
   word-break: break-all;
+}
+.copy-button {
+  right: -10px;
 }
 </style>
