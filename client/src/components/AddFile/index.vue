@@ -1,83 +1,115 @@
 <template>
   <div class="q-pa-md">
-    <q-uploader
+    <q-card
       flat
       bordered
-      :label="$t('selectFile')"
-      auto-upload
-      hide-upload-btn
-      :factory="hashFile"
     >
-      <template v-slot:header="scope">
-        <q-tabs
-          v-model="tab"
-          dense
-          class="bg-white text-primary"
-        >
-          <q-tab
-            name="sign"
-            label="sign"
-          />
-          <q-tab
-            name="verify"
-            label="verify"
-          />
-        </q-tabs>
-      </template>
-      <template v-slot:list="scope">
-        <div
-          v-if="scope.files < 1"
-          class="q-pa-xl flex flex-center column text-center"
-          style="height: -webkit-fill-available;"
-        >
-          <q-icon
-            name="backup"
-            class="text-grey-4"
-            style="font-size: 100px"
-          />
-          <span class="text-h6 text-weight-bold text-grey-6">{{ $t('dragDrop') }}</span>
-          <span class="text-body1 text-grey-7">
-            {{ $t('or') }} <span
-              class="text-blue"
-              @click="scope.pickFiles()"
-            >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
-        </div>
-        <div
-          v-else-if="!confirmed"
-          class="q-pa-xl flex flex-center column text-center"
-        >
-          <q-icon
-            name="fas fa-file-signature"
-            class="text-grey-4"
-            style="font-size: 100px"
-          />
-          <span class="q-mt-md text-h6 text-primary">
-            {{ file.name }}</span>
-          <span
-            v-if="file.type"
-            class="text-body1 text-grey-7"
-          >
-            {{ $t('type') }}: {{ file.type }}</span>
-          <span class="q-mb-lg text-body1 text-grey-7">
-            {{ $t('size') }}: {{ file.size }}</span>
-          <q-btn
-            unelevated
-            size="lg"
-            color="primary"
-            :label="$t('sign')"
-            @click="signHash"
-          />
-          <span
-            class="q-mt-sm text-blue"
-            @click="scope.reset()"
-          >{{ $t('differentFile') }}</span>
-        </div>
-        <Proof
-          v-if="confirmed"
-          :proof="file"
+      <q-tabs
+        v-model="tab"
+        dense
+        class="bg-white text-primary"
+      >
+        <q-tab
+          name="sign"
+          :label="$t('sign')"
         />
-      </template>
-    </q-uploader>
+        <q-tab
+          name="verify"
+          :label="$t('verify')"
+        />
+      </q-tabs>
+
+      <q-uploader
+        flat
+        bordered
+        :label="$t('selectFile')"
+        auto-upload
+        hide-upload-btn
+        :factory="hashFile"
+      >
+        <template v-slot:list="scope">
+          <div
+            v-if="scope.files < 1"
+            class="q-pa-xl flex flex-center column text-center"
+            style="height: -webkit-fill-available;"
+          >
+            <q-icon
+              name="backup"
+              class="text-grey-4"
+              style="font-size: 100px"
+            />
+
+            <span
+              v-if="tab==='sign'"
+              class="text-h6 text-weight-bold text-grey-6"
+            >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
+            <span
+              v-else
+              class="text-h6 text-weight-bold text-grey-6"
+            >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+
+            <span class="text-body1 text-grey-7">
+              {{ $t('or') }} <span
+                class="text-blue"
+                @click="scope.pickFiles()"
+              >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
+          </div>
+
+          <div
+            v-else-if="!confirmed"
+            class="q-pa-xl flex flex-center column text-center"
+          >
+            <q-icon
+              name="fas fa-file-signature"
+              class="text-grey-4"
+              style="font-size: 100px"
+            />
+            <span class="q-mt-md text-h6 text-primary">
+              {{ file.name }}</span>
+            <span
+              v-if="file.type"
+              class="text-body1 text-grey-7"
+            >
+              {{ $t('type') }}: {{ file.type }}</span>
+            <span class="q-mb-lg text-body1 text-grey-7">
+              {{ $t('size') }}: {{ file.size }}</span>
+            <q-btn
+              v-if="tab==='sign'"
+              unelevated
+              size="lg"
+              color="primary"
+              :label="$t('sign')"
+              @click="signHash"
+            />
+            <q-input
+              v-else
+              v-model="proofId"
+              outlined
+              rounded
+              bottom-slots
+              :label="$t('proofId')"
+            >
+              <template v-slot:append>
+                <q-btn
+                  unelevated
+                  rounded
+                  color="primary"
+                  :label="$t('verify')"
+                />
+              </template>
+            </q-input>
+            <span
+              class="q-mt-sm text-blue"
+              @click="scope.reset()"
+            >{{ $t('differentFile') }}</span>
+          </div>
+          <Proof
+            v-if="confirmed"
+            :proof="file"
+          />
+        </template>
+      </q-uploader>
+    </q-card>
   </div>
 </template>
 <script>
@@ -95,6 +127,8 @@ export default {
       file: null,
       confirmed: false,
       tab: 'sign',
+      proofId: '',
+      scope: null,
     };
   },
 
@@ -104,6 +138,12 @@ export default {
         return User.query().first();
       }
       return null;
+    },
+  },
+
+  watch: {
+    tab() {
+      this.confirmed = false;
     },
   },
 
@@ -158,9 +198,9 @@ export default {
 .q-uploader__file-status {
     display: none;
 }
-// .q-uploader__header {
-//     display: none;
-// }
+.q-uploader__header {
+    display: none;
+}
 
 .q-uploader--bordered {
     border: 2px solid rgba(0, 0, 0, 0.12);

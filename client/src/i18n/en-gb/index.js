@@ -3,7 +3,7 @@ export default {
   documentSigner: 'Document Signer',
   // AddFile
   selectFile: 'Select your File',
-  dragDrop: 'Drag and Drop your file to sign',
+  dragDrop: 'Drag and Drop your file to',
   or: 'or',
   browse: 'browse',
   chooseFile: 'to choose a file',
@@ -19,4 +19,6 @@ export default {
   proofConfirmed: 'Your proof has been confirmed!',
   copy: 'copy',
   copied: 'copied',
+  verify: 'verify',
+  proofId: 'Enter you proof ID',
 };
