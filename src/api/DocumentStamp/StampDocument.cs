@@ -67,6 +67,10 @@ namespace DocumentStamp
             {
                 return new BadRequestObjectResult(new Result<string>(false, ide.Message));
             }
+            catch(Exception exc)
+            {
+                return new BadRequestObjectResult(new Result<string>(false, exc.Message));
+            }
         }
     }
 }
