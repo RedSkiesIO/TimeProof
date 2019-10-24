@@ -52,7 +52,7 @@
       <div class="row proof-item justify-between">
         <div class="col">
           <q-input
-            v-model="user.pubKey"
+            v-model="mockTxId"
             filled
             readonly
             stack-label
@@ -148,6 +148,7 @@ export default {
   data() {
     return {
       copyLabel: this.$t('copy'),
+      mockTxId: '0x793ee985f13252d47c6a39a7bba209d0be5f26c4d4bf54d37daed952f3f4eac8',
     };
   },
 
