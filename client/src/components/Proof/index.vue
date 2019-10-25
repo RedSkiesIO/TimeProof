@@ -6,7 +6,14 @@
         class="text-green"
         style="font-size: 100px"
       />
-      <span class="text-h6 q-my-sm">{{ $t('proofConfirmed') }}</span>
+      <span
+        v-if="proof.verify"
+        class="text-h6 q-my-sm"
+      >{{ $t('proofVerified') }}</span>
+      <span
+        v-else
+        class="text-h6 q-my-sm"
+      >{{ $t('proofConfirmed') }}</span>
     </div>
 
     <div class="column">

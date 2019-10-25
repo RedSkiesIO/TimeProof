@@ -17,9 +17,11 @@ export default {
   signature: 'signature',
   hash: 'hash',
   proofConfirmed: 'Your proof has been confirmed!',
+  proofVerified: 'This file has been verified',
   copy: 'copy',
   copied: 'copied',
   verify: 'verify',
   proofId: 'Enter you proof ID',
   signed: 'Signed',
+
 };
