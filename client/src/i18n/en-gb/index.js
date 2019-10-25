@@ -21,4 +21,5 @@ export default {
   copied: 'copied',
   verify: 'verify',
   proofId: 'Enter you proof ID',
+  signed: 'Signed',
 };
