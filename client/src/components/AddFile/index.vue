@@ -40,7 +40,7 @@
         class="q-pa-xl flex flex-center column text-center"
       >
         <q-icon
-          name="fas fa-file-signature"
+          :name="fileIcon"
           class="text-grey-4"
           style="font-size: 100px"
         />
@@ -123,6 +123,23 @@ export default {
         return User.query().first();
       }
       return null;
+    },
+
+    fileIcon() {
+      const { type } = this.file;
+      if (type === 'application/pdf') {
+        return 'fas fa-file-pdf';
+      }
+
+      if (type === 'application/zip') {
+        return 'fas fa-file-archive';
+      }
+
+      if (type === 'image/png' || type === 'image/gif' || type === 'image/jpg') {
+        return 'fas fa-file-image';
+      }
+
+      return 'fas fa=file';
     },
   },
 
