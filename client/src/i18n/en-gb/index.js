@@ -21,7 +21,7 @@ export default {
   copy: 'copy',
   copied: 'copied',
   verify: 'verify',
-  proofId: 'Enter you proof ID',
+  proofId: 'Enter your proof ID',
   signed: 'Signed',
 
 };
