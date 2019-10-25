@@ -139,7 +139,7 @@ export default {
         return 'fas fa-file-image';
       }
 
-      return 'fas fa=file';
+      return 'fas fa-file';
     },
   },
 
