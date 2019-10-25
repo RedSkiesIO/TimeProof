@@ -53,15 +53,14 @@ namespace DocumentStamp
                 var random = new SecureRandom();
                 var keyPairGenerator = new Ed25519KeyPairGenerator();
                 keyPairGenerator.Init(new Ed25519KeyGenerationParameters(random));
-                var asymmetricCipherKeyPair = keyPairGenerator.GenerateKeyPair();
-                var nodePublicKey = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(asymmetricCipherKeyPair.Public);
+                var nodePublicKey = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyPairGenerator.GenerateKeyPair().Public);
 
                 var stampDocumentResponse = new StampDocumentResponse
                 {
                     TransactionId = Guid.NewGuid().ToString(),
                     TimeStamp = DateTime.UtcNow,
                     UserProof = stampDocumentRequest,
-                    NodeProof = new NodeProof {PublicKey = nodePublicKey.ToAsn1Object().GetDerEncoded().ToBase32().ToUpper(), Signature = "ABUYGSUYFGSUYS"}
+                    NodeProof = new NodeProof {PublicKey = nodePublicKey.ToAsn1Object().GetDerEncoded().ToBase32().ToUpper(), Signature = Guid.NewGuid().ToByteArray().ToBase32().ToUpper()}
                 };
 
                 return new OkObjectResult(new Result<StampDocumentResponse>(true, stampDocumentResponse));
