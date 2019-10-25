@@ -57,7 +57,7 @@ namespace DocumentStamp
 
                 var stampDocumentResponse = new StampDocumentResponse
                 {
-                    TransactionId = Guid.NewGuid().ToString(),
+                    TransactionId = Guid.NewGuid().ToByteArray().ToBase32().ToUpper(),
                     TimeStamp = DateTime.UtcNow,
                     UserProof = stampDocumentRequest,
                     NodeProof = new NodeProof {PublicKey = nodePublicKey.ToAsn1Object().GetDerEncoded().ToBase32().ToUpper(), Signature = Guid.NewGuid().ToByteArray().ToBase32().ToUpper()}
