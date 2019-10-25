@@ -31,15 +31,6 @@ namespace DocumentStamp
                 var stampDocumentRequest =
                     ModelValidator.ValidateAndConvert<StampDocumentRequest>(await req.ReadAsStringAsync());
 
-                //stampDocumentRequest.PublicKey = "EQWWLY36L3V6OG4UQQKHVIY3ORLFNWZLBNOZBCZWOJX2AT7F3URA".ToLower();
-                //stampDocumentRequest.Hash =
-                //    "4WT6N3R3CQL2QR3X2QA7SN374VN5FQEHYKUXTEXTDA4JWHBZHULSUOGVST6HCAMKELO467I2P24H4MJ3IUTGGGR4YUPUHANTDWMYQSA"
-                //        .ToLower();
-                //stampDocumentRequest.Signature =
-                //    "BGEKWDCR2SLIXKZZGSPRN3ZKKWYGNTGRU2PKO4BLXQJVJVL6NJXFJXLPVVGKBER6FIJTWMKCJ4OXKBLJGEHVT55ODK2OEICR6QF5SDY"
-                //        .ToLower();
-
-
                 var signature = stampDocumentRequest.Signature.FromBase32();
                 var message = stampDocumentRequest.Hash.FromBase32();
                 var publicKey = new Ed25519PublicKeyParameters(stampDocumentRequest.PublicKey.FromBase32(), 0);
