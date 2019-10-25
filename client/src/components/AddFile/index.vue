@@ -184,15 +184,17 @@ export default {
     },
 
     async sendProof() {
-      this.file.txId = await this.$axios.post('http://localhost:7071/api/StampDocumentFunction', {
-        params: {
-          hash: this.file.base32Hash,
-          publicKey: this.user.pubKey,
-          signature: this.file.signature,
-        },
+      const tx = await this.$axios.post('http://localhost:7071/api/StampDocumentFunction', {
+        hash: this.file.base32Hash,
+        publicKey: this.user.pubKey,
+        signature: this.file.signature,
       });
-      console.log(this.file.txId);
-      this.confirmed = true;
+
+      if (tx.data.success) {
+        this.file.txId = tx.data.value.transactionId;
+        this.file.timestamp = tx.data.value.timeStamp;
+        this.confirmed = true;
+      }
     },
   },
 };
