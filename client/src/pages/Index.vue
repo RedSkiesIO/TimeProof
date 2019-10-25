@@ -2,7 +2,6 @@
   <q-page class="flex flex-center">
     <q-card
       flat
-      bordered
     >
       <q-tabs
         v-model="tab"
@@ -53,5 +52,12 @@ export default {
 <style lang="scss" scoped>
 .q-tab-panel {
   padding: 0;
+}
+
+.q-card > div:first-child {
+    border-top: 2px solid rgba(0, 0, 0, 0.12);
+    border-left: 2px solid rgba(0, 0, 0, 0.12);
+    border-right: 2px solid rgba(0, 0, 0, 0.12);
+
 }
 </style>
