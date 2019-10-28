@@ -23,7 +23,7 @@ export default {
   copy: 'copy',
   copied: 'copied',
   verify: 'verify',
-  proofId: 'Enter your proof ID',
+  proofId: 'Enter your proof ID (optional)',
   signed: 'Signed',
 
 };

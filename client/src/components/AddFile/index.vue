@@ -61,24 +61,23 @@
           :label="$t('sign')"
           @click="signHash"
         />
-        <q-input
-          v-else
-          v-model="proofId"
-          outlined
-          rounded
-          bottom-slots
-          :label="$t('proofId')"
-        >
-          <template v-slot:append>
-            <q-btn
-              unelevated
-              rounded
-              color="primary"
-              :label="$t('verify')"
-              @click="verifyProof"
-            />
-          </template>
-        </q-input>
+        <div v-else>
+          <q-input
+            v-model="proofId"
+            outlined
+            :label="$t('proofId')"
+            stack-label
+          />
+          <q-btn
+            class="q-mt-sm"
+            unelevated
+            rounded
+            color="primary"
+            :label="$t('verify')"
+            @click="verifyProof"
+          />
+        </div>
+
         <span
           class="q-mt-sm text-blue"
           @click="scope.reset()"
