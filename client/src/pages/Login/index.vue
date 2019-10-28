@@ -4,7 +4,7 @@
       flat
     >
       <q-tabs
-        v-model="tab"
+        v-model="panel"
         dense
         class="bg-white text-primary"
       >
@@ -13,12 +13,12 @@
           :label="$t('login')"
         />
         <q-tab
-          name="signUp"
+          name="register"
           :label="$t('signUp')"
         />
       </q-tabs>
       <q-tab-panels
-        v-model="tab"
+        v-model="panel"
         animated
       >
         <q-tab-panel
@@ -43,7 +43,7 @@
         </q-tab-panel>
 
         <q-tab-panel
-          name="signUp"
+          name="register"
           class="q-gutter-y-md flex flex-center column text-center"
         >
           <q-input
@@ -78,7 +78,7 @@
             unelevated
             color="primary"
             :label="$t('register')"
-            @click="register"
+            @click="signUp"
           />
         </q-tab-panel>
       </q-tab-panels>
@@ -90,10 +90,15 @@
 
 export default {
   name: 'Login',
+  props: {
+    tab: {
+      type: String,
+      required: true,
+    },
+  },
 
   data() {
     return {
-      tab: 'login',
       name: null,
       email: null,
       password: null,
@@ -101,8 +106,20 @@ export default {
     };
   },
 
+  computed: {
+    panel: {
+      get() {
+        return this.tab;
+      },
+      set(val) {
+        this.$router.push({ path: `/${val}` });
+      },
+    },
+  },
+
+
   methods: {
-    async register() {
+    async signUp() {
       this.$refs.name.validate();
       this.$refs.email.validate();
       this.$refs.password.validate();

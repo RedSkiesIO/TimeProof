@@ -11,7 +11,14 @@ const routes = [
     path: '/login',
     component: () => import('layouts/Main'),
     children: [
-      { path: '', component: () => import('pages/Login') },
+      { path: '', component: () => import('pages/Login'), props: { tab: 'login' } },
+    ],
+  },
+  {
+    path: '/register',
+    component: () => import('layouts/Main'),
+    children: [
+      { path: '', component: () => import('pages/Login'), props: { tab: 'register' } },
     ],
   },
 ];

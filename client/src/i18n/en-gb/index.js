@@ -26,7 +26,7 @@ export default {
   verify: 'verify',
   proofId: 'Proof ID (optional)',
   signed: 'Signed',
-  login: 'Login',
+  login: 'Log In',
   signUp: 'Sign Up',
   signin: 'Sign In',
   register: 'Register',
