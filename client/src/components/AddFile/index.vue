@@ -36,57 +36,64 @@
       </div>
 
       <div
-        v-else-if="!confirmed"
-        class="q-pa-xl flex flex-center column text-center"
+        v-else
       >
-        <q-icon
-          :name="fileIcon"
-          class="text-grey-4"
-          style="font-size: 100px"
-        />
-        <span class="q-mt-md text-h6 text-primary">
-          {{ file.name }}</span>
-        <span
-          v-if="file.type"
-          class="text-body1 text-grey-7"
+        <div
+          v-if="!confirmed"
+          class="q-pa-xl flex flex-center column text-center"
         >
-          {{ $t('type') }}: {{ file.type }}</span>
-        <span class="q-mb-lg text-body1 text-grey-7">
-          {{ $t('size') }}: {{ file.size }}</span>
-        <q-btn
-          v-if="mode==='sign'"
-          unelevated
-          size="lg"
-          color="primary"
-          :label="$t('sign')"
-          @click="signHash"
-        />
-        <div v-else>
-          <q-input
-            v-model="proofId"
-            outlined
-            :label="$t('proofId')"
-            stack-label
+          <q-icon
+            :name="fileIcon"
+            class="text-grey-4"
+            style="font-size: 100px"
           />
+          <span class="q-mt-md text-h6 text-primary">
+            {{ file.name }}</span>
+          <span
+            v-if="file.type"
+            class="text-body1 text-grey-7"
+          >
+            {{ $t('type') }}: {{ file.type }}</span>
+          <span class="q-mb-lg text-body1 text-grey-7">
+            {{ $t('size') }}: {{ file.size }}</span>
           <q-btn
-            class="q-mt-sm"
+            v-if="mode==='sign'"
             unelevated
-            rounded
+            size="lg"
             color="primary"
-            :label="$t('verify')"
-            @click="verifyProof"
+            :label="$t('sign')"
+            @click="signHash"
           />
+          <div v-else>
+            <q-input
+              v-model="proofId"
+              :label="$t('proofId')"
+              stack-label
+              dense
+            />
+            <q-btn
+              class="q-mt-md"
+              unelevated
+              rounded
+              size="lg"
+              color="primary"
+              :label="$t('verify')"
+              @click="verifyProof"
+            />
+          </div>
+
+          <span
+            class="q-mt-sm text-blue"
+            @click="scope.reset()"
+          >{{ $t('differentFile') }}</span>
         </div>
 
-        <span
-          class="q-mt-sm text-blue"
-          @click="scope.reset()"
-        >{{ $t('differentFile') }}</span>
+        <Proof
+          v-if="confirmed"
+          :proof="file"
+          :scope="scope"
+        />
       </div>
-      <Proof
-        v-if="confirmed"
-        :proof="file"
-      />
     </template>
   </q-uploader>
 </template>
@@ -164,6 +171,7 @@ export default {
     },
 
     async hashFile(files) {
+      this.confirmed = false;
       this.file = {
         name: files[0].name,
         type: files[0].type,

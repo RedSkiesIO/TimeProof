@@ -10,6 +10,7 @@ export default {
   type: 'Type',
   size: 'Size',
   differentFile: 'choose a different file',
+  anotherFile: 'choose another file',
   sign: 'sign',
   file: 'File',
   signedBy: 'Signed by',
@@ -23,7 +24,7 @@ export default {
   copy: 'copy',
   copied: 'copied',
   verify: 'verify',
-  proofId: 'Enter your proof ID (optional)',
+  proofId: 'Proof ID (optional)',
   signed: 'Signed',
 
 };
