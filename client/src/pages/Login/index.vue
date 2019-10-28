@@ -28,15 +28,14 @@
           <q-input
             v-model="email"
             outlined
-            label="email"
+            :label="$t('email')"
           />
           <q-input
             v-model="password"
             outlined
-            label="password"
+            :label="$t('password')"
           />
           <q-btn
-            class="q-mt-md"
             unelevated
             color="primary"
             :label="$t('signin')"
@@ -50,20 +49,19 @@
           <q-input
             v-model="name"
             outlined
-            label="Full name"
+            :label="$t('fullName')"
           />
           <q-input
             v-model="email"
             outlined
-            label="email"
+            :label="$t('email')"
           />
           <q-input
             v-model="password"
             outlined
-            label="password"
+            :label="$t('password')"
           />
           <q-btn
-            class="q-mt-md"
             unelevated
             color="primary"
             :label="$t('register')"
@@ -82,6 +80,10 @@ export default {
   data() {
     return {
       tab: 'login',
+      name: null,
+      email: null,
+      password: null,
+
     };
   },
 };

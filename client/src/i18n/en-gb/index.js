@@ -30,4 +30,7 @@ export default {
   signUp: 'Sign Up',
   signin: 'Sign In',
   register: 'Register',
+  email: 'Email',
+  password: 'Password',
+  fullName: 'Full Name',
 };
