@@ -20,6 +20,10 @@ export default {
   },
 
   computed: {
+    account() {
+      return this.$store.state.settings.authenticatedAccount;
+    },
+
     user() {
       if (User.all().length > 0) {
         return User.query().first();
@@ -34,14 +38,21 @@ export default {
 
   methods: {
     start() {
-      if (!this.user) {
-        const keypair = this.$keypair.new();
-        User.insert({
-          data: {
-            pubKey: keypair.publicKey,
-            secretKey: keypair.secretKey,
-          },
-        });
+      console.log(this.account);
+
+      if (!this.account) {
+        console.log(this.user);
+        if (!this.user) {
+        // const keypair = this.$keypair.new();
+        // User.insert({
+        //   data: {
+        //     pubKey: keypair.publicKey,
+        //     secretKey: keypair.secretKey,
+        //   },
+        // });
+          this.$router.push({ path: '/register' });
+        }
+        this.$router.push({ path: '/login' });
       }
       this.ready = true;
     },

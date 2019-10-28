@@ -5,6 +5,8 @@ import VuexPersist from 'vuex-persist';
 
 import User from './User';
 
+import settings from './settings';
+
 
 Vue.use(Vuex);
 
@@ -15,6 +17,7 @@ database.register(User);
 const vuexPersist = new VuexPersist({
   key: 'upgraded-giggle',
   storage: localStorage,
+  modules: ['entities'],
 });
 
 if (process.env.DEV) {
@@ -28,7 +31,7 @@ if (process.env.DEV) {
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      // example
+      settings,
     },
     plugins: [VuexORM.install(database), vuexPersist.plugin],
     // enable strict mode (adds overhead!)

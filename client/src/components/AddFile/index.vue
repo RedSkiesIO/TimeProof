@@ -150,12 +150,6 @@ export default {
     },
   },
 
-  watch: {
-    tab() {
-      this.confirmed = false;
-    },
-  },
-
   methods: {
     getSize(bytes) {
       const decimals = 2;
@@ -171,6 +165,8 @@ export default {
     },
 
     async hashFile(files) {
+      console.log(this.$store.state.settings.authenticatedAccount);
+
       this.confirmed = false;
       this.file = {
         name: files[0].name,

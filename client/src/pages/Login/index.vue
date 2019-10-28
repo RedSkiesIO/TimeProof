@@ -39,6 +39,7 @@
             unelevated
             color="primary"
             :label="$t('signin')"
+            @click="login"
           />
         </q-tab-panel>
 
@@ -87,6 +88,7 @@
 </template>
 
 <script>
+import User from '../../store/User';
 
 export default {
   name: 'Login',
@@ -119,6 +121,14 @@ export default {
 
 
   methods: {
+    login() {
+      const account = User.find(this.email);
+      if (account) {
+        this.$store.dispatch('settings/setAuthenticatedAccount', account);
+        this.$router.push({ path: '/' });
+      }
+      console.log('not found');
+    },
     async signUp() {
       this.$refs.name.validate();
       this.$refs.email.validate();
@@ -128,6 +138,18 @@ export default {
         || !this.$refs.email.hasError
         || !this.$refs.password.hasError) {
         console.log('success');
+        const keypair = this.$keypair.new();
+
+        User.insert({
+          data: {
+            pubKey: keypair.publicKey,
+            secretKey: keypair.secretKey,
+            name: this.name,
+            email: this.email,
+          },
+        });
+        this.$store.dispatch('settings/setAuthenticatedAccount', User.find(this.email));
+        this.$router.push({ path: '/' });
       }
     },
   },
