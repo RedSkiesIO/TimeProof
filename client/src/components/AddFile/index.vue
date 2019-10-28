@@ -75,6 +75,7 @@
               rounded
               color="primary"
               :label="$t('verify')"
+              @click="verifyProof"
             />
           </template>
         </q-input>
@@ -135,7 +136,7 @@ export default {
         return 'fas fa-file-archive';
       }
 
-      if (type === 'image/png' || type === 'image/gif' || type === 'image/jpg') {
+      if (type === 'image/png' || type === 'image/gif' || type === 'image/jpeg') {
         return 'fas fa-file-image';
       }
 
@@ -197,6 +198,14 @@ export default {
         this.file.timestamp = tx.data.value.timeStamp;
         this.confirmed = true;
       }
+    },
+
+    async verifyProof() {
+      this.file.txId = this.proofId;
+      this.file.timestamp = Date.now();
+      this.file.verify = true;
+      this.file.verified = false;
+      this.confirmed = true;
     },
   },
 };
