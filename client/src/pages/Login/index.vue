@@ -47,24 +47,38 @@
           class="q-gutter-y-md flex flex-center column text-center"
         >
           <q-input
+            ref="name"
             v-model="name"
             outlined
             :label="$t('fullName')"
+            lazy-rules
+            :rules="[ val => val && val.length > 0 || $t('emptyName')]"
           />
           <q-input
+            ref="email"
             v-model="email"
             outlined
             :label="$t('email')"
+            lazy-rules
+            :rules="[ val => val && emailRegex.test(val.toLowerCase()) ||
+              $t('invalidEmail')]"
           />
           <q-input
+            ref="password"
             v-model="password"
             outlined
             :label="$t('password')"
+            type="password"
+            lazy-rules
+            :rules="[ val => val && val.length > 8 || $t('minCharactersErr'),
+                      val => /\d/.test(val) || $t('noNumbersErr'),
+                      val => /[A-Z]/.test(val) || $t('noUppercaseErr')]"
           />
           <q-btn
             unelevated
             color="primary"
             :label="$t('register')"
+            @click="register"
           />
         </q-tab-panel>
       </q-tab-panels>
@@ -83,8 +97,22 @@ export default {
       name: null,
       email: null,
       password: null,
-
+      emailRegex: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     };
+  },
+
+  methods: {
+    async register() {
+      this.$refs.name.validate();
+      this.$refs.email.validate();
+      this.$refs.password.validate();
+
+      if (!this.$refs.name.hasError
+        || !this.$refs.email.hasError
+        || !this.$refs.password.hasError) {
+        console.log('success');
+      }
+    },
   },
 };
 </script>

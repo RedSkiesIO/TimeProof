@@ -33,4 +33,10 @@ export default {
   email: 'Email',
   password: 'Password',
   fullName: 'Full Name',
+  minCharactersErr: 'Password must be at least 8 characters',
+  noNumberErr: 'Password must contain a number',
+  noUppercaseErr: 'Password must contain at least one uppercase letter',
+  invalidEmail: 'Please enter a valid email address',
+  emptyName: 'Please enter a name',
+
 };
