@@ -1,5 +1,3 @@
-// This is just an example,
-// so you can safely delete all default props below
 
 export default {
   documentSigner: 'Document Signer',
@@ -9,8 +7,16 @@ export default {
   or: 'or',
   browse: 'browse',
   chooseFile: 'to choose a file',
-  type: 'type',
-  size: 'size',
+  type: 'Type',
+  size: 'Size',
   differentFile: 'choose a different file',
   sign: 'sign',
+  file: 'File',
+  signedBy: 'Signed by',
+  id: 'id',
+  signature: 'signature',
+  hash: 'hash',
+  proofConfirmed: 'Your proof has been confirmed!',
+  copy: 'copy',
+  copied: 'copied',
 };

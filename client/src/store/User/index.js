@@ -8,6 +8,8 @@ export default class User extends Model {
       id: this.increment(),
       pubKey: this.attr(''),
       secretKey: this.attr(''),
+      name: this.attr('Satoshi Nakamoto'),
+      email: this.attr('user@email.com'),
     };
   }
 }

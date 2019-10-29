@@ -12,6 +12,7 @@ module.exports = function (ctx) {
       'axios',
       'blake2b',
       'keypair',
+      'base32',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
