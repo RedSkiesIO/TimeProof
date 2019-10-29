@@ -26,5 +26,4 @@ export default {
   verify: 'verify',
   proofId: 'Proof ID (optional)',
   signed: 'Signed',
-
 };

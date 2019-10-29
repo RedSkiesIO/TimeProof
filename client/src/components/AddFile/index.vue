@@ -156,6 +156,12 @@ export default {
     },
   },
 
+  watch: {
+    tab() {
+      this.confirmed = false;
+    },
+  },
+
   methods: {
     getSize(bytes) {
       const decimals = 2;
