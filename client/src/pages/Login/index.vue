@@ -138,18 +138,18 @@ export default {
         || !this.$refs.email.hasError
         || !this.$refs.password.hasError) {
         console.log('success');
-        const keypair = this.$keypair.new();
+        // const keypair = this.$keypair.new();
 
-        User.insert({
-          data: {
-            pubKey: keypair.publicKey,
-            secretKey: keypair.secretKey,
-            name: this.name,
-            email: this.email,
-          },
-        });
-        this.$store.dispatch('settings/setAuthenticatedAccount', User.find(this.email));
-        this.$router.push({ path: '/' });
+        // User.insert({
+        //   data: {
+        //     pubKey: keypair.publicKey,
+        //     secretKey: keypair.secretKey,
+        //     name: this.name,
+        //     email: this.email,
+        //   },
+        // });
+        // this.$store.dispatch('settings/setAuthenticatedAccount', User.find(this.email));
+        // this.$router.push({ path: '/' });
       }
     },
   },
