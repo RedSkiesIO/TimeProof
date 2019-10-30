@@ -66,20 +66,26 @@
           />
           <div v-else>
             <q-input
+              ref="proofId"
               v-model="proofId"
-              :label="$t('proofId')"
-              stack-label
-              dense
-            />
-            <q-btn
-              class="q-mt-md"
-              unelevated
+              outlined
               rounded
-              size="lg"
-              color="primary"
-              :label="$t('verify')"
-              @click="verifyProof"
-            />
+              bottom-slots
+              :label="$t('proofId')"
+              lazy-rules
+              :rules="[ val => val && val.length > 102
+                && val.length < 104 || $t('invalidProofId')]"
+            >
+              <template v-slot:append>
+                <q-btn
+                  unelevated
+                  rounded
+                  color="primary"
+                  :label="$t('verify')"
+                  @click="verifyProof"
+                />
+              </template>
+            </q-input>
           </div>
 
           <span
@@ -217,30 +223,33 @@ export default {
     },
 
     async verifyProof() {
-      this.file.verify = true;
-      try {
-        const tx = await this.$axios.get(`http://192.168.1.232:7071/api/VerifyStampDocument/${this.proofId}`);
+      this.$refs.proofId.validate();
+      if (!this.$refs.proofId.hasError) {
+        this.file.verify = true;
+        try {
+          const tx = await this.$axios.get(`http://192.168.1.232:7071/api/VerifyStampDocument/${this.proofId}`);
 
-        if (tx.data.success) {
-          const fileHash = tx.data.value.userProof.hash;
-          if (fileHash === this.file.base32Hash) {
-            this.file.txId = tx.data.value.transactionId;
-            this.file.timestamp = tx.data.value.timeStamp;
-            this.file.signature = tx.data.value.userProof.signature;
-            this.file.pubKey = tx.data.value.userProof.publicKey;
-            this.file.verified = true;
+          if (tx.data.success) {
+            const fileHash = tx.data.value.userProof.hash;
+            if (fileHash === this.file.base32Hash) {
+              this.file.txId = tx.data.value.transactionId;
+              this.file.timestamp = tx.data.value.timeStamp;
+              this.file.signature = tx.data.value.userProof.signature;
+              this.file.pubKey = tx.data.value.userProof.publicKey;
+              this.file.verified = true;
+            }
+            this.file.error = this.$t('filesDoNotMatch');
+            this.file.verified = false;
+          } else {
+            this.file.error = this.$t('noProofFound');
+            this.file.verified = false;
           }
-          this.file.error = this.$t('filesDoNotMatch');
-          this.file.verified = false;
-        } else {
+          this.confirmed = true;
+        } catch (e) {
           this.file.error = this.$t('noProofFound');
           this.file.verified = false;
+          this.confirmed = true;
         }
-        this.confirmed = true;
-      } catch (e) {
-        this.file.error = this.$t('noProofFound');
-        this.file.verified = false;
-        this.confirmed = true;
       }
     },
   },

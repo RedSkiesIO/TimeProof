@@ -25,6 +25,7 @@ export default {
   copy: 'copy',
   copied: 'copied',
   verify: 'verify',
-  proofId: 'Proof ID (optional)',
+  proofId: 'Proof ID',
   signed: 'Signed',
+  invalidProofId: 'Invalid proof ID',
 };
