@@ -237,9 +237,10 @@ export default {
               this.file.signature = tx.data.value.userProof.signature;
               this.file.pubKey = tx.data.value.userProof.publicKey;
               this.file.verified = true;
+            } else {
+              this.file.error = this.$t('filesDoNotMatch');
+              this.file.verified = false;
             }
-            this.file.error = this.$t('filesDoNotMatch');
-            this.file.verified = false;
           } else {
             this.file.error = this.$t('noProofFound');
             this.file.verified = false;
