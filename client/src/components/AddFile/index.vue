@@ -180,7 +180,21 @@ export default {
       const sig = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
       this.file.signature = this.$base32(sig);
       this.file.base32Hash = this.$base32(this.file.hash);
-      this.confirmed = true;
+      this.sendProof();
+    },
+
+    async sendProof() {
+      const tx = await this.$axios.post('http://localhost:7071/api/StampDocumentFunction', {
+        hash: this.file.base32Hash,
+        publicKey: this.user.pubKey,
+        signature: this.file.signature,
+      });
+
+      if (tx.data.success) {
+        this.file.txId = tx.data.value.transactionId;
+        this.file.timestamp = tx.data.value.timeStamp;
+        this.confirmed = true;
+      }
     },
   },
 };

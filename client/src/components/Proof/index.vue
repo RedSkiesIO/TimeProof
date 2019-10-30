@@ -42,6 +42,15 @@
 
       <div class="row proof-item justify-between">
         <div class="col-auto">
+          {{ $t('signed') }}:
+        </div>
+        <div class="col-auto">
+          {{ getDate }}
+        </div>
+      </div>
+
+      <div class="row proof-item justify-between">
+        <div class="col-auto">
           {{ $t('signedBy') }}:
         </div>
         <div class="col-auto">
@@ -52,7 +61,7 @@
       <div class="row proof-item justify-between">
         <div class="col">
           <q-input
-            v-model="mockTxId"
+            v-model="proof.txId"
             filled
             readonly
             stack-label
@@ -158,6 +167,11 @@ export default {
         return User.query().first();
       }
       return null;
+    },
+
+    getDate() {
+      const date = new Date(this.proof.timestamp);
+      return `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`;
     },
   },
 
