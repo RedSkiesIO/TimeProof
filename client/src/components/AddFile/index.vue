@@ -208,7 +208,7 @@ export default {
 
     async sendProof() {
       this.visible = true;
-      const tx = await this.$axios.post('http://192.168.1.232:7071/api/StampDocumentFunction', {
+      const tx = await this.$axios.post('http://localhost:7071/api/StampDocumentFunction', {
         hash: this.file.base32Hash,
         publicKey: this.user.pubKey,
         signature: this.file.signature,
@@ -227,7 +227,7 @@ export default {
       if (!this.$refs.proofId.hasError) {
         this.file.verify = true;
         try {
-          const tx = await this.$axios.get(`http://192.168.1.232:7071/api/VerifyStampDocument/${this.proofId}`);
+          const tx = await this.$axios.get(`http://localhost:7071/api/VerifyStampDocument/${this.proofId}`);
 
           if (tx.data.success) {
             const fileHash = tx.data.value.userProof.hash;
@@ -275,4 +275,8 @@ export default {
 .q-uploader--bordered {
     border: 2px solid rgba(0, 0, 0, 0.12);
 }
+ .q-field__append .q-icon {
+   display: none;
+ }
+
 </style>

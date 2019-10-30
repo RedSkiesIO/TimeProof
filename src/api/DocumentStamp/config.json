@@ -3,7 +3,7 @@
     "Node": {
       "PublicKey": "6pw33lhozgdusigne3gtouafs3p4x2rmizysvmtcv5o7g65pzbtq",
       "Port": 42066,
-      "IpAddress": "127.0.0.1",
+      "IpAddress": "192.168.1.232",
       "PfxFileName": "mycert.pfx",
       "SslCertPassword": "test",
       "NodePassword": "test"
