@@ -70,6 +70,7 @@
           <div class="col-auto">
             {{ getDate }}
           </div>
+
         </div>
 
         <div class="row proof-item justify-between">
@@ -80,7 +81,6 @@
             {{ user.name }} ({{ user.email }})
           </div>
         </div>
-
         <div class="row proof-item justify-between">
           <div class="col">
             <q-input
@@ -90,6 +90,7 @@
               stack-label
               :label="$t('id')"
               autogrow
+
             >
               <q-btn
                 flat
