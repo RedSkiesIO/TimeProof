@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security;
@@ -15,7 +16,6 @@ using Catalyst.Abstractions.Types;
 using Catalyst.Core.Lib;
 using Catalyst.Core.Lib.Cli;
 using Catalyst.Core.Lib.Cryptography;
-using Catalyst.Core.Lib.FileSystem;
 using Catalyst.Core.Lib.P2P;
 using Catalyst.Core.Modules.Cryptography.BulletProofs;
 using Catalyst.Core.Modules.Hashing;
@@ -28,7 +28,6 @@ using DocumentStamp.Model;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using TheDotNetLeague.MultiFormats.MultiBase;
-using TheDotNetLeague.MultiFormats.MultiHash;
 
 namespace DocumentStamp.Helper
 {
@@ -102,7 +101,19 @@ namespace DocumentStamp.Helper
                 var publicKey = privateKey.GetPublicKey();
 
                 var publicKeyBase32 = publicKey.Bytes.ToBase32();
-                var peerSettingsObj = new PeerSettings(publicKeyBase32, IPAddress.Loopback, 42076, NetworkType.Devnet);
+
+                var peerConfig = new Dictionary<string, string>
+                {
+                    {"CatalystNodeConfiguration:Peer:Network", "Devnet"},
+                    {"CatalystNodeConfiguration:Peer:PublicKey", publicKeyBase32},
+                    {"CatalystNodeConfiguration:Peer:Port", "42076"},
+                    {"CatalystNodeConfiguration:Peer:PublicIpAddress", IPAddress.Loopback.ToString()},
+                    {"CatalystNodeConfiguration:Peer:BindAddress", IPAddress.Loopback.ToString()}
+                };
+
+                var configRoot = new ConfigurationBuilder().AddInMemoryCollection(peerConfig).Build();
+
+                var peerSettingsObj = new PeerSettings(configRoot);
                 containerBuilder.RegisterInstance(peerSettingsObj).As<IPeerSettings>();
                 return peerSettingsObj;
             }).As<IPeerSettings>();
