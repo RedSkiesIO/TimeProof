@@ -1,116 +1,101 @@
 <template>
-  <div class="q-pa-md">
-    <q-card
-      flat
-      bordered
-    >
-      <q-tabs
-        v-model="tab"
-        dense
-        class="bg-white text-primary"
+  <q-uploader
+    flat
+    bordered
+    :label="$t('selectFile')"
+    auto-upload
+    hide-upload-btn
+    :factory="hashFile"
+  >
+    <template v-slot:list="scope">
+      <div
+        v-if="scope.files < 1"
+        class="q-pa-xl flex flex-center column text-center"
+        style="height: -webkit-fill-available;"
       >
-        <q-tab
-          name="sign"
-          :label="$t('sign')"
+        <q-icon
+          name="backup"
+          class="text-grey-4"
+          style="font-size: 100px"
         />
-        <q-tab
-          name="verify"
-          :label="$t('verify')"
-        />
-      </q-tabs>
 
-      <q-uploader
-        flat
-        bordered
-        :label="$t('selectFile')"
-        auto-upload
-        hide-upload-btn
-        :factory="hashFile"
+        <span
+          v-if="mode==='sign'"
+          class="text-h6 text-weight-bold text-grey-6"
+        >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
+        <span
+          v-else
+          class="text-h6 text-weight-bold text-grey-6"
+        >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+
+        <span class="text-body1 text-grey-7">
+          {{ $t('or') }} <span
+            class="text-blue"
+            @click="scope.pickFiles()"
+          >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
+      </div>
+
+      <div
+        v-else
       >
-        <template v-slot:list="scope">
-          <div
-            v-if="scope.files < 1"
-            class="q-pa-xl flex flex-center column text-center"
-            style="height: -webkit-fill-available;"
+        <div
+          v-if="!confirmed"
+          class="q-pa-xl flex flex-center column text-center"
+        >
+          <q-icon
+            :name="fileIcon"
+            class="text-grey-4"
+            style="font-size: 100px"
+          />
+          <span class="q-mt-md text-h6 text-primary">
+            {{ file.name }}</span>
+          <span
+            v-if="file.type"
+            class="text-body1 text-grey-7"
           >
-            <q-icon
-              name="backup"
-              class="text-grey-4"
-              style="font-size: 100px"
+            {{ $t('type') }}: {{ file.type }}</span>
+          <span class="q-mb-lg text-body1 text-grey-7">
+            {{ $t('size') }}: {{ file.size }}</span>
+          <q-btn
+            v-if="mode==='sign'"
+            unelevated
+            size="lg"
+            color="primary"
+            :label="$t('sign')"
+            @click="signHash"
+          />
+          <div v-else>
+            <q-input
+              v-model="proofId"
+              :label="$t('proofId')"
+              stack-label
+              dense
             />
-
-            <span
-              v-if="tab==='sign'"
-              class="text-h6 text-weight-bold text-grey-6"
-            >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
-            <span
-              v-else
-              class="text-h6 text-weight-bold text-grey-6"
-            >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
-
-            <span class="text-body1 text-grey-7">
-              {{ $t('or') }} <span
-                class="text-blue"
-                @click="scope.pickFiles()"
-              >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
-          </div>
-
-          <div
-            v-else-if="!confirmed"
-            class="q-pa-xl flex flex-center column text-center"
-          >
-            <q-icon
-              name="fas fa-file-signature"
-              class="text-grey-4"
-              style="font-size: 100px"
-            />
-            <span class="q-mt-md text-h6 text-primary">
-              {{ file.name }}</span>
-            <span
-              v-if="file.type"
-              class="text-body1 text-grey-7"
-            >
-              {{ $t('type') }}: {{ file.type }}</span>
-            <span class="q-mb-lg text-body1 text-grey-7">
-              {{ $t('size') }}: {{ file.size }}</span>
             <q-btn
-              v-if="tab==='sign'"
+              class="q-mt-md"
               unelevated
+              rounded
               size="lg"
               color="primary"
-              :label="$t('sign')"
-              @click="signHash"
+              :label="$t('verify')"
+              @click="verifyProof"
             />
-            <q-input
-              v-else
-              v-model="proofId"
-              outlined
-              rounded
-              bottom-slots
-              :label="$t('proofId')"
-            >
-              <template v-slot:append>
-                <q-btn
-                  unelevated
-                  rounded
-                  color="primary"
-                  :label="$t('verify')"
-                />
-              </template>
-            </q-input>
-            <span
-              class="q-mt-sm text-blue"
-              @click="scope.reset()"
-            >{{ $t('differentFile') }}</span>
           </div>
-          <Proof
-            v-if="confirmed"
-            :proof="file"
-          />
-        </template>
-      </q-uploader>
-    </q-card>
-  </div>
+
+          <span
+            class="q-mt-sm text-blue"
+            @click="scope.reset()"
+          >{{ $t('differentFile') }}</span>
+        </div>
+
+        <Proof
+          v-if="confirmed"
+          :proof="file"
+          :scope="scope"
+        />
+      </div>
+    </template>
+  </q-uploader>
 </template>
 <script>
 import User from '../../store/User';
@@ -120,6 +105,13 @@ export default {
   name: 'AddFile',
   components: {
     Proof,
+  },
+
+  props: {
+    mode: {
+      type: String,
+      required: true,
+    },
   },
 
   data() {
@@ -138,6 +130,29 @@ export default {
         return User.query().first();
       }
       return null;
+    },
+
+    fileIcon() {
+      const { type } = this.file;
+      if (type === 'application/pdf') {
+        return 'fas fa-file-pdf';
+      }
+
+      if (type === 'application/zip') {
+        return 'fas fa-file-archive';
+      }
+
+      if (type === 'image/png' || type === 'image/gif' || type === 'image/jpeg') {
+        return 'fas fa-file-image';
+      }
+
+      return 'fas fa-file';
+    },
+  },
+
+  watch: {
+    tab() {
+      this.confirmed = false;
     },
   },
 
@@ -162,6 +177,7 @@ export default {
     },
 
     async hashFile(files) {
+      this.confirmed = false;
       this.file = {
         name: files[0].name,
         type: files[0].type,
@@ -195,6 +211,14 @@ export default {
         this.file.timestamp = tx.data.value.timeStamp;
         this.confirmed = true;
       }
+    },
+
+    async verifyProof() {
+      this.file.txId = this.proofId;
+      this.file.timestamp = Date.now();
+      this.file.verify = true;
+      this.file.verified = false;
+      this.confirmed = true;
     },
   },
 };

@@ -2,11 +2,34 @@
   <div>
     <div class="q-pa-sm flex flex-center column text-center">
       <q-icon
+        v-if="proof.verify && !proof.verified"
+        name="error"
+        class="text-red"
+        style="font-size: 100px"
+      />
+      <q-icon
+        v-else
         name="fas fa-check-circle"
         class="text-green"
         style="font-size: 100px"
       />
-      <span class="text-h6 q-my-sm">{{ $t('proofConfirmed') }}</span>
+      <span
+        v-if="proof.verify && proof.verified"
+        class="text-h6 q-my-sm"
+      >{{ $t('proofVerified') }}</span>
+      <div
+        v-else-if="proof.verify && !proof.verified"
+        class="text-h6 q-my-sm"
+      >
+        <div>{{ $t('proofNotVerified') }}</div>
+        <div class="text-body2">
+          {{ $t('noProofFound') }}
+        </div>
+      </div>
+      <span
+        v-else
+        class="text-h6 q-my-sm"
+      >{{ $t('proofConfirmed') }}</span>
     </div>
 
     <div class="column">
@@ -39,105 +62,113 @@
           {{ proof.size }}
         </div>
       </div>
+      <div v-if="!proof.verify || (proof.verify && proof.verified)">
+        <div class="row proof-item justify-between">
+          <div class="col-auto">
+            {{ $t('signed') }}:
+          </div>
+          <div class="col-auto">
+            {{ getDate }}
+          </div>
 
-      <div class="row proof-item justify-between">
-        <div class="col-auto">
-          {{ $t('signed') }}:
         </div>
-        <div class="col-auto">
-          {{ getDate }}
-        </div>
-      </div>
 
-      <div class="row proof-item justify-between">
-        <div class="col-auto">
-          {{ $t('signedBy') }}:
+        <div class="row proof-item justify-between">
+          <div class="col-auto">
+            {{ $t('signedBy') }}:
+          </div>
+          <div class="col-auto">
+            {{ user.name }} ({{ user.email }})
+          </div>
         </div>
-        <div class="col-auto">
-          {{ user.name }} ({{ user.email }})
-        </div>
-      </div>
+        <div class="row proof-item justify-between">
+          <div class="col">
+            <q-input
+              v-model="proof.txId"
+              filled
+              readonly
+              stack-label
+              :label="$t('id')"
+              autogrow
 
-      <div class="row proof-item justify-between">
-        <div class="col">
-          <q-input
-            v-model="proof.txId"
-            filled
-            readonly
-            stack-label
-            :label="$t('id')"
-            autogrow
-          >
-            <q-btn
-              flat
-              rounded
-              size="sm"
-              color="grey"
-              icon="filter_none"
-              class="copy-button absolute-bottom-right"
-              @click="copy(user.pubKey)"
             >
-              <q-tooltip anchor="top middle">
-                {{ copyLabel }}
-              </q-tooltip>
-            </q-btn>
-          </q-input>
+              <q-btn
+                flat
+                rounded
+                size="sm"
+                color="grey"
+                icon="filter_none"
+                class="copy-button absolute-bottom-right"
+                @click="copy(user.pubKey)"
+              >
+                <q-tooltip anchor="top middle">
+                  {{ copyLabel }}
+                </q-tooltip>
+              </q-btn>
+            </q-input>
+          </div>
         </div>
-      </div>
 
-      <div class="row proof-item justify-between">
-        <div class="col">
-          <q-input
-            v-model="proof.base32Hash"
-            filled
-            readonly
-            stack-label
-            :label="$t('hash')"
-            autogrow
-          >
-            <q-btn
-              flat
-              rounded
-              size="sm"
-              color="grey"
-              icon="filter_none"
-              class="copy-button absolute-bottom-right"
-              @click="copy(proof.base32Hash)"
+        <div class="row proof-item justify-between">
+          <div class="col">
+            <q-input
+              v-model="proof.base32Hash"
+              filled
+              readonly
+              stack-label
+              :label="$t('hash')"
+              autogrow
             >
-              <q-tooltip anchor="top middle">
-                {{ copyLabel }}
-              </q-tooltip>
-            </q-btn>
-          </q-input>
+              <q-btn
+                flat
+                rounded
+                size="sm"
+                color="grey"
+                icon="filter_none"
+                class="copy-button absolute-bottom-right"
+                @click="copy(proof.base32Hash)"
+              >
+                <q-tooltip anchor="top middle">
+                  {{ copyLabel }}
+                </q-tooltip>
+              </q-btn>
+            </q-input>
+          </div>
         </div>
-      </div>
 
-      <div class="row proof-item justify-between">
-        <div class="col">
-          <q-input
-            v-model="proof.signature"
-            filled
-            readonly
-            stack-label
-            :label="$t('signature')"
-            autogrow
-          >
-            <q-btn
-              flat
-              rounded
-              size="sm"
-              color="grey"
-              icon="filter_none"
-              class="copy-button absolute-bottom-right"
-              @click="copy(proof.signature)"
+        <div class="row proof-item justify-between">
+          <div class="col">
+            <q-input
+              v-model="proof.signature"
+              filled
+              readonly
+              stack-label
+              :label="$t('signature')"
+              autogrow
             >
-              <q-tooltip anchor="top middle">
-                {{ copyLabel }}
-              </q-tooltip>
-            </q-btn>
-          </q-input>
+              <q-btn
+                flat
+                rounded
+                size="sm"
+                color="grey"
+                icon="filter_none"
+                class="copy-button absolute-bottom-right"
+                @click="copy(proof.signature)"
+              >
+                <q-tooltip anchor="top middle">
+                  {{ copyLabel }}
+                </q-tooltip>
+              </q-btn>
+            </q-input>
+          </div>
         </div>
       </div>
+    </div>
+    <div
+      class="q-mt-sm text-blue text-center"
+      @click="scope.reset()"
+    >
+      {{ $t('anotherFile') }}
     </div>
   </div>
 </template>
@@ -152,12 +183,15 @@ export default {
       type: Object,
       required: true,
     },
+    scope: {
+      type: Object,
+      required: true,
+    },
   },
 
   data() {
     return {
       copyLabel: this.$t('copy'),
-      mockTxId: '0x793ee985f13252d47c6a39a7bba209d0be5f26c4d4bf54d37daed952f3f4eac8',
     };
   },
 
@@ -185,6 +219,10 @@ export default {
       }, (err) => {
         console.error('Async: Could not copy text: ', err);
       });
+    },
+
+    reset() {
+      this.scope.reset();
     },
   },
 };

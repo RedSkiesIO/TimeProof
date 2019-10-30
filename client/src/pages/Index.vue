@@ -1,6 +1,35 @@
 <template>
   <q-page class="flex flex-center">
-    <AddFile />
+    <q-card
+      flat
+    >
+      <q-tabs
+        v-model="tab"
+        dense
+        class="bg-white text-primary"
+      >
+        <q-tab
+          name="sign"
+          :label="$t('sign')"
+        />
+        <q-tab
+          name="verify"
+          :label="$t('verify')"
+        />
+      </q-tabs>
+      <q-tab-panels
+        v-model="tab"
+        animated
+      >
+        <q-tab-panel name="sign">
+          <AddFile :mode="'sign'" />
+        </q-tab-panel>
+
+        <q-tab-panel name="verify">
+          <AddFile :mode="'verify'" />
+        </q-tab-panel>
+      </q-tab-panels>
+    </q-card>
   </q-page>
 </template>
 
@@ -12,5 +41,23 @@ export default {
   components: {
     AddFile,
   },
+
+  data() {
+    return {
+      tab: 'sign',
+    };
+  },
 };
 </script>
+<style lang="scss" scoped>
+.q-tab-panel {
+  padding: 0;
+}
+
+.q-card > div:first-child {
+    border-top: 2px solid rgba(0, 0, 0, 0.12);
+    border-left: 2px solid rgba(0, 0, 0, 0.12);
+    border-right: 2px solid rgba(0, 0, 0, 0.12);
+
+}
+</style>
