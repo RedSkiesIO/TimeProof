@@ -10,6 +10,7 @@ using Catalyst.Abstractions.Types;
 using Catalyst.Core.Lib.Extensions;
 using Catalyst.Core.Lib.IO.Messaging.Correlation;
 using Catalyst.Core.Lib.IO.Messaging.Dto;
+using Catalyst.Core.Modules.Cryptography.BulletProofs;
 using Catalyst.Protocol.Rpc.Node;
 using DocumentStamp.Helper;
 using DocumentStamp.Http.Request;
@@ -36,7 +37,6 @@ namespace DocumentStamp.Function
         {
             log.LogInformation("StampDocument processing a request");
 
-            var timeStamp = DateTime.UtcNow;
             var autoResetEvent = new AutoResetEvent(false);
 
             var container = AutoFacHelper.GenerateRpcClientContainerBuilder().Build();
@@ -55,9 +55,15 @@ namespace DocumentStamp.Function
                         throw new InvalidDataException("Could not verify signature of document stamp request");
                     }
 
+                    var cryptoWrapper = new FfiWrapper();
+
                     //Resolve keys the azure function will use
                     var privateKey = container.Resolve<IKeyStore>().KeyStoreDecrypt(KeyRegistryTypes.DefaultKey);
-                    var publicKey = privateKey.GetPublicKey();
+
+                    var receiverPublicKey =
+                        cryptoWrapper.GetPublicKeyFromBytes(stampDocumentRequest.PublicKey.FromBase32());
+
+                    var config = container.Resolve<Config>();
 
                     //Resolve the rpc client
                     var rpcClient = container.Resolve<IRpcClient>();
@@ -85,13 +91,10 @@ namespace DocumentStamp.Function
                     });
 
                     //Construct DocumentStamp smart contract data
-                    var userProofJson = JsonConvert.SerializeObject(new StampedUserProof
-                    {
-                        UserProof = stampDocumentRequest,
-                        TimeStamp = timeStamp
-                    });
+                    var userProofJson = JsonConvert.SerializeObject(stampDocumentRequest);
                     var transaction =
-                        StampTransactionHelper.GenerateStampTransaction(userProofJson.ToUtf8Bytes(), 1, 1);
+                        StampTransactionHelper.GenerateStampTransaction(privateKey, receiverPublicKey,
+                            userProofJson.ToUtf8Bytes(), 1, 1);
                     var protocolMessage =
                         transaction.ToProtocolMessage(peerSettings.PeerId, CorrelationId.GenerateCorrelationId());
 
@@ -99,18 +102,10 @@ namespace DocumentStamp.Function
 
                     //Wait for node response then generate azure function response
                     autoResetEvent.WaitOne();
-                    var stampDocumentResponse = new StampDocumentResponse
-                    {
-                        TransactionId = transaction.Transaction.Signature.RawBytes.ToByteArray().ToBase32().ToUpper(),
-                        TimeStamp = timeStamp,
-                        UserProof = stampDocumentRequest,
-                        NodeProof = new NodeProof
-                        {
-                            PublicKey = publicKey.Bytes.ToBase32().ToUpper(),
-                            Signature = transaction.Transaction.Signature.RawBytes.ToByteArray().ToBase32().ToUpper()
-                        }
-                    };
 
+                    var stampDocumentResponse =
+                        HttpHelper.GetStampDocument($"http://{config.NodeConfig.IpAddress}:{5005}",
+                            transaction.Transaction.Signature.RawBytes.ToByteArray().ToBase32().ToUpperInvariant());
                     return new OkObjectResult(new Result<StampDocumentResponse>(true, stampDocumentResponse));
                 }
                 catch (InvalidDataException ide)
