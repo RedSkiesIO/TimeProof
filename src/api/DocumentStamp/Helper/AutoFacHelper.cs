@@ -101,8 +101,7 @@ namespace DocumentStamp.Helper
                 var publicKey = privateKey.GetPublicKey();
 
                 var publicKeyBase32 = publicKey.Bytes.ToBase32();
-                var peerSettingsObj = new PeerSettings(publicKeyBase32, IPAddress.Loopback, 42076, publicKeyBase32,
-                    NetworkType.Devnet);
+                var peerSettingsObj = new PeerSettings(publicKeyBase32, IPAddress.Loopback, 42076, NetworkType.Devnet);
                 containerBuilder.RegisterInstance(peerSettingsObj).As<IPeerSettings>();
                 return peerSettingsObj;
             }).As<IPeerSettings>();
