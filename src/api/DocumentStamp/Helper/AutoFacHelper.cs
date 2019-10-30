@@ -15,6 +15,7 @@ using Catalyst.Abstractions.Types;
 using Catalyst.Core.Lib;
 using Catalyst.Core.Lib.Cli;
 using Catalyst.Core.Lib.Cryptography;
+using Catalyst.Core.Lib.FileSystem;
 using Catalyst.Core.Lib.P2P;
 using Catalyst.Core.Modules.Cryptography.BulletProofs;
 using Catalyst.Core.Modules.Hashing;
@@ -27,6 +28,7 @@ using DocumentStamp.Model;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using TheDotNetLeague.MultiFormats.MultiBase;
+using TheDotNetLeague.MultiFormats.MultiHash;
 
 namespace DocumentStamp.Helper
 {
@@ -96,8 +98,7 @@ namespace DocumentStamp.Helper
             containerBuilder.Register(x =>
             {
                 var keyStore = x.Resolve<IKeyStore>();
-                var privateKey = keyStore.KeyStoreDecrypt(KeyRegistryTypes.DefaultKey) ??
-                                 keyStore.KeyStoreGenerate(NetworkType.Devnet, KeyRegistryTypes.DefaultKey).Result;
+                var privateKey = keyStore.KeyStoreDecrypt(KeyRegistryTypes.DefaultKey);
                 var publicKey = privateKey.GetPublicKey();
 
                 var publicKeyBase32 = publicKey.Bytes.ToBase32();
