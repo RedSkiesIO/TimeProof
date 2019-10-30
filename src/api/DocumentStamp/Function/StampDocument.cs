@@ -16,28 +16,18 @@ using DocumentStamp.Http.Request;
 using DocumentStamp.Http.Response;
 using DocumentStamp.Model;
 using DocumentStamp.Validator;
-using Google.Protobuf;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Crypto.Parameters;
 using TheDotNetLeague.MultiFormats.MultiBase;
 
-namespace DocumentStamp
+namespace DocumentStamp.Function
 {
     public static class StampDocument
     {
-        private static bool VerifyStampDocumentRequest(UserProof userProof)
-        {
-            var hash = userProof.Hash.FromBase32();
-            var signature = userProof.Signature.FromBase32();
-            var publicKey = new Ed25519PublicKeyParameters(userProof.PublicKey.FromBase32(), 0);
-            return SignatureHelper.Verify(hash, signature, publicKey);
-        }
-
         [FunctionName("StampDocumentFunction")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]
@@ -59,7 +49,7 @@ namespace DocumentStamp
                         ModelValidator.ValidateAndConvert<StampDocumentRequest>(await req.ReadAsStringAsync());
 
                     //Verify the signature of the stamp document request
-                    var verifyResult = VerifyStampDocumentRequest(stampDocumentRequest);
+                    var verifyResult = SignatureHelper.VerifyStampDocumentRequest(stampDocumentRequest);
                     if (!verifyResult)
                     {
                         throw new InvalidDataException("Could not verify signature of document stamp request");
@@ -95,8 +85,11 @@ namespace DocumentStamp
                     });
 
                     //Construct DocumentStamp smart contract data
-                    var userProofJson =
-                        JsonConvert.SerializeObject(new {UserProof = stampDocumentRequest, TimeStamp = timeStamp});
+                    var userProofJson = JsonConvert.SerializeObject(new StampedUserProof
+                    {
+                        UserProof = stampDocumentRequest,
+                        TimeStamp = timeStamp
+                    });
                     var transaction =
                         StampTransactionHelper.GenerateStampTransaction(userProofJson.ToUtf8Bytes(), 1, 1);
                     var protocolMessage =
@@ -108,7 +101,7 @@ namespace DocumentStamp
                     autoResetEvent.WaitOne();
                     var stampDocumentResponse = new StampDocumentResponse
                     {
-                        TransactionId = transaction.Transaction.Signature.ToByteArray().ToBase32().ToUpper(),
+                        TransactionId = transaction.Transaction.Signature.RawBytes.ToByteArray().ToBase32().ToUpper(),
                         TimeStamp = timeStamp,
                         UserProof = stampDocumentRequest,
                         NodeProof = new NodeProof
