@@ -3,15 +3,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Catalyst.Abstractions.Cryptography;
-using Catalyst.Abstractions.Keystore;
 using Catalyst.Abstractions.P2P;
-using Catalyst.Abstractions.P2P.Models;
 using Catalyst.Abstractions.Rpc;
-using Catalyst.Abstractions.Types;
 using Catalyst.Core.Lib.Extensions;
 using Catalyst.Core.Lib.IO.Messaging.Correlation;
 using Catalyst.Core.Lib.IO.Messaging.Dto;
-using Catalyst.Core.Modules.Cryptography.BulletProofs;
 using Catalyst.Protocol.Peer;
 using Catalyst.Protocol.Rpc.Node;
 using DocumentStamp.Helper;
@@ -39,7 +35,8 @@ namespace DocumentStamp.Function
         private readonly IRpcClient _rpcClient;
         private readonly PeerId _recipientPeer;
 
-        public StampDocument(Config config, IPeerSettings peerSettings, ICryptoContext cryptoContext, IPrivateKey privateKey, IRpcClient rpcClient,
+        public StampDocument(Config config, IPeerSettings peerSettings, ICryptoContext cryptoContext,
+            IPrivateKey privateKey, IRpcClient rpcClient,
             PeerId recipientPeer)
         {
             _autoResetEvent = new AutoResetEvent(false);
