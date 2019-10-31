@@ -20,7 +20,7 @@ namespace DocumentStamp.Function
             _privateKey = privateKey;
         }
 
-        [FunctionName("DocumentStampSettingsFunction")]
+        [FunctionName("DocumentStampSettings")]
         public IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]
             HttpRequest req,
