@@ -207,7 +207,7 @@ export default {
     async sendProof() {
       this.visible = true;
 
-      const tx = await this.$axios.post('http://localhost:7071/api/StampDocumentFunction', {
+      const tx = await this.$axios.post('http://localhost:7071/api/StampDocument', {
         hash: this.file.base32Hash,
         publicKey: this.user.pubKey,
         signature: this.file.signature,

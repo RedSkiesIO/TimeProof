@@ -13,6 +13,7 @@ module.exports = function (ctx) {
       'blake2b',
       'keypair',
       'base32',
+      'auth',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -84,7 +85,7 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       // https: true,
-      // port: 8080,
+      port: 6420,
       open: true, // opens browser window automatically
     },
 

@@ -38,6 +38,7 @@ export default {
 
   methods: {
     start() {
+      this.$auth.signIn();
       // if (!this.account) {
       if (!this.user) {
         const keypair = this.$keypair.new();
