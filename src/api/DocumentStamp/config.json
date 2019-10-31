@@ -6,7 +6,8 @@
       "IpAddress": "192.168.1.232",
       "PfxFileName": "mycert.pfx",
       "SslCertPassword": "test",
-      "NodePassword": "test"
+      "NodePassword": "test",
+      "WebAddress": "http://192.168.1.232:5005"
     }
   }
 }

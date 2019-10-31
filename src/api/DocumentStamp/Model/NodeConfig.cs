@@ -14,6 +14,7 @@ namespace DocumentStamp.Model
         public string PfxFileName { get; }
         public string SslCertPassword { get; }
         public string NodePassword { get; }
+        public string WebAddress { get; }
 
         public NodeConfig(IConfiguration configuration)
         {
@@ -24,6 +25,7 @@ namespace DocumentStamp.Model
             PfxFileName = configuration.GetSection("PfxFileName").Value;
             SslCertPassword = configuration.GetSection("SslCertPassword").Value;
             NodePassword = configuration.GetSection("NodePassword").Value;
+            WebAddress = configuration.GetSection("WebAddress").Value;
         }
     }
 }
