@@ -13,7 +13,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using TheDotNetLeague.MultiFormats.MultiBase;
 
-namespace DocumentStamp
+namespace DocumentStamp.Function
 {
     public static class DocumentStampSettings
     {

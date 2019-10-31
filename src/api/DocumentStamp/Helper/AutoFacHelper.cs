@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security;
@@ -96,13 +97,23 @@ namespace DocumentStamp.Helper
             containerBuilder.Register(x =>
             {
                 var keyStore = x.Resolve<IKeyStore>();
-                var privateKey = keyStore.KeyStoreDecrypt(KeyRegistryTypes.DefaultKey) ??
-                                 keyStore.KeyStoreGenerate(NetworkType.Devnet, KeyRegistryTypes.DefaultKey).Result;
+                var privateKey = keyStore.KeyStoreDecrypt(KeyRegistryTypes.DefaultKey);
                 var publicKey = privateKey.GetPublicKey();
 
                 var publicKeyBase32 = publicKey.Bytes.ToBase32();
-                var peerSettingsObj = new PeerSettings(publicKeyBase32, IPAddress.Loopback, 42076, publicKeyBase32,
-                    NetworkType.Devnet);
+
+                var peerConfig = new Dictionary<string, string>
+                {
+                    {"CatalystNodeConfiguration:Peer:Network", "Devnet"},
+                    {"CatalystNodeConfiguration:Peer:PublicKey", publicKeyBase32},
+                    {"CatalystNodeConfiguration:Peer:Port", "42076"},
+                    {"CatalystNodeConfiguration:Peer:PublicIpAddress", IPAddress.Loopback.ToString()},
+                    {"CatalystNodeConfiguration:Peer:BindAddress", IPAddress.Loopback.ToString()}
+                };
+
+                var configRoot = new ConfigurationBuilder().AddInMemoryCollection(peerConfig).Build();
+
+                var peerSettingsObj = new PeerSettings(configRoot);
                 containerBuilder.RegisterInstance(peerSettingsObj).As<IPeerSettings>();
                 return peerSettingsObj;
             }).As<IPeerSettings>();
