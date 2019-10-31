@@ -23,7 +23,7 @@
       >
         <div>{{ $t('proofNotVerified') }}</div>
         <div class="text-body2">
-          {{ $t('noProofFound') }}
+          {{ proof.error }}
         </div>
       </div>
       <span
@@ -76,11 +76,19 @@
           <div class="col-auto">
             {{ $t('signedBy') }}:
           </div>
-          <div class="col-auto">
+          <div
+            v-if="!proof.verify"
+            class="col-auto"
+          >
             {{ user.name }} ({{ user.email }})
           </div>
+          <div
+            v-else
+            class="col-auto"
+          >
+            {{ proof.pubKey }}
+          </div>
         </div>
-
         <div class="row proof-item justify-between">
           <div class="col">
             <q-input
@@ -98,7 +106,8 @@
                 color="grey"
                 icon="filter_none"
                 class="copy-button absolute-bottom-right"
-                @click="copy(user.pubKey)"
+                @click="copy(proof.txId)"
+
               >
                 <q-tooltip anchor="top middle">
                   {{ copyLabel }}

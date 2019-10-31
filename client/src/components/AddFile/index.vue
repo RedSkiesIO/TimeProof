@@ -66,20 +66,26 @@
           />
           <div v-else>
             <q-input
+              ref="proofId"
               v-model="proofId"
-              :label="$t('proofId')"
-              stack-label
-              dense
-            />
-            <q-btn
-              class="q-mt-md"
-              unelevated
+              outlined
               rounded
-              size="lg"
-              color="primary"
-              :label="$t('verify')"
-              @click="verifyProof"
-            />
+              bottom-slots
+              :label="$t('proofId')"
+              lazy-rules
+              :rules="[ val => val && val.length > 102
+                && val.length < 104 || $t('invalidProofId')]"
+            >
+              <template v-slot:append>
+                <q-btn
+                  unelevated
+                  rounded
+                  color="primary"
+                  :label="$t('verify')"
+                  @click="verifyProof"
+                />
+              </template>
+            </q-input>
           </div>
 
           <span
@@ -94,6 +100,12 @@
           :scope="scope"
         />
       </div>
+      <q-inner-loading :showing="visible">
+        <q-spinner-grid
+          size="50px"
+          color="primary"
+        />
+      </q-inner-loading>
     </template>
   </q-uploader>
 </template>
@@ -121,6 +133,7 @@ export default {
       tab: 'sign',
       proofId: '',
       scope: null,
+      visible: false,
     };
   },
 
@@ -178,6 +191,7 @@ export default {
         const input = Buffer.from(evt.target.result);
         const output = new Uint8Array(64);
         this.file.hash = this.$blake2b(output.length).update(input).digest();
+        this.file.base32Hash = this.$base32(this.file.hash);
       };
       reader.readAsArrayBuffer(files[0]);
     },
@@ -185,11 +199,14 @@ export default {
     signHash() {
       const sig = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
       this.file.signature = this.$base32(sig);
-      this.file.base32Hash = this.$base32(this.file.hash);
+
+
       this.sendProof();
     },
 
     async sendProof() {
+      this.visible = true;
+
       const tx = await this.$axios.post('http://localhost:7071/api/StampDocumentFunction', {
         hash: this.file.base32Hash,
         publicKey: this.user.pubKey,
@@ -199,16 +216,41 @@ export default {
       if (tx.data.success) {
         this.file.txId = tx.data.value.transactionId;
         this.file.timestamp = tx.data.value.timeStamp;
+        this.visible = false;
         this.confirmed = true;
       }
     },
 
     async verifyProof() {
-      this.file.txId = this.proofId;
-      this.file.timestamp = Date.now();
-      this.file.verify = true;
-      this.file.verified = false;
-      this.confirmed = true;
+      this.$refs.proofId.validate();
+      if (!this.$refs.proofId.hasError) {
+        this.file.verify = true;
+        try {
+          const tx = await this.$axios.get(`http://localhost:7071/api/VerifyStampDocument/${this.proofId}`);
+
+          if (tx.data.success) {
+            const fileHash = tx.data.value.userProof.hash;
+            if (fileHash === this.file.base32Hash) {
+              this.file.txId = tx.data.value.transactionId;
+              this.file.timestamp = tx.data.value.timeStamp;
+              this.file.signature = tx.data.value.userProof.signature;
+              this.file.pubKey = tx.data.value.userProof.publicKey;
+              this.file.verified = true;
+            } else {
+              this.file.error = this.$t('filesDoNotMatch');
+              this.file.verified = false;
+            }
+          } else {
+            this.file.error = this.$t('noProofFound');
+            this.file.verified = false;
+          }
+          this.confirmed = true;
+        } catch (e) {
+          this.file.error = this.$t('noProofFound');
+          this.file.verified = false;
+          this.confirmed = true;
+        }
+      }
     },
   },
 };
@@ -233,4 +275,8 @@ export default {
 .q-uploader--bordered {
     border: 2px solid rgba(0, 0, 0, 0.12);
 }
+ .q-field__append .q-icon {
+   display: none;
+ }
+
 </style>

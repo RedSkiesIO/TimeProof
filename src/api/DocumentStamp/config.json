@@ -1,0 +1,13 @@
+{
+  "DocumentStamp": {
+    "Node": {
+      "PublicKey": "xvrdm52u52c4flnuda7h4ubke2kzcnvh7h2t4gnpjkpaz3u2ymma",
+      "Port": 42066,
+      "IpAddress": "192.168.1.232",
+      "PfxFileName": "mycert.pfx",
+      "SslCertPassword": "test",
+      "NodePassword": "test",
+      "WebAddress": "http://192.168.1.232:5005"
+    }
+  }
+}

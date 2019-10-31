@@ -21,10 +21,11 @@ export default {
   proofVerified: 'This file has been verified',
   proofNotVerified: 'This file cannot be verified',
   noProofFound: 'No proof was found for this file',
+  filesDoNotMatch: 'Files do not match',
   copy: 'copy',
   copied: 'copied',
   verify: 'verify',
-  proofId: 'Proof ID (optional)',
+  proofId: 'Proof ID',
   signed: 'Signed',
   login: 'Log In',
   signUp: 'Sign Up',
@@ -38,5 +39,5 @@ export default {
   noUppercaseErr: 'Password must contain at least one uppercase letter',
   invalidEmail: 'Please enter a valid email address',
   emptyName: 'Please enter a name',
-
+  invalidProofId: 'Invalid proof ID',
 };
