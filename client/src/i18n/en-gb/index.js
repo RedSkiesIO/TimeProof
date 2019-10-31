@@ -21,9 +21,11 @@ export default {
   proofVerified: 'This file has been verified',
   proofNotVerified: 'This file cannot be verified',
   noProofFound: 'No proof was found for this file',
+  filesDoNotMatch: 'Files do not match',
   copy: 'copy',
   copied: 'copied',
   verify: 'verify',
-  proofId: 'Proof ID (optional)',
+  proofId: 'Proof ID',
   signed: 'Signed',
+  invalidProofId: 'Invalid proof ID',
 };
