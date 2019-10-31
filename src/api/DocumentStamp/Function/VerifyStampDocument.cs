@@ -10,14 +10,13 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using RestSharp;
 
 namespace DocumentStamp.Function
 {
     public class VerifyStampDocument
     {
         [FunctionName("VerifyStampDocumentFunction")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "VerifyStampDocument/{txId}")]
             HttpRequest req,
             string txId,
@@ -32,7 +31,7 @@ namespace DocumentStamp.Function
 
                 var config = new Config(configRoot);
                 var stampDocumentResponse =
-                    HttpHelper.GetStampDocument($"http://{config.NodeConfig.IpAddress}:{5005}", txId);
+                    HttpHelper.GetStampDocument(config.NodeConfig.WebAddress, txId);
                 return new OkObjectResult(new Result<StampDocumentResponse>(true, stampDocumentResponse));
             }
             catch (InvalidDataException ide)
