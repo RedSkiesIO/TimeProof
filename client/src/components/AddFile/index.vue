@@ -203,11 +203,14 @@ export default {
     signHash() {
       const sig = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
       this.file.signature = this.$base32(sig);
+
+
       this.sendProof();
     },
 
     async sendProof() {
       this.visible = true;
+
       const tx = await this.$axios.post('http://localhost:7071/api/StampDocumentFunction', {
         hash: this.file.base32Hash,
         publicKey: this.user.pubKey,

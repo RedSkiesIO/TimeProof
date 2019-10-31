@@ -107,6 +107,7 @@
                 icon="filter_none"
                 class="copy-button absolute-bottom-right"
                 @click="copy(proof.txId)"
+
               >
                 <q-tooltip anchor="top middle">
                   {{ copyLabel }}
