@@ -74,23 +74,7 @@ const auth = {
       // this.callApiWithAccessToken(tokenResponse.accessToken);
     });
   },
-  // helper function to access the resource with the token
-  // callApiWithAccessToken(accessToken) {
-  //   // Call the Web API with the AccessToken
-  //   $.ajax({
-  //     type: 'GET',
-  //     url: appConfig.webApi,
-  //     headers: {
-  //       Authorization: `Bearer ${accessToken}`,
-  //     },
-  //   }).done((data) => {
-  //     this.logMessage(`Web APi returned:\n${JSON.stringify(data)}`);
-  //   })
-  //     .fail((jqXHR, textStatus) => {
-  //       this.logMessage(`Error calling the Web api:\n${textStatus}`);
-  //     });
-  // },
-  // signout the user
+
   logout() {
     // Removes all sessions, need to call AAD endpoint to do full logout
     myMSALObj.logout();
@@ -98,7 +82,6 @@ const auth = {
   // debug helper
   logMessage(s) {
     console.log('LOG: ', s);
-    // document.body.querySelector('.response').appendChild(document.createTextNode(`\n${s}`));
   },
 
 };
