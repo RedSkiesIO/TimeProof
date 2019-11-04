@@ -34,12 +34,15 @@
               to="/register"
             />
           </span> -->
-          <q-tab
+          <a
             v-if="!$auth.account()"
-            name="loginSignin"
-            :label="$t('log in / register')"
-            @click="$auth.signIn()"
-          />
+            href="https://easyauthtest3.azurewebsites.net/.auth/login/microsoftaccount?post_login_redirect_url=http%3A%2F%2Flocalhost%3A6420"
+          >
+            <q-tab
+              name="loginSignin"
+              :label="$t('log in / register')"
+            />
+          </a>
           <q-tab
             v-else
             name="logout"

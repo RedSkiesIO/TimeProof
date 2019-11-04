@@ -37,12 +37,15 @@ export default {
   },
 
   methods: {
-    start() {
+    async start() {
       console.log(this.$auth.account());
-      // if (!this.$auth.account()) {
-      //   // this.$auth.signIn();
-      // }
-      // if (!this.account) {
+      if (!this.$auth.account()) {
+        console.log('signin ', this.$auth.signIn());
+      } else {
+        const token = await this.$auth.getToken();
+        console.log(token);
+      }
+
       if (!this.user) {
         const keypair = this.$keypair.new();
         User.insert({
@@ -51,10 +54,7 @@ export default {
             secretKey: keypair.secretKey,
           },
         });
-        // this.$router.push({ path: '/register' });
       }
-      // this.$router.push({ path: '/login' });
-      // }
       this.ready = true;
     },
   },
