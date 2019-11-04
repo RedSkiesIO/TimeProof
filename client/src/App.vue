@@ -38,20 +38,23 @@ export default {
 
   methods: {
     start() {
-      this.$auth.signIn();
-      // if (!this.account) {
-      if (!this.user) {
-        const keypair = this.$keypair.new();
-        User.insert({
-          data: {
-            pubKey: keypair.publicKey,
-            secretKey: keypair.secretKey,
-          },
-        });
-        // this.$router.push({ path: '/register' });
+      console.log(this.$auth.account());
+      if (!this.$auth.account()) {
+        // this.$auth.signIn();
       }
-      // this.$router.push({ path: '/login' });
-      // }
+      if (!this.account) {
+        if (!this.user) {
+          const keypair = this.$keypair.new();
+          User.insert({
+            data: {
+              pubKey: keypair.publicKey,
+              secretKey: keypair.secretKey,
+            },
+          });
+          this.$router.push({ path: '/register' });
+        }
+        this.$router.push({ path: '/login' });
+      }
       this.ready = true;
     },
   },

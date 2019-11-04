@@ -19,15 +19,23 @@
             label="About"
             to="/about"
           />
-          <q-route-tab
-            name="login"
-            :label="$t('login')"
-            to="/login"
-          />
-          <q-route-tab
-            name="register"
-            :label="$t('register')"
-            to="/register"
+          <div v-if="!$auth.account">
+            <q-route-tab
+              name="login"
+              :label="$t('login')"
+              to="/login"
+            />
+            <q-route-tab
+              name="register"
+              :label="$t('register')"
+              to="/register"
+            />
+          </div>
+          <q-tab
+            v-else
+            name="logout"
+            :label="$t('logout')"
+            @click="$auth.logout"
           />
         </q-tabs>
       </q-toolbar>
