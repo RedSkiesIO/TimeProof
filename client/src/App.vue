@@ -42,7 +42,7 @@ export default {
       if (!this.$auth.account()) {
         console.log('signin ', this.$auth.signIn());
       } else {
-        const token = await this.$auth.getToken();
+        const token = await this.$auth.getSessionToken();
         console.log(token);
       }
 

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import * as Msal from 'msal';
+import axios from 'axios';
 
 // configuration to initialize msal
 const msalConfig = {
@@ -52,6 +53,15 @@ const auth = {
         console.log('Failed token acquisition', error2);
       });
     });
+  },
+
+  // get token for api access
+  async getSessionToken() {
+    const token = await this.getToken();
+    return axios.post('https://easyauthtest3.azurewebsites.net/.auth/login/microsoftaccount',
+      {
+        access_token: token,
+      });
   },
 
   logout() {
