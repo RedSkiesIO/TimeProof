@@ -19,7 +19,10 @@
             label="About"
             to="/about"
           />
-          <div v-if="!$auth.account">
+          <!-- <span
+            v-if="!$auth.account()"
+            class="flex"
+          >
             <q-route-tab
               name="login"
               :label="$t('login')"
@@ -30,12 +33,18 @@
               :label="$t('register')"
               to="/register"
             />
-          </div>
+          </span> -->
+          <q-tab
+            v-if="!$auth.account()"
+            name="loginSignin"
+            :label="$t('log in / register')"
+            @click="$auth.signIn()"
+          />
           <q-tab
             v-else
             name="logout"
             :label="$t('logout')"
-            @click="$auth.logout"
+            @click="$auth.logout()"
           />
         </q-tabs>
       </q-toolbar>

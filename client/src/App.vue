@@ -39,22 +39,22 @@ export default {
   methods: {
     start() {
       console.log(this.$auth.account());
-      if (!this.$auth.account()) {
-        // this.$auth.signIn();
+      // if (!this.$auth.account()) {
+      //   // this.$auth.signIn();
+      // }
+      // if (!this.account) {
+      if (!this.user) {
+        const keypair = this.$keypair.new();
+        User.insert({
+          data: {
+            pubKey: keypair.publicKey,
+            secretKey: keypair.secretKey,
+          },
+        });
+        // this.$router.push({ path: '/register' });
       }
-      if (!this.account) {
-        if (!this.user) {
-          const keypair = this.$keypair.new();
-          User.insert({
-            data: {
-              pubKey: keypair.publicKey,
-              secretKey: keypair.secretKey,
-            },
-          });
-          this.$router.push({ path: '/register' });
-        }
-        this.$router.push({ path: '/login' });
-      }
+      // this.$router.push({ path: '/login' });
+      // }
       this.ready = true;
     },
   },

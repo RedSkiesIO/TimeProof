@@ -49,9 +49,14 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .q-tab-panel {
   padding: 0;
+  height: inherit;
+}
+
+.q-panel {
+  height: inherit;
 }
 
 .q-card > div:first-child {
