@@ -38,13 +38,15 @@ export default {
 
   methods: {
     async start() {
-      console.log(this.$auth.account());
-      if (!this.$auth.account()) {
-        console.log('signin ', this.$auth.signIn());
-      } else {
-        const token = await this.$auth.getSessionToken();
-        console.log(token);
-      }
+      const me = await this.$axios.get('http://localhost:5000/.auth/me');
+      console.log(me);
+      // console.log(this.$auth.account());
+      // if (!this.$auth.account()) {
+      //   console.log('signin ', this.$auth.signIn());
+      // } else {
+      //   const token = await this.$auth.getSessionToken();
+      //   console.log(token);
+      // }
 
       if (!this.user) {
         const keypair = this.$keypair.new();
