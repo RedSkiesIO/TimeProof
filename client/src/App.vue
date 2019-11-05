@@ -37,9 +37,12 @@ export default {
   },
 
   methods: {
-    async start() {
-      const me = await this.$axios.get('http://localhost:5000/.auth/me');
+    async getToken() {
+      const me = await this.$axios.get('https://easyauthtest3.azurewebsites.net/.auth/me', { withCredentials: true });
       console.log(me);
+    },
+
+    async start() {
       // console.log(this.$auth.account());
       // if (!this.$auth.account()) {
       //   console.log('signin ', this.$auth.signIn());

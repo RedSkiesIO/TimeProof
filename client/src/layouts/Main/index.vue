@@ -19,11 +19,11 @@
             label="About"
             to="/about"
           />
-          <!-- <span
+          <span
             v-if="!$auth.account()"
             class="flex"
           >
-            <q-route-tab
+            <!-- <q-route-tab
               name="login"
               :label="$t('login')"
               to="/login"
@@ -32,24 +32,35 @@
               name="register"
               :label="$t('register')"
               to="/register"
+            /> -->
+            <q-tab
+              name="signin"
+              :label="$t('signin / register')"
+              @click="$auth.signIn()"
             />
-          </span> -->
-          <a
-            href="https://easyauthtest3.azurewebsites.net/.auth/login/microsoftaccount?post_login_redirect_url=http%3A%2F%2Flocalhost%3A6420"
+          </span>
+
+          <!-- <a
+            href="https://easyauthtest3.azurewebsites.net/.auth/login/microsoftaccount?post_login_redirect_url=http%3A%2F%2Flocalhost%3A6420?"
           >
             <q-tab
               name="loginSignin"
               :label="$t('log in / register')"
             />
-          </a>
-          <a
-            href="https://easyauthtest3.azurewebsites.net/.auth/logout"
-          >
-            <q-tab
-              name="logout"
-              :label="$t('logout')"
-            />
-          </a>
+          </a> -->
+
+          <q-tab
+            v-else
+            name="logout"
+            :label="$t('logout')"
+            @click="$auth.logout"
+          />
+
+          <q-tab
+            name="token"
+            :label="$t('token')"
+            @click="$auth.getSessionToken()"
+          />
         </q-tabs>
       </q-toolbar>
     </q-header>
@@ -68,6 +79,13 @@ export default {
     return {
       tab: '',
     };
+  },
+
+  methods: {
+    async getToken() {
+      const me = await this.$axios.get('https://easyauthtest3.azurewebsites.net/.auth/me');
+      console.log(me);
+    },
   },
 };
 </script>

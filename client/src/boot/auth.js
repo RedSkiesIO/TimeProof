@@ -5,7 +5,7 @@ import axios from 'axios';
 // configuration to initialize msal
 const msalConfig = {
   auth: {
-    clientId: 'bde6ae98-eefc-4af9-90c8-c609b1a466ff', // This is your client ID
+    clientId: '413664b7-41ea-4096-ae23-3abcb7f8c359', // This is your client ID
     authority: 'https://login.microsoftonline.com/e76987d2-a8b1-490c-89bb-08e77b63d40b', // This is your tenant info
     redirectURI: 'http://localhost:6420/',
   },
@@ -28,7 +28,7 @@ const myMSALObj = new Msal.UserAgentApplication(msalConfig);
 myMSALObj.handleRedirectCallback(authCallback);
 // request to signin - returns an idToken
 const requestObj = {
-  scopes: ['user.read'],
+  scopes: ['https://easyauthtest3.azurewebsites.net/.default'],
 };
 
 // signin and acquire a token silently with POPUP flow.
@@ -48,7 +48,8 @@ const auth = {
       console.log('aquire token popup', error);
       // fallback to interaction when silent call fails
       return myMSALObj.acquireTokenPopup(requestObj).then((tokenResponse) => {
-        console.log(tokenResponse);
+        console.log('popup: ', tokenResponse);
+        return tokenResponse;
       }).catch((error2) => {
         console.log('Failed token acquisition', error2);
       });
@@ -58,10 +59,16 @@ const auth = {
   // get token for api access
   async getSessionToken() {
     const token = await this.getToken();
-    return axios.post('http://localhost:5000/.auth/login/microsoftaccount',
-      {
-        access_token: token,
-      });
+    console.log(token);
+    try {
+      const session = await axios.post('https://easyauthtest3.azurewebsites.net/.auth/login/microsoftaccount',
+        {
+          access_token: token.accessToken,
+        });
+      console.log(session);
+    } catch (e) {
+      console.log(e);
+    }
   },
 
   logout() {
