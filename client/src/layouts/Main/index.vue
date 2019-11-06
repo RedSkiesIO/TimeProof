@@ -19,47 +19,17 @@
             label="About"
             to="/about"
           />
-          <span
-            v-if="!$auth.account()"
-            class="flex"
-          >
-            <!-- <q-route-tab
-              name="login"
-              :label="$t('login')"
-              to="/login"
-            />
-            <q-route-tab
-              name="register"
-              :label="$t('register')"
-              to="/register"
-            /> -->
-            <q-tab
-              name="signin"
-              :label="$t('signin / register')"
-              @click="$auth.signIn()"
-            />
-          </span>
-
-          <!-- <a
-            href="https://easyauthtest3.azurewebsites.net/.auth/login/microsoftaccount?post_login_redirect_url=http%3A%2F%2Flocalhost%3A6420?"
-          >
-            <q-tab
-              name="loginSignin"
-              :label="$t('log in / register')"
-            />
-          </a> -->
-
+          <q-tab
+            v-if="!isLoggedIn"
+            name="signin"
+            :label="$t('signin / register')"
+            @click.prevent="logIn"
+          />
           <q-tab
             v-else
             name="logout"
             :label="$t('logout')"
-            @click="$auth.logout"
-          />
-
-          <q-tab
-            name="token"
-            :label="$t('token')"
-            @click="$auth.getSessionToken()"
+            @click.prevent="logOut"
           />
         </q-tabs>
       </q-toolbar>
@@ -72,6 +42,8 @@
 </template>
 
 <script>
+import { auth } from '../../helpers/adal';
+
 export default {
   name: 'MainLayout',
 
@@ -81,10 +53,21 @@ export default {
     };
   },
 
+  computed: {
+    isLoggedIn() {
+      return auth.isLoggedIn;
+    },
+  },
+
   methods: {
-    async getToken() {
-      const me = await this.$axios.get('https://easyauthtest3.azurewebsites.net/.auth/me');
-      console.log(me);
+    logIn(e) {
+      e.preventDefault();
+      auth.login();
+    },
+
+    logOut(e) {
+      e.preventDefault();
+      auth.logout();
     },
   },
 };

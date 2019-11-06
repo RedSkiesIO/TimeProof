@@ -12,10 +12,10 @@
           name="login"
           :label="$t('login')"
         />
-        <q-tab
+        <!-- <q-tab
           name="register"
           :label="$t('signUp')"
-        />
+        /> -->
       </q-tabs>
       <q-tab-panels
         v-model="panel"
@@ -25,7 +25,7 @@
           name="login"
           class="q-gutter-y-md flex flex-center column text-center"
         >
-          <q-input
+          <!-- <q-input
             v-model="email"
             outlined
             :label="$t('email')"
@@ -34,16 +34,34 @@
             v-model="password"
             outlined
             :label="$t('password')"
-          />
-          <q-btn
-            unelevated
-            color="primary"
-            :label="$t('signin')"
-            @click="login"
-          />
+          /> -->
+          <a href="/.auth/login/aad">
+            <q-btn
+              unelevated
+              color="primary"
+              :label="$t('log in with azure ad')"
+              @click="login"
+            />
+          </a>
+          <a href="/.auth/login/microsoftaccount">
+            <q-btn
+              unelevated
+              color="primary"
+              :label="$t('log in with microsoft')"
+              @click="login"
+            />
+          </a>
+          <a href="/.auth/login/google">
+            <q-btn
+              unelevated
+              color="primary"
+              :label="$t('log in with google')"
+              @click="login"
+            />
+          </a>
         </q-tab-panel>
 
-        <q-tab-panel
+        <!-- <q-tab-panel
           name="register"
           class="q-gutter-y-md flex flex-center column text-center"
         >
@@ -81,7 +99,7 @@
             :label="$t('register')"
             @click="signUp"
           />
-        </q-tab-panel>
+        </q-tab-panel> -->
       </q-tab-panels>
     </q-card>
   </q-page>

@@ -9,6 +9,7 @@
 
 <script>
 import User from './store/User';
+import { auth } from './helpers/adal';
 
 export default {
   name: 'App',
@@ -33,23 +34,19 @@ export default {
   },
 
   mounted() {
+    auth.handleLoginCallback();
     this.start();
   },
 
   methods: {
-    async getToken() {
-      const me = await this.$axios.get('https://easyauthtest3.azurewebsites.net/.auth/me', { withCredentials: true });
-      console.log(me);
-    },
-
     async start() {
-      // console.log(this.$auth.account());
-      // if (!this.$auth.account()) {
-      //   console.log('signin ', this.$auth.signIn());
-      // } else {
-      //   const token = await this.$auth.getSessionToken();
-      //   console.log(token);
-      // }
+      if (auth.isLoggedIn) {
+        auth.acquireTokenForAPI((error, token) => {
+          if (!error) {
+            console.log(token);
+          }
+        });
+      }
 
       if (!this.user) {
         const keypair = this.$keypair.new();
