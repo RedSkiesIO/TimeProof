@@ -44,6 +44,20 @@ export default {
         auth.acquireTokenForAPI((error, token) => {
           if (!error) {
             console.log(token);
+            this.$axios
+              .get('https://easyauthtest4.azurewebsites.net/api/HttpTrigger1',
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/json',
+                  },
+                  params: {
+                    name: 'stephen',
+                  },
+                })
+              .then((data) => {
+                console.log(data);
+              });
           }
         });
       }

@@ -31,6 +31,7 @@ export default {
   signUp: 'Sign Up',
   signin: 'Sign In',
   register: 'Register',
+  logout: 'Logout',
   email: 'Email',
   password: 'Password',
   fullName: 'Full Name',

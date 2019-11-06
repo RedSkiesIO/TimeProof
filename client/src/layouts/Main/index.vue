@@ -55,7 +55,7 @@ export default {
 
   computed: {
     isLoggedIn() {
-      return auth.isLoggedIn;
+      return auth.isLoggedIn();
     },
   },
 
