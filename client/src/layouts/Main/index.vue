@@ -31,6 +31,11 @@
             :label="$t('logout')"
             @click.prevent="logOut"
           />
+          <q-tab
+            size="sm"
+            name="account"
+            icon="account_circle"
+          />
         </q-tabs>
       </q-toolbar>
     </q-header>
@@ -38,10 +43,30 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+    <div class="user-dialog">
+      <q-dialog
+        v-model="dialog"
+        seamless
+        :position="position"
+        content-class="user-dialog"
+      >
+        <q-card style="width: 350px">
+          <q-card-section class="column items-center no-wrap">
+            <div>
+              <div class=" text-center text-weight-bold">
+                {{ user.name }}
+              </div>
+              <q-space />
+</div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+    </div>
   </q-layout>
 </template>
 
 <script>
+import User from '../../store/User';
 
 export default {
   name: 'MainLayout',
@@ -49,6 +74,8 @@ export default {
   data() {
     return {
       tab: '',
+      dialog: true,
+      position: 'top',
     };
   },
 
@@ -59,6 +86,22 @@ export default {
         return false;
       }
       return true;
+    },
+    account() {
+      const account = this.$auth.account();
+      if (!account) {
+        return null;
+      }
+      return account;
+    },
+    user() {
+      if (this.account) {
+        const user = User.find(this.account.accountIdentifier);
+        if (user) {
+          return user;
+        }
+      }
+      return null;
     },
   },
 
@@ -75,3 +118,11 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.user-dialog .fixed-top {
+  top: 50px;
+  right: 0;
+  left: auto;
+  padding: 0;
+}
+</style>
