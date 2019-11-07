@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { auth } from '../../helpers/adal';
+// import { auth } from '../../helpers/adal';
 
 export default {
   name: 'MainLayout',
@@ -55,19 +55,24 @@ export default {
 
   computed: {
     isLoggedIn() {
-      return auth.isLoggedIn();
+      const account = this.$auth.account();
+      console.log(account);
+      if (!account) {
+        return false;
+      }
+      return true;
     },
   },
 
   methods: {
     logIn(e) {
       e.preventDefault();
-      auth.login();
+      this.$auth.signIn();
     },
 
     logOut(e) {
       e.preventDefault();
-      auth.logout();
+      this.$auth.logout();
     },
   },
 };

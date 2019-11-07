@@ -1,12 +1,18 @@
 import Vue from 'vue';
 import * as Msal from 'msal';
-import axios from 'axios';
+// import axios from 'axios';
+
+const appConfig = {
+  b2cScopes: ['https://timestamper.onmicrosoft.com/api/demo.read'],
+  webApi: '',
+};
 
 // configuration to initialize msal
 const msalConfig = {
   auth: {
-    clientId: '413664b7-41ea-4096-ae23-3abcb7f8c359', // This is your client ID
-    authority: 'https://login.microsoftonline.com/e76987d2-a8b1-490c-89bb-08e77b63d40b', // This is your tenant info
+    clientId: 'e4ab5c13-6a76-4784-a0f3-da7d50135fa3', // This is your client ID
+    authority: 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn', // This is your tenant info
+    validateAuthority: false,
     redirectURI: 'http://localhost:6420/',
   },
   cache: {
@@ -23,19 +29,21 @@ function authCallback(error, response) {
   // handle redirect response
 }
 
+const loginRequest = {
+  scopes: appConfig.b2cScopes,
+};
+// request to acquire a token for resource access
+const tokenRequest = {
+  scopes: appConfig.b2cScopes,
+};
+
 // instantiate MSAL
 const myMSALObj = new Msal.UserAgentApplication(msalConfig);
 myMSALObj.handleRedirectCallback(authCallback);
-// request to signin - returns an idToken
-const requestObj = {
-  scopes: ['https://easyauthtest3.azurewebsites.net/.default'],
-};
 
-// signin and acquire a token silently with POPUP flow.
-//  Fall back in case of failure with silent acquisition to popup
 const auth = {
   signIn() {
-    return myMSALObj.loginRedirect(requestObj);
+    return myMSALObj.loginRedirect(loginRequest);
   },
 
   account() {
@@ -44,31 +52,16 @@ const auth = {
 
   // acquire a token silently
   getToken() {
-    return myMSALObj.acquireTokenSilent(requestObj).catch((error) => {
+    return myMSALObj.acquireTokenSilent(tokenRequest).catch((error) => {
       console.log('aquire token popup', error);
       // fallback to interaction when silent call fails
-      return myMSALObj.acquireTokenPopup(requestObj).then((tokenResponse) => {
+      return myMSALObj.acquireTokenPopup(tokenRequest).then((tokenResponse) => {
         console.log('popup: ', tokenResponse);
         return tokenResponse;
       }).catch((error2) => {
         console.log('Failed token acquisition', error2);
       });
     });
-  },
-
-  // get token for api access
-  async getSessionToken() {
-    const token = await this.getToken();
-    console.log(token);
-    try {
-      const session = await axios.post('https://easyauthtest3.azurewebsites.net/.auth/login/microsoftaccount',
-        {
-          access_token: token.accessToken,
-        });
-      console.log(session);
-    } catch (e) {
-      console.log(e);
-    }
   },
 
   logout() {
