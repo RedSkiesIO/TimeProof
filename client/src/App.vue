@@ -9,7 +9,6 @@
 
 <script>
 import User from './store/User';
-// import { auth } from './helpers/adal';
 
 export default {
   name: 'App',
