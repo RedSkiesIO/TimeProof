@@ -1,6 +1,7 @@
 <template>
   <q-page class="flex flex-center">
     <q-card
+      v-if="isLoggedIn"
       flat
     >
       <q-tabs
@@ -30,6 +31,12 @@
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
+    <q-card
+      v-else
+      flat
+    >
+      {{ $t('notSignedIn') }}
+    </q-card>
   </q-page>
 </template>
 
@@ -46,6 +53,16 @@ export default {
     return {
       tab: 'sign',
     };
+  },
+
+  computed: {
+    isLoggedIn() {
+      const account = this.$auth.account();
+      if (!account) {
+        return false;
+      }
+      return true;
+    },
   },
 };
 </script>

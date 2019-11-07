@@ -26,13 +26,11 @@ function authCallback(error, response) {
     console.log(error);
   }
   console.log(response);
-  // handle redirect response
 }
 
 const loginRequest = {
   scopes: appConfig.b2cScopes,
 };
-// request to acquire a token for resource access
 const tokenRequest = {
   scopes: appConfig.b2cScopes,
 };
@@ -65,7 +63,6 @@ const auth = {
   },
 
   logout() {
-    // Removes all sessions, need to call AAD endpoint to do full logout
     myMSALObj.logout();
   },
 

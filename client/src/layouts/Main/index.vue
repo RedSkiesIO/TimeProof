@@ -16,13 +16,13 @@
         >
           <q-route-tab
             name="about"
-            label="About"
+            :label="$t('about')"
             to="/about"
           />
           <q-tab
             v-if="!isLoggedIn"
             name="signin"
-            :label="$t('signin / register')"
+            :label="$t('signUpSignIn')"
             @click.prevent="logIn"
           />
           <q-tab
@@ -42,7 +42,6 @@
 </template>
 
 <script>
-// import { auth } from '../../helpers/adal';
 
 export default {
   name: 'MainLayout',
@@ -56,7 +55,6 @@ export default {
   computed: {
     isLoggedIn() {
       const account = this.$auth.account();
-      console.log(account);
       if (!account) {
         return false;
       }
