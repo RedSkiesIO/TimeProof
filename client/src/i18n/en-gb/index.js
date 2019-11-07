@@ -41,7 +41,7 @@ export default {
   invalidEmail: 'Please enter a valid email address',
   emptyName: 'Please enter a name',
   invalidProofId: 'Invalid proof ID',
-  notSignedIn: 'Please log in to sign a document',
+  notSignedIn: 'Please log in or register to use the document signer',
   signUpSignIn: 'Log In / Register',
   about: 'About',
 };

@@ -22,52 +22,39 @@ export default {
 
   computed: {
     account() {
-      return this.$store.state.settings.authenticatedAccount;
+      const account = this.$auth.account();
+      if (!account) {
+        return null;
+      }
+      return account;
     },
 
     user() {
-      if (User.all().length > 0) {
-        return User.query().first();
+      if (this.account) {
+        const user = User.find(this.account.accountIdentifier);
+        if (user) {
+          return user;
+        }
       }
       return null;
     },
   },
 
   mounted() {
-    // auth.handleLoginCallback();
     this.start();
   },
 
   methods: {
     async start() {
-      // if (auth.isLoggedIn) {
-      //   auth.acquireTokenForAPI((error, token) => {
-      //     if (!error) {
-      //       console.log(token);
-      //       this.$axios
-      //         .get('https://easyauthtest4.azurewebsites.net/api/HttpTrigger1',
-      //           {
-      //             headers: {
-      //               Authorization: `Bearer ${token}`,
-      //               Accept: 'application/json',
-      //             },
-      //             params: {
-      //               name: 'stephen',
-      //             },
-      //           })
-      //         .then((data) => {
-      //           console.log(data);
-      //         });
-      //     }
-      //   });
-      // }
-
-      if (!this.user) {
+      if (!this.user && this.account) {
         const keypair = this.$keypair.new();
         User.insert({
           data: {
+            accountIdentifier: this.account.accountIdentifier,
             pubKey: keypair.publicKey,
             secretKey: keypair.secretKey,
+            name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+            email: this.account.idToken.emails[0],
           },
         });
       }
