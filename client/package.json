@@ -14,7 +14,6 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "@vuex-orm/core": "^0.32.5",
-    "adal-angular": "^1.0.17",
     "axios": "^0.18.1",
     "base32-decode": "^1.0.0",
     "base32-encode": "^1.1.1",
