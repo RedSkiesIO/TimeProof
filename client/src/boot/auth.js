@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import * as Msal from 'msal';
-// import axios from 'axios';
 
 const appConfig = {
   b2cScopes: ['https://timestamper.onmicrosoft.com/api/demo.read'],
@@ -71,6 +70,15 @@ const auth = {
     passwordReset.loginRedirect();
     msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn';
   },
+
+  editProfile() {
+    msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_EditProfile';
+    const editProfile = new Msal.UserAgentApplication(msalConfig);
+    editProfile.handleRedirectCallback((error, response) => {
+      console.log(error, response);
+    });
+    editProfile.loginRedirect();
+  },
 };
 
 function authCallback(error, response) {
@@ -80,6 +88,11 @@ function authCallback(error, response) {
       auth.forgotPassword();
     }
   }
+  if (response.account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+    msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn';
+    auth.signIn();
+  }
+
   console.log(response);
 }
 

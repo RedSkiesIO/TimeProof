@@ -178,8 +178,6 @@ export default {
     },
 
     async hashFile(files) {
-      console.log(this.$store.state.settings.authenticatedAccount);
-
       this.confirmed = false;
       this.file = {
         name: files[0].name,
@@ -207,7 +205,7 @@ export default {
     async sendProof() {
       this.visible = true;
 
-      const tx = await this.$axios.post('http://localhost:7071/api/StampDocument', {
+      const tx = await this.$axios.post('https://documentstamp.azurewebsites.net/api/StampDocument', {
         hash: this.file.base32Hash,
         publicKey: this.user.pubKey,
         signature: this.file.signature,
@@ -226,7 +224,7 @@ export default {
       if (!this.$refs.proofId.hasError) {
         this.file.verify = true;
         try {
-          const tx = await this.$axios.get(`http://localhost:7071/api/VerifyStampDocument/${this.proofId}`);
+          const tx = await this.$axios.get(`https://documentstamp.azurewebsites.net/api/VerifyStampDocument/${this.proofId}`);
 
           if (tx.data.success) {
             const fileHash = tx.data.value.userProof.hash;

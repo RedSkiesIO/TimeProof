@@ -57,7 +57,6 @@ export default {
           },
         });
       } else if (this.user && this.account) {
-        console.log(this.account);
         User.update({
           data: {
             accountIdentifier: this.account.accountIdentifier,

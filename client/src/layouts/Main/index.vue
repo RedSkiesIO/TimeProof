@@ -29,11 +29,6 @@
             v-else
             class="flex"
           >
-            <!-- <q-tab
-              name="logout"
-              :label="$t('logout')"
-              @click.prevent="logOut"
-            /> -->
             <q-tab
               size="sm"
               name="account"
@@ -74,6 +69,12 @@
               </div>
               <div class="text-center text-weight-bold">
                 {{ user.email }}
+              </div>
+              <div
+                class="text-body2 text-blue"
+                @click="$auth.editProfile()"
+              >
+                edit details
               </div>
               <q-btn
                 flat
