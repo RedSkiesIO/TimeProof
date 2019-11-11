@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="q-pa-sm flex flex-center column text-center">
+    <div
+      id="proof"
+      class="q-pa-sm flex flex-center column text-center"
+    >
       <q-icon
         v-if="proof.verify && !proof.verified"
         name="error"
@@ -218,14 +221,20 @@ export default {
 
   methods: {
     copy(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        this.copyLabel = this.$t('copied');
-        setTimeout(() => {
-          this.copyLabel = this.$t('copy');
-        }, 1500);
-      }, (err) => {
-        console.error('Async: Could not copy text: ', err);
-      });
+      console.log(text);
+      this.createPDF();
+      // navigator.clipboard.writeText(text).then(() => {
+      //   this.copyLabel = this.$t('copied');
+      //   setTimeout(() => {
+      //     this.copyLabel = this.$t('copy');
+      //   }, 1500);
+      // }, (err) => {
+      //   console.error('Async: Could not copy text: ', err);
+      // });
+    },
+
+    createPDF() {
+      this.$pdf(this.proof);
     },
 
     reset() {
