@@ -7,20 +7,6 @@ const routes = [
       { path: '', component: () => import('pages/Index.vue') },
     ],
   },
-  {
-    path: '/login',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('pages/Login'), props: { tab: 'login' } },
-    ],
-  },
-  {
-    path: '/register',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('pages/Login'), props: { tab: 'register' } },
-    ],
-  },
 ];
 
 // Always leave this as last one
