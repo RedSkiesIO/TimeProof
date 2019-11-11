@@ -25,17 +25,22 @@
             :label="$t('signUpSignIn')"
             @click.prevent="logIn"
           />
-          <q-tab
+          <div
             v-else
-            name="logout"
-            :label="$t('logout')"
-            @click.prevent="logOut"
-          />
-          <q-tab
-            size="sm"
-            name="account"
-            icon="account_circle"
-          />
+            class="flex"
+          >
+            <!-- <q-tab
+              name="logout"
+              :label="$t('logout')"
+              @click.prevent="logOut"
+            /> -->
+            <q-tab
+              size="sm"
+              name="account"
+              icon="account_circle"
+              @click="dialog=true"
+            />
+          </div>
         </q-tabs>
       </q-toolbar>
     </q-header>
@@ -45,19 +50,37 @@
     </q-page-container>
     <div class="user-dialog">
       <q-dialog
+        v-if="account"
         v-model="dialog"
-        seamless
         :position="position"
+        transition-show="fade"
+        transition-hide="fade"
         content-class="user-dialog"
       >
-        <q-card style="width: 350px">
+        <q-card
+          flat
+          bordered
+          style="width: 350px"
+        >
           <q-card-section class="column items-center no-wrap">
-            <div>
-              <div class=" text-center text-weight-bold">
+            <div class="text-center text-weight-bold">
+              <q-icon
+                class="text-grey-6"
+                name="account_circle"
+                size="xl"
+              />
+              <div class=" q-mt-sm text-center text-weight-bold">
                 {{ user.name }}
               </div>
-              <q-space />
-</div>
+              <div class="text-center text-weight-bold">
+                {{ user.email }}
+              </div>
+              <q-btn
+                flat
+                :label="$t('logout')"
+                @click.prevent="logOut"
+              />
+            </div>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -74,7 +97,7 @@ export default {
   data() {
     return {
       tab: '',
-      dialog: true,
+      dialog: false,
       position: 'top',
     };
   },
@@ -82,14 +105,14 @@ export default {
   computed: {
     isLoggedIn() {
       const account = this.$auth.account();
-      if (!account) {
+      if (!account !== 'B2C_1_TimestampSignUpSignIn') {
         return false;
       }
       return true;
     },
     account() {
       const account = this.$auth.account();
-      if (!account) {
+      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
         return null;
       }
       return account;
@@ -124,5 +147,9 @@ export default {
   right: 0;
   left: auto;
   padding: 0;
+}
+
+.user-dialog .q-dialog__backdrop {
+    background: none;
 }
 </style>

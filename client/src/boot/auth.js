@@ -21,12 +21,6 @@ const msalConfig = {
   },
 };
 
-function authCallback(error, response) {
-  if (error) {
-    console.log(error);
-  }
-  console.log(response);
-}
 
 const loginRequest = {
   scopes: appConfig.b2cScopes,
@@ -37,7 +31,6 @@ const tokenRequest = {
 
 // instantiate MSAL
 const myMSALObj = new Msal.UserAgentApplication(msalConfig);
-myMSALObj.handleRedirectCallback(authCallback);
 
 const auth = {
   signIn() {
@@ -66,6 +59,31 @@ const auth = {
     myMSALObj.logout();
   },
 
+  forgotPassword() {
+    msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_PasswordReset';
+    const passwordReset = new Msal.UserAgentApplication(msalConfig);
+    passwordReset.handleRedirectCallback((error, response) => {
+      console.log(error, response);
+      if (response) {
+        this.logout();
+      }
+    });
+    passwordReset.loginRedirect();
+    msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn';
+  },
 };
+
+function authCallback(error, response) {
+  if (error) {
+    console.log(error);
+    if (error.message && error.message.indexOf('AADB2C90118') > -1) {
+      auth.forgotPassword();
+    }
+  }
+  console.log(response);
+}
+
+myMSALObj.handleRedirectCallback(authCallback);
+
 
 Vue.prototype.$auth = auth;

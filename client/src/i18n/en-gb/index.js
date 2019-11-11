@@ -27,7 +27,7 @@ export default {
   verify: 'verify',
   proofId: 'Proof ID',
   signed: 'Signed',
-  login: 'Log In',
+  login: 'LogIn',
   signUp: 'Sign Up',
   signin: 'Sign In',
   register: 'Register',
@@ -42,6 +42,6 @@ export default {
   emptyName: 'Please enter a name',
   invalidProofId: 'Invalid proof ID',
   notSignedIn: 'Please log in or register to use the document signer',
-  signUpSignIn: 'Log In / Register',
+  signUpSignIn: 'LogIn / Register',
   about: 'About',
 };

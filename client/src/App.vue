@@ -22,7 +22,7 @@ export default {
   computed: {
     account() {
       const account = this.$auth.account();
-      if (!account) {
+      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
         return null;
       }
       return account;
@@ -52,6 +52,15 @@ export default {
             accountIdentifier: this.account.accountIdentifier,
             pubKey: keypair.publicKey,
             secretKey: keypair.secretKey,
+            name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+            email: this.account.idToken.emails[0],
+          },
+        });
+      } else if (this.user && this.account) {
+        console.log(this.account);
+        User.update({
+          data: {
+            accountIdentifier: this.account.accountIdentifier,
             name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
             email: this.account.idToken.emails[0],
           },
