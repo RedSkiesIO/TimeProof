@@ -87,8 +87,7 @@ function authCallback(error, response) {
     if (error.message && error.message.indexOf('AADB2C90118') > -1) {
       auth.forgotPassword();
     }
-  }
-  if (response.account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+  } else if (response.account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
     msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn';
     auth.signIn();
   }

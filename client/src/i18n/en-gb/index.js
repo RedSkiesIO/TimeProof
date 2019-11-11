@@ -44,4 +44,5 @@ export default {
   notSignedIn: 'Please log in or register to use the document signer',
   signUpSignIn: 'LogIn / Register',
   about: 'About',
+  editProfile: 'Edit Profile',
 };

@@ -74,7 +74,7 @@
                 class="text-body2 text-blue"
                 @click="$auth.editProfile()"
               >
-                edit details
+                {{ $t('editProfile') }}
               </div>
               <q-btn
                 flat
