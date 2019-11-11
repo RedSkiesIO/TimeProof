@@ -205,7 +205,7 @@ export default {
     async sendProof() {
       this.visible = true;
 
-      const tx = await this.$axios.post('https://documentstamp.azurewebsites.net/api/StampDocument', {
+      const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
         hash: this.file.base32Hash,
         publicKey: this.user.pubKey,
         signature: this.file.signature,
@@ -224,7 +224,7 @@ export default {
       if (!this.$refs.proofId.hasError) {
         this.file.verify = true;
         try {
-          const tx = await this.$axios.get(`https://documentstamp.azurewebsites.net/api/VerifyStampDocument/${this.proofId}`);
+          const tx = await this.$axios.get(`${process.env.API}VerifyStampDocument/${this.proofId}${process.env.VERIFY_KEY}`);
 
           if (tx.data.success) {
             const fileHash = tx.data.value.userProof.hash;
