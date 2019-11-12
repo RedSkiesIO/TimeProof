@@ -2,6 +2,7 @@ import Vue from 'vue';
 import { PDFDocument } from 'pdf-lib';
 import templatePDF from 'pdf-templater';
 
+
 const downloadURL = (data, fileName) => {
   const a = document.createElement('a');
   a.href = data;
@@ -21,22 +22,25 @@ const saveDataToFile = (data, fileName, mimeType) => {
   }, 1000);
 };
 
-async function create() {
+async function create(name, proof) {
   const response = await fetch('../../statics/certificate.pdf');
   const file = await response.arrayBuffer();
-  console.log(file);
 
   const doc = await PDFDocument.load(file);
   await templatePDF(doc,
     {
-      hash: '12345',
-      proofId: '6789',
-      timestamp: 'today',
-      user: 'satoshi',
-      pubKey: 'blablabla',
+      name: proof.file,
+      hash: proof.hash.one,
+      hash2: proof.hash.two,
+      proofId: proof.proofId.one,
+      proofId2: proof.proofId.two,
+      timestamp: proof.timestamp,
+      user: proof.user,
+      signature: proof.signature.one,
+      signature2: proof.signature.two,
     });
   const output = await doc.save(); // Save the doc already replacement
-  saveDataToFile(output, 'cert.pdf', 'application/pdf');
+  saveDataToFile(output, name, 'application/pdf');
 }
 
 Vue.prototype.$pdf = create;

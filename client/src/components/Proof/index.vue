@@ -176,6 +176,12 @@
     </div>
     <div
       class="q-mt-sm text-blue text-center"
+      @click="getCertificate"
+    >
+      Get Certificate
+    </div>
+    <div
+      class="q-mt-sm text-blue text-center"
       @click="scope.reset()"
     >
       {{ $t('anotherFile') }}
@@ -221,16 +227,14 @@ export default {
 
   methods: {
     copy(text) {
-      console.log(text);
-      this.createPDF();
-      // navigator.clipboard.writeText(text).then(() => {
-      //   this.copyLabel = this.$t('copied');
-      //   setTimeout(() => {
-      //     this.copyLabel = this.$t('copy');
-      //   }, 1500);
-      // }, (err) => {
-      //   console.error('Async: Could not copy text: ', err);
-      // });
+      navigator.clipboard.writeText(text).then(() => {
+        this.copyLabel = this.$t('copied');
+        setTimeout(() => {
+          this.copyLabel = this.$t('copy');
+        }, 1500);
+      }, (err) => {
+        console.error('Async: Could not copy text: ', err);
+      });
     },
 
     createPDF() {
@@ -239,6 +243,27 @@ export default {
 
     reset() {
       this.scope.reset();
+    },
+
+    getCertificate() {
+      const name = `${this.proof.txId}.pdf`;
+      const splitString = (string, index) => ({
+        one: string.substr(0, index),
+        two: string.substr(index + 1),
+      });
+
+      const hash = splitString(this.proof.base32Hash.toLowerCase(), 65);
+      const proofId = splitString(this.proof.txId.toLowerCase(), 65);
+      const signature = splitString(this.proof.signature.toLowerCase(), 65);
+      const file = {
+        file: this.proof.name,
+        hash,
+        proofId,
+        signature,
+        user: this.user.name,
+        timestamp: this.getDate,
+      };
+      this.$pdf(name, file);
     },
   },
 };
