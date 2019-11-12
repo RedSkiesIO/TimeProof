@@ -175,6 +175,7 @@
       </div>
     </div>
     <div
+      v-if="!proof.verify"
       class="q-mt-sm text-blue text-center"
       @click="getCertificate"
     >
@@ -249,7 +250,7 @@ export default {
       const name = `${this.proof.timestamp}.pdf`;
       const splitString = (string, index) => ({
         one: string.substr(0, index),
-        two: string.substr(index + 1),
+        two: string.substr(index),
       });
 
       const hash = splitString(this.proof.base32Hash.toLowerCase(), 65);
