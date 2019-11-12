@@ -82,9 +82,9 @@ export default {
     },
   },
 
-  // mounted() {
-  //   this.$pdf();
-  // },
+  mounted() {
+    this.$pdf();
+  },
 };
 </script>
 <style lang="scss">

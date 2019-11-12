@@ -14,7 +14,7 @@ module.exports = function (ctx) {
       'keypair',
       'base32',
       'auth',
-      'jsPdf',
+      'createPdf',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
