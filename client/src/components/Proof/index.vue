@@ -246,7 +246,7 @@ export default {
     },
 
     getCertificate() {
-      const name = `${this.proof.txId}.pdf`;
+      const name = `${this.proof.timestamp}.pdf`;
       const splitString = (string, index) => ({
         one: string.substr(0, index),
         two: string.substr(index + 1),
