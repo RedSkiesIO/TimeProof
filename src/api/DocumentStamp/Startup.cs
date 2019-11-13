@@ -26,7 +26,7 @@ namespace DocumentStamp
 
             if (keyStore.KeyStoreDecrypt(KeyRegistryTypes.DefaultKey) == null)
             {
-                keyStore.KeyStoreGenerate(NetworkType.Devnet, KeyRegistryTypes.DefaultKey).Wait();
+                keyStore.KeyStoreGenerateAsync(NetworkType.Devnet, KeyRegistryTypes.DefaultKey).Wait();
             }
 
             var rpcClientConfig = container.Resolve<IRpcClientConfig>();

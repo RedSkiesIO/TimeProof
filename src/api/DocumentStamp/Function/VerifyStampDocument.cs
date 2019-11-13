@@ -15,7 +15,7 @@ namespace DocumentStamp.Function
 {
     public class VerifyStampDocument
     {
-        [FunctionName("VerifyStampDocumentFunction")]
+        [FunctionName("VerifyStampDocument")]
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "VerifyStampDocument/{txId}")]
             HttpRequest req,

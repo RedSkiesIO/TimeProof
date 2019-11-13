@@ -48,7 +48,7 @@ namespace DocumentStamp.Function
             _recipientPeer = recipientPeer;
         }
 
-        [FunctionName("StampDocumentFunction")]
+        [FunctionName("StampDocument")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]
             HttpRequest req,
