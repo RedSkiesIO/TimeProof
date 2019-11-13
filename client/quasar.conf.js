@@ -13,6 +13,7 @@ module.exports = function (ctx) {
       'blake2b',
       'keypair',
       'base32',
+      'auth',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -60,6 +61,11 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       scopeHoisting: true,
+      env: {
+        API: JSON.stringify('https://documentstamp.azurewebsites.net/api/'),
+        STAMP_KEY: JSON.stringify('?code=O5ra0Gt/pfYFVXfjTVBm70FOOoEb4RUQG2BMidcZmpcWnjRziha3WA=='),
+        VERIFY_KEY: JSON.stringify('?code=hC362dyPjv3OwrNNL3XS1JDZs9CEzef/azXMVkyK1Uh3OyWcpdJ6Cg=='),
+      },
       // vueRouterMode: 'history',
       // showProgress: false,
       // gzip: true,
@@ -84,7 +90,7 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
       // https: true,
-      // port: 8080,
+      port: 6420,
       open: true, // opens browser window automatically
     },
 

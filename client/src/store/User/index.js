@@ -3,9 +3,11 @@ import { Model } from '@vuex-orm/core';
 export default class User extends Model {
   static entity = 'users';
 
+  static primaryKey = 'accountIdentifier';
+
   static fields() {
     return {
-      id: this.increment(),
+      accountIdentifier: this.attr(''),
       pubKey: this.attr(''),
       secretKey: this.attr(''),
       name: this.attr('Satoshi Nakamoto'),

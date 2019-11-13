@@ -8,33 +8,33 @@
     :factory="hashFile"
   >
     <template v-slot:list="scope">
-      <div
-        v-if="scope.files < 1"
-        class="q-pa-xl flex flex-center column text-center"
-        style="height: -webkit-fill-available;"
-      >
-        <q-icon
-          name="backup"
-          class="text-grey-4"
-          style="font-size: 100px"
-        />
+      <div v-if="scope.files < 1">
+        <div
 
-        <span
-          v-if="mode==='sign'"
-          class="text-h6 text-weight-bold text-grey-6"
-        >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
-        <span
-          v-else
-          class="text-h6 text-weight-bold text-grey-6"
-        >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+          class="q-mt-xl q-pa-xl flex flex-center column text-center"
+        >
+          <q-icon
+            name="backup"
+            class="text-grey-4"
+            style="font-size: 100px"
+          />
 
-        <span class="text-body1 text-grey-7">
-          {{ $t('or') }} <span
-            class="text-blue"
-            @click="scope.pickFiles()"
-          >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
+          <span
+            v-if="mode==='sign'"
+            class="text-h6 text-weight-bold text-grey-6"
+          >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
+          <span
+            v-else
+            class="text-h6 text-weight-bold text-grey-6"
+          >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+
+          <span class="text-body1 text-grey-7">
+            {{ $t('or') }} <span
+              class="text-blue"
+              @click="scope.pickFiles()"
+            >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
+        </div>
       </div>
-
       <div
         v-else
       >
@@ -163,12 +163,6 @@ export default {
     },
   },
 
-  watch: {
-    tab() {
-      this.confirmed = false;
-    },
-  },
-
   methods: {
     getSize(bytes) {
       const decimals = 2;
@@ -211,7 +205,7 @@ export default {
     async sendProof() {
       this.visible = true;
 
-      const tx = await this.$axios.post('http://localhost:7071/api/StampDocumentFunction', {
+      const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
         hash: this.file.base32Hash,
         publicKey: this.user.pubKey,
         signature: this.file.signature,
@@ -230,7 +224,7 @@ export default {
       if (!this.$refs.proofId.hasError) {
         this.file.verify = true;
         try {
-          const tx = await this.$axios.get(`http://localhost:7071/api/VerifyStampDocument/${this.proofId}`);
+          const tx = await this.$axios.get(`${process.env.API}VerifyStampDocument/${this.proofId}${process.env.VERIFY_KEY}`);
 
           if (tx.data.success) {
             const fileHash = tx.data.value.userProof.hash;
@@ -262,7 +256,7 @@ export default {
 <style lang="scss">
 .q-uploader {
   width: inherit;
-  max-height: inherit;
+  max-height:inherit;
   min-width: 25rem;
   min-height: 25rem;
 }

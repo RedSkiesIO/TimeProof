@@ -20,9 +20,20 @@ export default {
   },
 
   computed: {
+    account() {
+      const account = this.$auth.account();
+      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+        return null;
+      }
+      return account;
+    },
+
     user() {
-      if (User.all().length > 0) {
-        return User.query().first();
+      if (this.account) {
+        const user = User.find(this.account.accountIdentifier);
+        if (user) {
+          return user;
+        }
       }
       return null;
     },
@@ -33,13 +44,24 @@ export default {
   },
 
   methods: {
-    start() {
-      if (!this.user) {
+    async start() {
+      if (!this.user && this.account) {
         const keypair = this.$keypair.new();
         User.insert({
           data: {
+            accountIdentifier: this.account.accountIdentifier,
             pubKey: keypair.publicKey,
             secretKey: keypair.secretKey,
+            name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+            email: this.account.idToken.emails[0],
+          },
+        });
+      } else if (this.user && this.account) {
+        User.update({
+          data: {
+            accountIdentifier: this.account.accountIdentifier,
+            name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+            email: this.account.idToken.emails[0],
           },
         });
       }
