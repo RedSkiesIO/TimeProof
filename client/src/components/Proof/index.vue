@@ -29,10 +29,20 @@
           {{ proof.error }}
         </div>
       </div>
-      <span
+      <div
         v-else
-        class="text-h6 q-my-sm"
-      >{{ $t('proofConfirmed') }}</span>
+        class="column"
+      >
+        <span
+          class="text-h6 q-my-sm"
+        >{{ $t('proofConfirmed') }}</span>
+        <q-btn
+          outline
+          color="primary"
+          label="Download Certificate"
+          @click="getCertificate"
+        />
+      </div>
     </div>
 
     <div class="column">
@@ -81,13 +91,13 @@
           </div>
           <div
             v-if="!proof.verify"
-            class="col-auto"
+            class="col-auto q-pl-sm"
           >
             {{ user.name }} ({{ user.email }})
           </div>
           <div
             v-else
-            class="col-auto"
+            class="col-auto q-pl-sm"
           >
             {{ proof.pubKey }}
           </div>
@@ -175,13 +185,6 @@
       </div>
     </div>
     <div
-      v-if="!proof.verify"
-      class="q-mt-sm text-blue text-center"
-      @click="getCertificate"
-    >
-      Get Certificate
-    </div>
-    <div
       class="q-mt-sm text-blue text-center"
       @click="scope.reset()"
     >
@@ -236,10 +239,6 @@ export default {
       }, (err) => {
         console.error('Async: Could not copy text: ', err);
       });
-    },
-
-    createPDF() {
-      this.$pdf(this.proof);
     },
 
     reset() {
