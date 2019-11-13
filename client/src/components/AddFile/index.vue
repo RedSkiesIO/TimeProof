@@ -74,7 +74,7 @@
               :label="$t('proofId')"
               lazy-rules
               :rules="[ val => val && val.length > 102
-                && val.length < 104 || $t('invalidProofId')]"
+                && val.length < 105 || $t('invalidProofId')]"
             >
               <template v-slot:append>
                 <q-btn
@@ -223,8 +223,9 @@ export default {
       this.$refs.proofId.validate();
       if (!this.$refs.proofId.hasError) {
         this.file.verify = true;
+        const txId = this.proofId.replace(/\s+/g, '');
         try {
-          const tx = await this.$axios.get(`${process.env.API}VerifyStampDocument/${this.proofId}${process.env.VERIFY_KEY}`);
+          const tx = await this.$axios.get(`${process.env.API}VerifyStampDocument/${txId.toUpperCase()}${process.env.VERIFY_KEY}`);
 
           if (tx.data.success) {
             const fileHash = tx.data.value.userProof.hash;

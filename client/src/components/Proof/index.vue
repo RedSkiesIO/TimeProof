@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="q-pa-sm flex flex-center column text-center">
+    <div
+      id="proof"
+      class="q-pa-sm flex flex-center column text-center"
+    >
       <q-icon
         v-if="proof.verify && !proof.verified"
         name="error"
@@ -26,10 +29,20 @@
           {{ proof.error }}
         </div>
       </div>
-      <span
+      <div
         v-else
-        class="text-h6 q-my-sm"
-      >{{ $t('proofConfirmed') }}</span>
+        class="column"
+      >
+        <span
+          class="text-h6 q-my-sm"
+        >{{ $t('proofConfirmed') }}</span>
+        <q-btn
+          outline
+          color="primary"
+          label="Download Certificate"
+          @click="getCertificate"
+        />
+      </div>
     </div>
 
     <div class="column">
@@ -78,13 +91,13 @@
           </div>
           <div
             v-if="!proof.verify"
-            class="col-auto"
+            class="col-auto q-pl-sm"
           >
             {{ user.name }} ({{ user.email }})
           </div>
           <div
             v-else
-            class="col-auto"
+            class="col-auto q-pl-sm"
           >
             {{ proof.pubKey }}
           </div>
@@ -230,6 +243,27 @@ export default {
 
     reset() {
       this.scope.reset();
+    },
+
+    getCertificate() {
+      const name = `${this.proof.timestamp}.pdf`;
+      const splitString = (string, index) => ({
+        one: string.substr(0, index),
+        two: string.substr(index),
+      });
+
+      const hash = splitString(this.proof.base32Hash.toLowerCase(), 65);
+      const proofId = splitString(this.proof.txId.toLowerCase(), 65);
+      const signature = splitString(this.proof.signature.toLowerCase(), 65);
+      const file = {
+        file: this.proof.name,
+        hash,
+        proofId,
+        signature,
+        user: this.user.name,
+        timestamp: this.getDate,
+      };
+      this.$pdf(name, file);
     },
   },
 };

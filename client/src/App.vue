@@ -45,26 +45,31 @@ export default {
 
   methods: {
     async start() {
-      if (!this.user && this.account) {
-        const keypair = this.$keypair.new();
-        User.insert({
-          data: {
-            accountIdentifier: this.account.accountIdentifier,
-            pubKey: keypair.publicKey,
-            secretKey: keypair.secretKey,
-            name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
-            email: this.account.idToken.emails[0],
-          },
-        });
-      } else if (this.user && this.account) {
-        User.update({
-          data: {
-            accountIdentifier: this.account.accountIdentifier,
-            name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
-            email: this.account.idToken.emails[0],
-          },
-        });
+      if (this.account) {
+        const token = await this.$auth.getToken();
+        this.$axios.defaults.headers.common.Authorization = `Bearer ${token.accessToken}`;
+        if (!this.user) {
+          const keypair = this.$keypair.new();
+          User.insert({
+            data: {
+              accountIdentifier: this.account.accountIdentifier,
+              pubKey: keypair.publicKey,
+              secretKey: keypair.secretKey,
+              name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+              email: this.account.idToken.emails[0],
+            },
+          });
+        } else if (this.user) {
+          User.update({
+            data: {
+              accountIdentifier: this.account.accountIdentifier,
+              name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+              email: this.account.idToken.emails[0],
+            },
+          });
+        }
       }
+
       this.ready = true;
     },
   },
