@@ -26,12 +26,16 @@
           <div class="column">
             <div>{{ $t('subscription') }}:</div>
             <div class="text-green">
-              {{ $t('freeTier') }}
+              {{ $t(user.tier) }} {{ $t('tier') }}
             </div>
           </div>
           <div class="column q-gutter-y-sm">
             <div>{{ $t('moreTimestamps') }}</div>
-            <q-btn :label="$t('upgrade')" />
+            <q-btn
+              outline
+              color="primary"
+              :label="$t('upgrade')"
+            />
           </div>
         </div>
       </div>
