@@ -12,6 +12,8 @@ export default class User extends Model {
       secretKey: this.attr(''),
       name: this.attr('Satoshi Nakamoto'),
       email: this.attr('user@email.com'),
+      tier: this.attr('free'),
+      timestampsUsed: this.attr(0),
     };
   }
 }
