@@ -16,7 +16,7 @@
         <div>Date</div>
       </div>
       <div
-        v-for="stamp in timestamps"
+        v-for="stamp in timestamps.reverse()"
         :key="stamp.txId"
         class="row q-py-sm stamp-item"
       >
@@ -72,8 +72,8 @@ export default {
       return null;
     },
     timestamps() {
-      if (this.user.timestamps > 5) {
-        return this.user.timestamps.slice(0, 4);
+      if (this.user.timestamps.length > 5) {
+        return this.user.timestamps.slice(this.user.timestamps.length - 5);
       }
       return this.user.timestamps;
     },
@@ -111,6 +111,11 @@ export default {
 .stamp-item {
   border-top: 1px solid $grey-4;
 }
+
+.stamp-item:hover {
+  background: $grey-2;
+}
+
 .overflow {
   text-overflow: ellipsis;
   overflow: hidden;

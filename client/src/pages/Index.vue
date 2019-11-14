@@ -4,7 +4,11 @@
       v-if="isLoggedIn"
       class="row q-gutter-x-lg"
     >
-      <Usage />
+      <div class=" q-gutter-y-md column">
+        <Usage />
+        <RecentTimestamps />
+      </div>
+
       <div class="sign-verify">
         <q-card
           flat
@@ -57,7 +61,6 @@
           </q-tab-panels>
         </q-card>
       </div>
-      <RecentTimestamps />
     </div>
 
     <q-card
