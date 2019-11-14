@@ -2,39 +2,42 @@
   <q-page class="flex flex-center">
     <div
       v-if="isLoggedIn"
-      class="sign-verify"
+      class="row q-gutter-x-lg"
     >
-      <q-card
-        flat
-        class="sign-verify"
-      >
-        <q-tabs
-          v-model="tab"
-          dense
-          class="bg-white text-primary"
+      <Usage />
+      <div class="sign-verify">
+        <q-card
+          flat
+          class="sign-verify"
         >
-          <q-tab
-            name="sign"
-            :label="$t('sign')"
-          />
-          <q-tab
-            name="verify"
-            :label="$t('verify')"
-          />
-        </q-tabs>
-        <q-tab-panels
-          v-model="tab"
-          animated
-        >
-          <q-tab-panel name="sign">
-            <AddFile :mode="'sign'" />
-          </q-tab-panel>
+          <q-tabs
+            v-model="tab"
+            dense
+            class="bg-white text-primary"
+          >
+            <q-tab
+              name="sign"
+              :label="$t('sign')"
+            />
+            <q-tab
+              name="verify"
+              :label="$t('verify')"
+            />
+          </q-tabs>
+          <q-tab-panels
+            v-model="tab"
+            animated
+          >
+            <q-tab-panel name="sign">
+              <AddFile :mode="'sign'" />
+            </q-tab-panel>
 
-          <q-tab-panel name="verify">
-            <AddFile :mode="'verify'" />
-          </q-tab-panel>
-        </q-tab-panels>
-      </q-card>
+            <q-tab-panel name="verify">
+              <AddFile :mode="'verify'" />
+            </q-tab-panel>
+          </q-tab-panels>
+        </q-card>
+      </div>
     </div>
 
     <q-card
@@ -59,11 +62,13 @@
 
 <script>
 import AddFile from '../components/AddFile';
+import Usage from '../components/Usage';
 
 export default {
   name: 'PageIndex',
   components: {
     AddFile,
+    Usage,
   },
 
   data() {

@@ -45,4 +45,10 @@ export default {
   signUpSignIn: 'LogIn / Register',
   about: 'About',
   editProfile: 'Edit Profile',
+  usageSummary: 'Usage Summary',
+  timestampsUsed: 'Timestamps Used',
+  subscription: 'Subscription',
+  freeTier: 'Free Tier',
+  moreTimestamps: 'Need more timestamps?',
+  upgrade: 'Upgrade',
 };
