@@ -111,6 +111,7 @@
 </template>
 <script>
 import User from '../../store/User';
+import Timestamp from '../../store/Timestamp';
 import Proof from '../Proof';
 
 export default {
@@ -175,6 +176,20 @@ export default {
   },
 
   methods: {
+    async insertTimestamp(file) {
+      Timestamp.insert({
+        data: {
+          txId: file.txId,
+          hash: file.base32Hash,
+          signature: file.signature,
+          accountIdentifier: this.user.accountIdentifier,
+          name: file.name,
+          date: file.timestamp,
+          type: file.type,
+        },
+      });
+    },
+
     getSize(bytes) {
       const decimals = 2;
       if (bytes === 0) return '0 Bytes';
@@ -232,6 +247,7 @@ export default {
             timestampsUsed: timestamps,
           },
         });
+        await this.insertTimestamp(this.file);
 
         this.visible = false;
         this.confirmed = true;

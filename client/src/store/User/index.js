@@ -1,5 +1,5 @@
 import { Model } from '@vuex-orm/core';
-import Timestamp from './Timestamp';
+import Timestamp from '../Timestamp';
 
 export default class User extends Model {
   static entity = 'users';
