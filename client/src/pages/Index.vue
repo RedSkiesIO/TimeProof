@@ -57,6 +57,7 @@
           </q-tab-panels>
         </q-card>
       </div>
+      <RecentTimestamps />
     </div>
 
     <q-card
@@ -82,6 +83,7 @@
 <script>
 import AddFile from '../components/AddFile';
 import Usage from '../components/Usage';
+import RecentTimestamps from '../components/RecentTimestamps';
 import User from '../store/User';
 
 export default {
@@ -89,6 +91,7 @@ export default {
   components: {
     AddFile,
     Usage,
+    RecentTimestamps,
   },
 
   data() {
