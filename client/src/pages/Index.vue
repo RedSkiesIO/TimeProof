@@ -10,7 +10,10 @@
       >
         <div class=" q-gutter-y-md column">
           <Usage />
-          <RecentTimestamps @open="showTimestamps=true" />
+          <RecentTimestamps
+            v-if="user.timestamps.length > 0"
+            @open="showTimestamps=true"
+          />
         </div>
 
         <div class="sign-verify">
@@ -137,9 +140,9 @@ export default {
     },
     user() {
       if (this.account) {
-        const user = User.find(this.account.accountIdentifier);
+        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
         if (user) {
-          return user;
+          return user[0];
         }
       }
       return null;
