@@ -44,6 +44,13 @@
     </q-card>
     <q-dialog v-model="confirmed">
       <q-card>
+        <div class="row justify-end">
+          <q-icon
+            v-close-popup
+            size="md"
+            name="close"
+          />
+        </div>
         <Proof
           v-if="confirmed"
           :proof="file"

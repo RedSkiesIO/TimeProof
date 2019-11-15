@@ -31,10 +31,10 @@
           v-for="stamp in timestamps"
           :key="stamp.txId"
           class="row stamp-item2"
-          @click="timestampDialog(stamp)"
         >
           <div
             class="col-2 q-px-sm overflow"
+            @click="timestampDialog(stamp)"
           >
             <q-icon
               class="col-auto text-grey-6 q-pr-sm"
@@ -43,13 +43,22 @@
             />
             {{ stamp.name }}
           </div>
-          <div class="col-6 overflow">
+          <div
+            class="col-6 overflow"
+            @click="timestampDialog(stamp)"
+          >
             {{ stamp.hash }}
           </div>
-          <div class=" col text-left">
+          <div
+            class=" col text-left"
+            @click="timestampDialog(stamp)"
+          >
             {{ getDate(stamp.date) }}
           </div>
-          <div class="col q-pr-sm text-right text-blue">
+          <div
+            class="col q-pr-sm text-right text-blue"
+            @click="getCertificate(stamp)"
+          >
             {{ $t('downloadCertificate') }}
           </div>
         </div>
@@ -57,6 +66,14 @@
     </q-card>
     <q-dialog v-model="confirmed">
       <q-card>
+        <div class="row justify-end">
+          <q-icon
+            v-close-popup
+            size="md"
+            name="close"
+          />
+        </div>
+
         <Proof
           v-if="confirmed"
           :proof="file"
@@ -139,6 +156,27 @@ export default {
       }
 
       return 'fas fa-file';
+    },
+
+    getCertificate(stamp) {
+      const name = `${stamp.timestamp}.pdf`;
+      const splitString = (string, index) => ({
+        one: string.substr(0, index),
+        two: string.substr(index),
+      });
+
+      const hash = splitString(stamp.base32Hash.toLowerCase(), 65);
+      const proofId = splitString(stamp.txId.toLowerCase(), 65);
+      const signature = splitString(stamp.signature.toLowerCase(), 65);
+      const file = {
+        file: stamp.name,
+        hash,
+        proofId,
+        signature,
+        user: this.user.name,
+        timestamp: this.getDate(stamp.timestamp),
+      };
+      this.$pdf(name, file);
     },
   },
 };
