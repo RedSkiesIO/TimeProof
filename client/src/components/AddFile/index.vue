@@ -35,6 +35,26 @@
             >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
         </div>
       </div>
+      <div v-else-if="error">
+        <div
+
+          class="q-mt-xl q-pa-xl flex flex-center column text-center"
+        >
+          <q-icon
+            name="error"
+            class="text-grey-4"
+            style="font-size: 100px"
+          />
+
+          <span
+            class="text-h6 text-weight-bold text-grey-6"
+          >Something went wrong</span>
+          <span
+            class="text-blue"
+            @click="reset(scope)"
+          >Try again</span>
+        </div>
+      </div>
       <div
         v-else
       >
@@ -176,6 +196,10 @@ export default {
   },
 
   methods: {
+    reset(scope) {
+      scope.reset();
+      this.error = false;
+    },
     async insertTimestamp(file) {
       Timestamp.insert({
         data: {
@@ -231,27 +255,31 @@ export default {
 
     async sendProof() {
       this.visible = true;
-
-      const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
-        hash: this.file.base32Hash,
-        publicKey: this.user.pubKey,
-        signature: this.file.signature,
-      });
-
-      if (tx.data.success) {
-        this.file.txId = tx.data.value.transactionId;
-        this.file.timestamp = tx.data.value.timeStamp;
-        const timestamps = this.user.timestampsUsed + 1;
-        User.update({
-          data: {
-            accountIdentifier: this.account.accountIdentifier,
-            timestampsUsed: timestamps,
-          },
+      try {
+        const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
+          hash: this.file.base32Hash,
+          publicKey: this.user.pubKey,
+          signature: this.file.signature,
         });
-        await this.insertTimestamp(this.file);
 
+        if (tx.data.success) {
+          this.file.txId = tx.data.value.transactionId;
+          this.file.timestamp = tx.data.value.timeStamp;
+          const timestamps = this.user.timestampsUsed + 1;
+          User.update({
+            data: {
+              accountIdentifier: this.account.accountIdentifier,
+              timestampsUsed: timestamps,
+            },
+          });
+          await this.insertTimestamp(this.file);
+
+          this.visible = false;
+          this.confirmed = true;
+        }
+      } catch (e) {
+        this.error = true;
         this.visible = false;
-        this.confirmed = true;
       }
     },
 

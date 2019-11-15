@@ -63,4 +63,6 @@ export default {
   timestamps: 'Timestamps',
   date: 'Date',
   downloadCertificate: 'Download Cetificate',
+  somethingWrong: 'Something went wrong',
+  tryAgain: 'Try Again',
 };
