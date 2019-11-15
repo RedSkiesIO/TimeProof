@@ -186,6 +186,7 @@ export default {
           name: file.name,
           date: file.timestamp,
           type: file.type,
+          size: this.file.size,
         },
       });
     },

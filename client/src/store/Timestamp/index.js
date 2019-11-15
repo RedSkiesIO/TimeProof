@@ -14,6 +14,7 @@ export default class Timestamp extends Model {
       name: this.attr(''),
       date: this.attr(''),
       type: this.attr(''),
+      size: this.attr(''),
     };
   }
 }

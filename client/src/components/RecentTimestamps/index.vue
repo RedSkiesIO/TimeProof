@@ -5,7 +5,7 @@
       class="usage-summary q-pa-sm"
     >
       <div class="row text-weight-bold text-h6">
-        {{ $t('Recent Timestamps') }}
+        {{ $t('recentTimestamps') }}
       </div>
       <div class="row">
         <div
@@ -16,9 +16,10 @@
         <div>Date</div>
       </div>
       <div
-        v-for="stamp in timestamps.reverse()"
+        v-for="stamp in timestamps"
         :key="stamp.txId"
         class="row q-py-sm stamp-item"
+        @click="timestampDialog(stamp)"
       >
         <div
           class="col-7 q-pr-sm overflow"
@@ -34,16 +35,36 @@
           {{ getDate(stamp.date) }}
         </div>
       </div>
+      <div class="text-center text-blue">
+        {{ $t('viewAll') }}
+      </div>
     </q-card>
+    <q-dialog v-model="confirmed">
+      <q-card>
+        <Proof
+          v-if="confirmed"
+          :proof="file"
+          :scope="{dialog: true}"
+        />
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 <script>
 import User from '../../store/User';
+import Proof from '../Proof';
 
 export default {
   name: 'RecentTimestamps',
+
+  components: {
+    Proof,
+  },
+
   data() {
     return {
+      confirmed: false,
+      file: null,
       tiers: {
         free: 50,
         basic: 1000,
@@ -72,14 +93,20 @@ export default {
       return null;
     },
     timestamps() {
+      const { timestamps } = this.user;
       if (this.user.timestamps.length > 5) {
-        return this.user.timestamps.slice(this.user.timestamps.length - 5);
+        return timestamps.slice(this.user.timestamps.length - 5).reverse();
       }
-      return this.user.timestamps;
+      return timestamps.slice(0).reverse();
     },
   },
 
   methods: {
+    timestampDialog(stamp) {
+      this.file = stamp;
+      this.confirmed = true;
+    },
+
     getDate(time) {
       const date = new Date(time);
       return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

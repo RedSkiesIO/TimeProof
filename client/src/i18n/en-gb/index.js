@@ -58,4 +58,6 @@ export default {
   pleaseUpgrade: 'Please upgrade to continue',
   noAllowance: 'You\'ve run out of your monthly',
   timestampAllowance: 'timestamp allowance',
+  recentTimestamps: 'Recent Timestamps',
+  viewAll: 'View All',
 };
