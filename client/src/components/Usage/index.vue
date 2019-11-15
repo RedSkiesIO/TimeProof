@@ -1,0 +1,96 @@
+<template>
+  <div>
+    <q-card
+      flat
+      class=" usage-summary q-pa-sm"
+    >
+      <div class="row text-weight-bold text-h6">
+        {{ $t('usageSummary') }}
+      </div>
+      <div class="row q-gutter-x-md">
+        <div class="column flex-center">
+          <q-knob
+            v-model="usedPercentage"
+            readonly
+            size="70px"
+            :thickness="0.22"
+            color="blue"
+            track-color="blue-3"
+            class="text-blue q-ma-md"
+          />
+          <div>
+            {{ $t('timestampsUsed') }}: {{ timestampsUsed }}
+          </div>
+        </div>
+        <div class="column q-gutter-y-md">
+          <div class="column">
+            <div>{{ $t('subscription') }}:</div>
+            <div class="text-green">
+              {{ $t(user.tier) }} {{ $t('tier') }}
+            </div>
+          </div>
+          <div class="column q-gutter-y-sm">
+            <div>{{ $t('moreTimestamps') }}</div>
+            <q-btn
+              outline
+              color="primary"
+              :label="$t('upgrade')"
+            />
+          </div>
+        </div>
+      </div>
+    </q-card>
+  </div>
+</template>
+<script>
+import User from '../../store/User';
+
+export default {
+  name: 'UsageSummary',
+  data() {
+    return {
+      tiers: {
+        free: 50,
+        basic: 1000,
+        standard: 10000,
+        premium: 100000,
+      },
+    };
+  },
+
+  computed: {
+    account() {
+      const account = this.$auth.account();
+      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+        return null;
+      }
+      return account;
+    },
+
+    user() {
+      if (this.account) {
+        const user = User.find(this.account.accountIdentifier);
+        if (user) {
+          return user;
+        }
+      }
+      return null;
+    },
+    timestampsUsed() {
+      const used = this.user.timestampsUsed;
+      const { tier } = this.user;
+
+      return `${used}/${this.tiers[tier]}`;
+    },
+    usedPercentage() {
+      return (this.user.timestampsUsed / this.tiers[this.user.tier]) * 100;
+    },
+
+  },
+};
+</script>
+<style lang="scss">
+.usage-summary {
+    border: 2px solid rgba(0, 0, 0, 0.12);
+}
+</style>

@@ -138,9 +138,20 @@ export default {
   },
 
   computed: {
+    account() {
+      const account = this.$auth.account();
+      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+        return null;
+      }
+      return account;
+    },
+
     user() {
-      if (User.all().length > 0) {
-        return User.query().first();
+      if (this.account) {
+        const user = User.find(this.account.accountIdentifier);
+        if (user) {
+          return user;
+        }
       }
       return null;
     },
@@ -214,6 +225,14 @@ export default {
       if (tx.data.success) {
         this.file.txId = tx.data.value.transactionId;
         this.file.timestamp = tx.data.value.timeStamp;
+        const timestamps = this.user.timestampsUsed + 1;
+        User.update({
+          data: {
+            accountIdentifier: this.account.accountIdentifier,
+            timestampsUsed: timestamps,
+          },
+        });
+
         this.visible = false;
         this.confirmed = true;
       }
