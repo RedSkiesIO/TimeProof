@@ -159,13 +159,13 @@ export default {
     },
 
     getCertificate(stamp) {
-      const name = `${stamp.timestamp}.pdf`;
+      const name = `${stamp.date}.pdf`;
       const splitString = (string, index) => ({
         one: string.substr(0, index),
         two: string.substr(index),
       });
 
-      const hash = splitString(stamp.base32Hash.toLowerCase(), 65);
+      const hash = splitString(stamp.hash.toLowerCase(), 65);
       const proofId = splitString(stamp.txId.toLowerCase(), 65);
       const signature = splitString(stamp.signature.toLowerCase(), 65);
       const file = {
@@ -174,7 +174,7 @@ export default {
         proofId,
         signature,
         user: this.user.name,
-        timestamp: this.getDate(stamp.timestamp),
+        timestamp: this.getDate(stamp.date),
       };
       this.$pdf(name, file);
     },

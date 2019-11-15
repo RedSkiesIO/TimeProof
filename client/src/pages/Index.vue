@@ -1,7 +1,8 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class="flex justify-center">
     <div
       v-if="isLoggedIn"
+      class="q-mt-lg"
     >
       <div
         v-if="!showTimestamps"
@@ -108,7 +109,7 @@ export default {
 
   data() {
     return {
-      showTimestamps: true,
+      showTimestamps: false,
       tab: 'sign',
       tiers: {
         free: 50,
