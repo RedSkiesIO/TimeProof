@@ -60,4 +60,7 @@ export default {
   timestampAllowance: 'timestamp allowance',
   recentTimestamps: 'Recent Timestamps',
   viewAll: 'View All',
+  timestamps: 'Timestamps',
+  date: 'Date',
+  downloadCertificate: 'Download Cetificate',
 };

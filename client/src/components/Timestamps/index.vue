@@ -2,45 +2,58 @@
   <div>
     <q-card
       flat
-      class="usage-summary q-pa-sm"
+      class="timestamp-list q-pa-md"
     >
-      <div class="row text-weight-bold text-h6">
-        {{ $t('recentTimestamps') }}
-      </div>
-      <div class="row">
-        <div
-          class="col-7"
-        >
-          File
-        </div>
-        <div>Date</div>
-      </div>
-      <div
-        v-for="stamp in timestamps"
-        :key="stamp.txId"
-        class="row q-py-sm stamp-item"
-        @click="timestampDialog(stamp)"
-      >
-        <div
-          class="col-7 q-pr-sm overflow"
-        >
+      <div class="row text-weight-bold text-h6 q-pb-md justify-between">
+        {{ $t('timestamps') }}
+        <div @click="$emit('close')">
           <q-icon
-            class="col-auto text-grey-6 q-pr-sm"
-            :name="fileIcon(stamp.type)"
-            style="font-size: 1.5em"
+            size="md"
+            name="close"
           />
-          {{ stamp.name }}
-        </div>
-        <div class="text-right">
-          {{ getDate(stamp.date) }}
         </div>
       </div>
-      <div
-        class="text-center text-blue"
-        @click="$emit('open')"
-      >
-        {{ $t('viewAll') }}
+      <div class="text-uppercase text-weight-bold text-primary row">
+        <div
+          class="col-2"
+        >
+          {{ $t('file') }}
+        </div>
+        <div class="col-6">
+          {{ $t('proofId') }}
+        </div>
+        <div class="col-auto">
+          {{ $t('date') }}
+        </div>
       </div>
+      <q-scroll-area style="height: 30rem;">
+        <div
+          v-for="stamp in timestamps"
+          :key="stamp.txId"
+          class="row stamp-item2"
+          @click="timestampDialog(stamp)"
+        >
+          <div
+            class="col-2 q-px-sm overflow"
+          >
+            <q-icon
+              class="col-auto text-grey-6 q-pr-sm"
+              :name="fileIcon(stamp.type)"
+              style="font-size: 1.5em"
+            />
+            {{ stamp.name }}
+          </div>
+          <div class="col-6 overflow">
+            {{ stamp.hash }}
+          </div>
+          <div class=" col text-left">
+            {{ getDate(stamp.date) }}
+          </div>
+          <div class="col q-pr-sm text-right text-blue">
+            {{ $t('downloadCertificate') }}
+          </div>
+        </div>
+      </q-scroll-area>
     </q-card>
     <q-dialog v-model="confirmed">
       <q-card>
@@ -58,7 +71,7 @@ import User from '../../store/User';
 import Proof from '../Proof';
 
 export default {
-  name: 'RecentTimestamps',
+  name: 'Timestamps',
 
   components: {
     Proof,
@@ -97,9 +110,6 @@ export default {
     },
     timestamps() {
       const { timestamps } = this.user;
-      if (this.user.timestamps.length > 5) {
-        return timestamps.slice(this.user.timestamps.length - 5).reverse();
-      }
       return timestamps.slice(0).reverse();
     },
   },
@@ -134,15 +144,17 @@ export default {
 };
 </script>
 <style lang="scss">
-.usage-summary {
+.timestamp-list {
     border: 2px solid rgba(0, 0, 0, 0.12);
-    max-width: 25em;
+    min-width: 52rem;
+    width: 80vw;
 }
-.stamp-item {
+.stamp-item2 {
   border-top: 1px solid $grey-4;
+  padding: 1rem 0;
 }
 
-.stamp-item:hover {
+.stamp-item2:hover {
   background: $grey-2;
 }
 
