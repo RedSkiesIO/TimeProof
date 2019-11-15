@@ -155,6 +155,7 @@ export default {
       proofId: '',
       scope: null,
       visible: false,
+      error: false,
     };
   },
 
