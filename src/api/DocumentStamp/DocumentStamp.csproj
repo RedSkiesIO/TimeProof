@@ -8,10 +8,6 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Function\StampDocument2.cs" />
-    <Compile Remove="Startup2.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Remove="mycert.pfx" />
   </ItemGroup>
   <ItemGroup>
