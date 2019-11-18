@@ -132,7 +132,11 @@ export default {
     },
     timestamps() {
       const { timestamps } = this.user;
-      return timestamps.slice(0).reverse();
+      const ts = timestamps.slice(0);
+
+      ts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      return ts.slice(0);
     },
   },
 

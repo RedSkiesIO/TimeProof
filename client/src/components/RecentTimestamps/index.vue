@@ -104,10 +104,14 @@ export default {
     },
     timestamps() {
       const { timestamps } = this.user;
-      if (this.user.timestamps.length > 5) {
-        return timestamps.slice(this.user.timestamps.length - 5).reverse();
+      const ts = timestamps.slice(0);
+
+      ts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if (ts.length > 5) {
+        return ts.slice(0, 5);
       }
-      return timestamps.slice(0).reverse();
+      return ts.slice(0);
     },
   },
 
