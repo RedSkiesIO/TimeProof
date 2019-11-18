@@ -49,7 +49,7 @@
             class="col-6 overflow"
             @click="timestampDialog(stamp)"
           >
-            {{ stamp.hash }}
+            {{ stamp.txId }}
           </div>
           <div
             class=" col text-left"
