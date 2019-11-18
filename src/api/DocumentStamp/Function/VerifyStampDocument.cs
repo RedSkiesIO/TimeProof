@@ -13,7 +13,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using RestSharp;
 
-namespace DocumentStamp.Function
+namespace DocumentStamp.Function    
 {
     public class VerifyStampDocument
     {
