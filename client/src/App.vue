@@ -17,6 +17,7 @@ export default {
   data() {
     return {
       ready: false,
+      re: /(?:\.([^.]+))?$/,
     };
   },
 
@@ -95,31 +96,35 @@ export default {
             },
           });
         }
+        try {
+          const getTotal = await this.$axios.get(`${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
+          const totalTs = getTotal.data.value;
+          if (totalTs > 0) {
+            const timestamps = await this.$axios.get(`${process.env.API}GetStamps/1/${totalTs}${process.env.GET_STAMP_KEY}`);
+            const files = timestamps.data.value.map(file => ({
+              txId: file.stampDocumentProof.transactionId,
+              hash: file.stampDocumentProof.userProof.hash,
+              signature: file.stampDocumentProof.userProof.signature,
+              accountIdentifier: this.user.accountIdentifier,
+              name: file.fileName,
+              date: file.stampDocumentProof.timeStamp,
+              type: this.re.exec(file.fileName)[1],
+            }));
+            await Timestamp.create({
+              data: files,
+            });
+          }
 
-        const getTotal = await this.$axios.get(`${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
-        const totalTs = getTotal.data.value;
-        if (totalTs > 0) {
-          const timestamps = await this.$axios.get(`${process.env.API}GetStamps/1/${totalTs}${process.env.GET_STAMP_KEY}`);
-          const files = timestamps.data.value.map(file => ({
-            txId: file.stampDocumentProof.transactionId,
-            hash: file.stampDocumentProof.userProof.hash,
-            signature: file.stampDocumentProof.userProof.signature,
-            accountIdentifier: this.user.accountIdentifier,
-            name: file.fileName,
-            date: file.stampDocumentProof.timeStamp,
-          }));
-          await Timestamp.create({
-            data: files,
+          User.update({
+            data: {
+              accountIdentifier: this.account.accountIdentifier,
+              timestampsUsed: this.timestampsUsed,
+              totalTimestamps: totalTs,
+            },
           });
+        } catch (e) {
+          console.log(e);
         }
-
-        User.update({
-          data: {
-            accountIdentifier: this.account.accountIdentifier,
-            timestampsUsed: this.timestampsUsed,
-            totalTimestamps: totalTs,
-          },
-        });
       }
 
       this.ready = true;

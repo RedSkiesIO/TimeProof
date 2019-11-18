@@ -156,6 +156,7 @@ export default {
       scope: null,
       visible: false,
       error: false,
+      re: /(?:\.([^.]+))?$/,
     };
   },
 
@@ -180,15 +181,15 @@ export default {
 
     fileIcon() {
       const { type } = this.file;
-      if (type === 'application/pdf') {
+      if (type === 'pdf') {
         return 'fas fa-file-pdf';
       }
 
-      if (type === 'application/zip') {
+      if (type === 'zip') {
         return 'fas fa-file-archive';
       }
 
-      if (type === 'image/png' || type === 'image/gif' || type === 'image/jpeg') {
+      if (type === 'png' || type === 'gif' || type === 'jpeg') {
         return 'fas fa-file-image';
       }
 
@@ -233,7 +234,7 @@ export default {
       this.confirmed = false;
       this.file = {
         name: files[0].name,
-        type: files[0].type,
+        type: this.re.exec(files[0].name)[1],
         size: this.getSize(files[0].size),
       };
       const reader = await new FileReader();

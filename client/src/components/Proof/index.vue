@@ -68,7 +68,10 @@
         </div>
       </div>
 
-      <div class="row proof-item justify-between">
+      <div
+        v-if="proof.size "
+        class="row proof-item justify-between"
+      >
         <div class="col-auto">
           {{ $t('size') }}:
         </div>

@@ -148,15 +148,15 @@ export default {
     },
 
     fileIcon(type) {
-      if (type === 'application/pdf') {
+      if (type === 'pdf') {
         return 'fas fa-file-pdf';
       }
 
-      if (type === 'application/zip') {
+      if (type === 'zip') {
         return 'fas fa-file-archive';
       }
 
-      if (type === 'image/png' || type === 'image/gif' || type === 'image/jpeg') {
+      if (type === 'png' || type === 'gif' || type === 'jpeg') {
         return 'fas fa-file-image';
       }
 
