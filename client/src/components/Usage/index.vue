@@ -69,9 +69,9 @@ export default {
 
     user() {
       if (this.account) {
-        const user = User.find(this.account.accountIdentifier);
+        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
         if (user) {
-          return user;
+          return user[0];
         }
       }
       return null;

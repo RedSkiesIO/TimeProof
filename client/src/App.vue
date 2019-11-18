@@ -31,12 +31,23 @@ export default {
 
     user() {
       if (this.account) {
-        const user = User.find(this.account.accountIdentifier);
+        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
         if (user) {
-          return user;
+          return user[0];
         }
       }
       return null;
+    },
+
+    timestampsUsed() {
+      const d = new Date();
+      const thisMonth = `${d.getMonth()}${d.getFullYear()}`;
+      const timestamps = this.user.timestamps.filter((stamp) => {
+        const date = new Date(stamp.date);
+        const month = `${date.getMonth()}${date.getFullYear()}`;
+        return month === thisMonth;
+      });
+      return timestamps.length;
     },
   },
 
@@ -59,6 +70,7 @@ export default {
         },
       });
     },
+
     async start() {
       if (this.account) {
         const token = await this.$auth.getToken();
@@ -88,7 +100,6 @@ export default {
         const totalTs = getTotal.data.value;
         if (totalTs > 0) {
           const timestamps = await this.$axios.get(`${process.env.API}GetStamps/1/${totalTs}${process.env.GET_STAMP_KEY}`);
-          console.log(timestamps);
           const files = timestamps.data.value.map(file => ({
             txId: file.stampDocumentProof.transactionId,
             hash: file.stampDocumentProof.userProof.hash,
@@ -101,9 +112,11 @@ export default {
             data: files,
           });
         }
+
         User.update({
           data: {
             accountIdentifier: this.account.accountIdentifier,
+            timestampsUsed: this.timestampsUsed,
             totalTimestamps: totalTs,
           },
         });
