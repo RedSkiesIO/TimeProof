@@ -1,9 +1,8 @@
 <template>
   <div
-    v-if="ready"
     id="q-app"
   >
-    <router-view />
+    <router-view :display="ready" />
   </div>
 </template>
 

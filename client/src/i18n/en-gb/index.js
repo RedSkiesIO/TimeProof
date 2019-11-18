@@ -66,4 +66,5 @@ export default {
   somethingWrong: 'Something went wrong',
   tryAgain: 'Try Again',
   totalTimestamps: 'Total timestamps',
+  loadingDashboard: 'Loading dashboard',
 };
