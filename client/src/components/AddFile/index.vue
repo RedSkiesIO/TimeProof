@@ -242,14 +242,14 @@ export default {
         const input = Buffer.from(evt.target.result);
         const output = new Uint8Array(64);
         this.file.hash = this.$blake2b(output.length).update(input).digest();
-        this.file.base32Hash = this.$base32(this.file.hash);
+        this.file.base32Hash = this.$base32(this.file.hash).toLowerCase();
       };
       reader.readAsArrayBuffer(files[0]);
     },
 
     signHash() {
       const sig = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
-      this.file.signature = this.$base32(sig);
+      this.file.signature = this.$base32(sig).toLowerCase();
 
 
       this.sendProof();
@@ -296,7 +296,7 @@ export default {
 
           if (tx.data.success) {
             const fileHash = tx.data.value.stampDocumentProof.userProof.hash;
-            if (fileHash === this.file.base32Hash) {
+            if (fileHash === this.file.base32Hash.toLowerCase()) {
               this.file.txId = tx.data.value.stampDocumentProof.transactionId;
               this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
               this.file.signature = tx.data.value.stampDocumentProof.userProof.signature;
