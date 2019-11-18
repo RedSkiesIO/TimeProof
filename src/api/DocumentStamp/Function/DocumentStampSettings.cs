@@ -14,7 +14,6 @@ namespace DocumentStamp.Function
     public class DocumentStampSettings
     {
         private readonly IPrivateKey _privateKey;
-
         public DocumentStampSettings(IPrivateKey privateKey)
         {
             _privateKey = privateKey;
@@ -33,15 +32,15 @@ namespace DocumentStamp.Function
                 var publicKey = _privateKey.GetPublicKey();
 
                 return new OkObjectResult(new Result<object>(true,
-                    new {PublicKey = publicKey.Bytes.ToBase32().ToUpper()}));
+                    new { PublicKey = publicKey.Bytes.ToBase32().ToUpper() }));
             }
             catch (InvalidDataException ide)
             {
-                return new BadRequestObjectResult(new Result<string>(false, ide.Message));
+                return new BadRequestObjectResult(new Result<string>(false, ide.ToString()));
             }
             catch (Exception exc)
             {
-                return new BadRequestObjectResult(new Result<string>(false, exc.Message));
+                return new BadRequestObjectResult(new Result<string>(false, exc.ToString()));
             }
         }
     }

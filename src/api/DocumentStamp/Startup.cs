@@ -1,16 +1,14 @@
-﻿using Autofac;
-using Catalyst.Abstractions.Cryptography;
-using Catalyst.Abstractions.Keystore;
-using Catalyst.Abstractions.P2P;
-using Catalyst.Abstractions.Rpc;
-using Catalyst.Abstractions.Types;
+﻿using System;
+using System.Net;
 using Catalyst.Core.Lib.Extensions;
-using Catalyst.Protocol.Network;
+using Catalyst.Core.Modules.Cryptography.BulletProofs;
+using Catalyst.Modules.Repository.CosmosDb;
 using DocumentStamp;
-using DocumentStamp.Helper;
 using DocumentStamp.Model;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using RestSharp;
+using TheDotNetLeague.MultiFormats.MultiBase;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 
@@ -20,23 +18,30 @@ namespace DocumentStamp
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            var containerBuilder = AutoFacHelper.GenerateRpcClientContainerBuilder();
-            var container = containerBuilder.Build();
-            var keyStore = container.Resolve<IKeyStore>();
+            var cryptoContext = new FfiWrapper();
+            var privateKey = cryptoContext.GetPrivateKeyFromBytes(Environment.GetEnvironmentVariable("FunctionPrivateKey").FromBase32());
+            var publicKey = privateKey.GetPublicKey();
+            var publicKeyBase32 = publicKey.Bytes.ToBase32();
 
-            if (keyStore.KeyStoreDecrypt(KeyRegistryTypes.DefaultKey) == null)
-            {
-                keyStore.KeyStoreGenerateAsync(NetworkType.Devnet, KeyRegistryTypes.DefaultKey).Wait();
-            }
+            var peerId = publicKeyBase32.BuildPeerIdFromBase32Key(IPAddress.Loopback, 42076);
 
-            var rpcClientConfig = container.Resolve<IRpcClientConfig>();
+            var recptIp = IPAddress.Parse(Environment.GetEnvironmentVariable("NodeIpAddress"));
+            var recptPort = int.Parse(Environment.GetEnvironmentVariable("NodePort"));
+            var recptPublicKey = Environment.GetEnvironmentVariable("NodePublicKey");
 
-            builder.Services.AddSingleton(container.Resolve<Config>());
-            builder.Services.AddSingleton(container.Resolve<IPeerSettings>());
-            builder.Services.AddSingleton(container.Resolve<ICryptoContext>());
-            builder.Services.AddSingleton(keyStore.KeyStoreDecrypt(KeyRegistryTypes.DefaultKey));
-            builder.Services.AddSingleton(container.Resolve<IRpcClient>());
-            builder.Services.AddSingleton(rpcClientConfig.PublicKey.BuildPeerIdFromBase32Key(rpcClientConfig.HostAddress, rpcClientConfig.Port));
+            var recipientPeer =
+                recptPublicKey.BuildPeerIdFromBase32Key(recptIp,
+                    recptPort);
+
+            var documentStampMetaDataRepository = new CosmosDbRepository<DocumentStampMetaData>(Environment.GetEnvironmentVariable("CosmosDBServer"), Environment.GetEnvironmentVariable("AuthorizationKey"), Environment.GetEnvironmentVariable("DatabaseId"), true);
+
+            var restClient = new RestClient(Environment.GetEnvironmentVariable("NodeWebAddress"));
+            builder.Services.AddSingleton(restClient);
+            builder.Services.AddSingleton(peerId);
+            builder.Services.AddSingleton(cryptoContext);
+            builder.Services.AddSingleton(privateKey);
+            builder.Services.AddSingleton(recipientPeer);
+            builder.Services.AddSingleton(documentStampMetaDataRepository);
         }
     }
 }
