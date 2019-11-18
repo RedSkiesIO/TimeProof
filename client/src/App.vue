@@ -9,6 +9,7 @@
 
 <script>
 import User from './store/User';
+import Timestamp from './store/Timestamp';
 
 export default {
   name: 'App',
@@ -44,6 +45,20 @@ export default {
   },
 
   methods: {
+    async insertTimestamp(file) {
+      Timestamp.insert({
+        data: {
+          txId: file.txId,
+          hash: file.base32Hash,
+          signature: file.signature,
+          accountIdentifier: this.user.accountIdentifier,
+          name: file.name,
+          date: file.timestamp,
+          type: file.type,
+          size: file.size,
+        },
+      });
+    },
     async start() {
       if (this.account) {
         const token = await this.$auth.getToken();
@@ -68,6 +83,30 @@ export default {
             },
           });
         }
+
+        const getTotal = await this.$axios.get(`${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
+        const totalTs = getTotal.data.value;
+        if (totalTs > 0) {
+          const timestamps = await this.$axios.get(`${process.env.API}GetStamps/1/${totalTs}${process.env.GET_STAMP_KEY}`);
+          console.log(timestamps);
+          const files = timestamps.data.value.map(file => ({
+            txId: file.stampDocumentProof.transactionId,
+            hash: file.stampDocumentProof.userProof.hash,
+            signature: file.stampDocumentProof.userProof.signature,
+            accountIdentifier: this.user.accountIdentifier,
+            name: file.fileName,
+            date: file.stampDocumentProof.timeStamp,
+          }));
+          await Timestamp.create({
+            data: files,
+          });
+        }
+        User.update({
+          data: {
+            accountIdentifier: this.account.accountIdentifier,
+            totalTimestamps: totalTs,
+          },
+        });
       }
 
       this.ready = true;

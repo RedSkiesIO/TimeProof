@@ -15,6 +15,7 @@ export default class User extends Model {
       email: this.attr('user@email.com'),
       tier: this.attr('free'),
       timestampsUsed: this.attr(0),
+      totalTimestamps: this.attr(0),
       timestamps: this.hasMany(Timestamp, 'accountIdentifier'),
     };
   }

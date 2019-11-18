@@ -69,7 +69,6 @@
         <div class="row justify-end">
           <q-icon
             v-close-popup
-            size="md"
             name="close"
           />
         </div>
