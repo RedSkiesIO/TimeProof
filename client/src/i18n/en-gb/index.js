@@ -65,4 +65,5 @@ export default {
   downloadCertificate: 'Download Cetificate',
   somethingWrong: 'Something went wrong',
   tryAgain: 'Try Again',
+  totalTimestamps: 'Total timestamps',
 };

@@ -6,11 +6,13 @@
     >
       <div class="row text-weight-bold text-h6 q-pb-md justify-between">
         {{ $t('timestamps') }}
-        <div @click="$emit('close')">
-          <q-icon
-            size="md"
-            name="close"
-          />
+        <div class="flex text-body1 q-gutter-x-md">
+          <div @click="$emit('close')">
+            <q-icon
+              size="sm"
+              name="close"
+            />
+          </div>
         </div>
       </div>
       <div class="text-uppercase text-weight-bold text-primary row">
@@ -63,6 +65,9 @@
           </div>
         </div>
       </q-scroll-area>
+      <div class="row text-weight-bold justify-end">
+        {{ $t('totalTimestamps') }}: {{ user.timestampsUsed }}
+      </div>
     </q-card>
     <q-dialog v-model="confirmed">
       <q-card>
@@ -70,6 +75,7 @@
           <q-icon
             v-close-popup
             name="close"
+            size="md"
           />
         </div>
 
