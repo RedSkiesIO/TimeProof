@@ -11,9 +11,9 @@
         <div
           class="col-7"
         >
-          File
+          {{ $t('file') }}
         </div>
-        <div>Date</div>
+        <div>{{ $t('date') }}</div>
       </div>
       <div
         v-for="stamp in timestamps"
