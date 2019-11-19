@@ -1,6 +1,7 @@
 <template>
   <div>
     <div
+      v-if="ready"
       id="proof"
       class="q-pa-sm flex flex-center column text-center"
     >
@@ -67,7 +68,10 @@
         </div>
       </div>
 
-      <div class="row proof-item justify-between">
+      <div
+        v-if="proof.size "
+        class="row proof-item justify-between"
+      >
         <div class="col-auto">
           {{ $t('size') }}:
         </div>
@@ -80,7 +84,10 @@
           <div class="col-auto">
             {{ $t('signed') }}:
           </div>
-          <div class="col-auto">
+          <div
+            v-if="ready"
+            class="col-auto"
+          >
             {{ getDate }}
           </div>
         </div>
@@ -185,6 +192,7 @@
       </div>
     </div>
     <div
+      v-if="!scope.dialog"
       class="q-mt-sm text-blue text-center"
       @click="scope.reset()"
     >
@@ -212,6 +220,7 @@ export default {
   data() {
     return {
       copyLabel: this.$t('copy'),
+      ready: false,
     };
   },
 
@@ -227,6 +236,14 @@ export default {
       const date = new Date(this.proof.timestamp);
       return `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`;
     },
+  },
+
+  mounted() {
+    if (this.scope.dialog) {
+      this.proof.timestamp = this.proof.date;
+      this.proof.base32Hash = this.proof.hash;
+    }
+    this.ready = true;
   },
 
   methods: {

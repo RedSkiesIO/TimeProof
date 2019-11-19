@@ -35,6 +35,26 @@
             >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
         </div>
       </div>
+      <div v-else-if="error">
+        <div
+
+          class="q-mt-xl q-pa-xl flex flex-center column text-center"
+        >
+          <q-icon
+            name="error"
+            class="text-grey-4"
+            style="font-size: 100px"
+          />
+
+          <span
+            class="text-h6 text-weight-bold text-grey-6"
+          >Something went wrong</span>
+          <span
+            class="text-blue"
+            @click="reset(scope)"
+          >Try again</span>
+        </div>
+      </div>
       <div
         v-else
       >
@@ -111,6 +131,7 @@
 </template>
 <script>
 import User from '../../store/User';
+import Timestamp from '../../store/Timestamp';
 import Proof from '../Proof';
 
 export default {
@@ -134,6 +155,8 @@ export default {
       proofId: '',
       scope: null,
       visible: false,
+      error: false,
+      re: /(?:\.([^.]+))?$/,
     };
   },
 
@@ -158,15 +181,15 @@ export default {
 
     fileIcon() {
       const { type } = this.file;
-      if (type === 'application/pdf') {
+      if (type === 'pdf') {
         return 'fas fa-file-pdf';
       }
 
-      if (type === 'application/zip') {
+      if (type === 'zip') {
         return 'fas fa-file-archive';
       }
 
-      if (type === 'image/png' || type === 'image/gif' || type === 'image/jpeg') {
+      if (type === 'png' || type === 'gif' || type === 'jpeg') {
         return 'fas fa-file-image';
       }
 
@@ -175,6 +198,25 @@ export default {
   },
 
   methods: {
+    reset(scope) {
+      scope.reset();
+      this.error = false;
+    },
+    async insertTimestamp(file) {
+      Timestamp.insert({
+        data: {
+          txId: file.txId,
+          hash: file.base32Hash,
+          signature: file.signature,
+          accountIdentifier: this.user.accountIdentifier,
+          name: file.name,
+          date: file.timestamp,
+          type: file.type,
+          size: file.size,
+        },
+      });
+    },
+
     getSize(bytes) {
       const decimals = 2;
       if (bytes === 0) return '0 Bytes';
@@ -192,7 +234,7 @@ export default {
       this.confirmed = false;
       this.file = {
         name: files[0].name,
-        type: files[0].type,
+        type: this.re.exec(files[0].name)[1],
         size: this.getSize(files[0].size),
       };
       const reader = await new FileReader();
@@ -200,14 +242,14 @@ export default {
         const input = Buffer.from(evt.target.result);
         const output = new Uint8Array(64);
         this.file.hash = this.$blake2b(output.length).update(input).digest();
-        this.file.base32Hash = this.$base32(this.file.hash);
+        this.file.base32Hash = this.$base32(this.file.hash).toLowerCase();
       };
       reader.readAsArrayBuffer(files[0]);
     },
 
     signHash() {
       const sig = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
-      this.file.signature = this.$base32(sig);
+      this.file.signature = this.$base32(sig).toLowerCase();
 
 
       this.sendProof();
@@ -215,26 +257,32 @@ export default {
 
     async sendProof() {
       this.visible = true;
-      const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
-        fileName: this.file.name,
-        hash: this.file.base32Hash,
-        publicKey: this.user.pubKey,
-        signature: this.file.signature,
-      });
-
-      if (tx.data.success) {
-        this.file.txId = tx.data.value.stampDocumentProof.transactionId;
-        this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
-        const timestamps = this.user.timestampsUsed + 1;
-        User.update({
-          data: {
-            accountIdentifier: this.account.accountIdentifier,
-            timestampsUsed: timestamps,
-          },
+      try {
+        const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
+          fileName: this.file.name,
+          hash: this.file.base32Hash,
+          publicKey: this.user.pubKey,
+          signature: this.file.signature,
         });
 
+        if (tx.data.success) {
+          this.file.txId = tx.data.value.stampDocumentProof.transactionId;
+          this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
+          const timestamps = this.user.timestampsUsed + 1;
+          User.update({
+            data: {
+              accountIdentifier: this.account.accountIdentifier,
+              timestampsUsed: timestamps,
+            },
+          });
+          await this.insertTimestamp(this.file);
+
+          this.visible = false;
+          this.confirmed = true;
+        }
+      } catch (e) {
+        this.error = true;
         this.visible = false;
-        this.confirmed = true;
       }
     },
 
@@ -247,8 +295,9 @@ export default {
           const tx = await this.$axios.get(`${process.env.API}VerifyStampDocument/${txId.toUpperCase()}${process.env.VERIFY_KEY}`);
 
           if (tx.data.success) {
-            const fileHash = tx.data.value.stampDocumentProof.userProof.hash.toUpperCase();
-            if (fileHash === this.file.base32Hash) {
+            const fileHash = tx.data.value.stampDocumentProof.userProof.hash;
+            if (fileHash === this.file.base32Hash.toLowerCase()) {
+
               this.file.txId = tx.data.value.stampDocumentProof.transactionId;
               this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
               this.file.signature = tx.data.value.stampDocumentProof.userProof.signature;

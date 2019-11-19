@@ -58,4 +58,13 @@ export default {
   pleaseUpgrade: 'Please upgrade to continue',
   noAllowance: 'You\'ve run out of your monthly',
   timestampAllowance: 'timestamp allowance',
+  recentTimestamps: 'Recent Timestamps',
+  viewAll: 'View All',
+  timestamps: 'Timestamps',
+  date: 'Date',
+  downloadCertificate: 'Download Cetificate',
+  somethingWrong: 'Something went wrong',
+  tryAgain: 'Try Again',
+  totalTimestamps: 'Total timestamps',
+  loadingDashboard: 'Loading dashboard',
 };

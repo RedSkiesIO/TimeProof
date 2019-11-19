@@ -41,7 +41,16 @@
     </q-header>
 
     <q-page-container>
-      <router-view />
+      <router-view v-if="display" />
+      <q-inner-loading :showing="!display">
+        <q-spinner-grid
+          size="70px"
+          color="primary"
+        />
+        <div class="text-body1 q-mt-lg">
+          {{ $t('loadingDashboard') }}
+        </div>
+      </q-inner-loading>
     </q-page-container>
     <div class="user-dialog">
       <q-dialog
@@ -94,6 +103,13 @@ import User from '../../store/User';
 
 export default {
   name: 'MainLayout',
+
+  props: {
+    display: {
+      type: Boolean,
+      required: true,
+    },
+  },
 
   data() {
     return {

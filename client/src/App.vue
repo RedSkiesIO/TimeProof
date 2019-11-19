@@ -1,14 +1,14 @@
 <template>
   <div
-    v-if="ready"
     id="q-app"
   >
-    <router-view />
+    <router-view :display="ready" />
   </div>
 </template>
 
 <script>
 import User from './store/User';
+import Timestamp from './store/Timestamp';
 
 export default {
   name: 'App',
@@ -16,6 +16,7 @@ export default {
   data() {
     return {
       ready: false,
+      re: /(?:\.([^.]+))?$/,
     };
   },
 
@@ -30,12 +31,23 @@ export default {
 
     user() {
       if (this.account) {
-        const user = User.find(this.account.accountIdentifier);
+        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
         if (user) {
-          return user;
+          return user[0];
         }
       }
       return null;
+    },
+
+    timestampsUsed() {
+      const d = new Date();
+      const thisMonth = `${d.getMonth()}${d.getFullYear()}`;
+      const timestamps = this.user.timestamps.filter((stamp) => {
+        const date = new Date(stamp.date);
+        const month = `${date.getMonth()}${date.getFullYear()}`;
+        return month === thisMonth;
+      });
+      return timestamps.length;
     },
   },
 
@@ -44,6 +56,21 @@ export default {
   },
 
   methods: {
+    async insertTimestamp(file) {
+      Timestamp.insert({
+        data: {
+          txId: file.txId,
+          hash: file.base32Hash,
+          signature: file.signature,
+          accountIdentifier: this.user.accountIdentifier,
+          name: file.name,
+          date: file.timestamp,
+          type: file.type,
+          size: file.size,
+        },
+      });
+    },
+
     async start() {
       if (this.account) {
         const token = await this.$auth.getToken();
@@ -67,6 +94,35 @@ export default {
               email: this.account.idToken.emails[0],
             },
           });
+        }
+        try {
+          const getTotal = await this.$axios.get(`${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
+          const totalTs = getTotal.data.value;
+          if (totalTs > 0) {
+            const timestamps = await this.$axios.get(`${process.env.API}GetStamps/1/${totalTs}${process.env.GET_STAMP_KEY}`);
+            const files = timestamps.data.value.map(file => ({
+              txId: file.stampDocumentProof.transactionId,
+              hash: file.stampDocumentProof.userProof.hash,
+              signature: file.stampDocumentProof.userProof.signature,
+              accountIdentifier: this.user.accountIdentifier,
+              name: file.fileName,
+              date: file.stampDocumentProof.timeStamp,
+              type: this.re.exec(file.fileName)[1],
+            }));
+            await Timestamp.create({
+              data: files,
+            });
+          }
+
+          User.update({
+            data: {
+              accountIdentifier: this.account.accountIdentifier,
+              timestampsUsed: this.timestampsUsed,
+              totalTimestamps: totalTs,
+            },
+          });
+        } catch (e) {
+          console.log(e);
         }
       }
 

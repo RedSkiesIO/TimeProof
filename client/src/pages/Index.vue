@@ -1,61 +1,76 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class="flex justify-center">
     <div
       v-if="isLoggedIn"
-      class="row q-gutter-x-lg"
+      class="q-mt-lg"
     >
-      <Usage />
-      <div class="sign-verify">
-        <q-card
-          flat
-          class="sign-verify"
-        >
-          <q-tabs
-            v-model="tab"
-            dense
-            class="bg-white text-primary"
-          >
-            <q-tab
-              name="sign"
-              :label="$t('sign')"
-            />
-            <q-tab
-              name="verify"
-              :label="$t('verify')"
-            />
-          </q-tabs>
-          <q-tab-panels
-            v-model="tab"
-            animated
-          >
-            <q-tab-panel name="sign">
-              <AddFile
-                v-if="allowed"
-                :mode="'sign'"
-              />
-              <div
-                v-else
-                class="column q-gutter-y-md q-pa-md upgrade flex flex-center text-center"
-              >
-                <div class="text-h6 text-weight-bold text-grey-8">
-                  {{ $t('noAllowance') }} <br> {{ $t('timestampAllowance') }}
-                </div>
-                <div class="text-body1 text-weight-bold">
-                  {{ $t('pleaseUpgrade') }}
-                </div>
-                <q-btn
-                  outline
-                  color="primary"
-                  :label="$t('upgrade')"
-                />
-              </div>
-            </q-tab-panel>
+      <div
+        v-if="!showTimestamps"
+        class="row q-gutter-x-lg"
+      >
+        <div class=" q-gutter-y-md column">
+          <Usage />
+          <RecentTimestamps
+            v-if="user.timestamps.length > 0"
+            @open="showTimestamps=true"
+          />
+        </div>
 
-            <q-tab-panel name="verify">
-              <AddFile :mode="'verify'" />
-            </q-tab-panel>
-          </q-tab-panels>
-        </q-card>
+        <div class="sign-verify">
+          <q-card
+            flat
+            class="sign-verify"
+          >
+            <q-tabs
+              v-model="tab"
+              dense
+              class="bg-white text-primary"
+            >
+              <q-tab
+                name="sign"
+                :label="$t('sign')"
+              />
+              <q-tab
+                name="verify"
+                :label="$t('verify')"
+              />
+            </q-tabs>
+            <q-tab-panels
+              v-model="tab"
+              animated
+            >
+              <q-tab-panel name="sign">
+                <AddFile
+                  v-if="allowed"
+                  :mode="'sign'"
+                />
+                <div
+                  v-else
+                  class="column q-gutter-y-md q-pa-md upgrade flex flex-center text-center"
+                >
+                  <div class="text-h6 text-weight-bold text-grey-8">
+                    {{ $t('noAllowance') }} <br> {{ $t('timestampAllowance') }}
+                  </div>
+                  <div class="text-body1 text-weight-bold">
+                    {{ $t('pleaseUpgrade') }}
+                  </div>
+                  <q-btn
+                    outline
+                    color="primary"
+                    :label="$t('upgrade')"
+                  />
+                </div>
+              </q-tab-panel>
+
+              <q-tab-panel name="verify">
+                <AddFile :mode="'verify'" />
+              </q-tab-panel>
+            </q-tab-panels>
+          </q-card>
+        </div>
+      </div>
+      <div v-else>
+        <Timestamps @close="showTimestamps=false" />
       </div>
     </div>
 
@@ -82,6 +97,8 @@
 <script>
 import AddFile from '../components/AddFile';
 import Usage from '../components/Usage';
+import Timestamps from '../components/Timestamps';
+import RecentTimestamps from '../components/RecentTimestamps';
 import User from '../store/User';
 
 export default {
@@ -89,10 +106,13 @@ export default {
   components: {
     AddFile,
     Usage,
+    Timestamps,
+    RecentTimestamps,
   },
 
   data() {
     return {
+      showTimestamps: false,
       tab: 'sign',
       tiers: {
         free: 50,
@@ -120,15 +140,15 @@ export default {
     },
     user() {
       if (this.account) {
-        const user = User.find(this.account.accountIdentifier);
+        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
         if (user) {
-          return user;
+          return user[0];
         }
       }
       return null;
     },
     allowed() {
-      if (this.user.timestampsUsed < this.tiers[this.user.tier]) {
+      if (this.user.timestampsUsed <= this.tiers[this.user.tier]) {
         return true;
       }
       return false;
