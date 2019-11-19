@@ -9,11 +9,9 @@
         class="row q-gutter-x-lg"
       >
         <div class=" q-gutter-y-md column">
+          <Account />
           <Usage />
-          <RecentTimestamps
-            v-if="user.timestamps.length > 0"
-            @open="showTimestamps=true"
-          />
+          <Key />
         </div>
 
         <div class="sign-verify">
@@ -68,6 +66,12 @@
             </q-tab-panels>
           </q-card>
         </div>
+        <div>
+          <RecentTimestamps
+            v-if="user.timestamps.length > 0"
+            @open="showTimestamps=true"
+          />
+        </div>
       </div>
       <div v-else>
         <Timestamps @close="showTimestamps=false" />
@@ -97,6 +101,8 @@
 <script>
 import AddFile from '../components/AddFile';
 import Usage from '../components/Usage';
+import Account from '../components/Account';
+import Key from '../components/Key';
 import Timestamps from '../components/Timestamps';
 import RecentTimestamps from '../components/RecentTimestamps';
 import User from '../store/User';
@@ -108,6 +114,8 @@ export default {
     Usage,
     Timestamps,
     RecentTimestamps,
+    Account,
+    Key,
   },
 
   data() {
