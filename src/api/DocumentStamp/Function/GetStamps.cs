@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -11,28 +12,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using RestSharp;
 
-namespace DocumentStamp.Function    
+namespace DocumentStamp.Function
 {
-    public class VerifyStampDocument
+    public class GetStamps
     {
-        private readonly RestClient _restClient;
         private readonly CosmosDbRepository<DocumentStampMetaData> _documentStampMetaDataRepository;
-        public VerifyStampDocument(RestClient restClient, CosmosDbRepository<DocumentStampMetaData> documentStampMetaDataRepository)
+        public GetStamps(CosmosDbRepository<DocumentStampMetaData> documentStampMetaDataRepository)
         {
-            _restClient = restClient;
             _documentStampMetaDataRepository = documentStampMetaDataRepository;
         }
 
-        [FunctionName("VerifyStampDocument")]
+        [FunctionName("GetStamps")]
         public IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "VerifyStampDocument/{txId}")]
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetStamps/{page}/{count}")]
             HttpRequest req,
             ClaimsPrincipal principal,
-            string txId,
+            int page,
+            int count,
             ILogger log)
         {
+            page--;
             string userId;
 #if (DEBUG)
             principal = JwtDebugTokenHelper.GenerateClaimsPrincipal();
@@ -41,32 +41,24 @@ namespace DocumentStamp.Function
             userId = principal.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
 #endif
 
-            log.LogInformation("VerifyStampDocument processing a request");
+            log.LogInformation("GetStamps processing a request");
 
             try
             {
-                var metaData = _documentStampMetaDataRepository.Find(x => x.Id == txId.ToLower() && x.User == userId);
-                var stampDocumentResponse = new StampDocumentResponse
-                {
-                    StampDocumentProof = HttpHelper.GetStampDocument(_restClient, txId)
-                };
+                var documentStamp = _documentStampMetaDataRepository.FindAll(x => x.User == userId).Skip(page * count).Take(count).OrderByDescending(x => x.StampDocumentProof.TimeStamp);
+                var stampedDocumentList = documentStamp.Select(x => new StampDocumentResponse() { FileName = x.FileName, StampDocumentProof = x.StampDocumentProof }).ToList();
 
-                if (metaData != null)
-                {
-                    stampDocumentResponse.FileName = metaData.FileName;
-                }
-
-                return new OkObjectResult(new Result<StampDocumentResponse>(true, stampDocumentResponse));
+                return new OkObjectResult(new Result<IEnumerable<StampDocumentResponse>>(true, stampedDocumentList));
             }
             catch (InvalidDataException ide)
             {
                 log.LogError(ide.ToString());
-                return new BadRequestObjectResult(new Result<string>(false, ide.Message));
+                return new BadRequestObjectResult(new Result<string>(false, ide.ToString()));
             }
             catch (Exception exc)
             {
                 log.LogError(exc.ToString());
-                return new BadRequestObjectResult(new Result<string>(false, exc.Message));
+                return new BadRequestObjectResult(new Result<string>(false, exc.ToString()));
             }
         }
     }

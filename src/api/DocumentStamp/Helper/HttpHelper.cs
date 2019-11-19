@@ -12,9 +12,8 @@ namespace DocumentStamp.Helper
 {
     public static class HttpHelper
     {
-        public static StampDocumentResponse GetStampDocument(string webAddress, string txId)
+        public static StampDocumentProof GetStampDocument(RestClient client, string txId)
         {
-            var client = new RestClient($"{webAddress}");
             var request = new RestRequest("/api/Mempool/Get/{id}", Method.GET);
             request.AddUrlSegment("id", txId);
 
@@ -36,18 +35,18 @@ namespace DocumentStamp.Helper
                 throw new InvalidDataException("Could not verify signature of document stamp request");
             }
 
-            var stampDocumentResponse = new StampDocumentResponse
+            var stampDocumentProof = new StampDocumentProof
             {
-                TransactionId = transactionBroadcastDao.Id.ToUpper(),
+                TransactionId = transactionBroadcastDao.Id.ToLowerInvariant(),
                 TimeStamp = transactionBroadcastDao.TimeStamp,
                 UserProof = userProof,
                 NodeProof = new NodeProof
                 {
-                    PublicKey = smartContract.Base.SenderPublicKey.ToUpper(),
-                    Signature = transactionBroadcastDao.Signature.RawBytes.ToUpper()
+                    PublicKey = smartContract.Base.SenderPublicKey.ToLowerInvariant(),
+                    Signature = transactionBroadcastDao.Signature.RawBytes.ToLowerInvariant()
                 }
             };
-            return stampDocumentResponse;
+            return stampDocumentProof;
         }
     }
 }
