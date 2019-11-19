@@ -55,16 +55,14 @@ module.exports = function (ctx) {
       // Quasar plugins
       plugins: [],
     },
-
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
     supportIE: false,
-
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       scopeHoisting: true,
       env: {
         API: JSON.stringify('https://documentstamp.azurewebsites.net/api/'),
-        STAMP_KEY: JSON.stringify('?code=O5ra0Gt/pfYFVXfjTVBm70FOOoEb4RUQG2BMidcZmpcWnjRziha3WA=='),
+        STAMP_KEY: JSON.stringify('?code=AJNcVPZsy9bdB5iMDl4jGDHsbEPWZRPFkLP53gUDvPqixoJatWTQBQ=='),
         VERIFY_KEY: JSON.stringify('?code=hC362dyPjv3OwrNNL3XS1JDZs9CEzef/azXMVkyK1Uh3OyWcpdJ6Cg=='),
       },
       // vueRouterMode: 'history',

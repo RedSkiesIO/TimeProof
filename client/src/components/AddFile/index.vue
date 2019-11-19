@@ -215,16 +215,16 @@ export default {
 
     async sendProof() {
       this.visible = true;
-
       const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
+        fileName: this.file.name,
         hash: this.file.base32Hash,
         publicKey: this.user.pubKey,
         signature: this.file.signature,
       });
 
       if (tx.data.success) {
-        this.file.txId = tx.data.value.transactionId;
-        this.file.timestamp = tx.data.value.timeStamp;
+        this.file.txId = tx.data.value.stampDocumentProof.transactionId;
+        this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
         const timestamps = this.user.timestampsUsed + 1;
         User.update({
           data: {
@@ -247,12 +247,12 @@ export default {
           const tx = await this.$axios.get(`${process.env.API}VerifyStampDocument/${txId.toUpperCase()}${process.env.VERIFY_KEY}`);
 
           if (tx.data.success) {
-            const fileHash = tx.data.value.userProof.hash;
+            const fileHash = tx.data.value.stampDocumentProof.userProof.hash.toUpperCase();
             if (fileHash === this.file.base32Hash) {
-              this.file.txId = tx.data.value.transactionId;
-              this.file.timestamp = tx.data.value.timeStamp;
-              this.file.signature = tx.data.value.userProof.signature;
-              this.file.pubKey = tx.data.value.userProof.publicKey;
+              this.file.txId = tx.data.value.stampDocumentProof.transactionId;
+              this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
+              this.file.signature = tx.data.value.stampDocumentProof.userProof.signature;
+              this.file.pubKey = tx.data.value.stampDocumentProof.userProof.publicKey;
               this.file.verified = true;
             } else {
               this.file.error = this.$t('filesDoNotMatch');

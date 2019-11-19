@@ -1,13 +1,10 @@
-﻿using System;
-using DocumentStamp.Model;
+﻿using DocumentStamp.Model;
 
 namespace DocumentStamp.Http.Response
 {
     public class StampDocumentResponse
     {
-        public string TransactionId { set; get; }
-        public DateTime TimeStamp { set; get; }
-        public UserProof UserProof { set; get; }
-        public NodeProof NodeProof { set; get; }
+        public string FileName { set; get; }
+        public StampDocumentProof StampDocumentProof { set; get; }
     }
 }

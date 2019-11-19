@@ -2,7 +2,18 @@
   "IsEncrypted": false,
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "NodePublicKey": "gm2u2cqtutmgzstjtof4pu2tnp73m5vhiomgixqcpvgyr5mfxwfa",
+    "NodeIpAddress": "127.0.0.1",
+    "NodePort": 42066,
+    "NodeWebAddress": "http://127.0.0.1:5005",
+    "NodePfxFileName": "mycert.pfx",
+    "NodeSslCertPassword": "test",
+    "NodePassword": "test",
+    "FunctionPrivateKey": "tbglv5xzz45cyqtp3txc5xodcx3ynkqijxvkly3te5n4uy6aokea",
+    "CosmosDBServer": "https://localhost:8081",
+    "AuthorizationKey": "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+    "DatabaseId": "DocumentStamp"
   },
   "Host": {
     "LocalHttpPort": 7071,

@@ -1,59 +1,66 @@
 using System;
 using System.IO;
-using System.Threading;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Catalyst.Abstractions.Cryptography;
-using Catalyst.Abstractions.P2P;
-using Catalyst.Abstractions.Rpc;
+using Catalyst.Core.Lib.DAO;
 using Catalyst.Core.Lib.Extensions;
-using Catalyst.Core.Lib.IO.Messaging.Correlation;
-using Catalyst.Core.Lib.IO.Messaging.Dto;
+using Catalyst.Core.Modules.Cryptography.BulletProofs;
+using Catalyst.Modules.Repository.CosmosDb;
 using Catalyst.Protocol.Peer;
-using Catalyst.Protocol.Rpc.Node;
 using DocumentStamp.Helper;
 using DocumentStamp.Http.Request;
 using DocumentStamp.Http.Response;
 using DocumentStamp.Model;
 using DocumentStamp.Validator;
+using Google.Protobuf;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using RestSharp;
 using TheDotNetLeague.MultiFormats.MultiBase;
 
 namespace DocumentStamp.Function
 {
+    //https://github.com/Azure/DotNetty/issues/246 memoryleaks in dotnetty, using web3 instead until fixed
     public class StampDocument
     {
-        private readonly AutoResetEvent _autoResetEvent;
-        private readonly Config _config;
-        private readonly IPeerSettings _peerSettings;
-        private readonly ICryptoContext _cryptoContext;
+        private readonly RestClient _restClient;
+        private readonly PeerId _peerId;
+        private readonly FfiWrapper _cryptoContext;
         private readonly IPrivateKey _privateKey;
-        private readonly IRpcClient _rpcClient;
-        private readonly PeerId _recipientPeer;
+        private readonly CosmosDbRepository<DocumentStampMetaData> _documentStampMetaDataRepository;
 
-        public StampDocument(Config config, IPeerSettings peerSettings, ICryptoContext cryptoContext,
-            IPrivateKey privateKey, IRpcClient rpcClient,
-            PeerId recipientPeer)
+        public StampDocument(RestClient restClient, PeerId peerId, FfiWrapper cryptoContext, IPrivateKey privateKey, CosmosDbRepository<DocumentStampMetaData> documentStampMetaDataRepository)
         {
-            _autoResetEvent = new AutoResetEvent(false);
-            _config = config;
-            _peerSettings = peerSettings;
+            _restClient = restClient;
+            _peerId = peerId;
             _cryptoContext = cryptoContext;
             _privateKey = privateKey;
-            _rpcClient = rpcClient;
-            _recipientPeer = recipientPeer;
+            _documentStampMetaDataRepository = documentStampMetaDataRepository;
         }
 
         [FunctionName("StampDocument")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]
             HttpRequest req,
+            ClaimsPrincipal principal,
             ILogger log)
         {
+            string userId;
+#if (DEBUG)
+            //Test JWT token
+            principal = JwtDebugTokenHelper.GenerateClaimsPrincipal();
+            userId = principal.Claims.First(x => x.Type == "sub").Value;
+#else
+            //Actual JWT token
+            userId = principal.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
+#endif
+
             log.LogInformation("StampDocument processing a request");
 
             try
@@ -61,6 +68,10 @@ namespace DocumentStamp.Function
                 //Validate the request model sent by the user or client
                 var stampDocumentRequest =
                     ModelValidator.ValidateAndConvert<StampDocumentRequest>(await req.ReadAsStringAsync());
+
+                stampDocumentRequest.PublicKey = stampDocumentRequest.PublicKey.ToLowerInvariant();
+                stampDocumentRequest.Signature = stampDocumentRequest.Signature.ToLowerInvariant();
+                stampDocumentRequest.Hash = stampDocumentRequest.Hash.ToLowerInvariant();
 
                 //Verify the signature of the stamp document request
                 var verifyResult = SignatureHelper.VerifyStampDocumentRequest(stampDocumentRequest);
@@ -72,46 +83,55 @@ namespace DocumentStamp.Function
                 var receiverPublicKey =
                     _cryptoContext.GetPublicKeyFromBytes(stampDocumentRequest.PublicKey.FromBase32());
 
-                //Connect to the node
-                await _rpcClient.StartAsync();
-
-                //Listen to BroadcastRawTransactionResponse responses from the node.
-                _rpcClient.SubscribeToResponse<BroadcastRawTransactionResponse>(x =>
-                {
-                    if (x.ResponseCode != ResponseCode.Successful)
-                    {
-                        throw new InvalidDataException(
-                            $"Stamp document returned an invalid response code: {x.ResponseCode}");
-                    }
-
-                    _autoResetEvent.Set();
-                });
-
                 //Construct DocumentStamp smart contract data
                 var userProofJson = JsonConvert.SerializeObject(stampDocumentRequest);
                 var transaction =
-                    StampTransactionHelper.GenerateStampTransaction(_privateKey, receiverPublicKey,
+                    StampTransactionHelper.GenerateStampTransaction(_cryptoContext, _privateKey, receiverPublicKey,
                         userProofJson.ToUtf8Bytes(), 1, 1);
                 var protocolMessage =
-                    transaction.ToProtocolMessage(_peerSettings.PeerId, CorrelationId.GenerateCorrelationId());
+                    StampTransactionHelper.ConvertToProtocolMessage(transaction, _cryptoContext, _privateKey,
+                        _peerId);
 
-                _rpcClient.SendMessage(new MessageDto(protocolMessage, _recipientPeer));
+                var request = new RestRequest("/api/Mempool/AddTransaction", Method.POST);
+                request.AddQueryParameter("transactionBroadcastProtocolBase64", Convert.ToBase64String(protocolMessage.ToByteArray()));
 
-                //Wait for node response then generate azure function response
-                _autoResetEvent.WaitOne();
+                var response = _restClient.Execute<TransactionBroadcastDao>(request);
+                if (!response.IsSuccessful)
+                {
+                    throw new InvalidDataException("DocumentStamp failed to send");
+                }
 
-                var stampDocumentResponse =
-                    HttpHelper.GetStampDocument(_config.NodeConfig.WebAddress,
-                        transaction.Transaction.Signature.RawBytes.ToByteArray().ToBase32().ToUpperInvariant());
+                var transactionId = transaction.Signature.RawBytes.ToByteArray().ToBase32().ToLowerInvariant();
+                var stampDocumentResponse = new StampDocumentResponse
+                {
+                    StampDocumentProof = HttpHelper.GetStampDocument(_restClient, transactionId),
+                    FileName = stampDocumentRequest.FileName
+                };
+
+                var documentStampMetaData = new DocumentStampMetaData
+                {
+                    Id = transactionId,
+                    FileName = stampDocumentRequest.FileName,
+                    PublicKey = stampDocumentRequest.PublicKey,
+                    StampDocumentProof = stampDocumentResponse.StampDocumentProof,
+                    User = userId
+                };
+
+                _documentStampMetaDataRepository.Add(documentStampMetaData);
+
                 return new OkObjectResult(new Result<StampDocumentResponse>(true, stampDocumentResponse));
             }
             catch (InvalidDataException ide)
             {
-                return new BadRequestObjectResult(new Result<string>(false, ide.Message));
+                log.LogError(ide.ToString());
+                return new BadRequestObjectResult(new Result<string>(false,
+                    ide.Message));
             }
             catch (Exception exc)
             {
-                return new BadRequestObjectResult(new Result<string>(false, exc.Message));
+                log.LogError(exc.ToString());
+                return new BadRequestObjectResult(new Result<string>(false,
+                    exc.Message));
             }
         }
     }
