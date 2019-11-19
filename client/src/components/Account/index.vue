@@ -15,23 +15,6 @@
         <div><q-icon name="fas fa-envelope" /></div>
         <div>{{ user.email }}</div>
       </div>
-      <!-- <div class="row">
-        <q-input
-          v-model="key"
-          label="Signing Key"
-          readonly
-          :type="isPwd ? 'password' : 'text'"
-          class="q-mt-sm signing-key"
-        >
-          <template v-slot:append>
-            <q-icon
-              :name="isPwd ? 'visibility_off' : 'visibility'"
-              class="cursor-pointer"
-              @click="isPwd = !isPwd"
-            />
-          </template>
-        </q-input>
-      </div> -->
     </q-card>
   </div>
 </template>
