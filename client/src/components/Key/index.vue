@@ -1,6 +1,7 @@
 <template>
   <div>
     <q-card
+      v-if="signKey"
       flat
       class="account q-pa-sm"
     >
@@ -45,6 +46,50 @@
           round
           color="primary"
           icon="lock"
+          @click="signKey=false"
+        />
+      </div>
+      <div class="row justify-center text-blue q-mb-sm">
+        {{ $t('importKey') }}
+      </div>
+      <div class="row justify-center text-blue">
+        {{ $t('newKey') }}
+      </div>
+      <div class="row justify-end" />
+    </q-card>
+    <q-card
+      v-if="!signKey"
+      flat
+      class="account q-pa-sm"
+    >
+      <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
+        <div>{{ $t('signingKeyLocked') }}</div>
+      </div>
+      <div class="row justify-center">
+        {{ $t('signingKeyLockedDesc') }}
+      </div>
+      <div class="row">
+        <q-input
+          v-model="password"
+          :label="$t('enterPassword')"
+          :type="isPwd ? 'password' : 'text'"
+          class="q-my-sm signing-key"
+        >
+          <template v-slot:append>
+            <q-icon
+              :name="isPwd ? 'visibility_off' : 'visibility'"
+              class="cursor-pointer"
+              @click="isPwd = !isPwd"
+            />
+          </template>
+        </q-input>
+      </div>
+      <div class="row justify-center q-mb-sm">
+        <q-btn
+          outline
+          :label="$t('unlock')"
+          color="primary"
+          @click="signKey=true"
         />
       </div>
       <div class="row justify-center text-blue q-mb-sm">
@@ -65,7 +110,9 @@ export default {
 
   data() {
     return {
+      signKey: true,
       isPwd: true,
+      password: '',
       tiers: {
         free: 50,
         basic: 1000,
