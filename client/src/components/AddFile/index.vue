@@ -48,11 +48,11 @@
 
           <span
             class="text-h6 text-weight-bold text-grey-6"
-          >Something went wrong</span>
+          >{{ $t('somethingWrong') }}</span>
           <span
             class="text-blue"
             @click="reset(scope)"
-          >Try again</span>
+          >{{ $t('tryAgain') }}</span>
         </div>
       </div>
       <div
@@ -220,7 +220,6 @@ export default {
     getSize(bytes) {
       const decimals = 2;
       if (bytes === 0) return '0 Bytes';
-
       const k = 1024;
       const dm = decimals < 0 ? 0 : decimals;
       const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -297,7 +296,6 @@ export default {
           if (tx.data.success) {
             const fileHash = tx.data.value.stampDocumentProof.userProof.hash;
             if (fileHash === this.file.base32Hash.toLowerCase()) {
-
               this.file.txId = tx.data.value.stampDocumentProof.transactionId;
               this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
               this.file.signature = tx.data.value.stampDocumentProof.userProof.signature;
