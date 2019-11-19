@@ -76,5 +76,8 @@ export default {
   backupKeyDesc: 'If you lose your signing key you will not be able to prove your timestamps',
   importKey: 'Import a signing key',
   newKey: 'Create a new signing key',
-
+  signingKeyLocked: 'Your signing key is locked',
+  signingKeyLockedDesc: 'Please enter your signing key password to unlock',
+  enterPassword: 'Enter your password',
+  unlock: 'unlock',
 };
