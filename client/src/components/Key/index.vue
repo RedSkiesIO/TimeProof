@@ -4,8 +4,8 @@
       flat
       class="account q-pa-sm"
     >
-      <div class="row text-weight-bold text-h6 q-mb-xs">
-        {{ $t('signingKey') }}
+      <div class="row justify-between text-weight-bold text-h6 q-mb-xs">
+        <div>{{ $t('signingKey') }}</div>
       </div>
       <div class="column bg-red-1 q-pa-sm">
         <div class="row text-center text-weight-bold text-red justify-center">
@@ -38,6 +38,14 @@
             />
           </template>
         </q-input>
+      </div>
+      <div class="row justify-center q-mb-sm">
+        <q-btn
+          outline
+          round
+          color="primary"
+          icon="lock"
+        />
       </div>
       <div class="row justify-center text-blue q-mb-sm">
         {{ $t('importKey') }}
