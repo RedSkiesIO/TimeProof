@@ -90,6 +90,7 @@ export default {
         } else if (this.user) {
           const encryptedKey = await this.$crypto.encrypt(this.user.secretKey, 'password');
           console.log(encryptedKey);
+          console.log(this.$base32(encryptedKey.cipherText));
           const decryptedKey = await this.$crypto.decrypt(encryptedKey, 'password');
           console.log(decryptedKey);
           User.update({
