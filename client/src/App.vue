@@ -77,6 +77,7 @@ export default {
         this.$axios.defaults.headers.common.Authorization = `Bearer ${token.accessToken}`;
         if (!this.user) {
           const keypair = this.$keypair.new();
+
           User.insert({
             data: {
               accountIdentifier: this.account.accountIdentifier,
@@ -87,6 +88,10 @@ export default {
             },
           });
         } else if (this.user) {
+          const encryptedKey = await this.$crypto.encrypt(this.user.secretKey, 'password');
+          console.log(encryptedKey);
+          const decryptedKey = await this.$crypto.decrypt(encryptedKey, 'password');
+          console.log(decryptedKey);
           User.update({
             data: {
               accountIdentifier: this.account.accountIdentifier,

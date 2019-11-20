@@ -15,6 +15,7 @@ module.exports = function (ctx) {
       'base32',
       'auth',
       'createPdf',
+      'crypto',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
