@@ -20,6 +20,7 @@
             outline
             color="black"
             :label="$t('backup')"
+            @click="backup"
           />
         </div>
       </div>
@@ -205,6 +206,9 @@ export default {
     async unlockKey(password) {
       const decrypted = await this.$crypto.decrypt(this.user.secretKey, password);
       this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
+    },
+    async backup() {
+      await this.$crypto.createKeystore(this.user);
     },
   },
 };
