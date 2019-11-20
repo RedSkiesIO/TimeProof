@@ -195,6 +195,10 @@ export default {
 
       return 'fas fa-file';
     },
+
+    key() {
+      return this.$store.state.settings.authenticatedAccount;
+    },
   },
 
   methods: {
@@ -247,11 +251,11 @@ export default {
     },
 
     signHash() {
-      const sig = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
-      this.file.signature = this.$base32(sig).toLowerCase();
-
-
-      this.sendProof();
+      if (this.key) {
+        const sig = this.$keypair.signMessage(this.file.hash, this.key);
+        this.file.signature = this.$base32(sig).toLowerCase();
+        this.sendProof();
+      }
     },
 
     async sendProof() {

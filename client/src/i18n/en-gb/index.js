@@ -63,7 +63,7 @@ export default {
   viewAll: 'View All',
   timestamps: 'Timestamps',
   date: 'Date',
-  downloadCertificate: 'Download Cetificate',
+  downloadCertificate: 'Download Certificate',
   somethingWrong: 'Something went wrong',
   tryAgain: 'Try Again',
   totalTimestamps: 'Total timestamps',
@@ -80,4 +80,9 @@ export default {
   signingKeyLockedDesc: 'Please enter your signing key password to unlock',
   enterPassword: 'Enter your password',
   unlock: 'unlock',
+  createKey: 'Create a signing key',
+  createKeyDesc: 'In order to create timestamps you need to add a signing key',
+  createKeyLabel: 'Create Key',
+  newKeyDesc: 'Please choose a password to encrypt your signing key',
+
 };

@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-card
-      v-if="signKey"
+      v-if="key && user.secretKey"
       flat
       class="account q-pa-sm"
     >
@@ -46,19 +46,23 @@
           round
           color="primary"
           icon="lock"
-          @click="signKey=false"
+          @click="lockKey"
         />
       </div>
       <div class="row justify-center text-blue q-mb-sm">
         {{ $t('importKey') }}
       </div>
-      <div class="row justify-center text-blue">
+      <div
+        class="row justify-center text-blue"
+        @click="newKey=true"
+      >
         {{ $t('newKey') }}
       </div>
       <div class="row justify-end" />
     </q-card>
+
     <q-card
-      v-if="!signKey"
+      v-if="!key && user.secretKey"
       flat
       class="account q-pa-sm"
     >
@@ -89,28 +93,63 @@
           outline
           :label="$t('unlock')"
           color="primary"
-          @click="signKey=true"
+          @click="unlockKey(password)"
         />
       </div>
       <div class="row justify-center text-blue q-mb-sm">
         {{ $t('importKey') }}
       </div>
-      <div class="row justify-center text-blue">
+      <div
+        class="row justify-center text-blue"
+        @click="newKey=true"
+      >
         {{ $t('newKey') }}
       </div>
       <div class="row justify-end" />
     </q-card>
+
+    <q-card
+      v-if="!user.secretKey"
+      flat
+      class="account q-pa-sm"
+    >
+      <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
+        <div>{{ $t('createKey') }}</div>
+      </div>
+      <div class="row justify-center text-center">
+        {{ $t('createKeyDesc') }}
+      </div>
+      <div class="row justify-center q-my-sm">
+        <q-btn
+          outline
+          :label="$t('createKeyLabel')"
+          color="primary"
+          @click="newKey=true"
+        />
+      </div>
+      <div class="row justify-center text-blue q-mb-sm">
+        {{ $t('importKey') }}
+      </div>
+      <div class="row justify-end" />
+    </q-card>
+    <q-dialog v-model="newKey">
+      <NewKey />
+    </q-dialog>
   </div>
 </template>
 <script>
 import User from '../../store/User';
+import NewKey from './NewKey';
 
 export default {
   name: 'Key',
-
+  components: {
+    NewKey,
+  },
   data() {
     return {
-      signKey: true,
+      newKey: false,
+      signKey: false,
       isPwd: true,
       password: '',
       tiers: {
@@ -142,10 +181,31 @@ export default {
     },
 
     key() {
-      return this.user.secretKey;
+      console.log(this.$store.state.settings.authenticatedAccount);
+      return this.$store.state.settings.authenticatedAccount;
     },
+  },
 
+  methods: {
+    async addKey(password) {
+      const keypair = this.$keypair.new();
+      const encrypted = await this.$crypto.encrypt(keypair.secretKey, password);
 
+      await User.update({
+        data: {
+          accountIdentifier: this.account.accountIdentifier,
+          pubKey: keypair.publicKey,
+          secretKey: encrypted,
+        },
+      });
+    },
+    async lockKey() {
+      await this.$store.dispatch('settings/setAuthenticatedAccount', null);
+    },
+    async unlockKey(password) {
+      const decrypted = await this.$crypto.decrypt(this.user.secretKey, password);
+      this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
+    },
   },
 };
 </script>
