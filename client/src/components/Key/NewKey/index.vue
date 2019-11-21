@@ -3,18 +3,35 @@
     flat
     class="account q-pa-sm"
   >
-    <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
-      <div>{{ $t('createKeyLabel') }}</div>
+    <div v-if="mode==='new'">
+      <div
+        class="row justify-center text-weight-bold text-h6 q-mb-xs"
+      >
+        <div>{{ $t('createKeyLabel') }}</div>
+      </div>
+      <div class="row justify-center">
+        {{ $t('newKeyDesc') }}
+      </div>
     </div>
-    <div class="row justify-center">
-      {{ $t('newKeyDesc') }}
+
+    <div v-if="mode==='unlock'">
+      <div
+        class="row justify-center text-weight-bold text-h6 q-mb-xs"
+      >
+        <div>{{ $t('unlockKey') }}</div>
+      </div>
+      <div class="row justify-center">
+        {{ $t('unlockKeyDesc') }}
+      </div>
     </div>
+
+
     <div class="row">
       <q-input
         v-model="password"
         :label="$t('enterPassword')"
         :type="isPwd ? 'password' : 'text'"
-        class="q-my-sm signing-key"
+        class="q-ma-sm signing-key"
       >
         <template v-slot:append>
           <q-icon
@@ -28,10 +45,18 @@
     <div class="row justify-center q-mb-sm">
       <q-btn
         outline
-        :label="$t('createKeyLabel')"
+        :label="buttonLabel"
         color="primary"
-        @click="addKey(password)"
+        @click="buttonAction"
       />
+    </div>
+    <div
+      v-if="mode='new'"
+      class="q-pa-md justify-center text-center text-weight-bold"
+    >
+      <span class="text-red">DO NOT FORGET</span> to save your password.
+      You will need this<br><span class="text-red">Password + Keystore</span>
+      File to unlock your signing key.
     </div>
   </q-card>
 </template>
@@ -40,6 +65,14 @@ import User from '../../../store/User';
 
 export default {
   name: 'NewKey',
+
+  props: {
+    mode: {
+      type: String,
+      required: true,
+    },
+  },
+
   data() {
     return {
       password: null,
@@ -64,9 +97,27 @@ export default {
       }
       return null;
     },
+    buttonLabel() {
+      if (this.mode === 'new') {
+        return this.$t('createKeyLabel');
+      }
+      return this.$t('unlockKeyLabel');
+    },
   },
 
   methods: {
+    async buttonAction() {
+      try {
+        if (this.mode === 'new') {
+          await this.addKey(this.password);
+        }
+        await this.unlockKey(this.password);
+      } catch (e) {
+        console.log('ERROR: ', e);
+      }
+    },
+
+
     async addKey(password) {
       const keypair = this.$keypair.new();
       const encrypted = await this.$crypto.encrypt(keypair.secretKey, password);
@@ -84,7 +135,8 @@ export default {
 
     async unlockKey(password) {
       const decrypted = await this.$crypto.decrypt(this.user.secretKey, password);
-      this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
+      await this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
+      this.$emit('closeUnlock');
     },
   },
 };

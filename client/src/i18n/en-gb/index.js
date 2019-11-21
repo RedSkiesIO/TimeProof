@@ -84,5 +84,8 @@ export default {
   createKeyDesc: 'In order to create timestamps you need to add a signing key',
   createKeyLabel: 'Create Key',
   newKeyDesc: 'Please choose a password to encrypt your signing key',
+  unlockKey: 'Please unlock your signing key',
+  unlockKeyDesc: 'Enter the password for your signing key to create a timestamp',
+  unlockKeyLabel: 'Unlock Key',
 
 };

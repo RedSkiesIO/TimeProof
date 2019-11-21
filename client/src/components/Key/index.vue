@@ -134,7 +134,7 @@
       <div class="row justify-end" />
     </q-card>
     <q-dialog v-model="newKey">
-      <NewKey />
+      <NewKey :mode="dialogMode" />
     </q-dialog>
   </div>
 </template>
@@ -149,6 +149,7 @@ export default {
   },
   data() {
     return {
+      dialogMode: 'new',
       newKey: false,
       signKey: false,
       isPwd: true,

@@ -120,6 +120,12 @@
           :scope="scope"
         />
       </div>
+      <q-dialog v-model="unlockKey">
+        <UnlockKey
+          mode="unlock"
+          @closeUnlock="unlockKey=false"
+        />
+      </q-dialog>
       <q-inner-loading :showing="visible">
         <q-spinner-grid
           size="50px"
@@ -133,11 +139,13 @@
 import User from '../../store/User';
 import Timestamp from '../../store/Timestamp';
 import Proof from '../Proof';
+import UnlockKey from '../Key/NewKey';
 
 export default {
   name: 'AddFile',
   components: {
     Proof,
+    UnlockKey,
   },
 
   props: {
@@ -149,6 +157,7 @@ export default {
 
   data() {
     return {
+      unlockKey: false,
       file: null,
       confirmed: false,
       tab: 'sign',
@@ -255,6 +264,8 @@ export default {
         const sig = this.$keypair.signMessage(this.file.hash, this.key);
         this.file.signature = this.$base32(sig).toLowerCase();
         this.sendProof();
+      } else {
+        this.unlockKey = true;
       }
     },
 
