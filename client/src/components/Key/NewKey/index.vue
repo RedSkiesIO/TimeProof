@@ -29,9 +29,9 @@
       <div
         class="row justify-center text-weight-bold text-h6 q-mb-xs"
       >
-        <div>{{ $t('encrypt your key') }}</div>
+        <div>{{ $t('encryptKey') }}</div>
       </div>
-      <div class="row justify-center">
+      <div class="row text-center justify-center">
         {{ $t('newKeyDesc') }}
       </div>
     </div>

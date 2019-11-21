@@ -70,7 +70,6 @@
   </div>
 </template>
 <script>
-import User from '../../../store/User';
 import Encrypt from '../NewKey';
 
 export default {
@@ -94,18 +93,6 @@ export default {
     async importFromKey() {
       this.keypair = this.$keypair.keypairFromSecretKey(this.secretKey);
       this.openEncrypt = true;
-    },
-
-    async encryptKey(key, password) {
-      const encrypted = await this.$crypto.encrypt(key.secretKey, password);
-
-      await User.update({
-        data: {
-          accountIdentifier: this.account.accountIdentifier,
-          pubKey: key.publicKey,
-          secretKey: encrypted,
-        },
-      });
     },
   },
 };

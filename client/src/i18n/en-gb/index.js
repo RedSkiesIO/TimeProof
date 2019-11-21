@@ -93,4 +93,6 @@ export default {
   saveKeystoreDesc: ' Don\'t lose it, it can not be recovered if you lose it',
   addKey: 'Add Key',
   enterSigningKey: 'Enter your signing key',
+  encryptKey: 'Encrypt your key',
+  importKeyLabel: 'Import Key',
 };
