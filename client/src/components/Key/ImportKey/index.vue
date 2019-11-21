@@ -15,7 +15,7 @@
           outline
           color="primary"
           label="Keystore file"
-          @click="$emit('backup')"
+          @click="importKeystore=true"
         />
         <q-btn
           outline
@@ -60,6 +60,12 @@
           @click="importFromKey()"
         />
       </div>
+    </q-card>
+    <q-card
+      v-if="importKeystore && !keypair"
+      class="q-pa-lg q-gutter-y-sm justify-center"
+    >
+      import keystore file
     </q-card>
     <Encrypt
       v-if="openEncrypt"
