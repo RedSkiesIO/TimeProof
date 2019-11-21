@@ -38,16 +38,21 @@ const crypto = {
   },
 
   async decrypt(encrypted, password) {
-    const algo = {
-      name: mode,
-      length,
-      iv: decode(encrypted.iv, 'RFC4648'),
-    };
-    const key = await this.genEncryptionKey(password, mode, length);
-    const decrypted = await window.crypto.subtle.decrypt(algo, key, decode(encrypted.cipherText, 'RFC4648'));
-
-    return new TextDecoder().decode(decrypted);
+    try {
+      const algo = {
+        name: mode,
+        length,
+        iv: decode(encrypted.iv, 'RFC4648'),
+      };
+      const key = await this.genEncryptionKey(password, mode, length);
+      const decrypted = await window.crypto.subtle.decrypt(algo, key, decode(encrypted.cipherText, 'RFC4648'));
+      return new TextDecoder().decode(decrypted);
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
   },
+
   async createKeystore(user) {
     const obj = {
       publicKey: user.publicKey,

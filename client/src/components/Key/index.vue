@@ -78,6 +78,7 @@
           v-model="password"
           :label="$t('enterPassword')"
           :type="isPwd ? 'password' : 'text'"
+          :error="!isValid"
           class="q-my-sm signing-key"
         >
           <template v-slot:append>
@@ -86,6 +87,9 @@
               class="cursor-pointer"
               @click="isPwd = !isPwd"
             />
+          </template>
+          <template v-slot:error>
+            {{ $t('wrongPassword') }}
           </template>
         </q-input>
       </div>
@@ -149,6 +153,7 @@ export default {
   },
   data() {
     return {
+      isValid: true,
       dialogMode: 'new',
       newKey: false,
       signKey: false,
@@ -204,10 +209,21 @@ export default {
     async lockKey() {
       await this.$store.dispatch('settings/setAuthenticatedAccount', null);
     },
+
     async unlockKey(password) {
       const decrypted = await this.$crypto.decrypt(this.user.secretKey, password);
-      this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
+      if (decrypted) {
+        await this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
+        this.$emit('sign');
+        this.$emit('closeUnlock');
+      } else {
+        this.isValid = false;
+        setTimeout(() => {
+          this.isValid = true;
+        }, 2000);
+      }
     },
+
     async backup() {
       await this.$crypto.createKeystore(this.user);
     },

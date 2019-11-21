@@ -87,5 +87,6 @@ export default {
   unlockKey: 'Please unlock your signing key',
   unlockKeyDesc: 'Enter the password for your signing key to create a timestamp',
   unlockKeyLabel: 'Unlock Key',
+  wrongPassword: 'Wrong password',
 
 };

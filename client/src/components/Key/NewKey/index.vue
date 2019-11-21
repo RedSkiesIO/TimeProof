@@ -31,6 +31,7 @@
         v-model="password"
         :label="$t('enterPassword')"
         :type="isPwd ? 'password' : 'text'"
+        :error="!isValid"
         class="q-ma-sm signing-key"
       >
         <template v-slot:append>
@@ -39,6 +40,9 @@
             class="cursor-pointer"
             @click="isPwd = !isPwd"
           />
+        </template>
+        <template v-slot:error>
+          {{ $t('wrongPassword') }}
         </template>
       </q-input>
     </div>
@@ -51,7 +55,7 @@
       />
     </div>
     <div
-      v-if="mode='new'"
+      v-if="mode==='new'"
       class="q-pa-md justify-center text-center text-weight-bold"
     >
       <span class="text-red">DO NOT FORGET</span> to save your password.
@@ -77,6 +81,7 @@ export default {
     return {
       password: null,
       isPwd: true,
+      isValid: true,
     };
   },
 
@@ -135,8 +140,16 @@ export default {
 
     async unlockKey(password) {
       const decrypted = await this.$crypto.decrypt(this.user.secretKey, password);
-      await this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
-      this.$emit('closeUnlock');
+      if (decrypted) {
+        await this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
+        this.$emit('sign');
+        this.$emit('closeUnlock');
+      } else {
+        this.isValid = false;
+        setTimeout(() => {
+          this.isValid = true;
+        }, 2000);
+      }
     },
   },
 };

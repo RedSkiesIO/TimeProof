@@ -124,6 +124,7 @@
         <UnlockKey
           mode="unlock"
           @closeUnlock="unlockKey=false"
+          @sign="signHash"
         />
       </q-dialog>
       <q-inner-loading :showing="visible">
