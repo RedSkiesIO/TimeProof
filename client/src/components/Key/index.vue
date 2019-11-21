@@ -50,12 +50,15 @@
           @click="lockKey"
         />
       </div>
-      <div class="row justify-center text-blue q-mb-sm">
+      <div
+        class="row justify-center text-blue q-mb-sm"
+        @click="openImportDialog"
+      >
         {{ $t('importKey') }}
       </div>
       <div
         class="row justify-center text-blue"
-        @click="newKey=true"
+        @click="openNewKeyDialog"
       >
         {{ $t('newKey') }}
       </div>
@@ -101,7 +104,10 @@
           @click="unlockKey(password)"
         />
       </div>
-      <div class="row justify-center text-blue q-mb-sm">
+      <div
+        class="row justify-center text-blue q-mb-sm"
+        @click="openImportDialog"
+      >
         {{ $t('importKey') }}
       </div>
       <div
@@ -138,6 +144,10 @@
       <div class="row justify-end" />
     </q-card>
     <q-dialog v-model="newKey">
+      <Import
+        v-if="dialogMode==='import'"
+        @close="newKey=false"
+      />
       <Backup
         v-if="dialogMode=='backup'"
         @backup="backup"
@@ -145,6 +155,7 @@
       <NewKey
         v-if="dialogMode=='new'"
         :mode="dialogMode"
+        @close="newKey=false"
       />
     </q-dialog>
   </div>
@@ -153,12 +164,14 @@
 import User from '../../store/User';
 import NewKey from './NewKey';
 import Backup from './BackupKey';
+import Import from './ImportKey';
 
 export default {
   name: 'Key',
   components: {
     NewKey,
     Backup,
+    Import,
   },
 
   data() {
@@ -204,9 +217,18 @@ export default {
   },
 
   methods: {
+    openNewKeyDialog() {
+      this.newKey = true;
+      this.dialogMode = 'new';
+    },
     openBackupdialog() {
       this.newKey = true;
       this.dialogMode = 'backup';
+    },
+
+    openImportDialog() {
+      this.newKey = true;
+      this.dialogMode = 'import';
     },
 
     async addKey(password) {

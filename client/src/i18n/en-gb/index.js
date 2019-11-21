@@ -75,6 +75,7 @@ export default {
   backupKey: 'Please backup your signing key',
   backupKeyDesc: 'If you lose your signing key you will not be able to prove your timestamps',
   importKey: 'Import a signing key',
+  importKeyDesc: 'Select your key type',
   newKey: 'Create a new signing key',
   signingKeyLocked: 'Your signing key is locked',
   signingKeyLockedDesc: 'Please enter your signing key password to unlock',
@@ -88,5 +89,8 @@ export default {
   unlockKeyDesc: 'Enter the password for your signing key to create a timestamp',
   unlockKeyLabel: 'Unlock Key',
   wrongPassword: 'Wrong password',
-
+  saveKeystore: 'Save your Keystore file',
+  saveKeystoreDesc: ' Don\'t lose it, it can not be recovered if you lose it',
+  addKey: 'Add Key',
+  enterSigningKey: 'Enter your signing key',
 };

@@ -25,6 +25,17 @@
       </div>
     </div>
 
+    <div v-if="mode==='import'">
+      <div
+        class="row justify-center text-weight-bold text-h6 q-mb-xs"
+      >
+        <div>{{ $t('encrypt your key') }}</div>
+      </div>
+      <div class="row justify-center">
+        {{ $t('newKeyDesc') }}
+      </div>
+    </div>
+
 
     <div class="row">
       <q-input
@@ -59,8 +70,8 @@
       class="q-pa-md justify-center text-center text-weight-bold"
     >
       <span class="text-red">DO NOT FORGET</span> to save your password.
-      You will need this<br><span class="text-red">Password + Keystore</span>
-      File to unlock your signing key.
+      You will need this<br><span class="text-red">Password + Keystore File</span>
+      to unlock your signing key.
     </div>
   </q-card>
 </template>
@@ -74,6 +85,11 @@ export default {
     mode: {
       type: String,
       required: true,
+    },
+    keypair: {
+      default: null,
+      type: Object,
+      required: false,
     },
   },
 
@@ -106,6 +122,9 @@ export default {
       if (this.mode === 'new') {
         return this.$t('createKeyLabel');
       }
+      if (this.mode === 'import') {
+        return this.$t('importKeyLabel');
+      }
       return this.$t('unlockKeyLabel');
     },
   },
@@ -116,6 +135,9 @@ export default {
         if (this.mode === 'new') {
           await this.addKey(this.password);
         }
+        if (this.mode === 'import') {
+          await this.addKey(this.password);
+        }
         await this.unlockKey(this.password);
       } catch (e) {
         console.log('ERROR: ', e);
@@ -124,7 +146,12 @@ export default {
 
 
     async addKey(password) {
-      const keypair = this.$keypair.new();
+      console.log('keypair: ', this.keypair);
+      let { keypair } = this;
+
+      if (this.mode === 'new') {
+        keypair = this.$keypair.new();
+      }
       const encrypted = await this.$crypto.encrypt(keypair.secretKey, password);
 
       await User.update({
@@ -142,8 +169,10 @@ export default {
       const decrypted = await this.$crypto.decrypt(this.user.secretKey, password);
       if (decrypted) {
         await this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
+        console.log('called');
         this.$emit('sign');
         this.$emit('closeUnlock');
+        this.$emit('close');
       } else {
         this.isValid = false;
         setTimeout(() => {
