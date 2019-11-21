@@ -20,7 +20,7 @@
             outline
             color="black"
             :label="$t('backup')"
-            @click="backup"
+            @click="openBackupdialog"
           />
         </div>
       </div>
@@ -138,19 +138,29 @@
       <div class="row justify-end" />
     </q-card>
     <q-dialog v-model="newKey">
-      <NewKey :mode="dialogMode" />
+      <Backup
+        v-if="dialogMode=='backup'"
+        @backup="backup"
+      />
+      <NewKey
+        v-if="dialogMode=='new'"
+        :mode="dialogMode"
+      />
     </q-dialog>
   </div>
 </template>
 <script>
 import User from '../../store/User';
 import NewKey from './NewKey';
+import Backup from './BackupKey';
 
 export default {
   name: 'Key',
   components: {
     NewKey,
+    Backup,
   },
+
   data() {
     return {
       isValid: true,
@@ -194,6 +204,11 @@ export default {
   },
 
   methods: {
+    openBackupdialog() {
+      this.newKey = true;
+      this.dialogMode = 'backup';
+    },
+
     async addKey(password) {
       const keypair = this.$keypair.new();
       const encrypted = await this.$crypto.encrypt(keypair.secretKey, password);
@@ -226,6 +241,7 @@ export default {
 
     async backup() {
       await this.$crypto.createKeystore(this.user);
+      this.newKey = false;
     },
   },
 };
