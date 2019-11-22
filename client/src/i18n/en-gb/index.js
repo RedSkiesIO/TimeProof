@@ -24,6 +24,7 @@ export default {
   filesDoNotMatch: 'Files do not match',
   copy: 'copy',
   copied: 'copied',
+  copyPubKey: 'Click to copy your public key',
   verify: 'verify',
   proofId: 'Proof ID',
   signed: 'Signed',

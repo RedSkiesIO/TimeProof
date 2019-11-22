@@ -28,7 +28,6 @@ const crypto = {
       length,
       iv: window.crypto.getRandomValues(new Uint8Array(ivLength)),
     };
-    console.log(algo.iv);
     const key = await this.genEncryptionKey(password, mode, length);
     const encoded = new TextEncoder().encode(text);
     return {

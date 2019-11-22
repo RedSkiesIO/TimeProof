@@ -215,7 +215,6 @@ export default {
     },
 
     key() {
-      console.log(this.$store.state.settings.authenticatedAccount);
       return this.$store.state.settings.authenticatedAccount;
     },
   },
