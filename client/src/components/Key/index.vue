@@ -112,7 +112,7 @@
       </div>
       <div
         class="row justify-center text-blue"
-        @click="newKey=true"
+        @click="openNewKeyDialog"
       >
         {{ $t('newKey') }}
       </div>
@@ -138,7 +138,10 @@
           @click="newKey=true"
         />
       </div>
-      <div class="row justify-center text-blue q-mb-sm">
+      <div
+        class="row justify-center text-blue q-mb-sm"
+        @click="openImportDialog"
+      >
         {{ $t('importKey') }}
       </div>
       <div class="row justify-end" />

@@ -55,10 +55,10 @@ const crypto = {
 
   async createKeystore(user) {
     const obj = {
-      publicKey: user.publicKey,
+      publicKey: user.pubKey,
       cipher: user.secretKey,
     };
-    this.downloadObjectAsJson(JSON.stringify(obj), 'test');
+    this.downloadObjectAsJson(obj, 'test');
   },
 
   downloadObjectAsJson(exportObj, exportName) {

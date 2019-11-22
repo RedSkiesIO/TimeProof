@@ -144,9 +144,12 @@ export default {
             User.update({
               data: {
                 accountIdentifier: this.account.accountIdentifier,
-                secretKey: json.cipherText,
+                pubKey: json.pubKey,
+                secretKey: json.cipher,
               },
             });
+          } else {
+            console.log('invalid keystore file');
           }
           console.log(json);
         } catch (e) {

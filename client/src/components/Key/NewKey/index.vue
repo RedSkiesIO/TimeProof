@@ -9,8 +9,12 @@
       >
         <div>{{ $t('createKeyLabel') }}</div>
       </div>
-      <div class="row justify-center">
+      <div class="row justify-center q-mb-sm text-weight-bold">
         {{ $t('newKeyDesc') }}
+      </div>
+      <div class="row text-center justify-center">
+        PLEASE NOTE this will overwrite an existing signing key. <br>
+        Make sure you have created a backup if you want to keep it.
       </div>
     </div>
 
