@@ -65,7 +65,25 @@
       v-if="importKeystore && !keypair"
       class="q-pa-lg q-gutter-y-sm justify-center"
     >
-      import keystore file
+      <div class="row">
+        {{ $t('importKeystoreFile') }}
+      </div>
+      <div class="row">
+        <q-input
+          filled
+          type="file"
+          hint="Native file"
+          @input="val => { file = val[0] }"
+        />
+      </div>
+      <div class="row">
+        <q-btn
+          outline
+          :label="$t('addKey')"
+          color="primary"
+          @click="importFromKeystore()"
+        />
+      </div>
     </q-card>
     <Encrypt
       v-if="openEncrypt"
@@ -77,6 +95,8 @@
 </template>
 <script>
 import Encrypt from '../NewKey';
+import User from '../../../store/User';
+
 
 export default {
   components: {
@@ -92,13 +112,48 @@ export default {
       isPwd: true,
       keypair: null,
       openEncrypt: false,
+      file: null,
     };
+  },
+
+  computed: {
+    account() {
+      const account = this.$auth.account();
+      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+        return null;
+      }
+      return account;
+    },
   },
 
   methods: {
     async importFromKey() {
       this.keypair = this.$keypair.keypairFromSecretKey(this.secretKey);
       this.openEncrypt = true;
+    },
+
+    async importFromKeystore() {
+      console.log(this.file);
+      const reader = await new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const json = JSON.parse(evt.target.result);
+          if (json.cipher) {
+            console.log('called');
+            this.$store.dispatch('settings/setAuthenticatedAccount', null);
+            User.update({
+              data: {
+                accountIdentifier: this.account.accountIdentifier,
+                secretKey: json.cipherText,
+              },
+            });
+          }
+          console.log(json);
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      reader.readAsText(this.file);
     },
   },
 };

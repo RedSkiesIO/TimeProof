@@ -95,4 +95,5 @@ export default {
   enterSigningKey: 'Enter your signing key',
   encryptKey: 'Encrypt your key',
   importKeyLabel: 'Import Key',
+  importKeystoreFile: 'Import a keystore file',
 };
