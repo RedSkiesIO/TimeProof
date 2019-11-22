@@ -159,7 +159,7 @@
       <NewKey
         v-if="dialogMode=='new'"
         :mode="dialogMode"
-        @close="newKey=false"
+        @close="closeDialog"
       />
     </q-dialog>
   </div>
@@ -221,6 +221,10 @@ export default {
   },
 
   methods: {
+    closeDialog() {
+      this.newKey = false;
+      this.$emit('close');
+    },
     openNewKeyDialog() {
       this.newKey = true;
       this.dialogMode = 'new';

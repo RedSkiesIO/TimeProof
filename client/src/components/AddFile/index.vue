@@ -120,10 +120,16 @@
           :scope="scope"
         />
       </div>
-      <q-dialog v-model="unlockKey">
+      <q-dialog v-model="dialog">
         <UnlockKey
+          v-if="unlockKey"
           mode="unlock"
-          @closeUnlock="unlockKey=false"
+          @closeUnlock="dialog=false"
+          @sign="signHash"
+        />
+        <NewKey
+          v-if="newKey"
+          @close="dialog=false"
           @sign="signHash"
         />
       </q-dialog>
@@ -141,12 +147,14 @@ import User from '../../store/User';
 import Timestamp from '../../store/Timestamp';
 import Proof from '../Proof';
 import UnlockKey from '../Key/NewKey';
+import NewKey from '../Key';
 
 export default {
   name: 'AddFile',
   components: {
     Proof,
     UnlockKey,
+    NewKey,
   },
 
   props: {
@@ -158,6 +166,8 @@ export default {
 
   data() {
     return {
+      dialog: false,
+      newKey: false,
       unlockKey: false,
       file: null,
       confirmed: false,
@@ -265,8 +275,12 @@ export default {
         const sig = this.$keypair.signMessage(this.file.hash, this.key);
         this.file.signature = this.$base32(sig).toLowerCase();
         this.sendProof();
+      } else if (!this.user.secretKey) {
+        this.newKey = true;
+        this.dialog = true;
       } else {
         this.unlockKey = true;
+        this.dialog = true;
       }
     },
 

@@ -151,7 +151,6 @@ export default {
 
 
     async addKey(password) {
-      console.log('keypair: ', this.keypair);
       let { keypair } = this;
 
       if (this.mode === 'new') {
@@ -174,7 +173,6 @@ export default {
       const decrypted = await this.$crypto.decrypt(this.user.secretKey, password);
       if (decrypted) {
         await this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
-        console.log('called');
         this.$emit('sign');
         this.$emit('closeUnlock');
         this.$emit('close');
