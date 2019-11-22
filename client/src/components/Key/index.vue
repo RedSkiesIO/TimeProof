@@ -83,6 +83,7 @@
           :type="isPwd ? 'password' : 'text'"
           :error="!isValid"
           class="q-my-sm signing-key"
+          @keyup.enter="unlockKey(password)"
         >
           <template v-slot:append>
             <q-icon

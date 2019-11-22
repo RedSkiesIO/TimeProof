@@ -48,6 +48,7 @@
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"
         class="q-ma-sm signing-key"
+        @keyup.enter="buttonAction"
       >
         <template v-slot:append>
           <q-icon

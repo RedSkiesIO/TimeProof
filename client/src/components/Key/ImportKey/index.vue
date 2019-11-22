@@ -135,19 +135,20 @@ export default {
     async importFromKeystore() {
       console.log(this.file);
       const reader = await new FileReader();
-      reader.onload = (evt) => {
+      reader.onload = async (evt) => {
         try {
           const json = JSON.parse(evt.target.result);
           if (json.cipher) {
             console.log('called');
             this.$store.dispatch('settings/setAuthenticatedAccount', null);
-            User.update({
+            await User.update({
               data: {
                 accountIdentifier: this.account.accountIdentifier,
-                pubKey: json.pubKey,
+                pubKey: json.publicKey,
                 secretKey: json.cipher,
               },
             });
+            this.$emit('close');
           } else {
             console.log('invalid keystore file');
           }
