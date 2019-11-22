@@ -297,7 +297,6 @@ export default {
           if (tx.data.success) {
             const fileHash = tx.data.value.stampDocumentProof.userProof.hash;
             if (fileHash === this.file.base32Hash.toLowerCase()) {
-
               this.file.txId = tx.data.value.stampDocumentProof.transactionId;
               this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
               this.file.signature = tx.data.value.stampDocumentProof.userProof.signature;
