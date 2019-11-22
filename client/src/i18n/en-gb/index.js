@@ -48,7 +48,7 @@ export default {
   about: 'About',
   editProfile: 'Edit Profile',
   usageSummary: 'Usage Summary',
-  timestampsUsed: 'Timestamps Used',
+  timestampsUsed: 'Timestamps used',
   subscription: 'Subscription',
   tier: 'Tier',
   moreTimestamps: 'Need more timestamps?',

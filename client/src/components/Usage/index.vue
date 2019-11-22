@@ -8,7 +8,7 @@
         {{ $t('usageSummary') }}
       </div>
       <div class="row q-gutter-x-md">
-        <div class="column flex-center">
+        <div class="col column flex-center">
           <q-knob
             v-model="usedPercentage"
             readonly
@@ -22,7 +22,7 @@
             {{ $t('timestampsUsed') }}: {{ timestampsUsed }}
           </div>
         </div>
-        <div class="column q-gutter-y-md">
+        <div class="col column q-gutter-y-md">
           <div class="column">
             <div>{{ $t('subscription') }}:</div>
             <div class="text-green">
@@ -92,5 +92,6 @@ export default {
 <style lang="scss">
 .usage-summary {
     border: 2px solid rgba(0, 0, 0, 0.12);
+    max-width: 350px;
 }
 </style>
