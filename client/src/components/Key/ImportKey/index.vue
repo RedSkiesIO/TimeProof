@@ -70,11 +70,14 @@
       </div>
       <div class="row">
         <q-input
-          filled
           type="file"
-          hint="Native file"
-          @input="val => { file = val[0] }"
-        />
+          :error="!isValid"
+          @input="validFile"
+        >
+          <template v-slot:error>
+            {{ $t('invalid keystore file') }}
+          </template>
+        </q-input>
       </div>
       <div class="row">
         <q-btn
@@ -127,19 +130,27 @@ export default {
   },
 
   methods: {
+    validFile(val) {
+      // eslint-disable-next-line prefer-destructuring
+      this.file = val[0];
+
+      if (this.file.type !== 'application/json') {
+        this.isValid = false;
+      } else {
+        this.isValid = true;
+      }
+    },
     async importFromKey() {
       this.keypair = this.$keypair.keypairFromSecretKey(this.secretKey);
       this.openEncrypt = true;
     },
 
     async importFromKeystore() {
-      console.log(this.file);
       const reader = await new FileReader();
       reader.onload = async (evt) => {
         try {
           const json = JSON.parse(evt.target.result);
           if (json.cipher) {
-            console.log('called');
             this.$store.dispatch('settings/setAuthenticatedAccount', null);
             await User.update({
               data: {
@@ -150,11 +161,10 @@ export default {
             });
             this.$emit('close');
           } else {
-            console.log('invalid keystore file');
+            this.isValid = false;
           }
-          console.log(json);
         } catch (e) {
-          console.log(e);
+          this.isValid = false;
         }
       };
       reader.readAsText(this.file);
