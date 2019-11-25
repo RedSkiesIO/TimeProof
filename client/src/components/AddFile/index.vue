@@ -378,10 +378,14 @@ export default {
 }
 
 .q-uploader--bordered {
-    border: 2px solid rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 15px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }
- .q-field__append .q-icon {
-   display: none;
- }
+
+.q-field__append .q-icon {
+  display: none;
+}
 
 </style>

@@ -41,8 +41,9 @@ const crypto = {
       const algo = {
         name: mode,
         length,
-        iv: decode(encrypted.iv, 'RFC4648'),
+        iv: new Uint8Array(decode(encrypted.iv, 'RFC4648')),
       };
+
       const key = await this.genEncryptionKey(password, mode, length);
       const decrypted = await window.crypto.subtle.decrypt(algo, key, decode(encrypted.cipherText, 'RFC4648'));
       return new TextDecoder().decode(decrypted);

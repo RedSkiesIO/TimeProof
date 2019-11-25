@@ -173,11 +173,14 @@ export default {
 .q-panel {
   height: inherit;
 }
-
+.sign-verify .q-card {
+  padding: 0;
+  border: 0;
+}
 .sign-verify .q-card > div:first-child {
-    border-top: 2px solid rgba(0, 0, 0, 0.12);
-    border-left: 2px solid rgba(0, 0, 0, 0.12);
-    border-right: 2px solid rgba(0, 0, 0, 0.12);
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
 
 }
 

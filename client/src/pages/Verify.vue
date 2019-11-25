@@ -67,24 +67,12 @@ export default {
 };
 </script>
 <style lang="scss">
-.q-tab-panel {
+.verify .q-card {
   padding: 0;
-  height: inherit;
 }
 
-.q-panel {
-  height: inherit;
+.verify .q-uploader__list {
+    border-radius: 15px;
 }
 
-.verify .q-card > div:first-child {
-    border: 2px solid rgba(0, 0, 0, 0.12);
-}
-
-.upgrade {
-  width: inherit;
-  max-height:inherit;
-  min-width: 25rem;
-  min-height: 25rem;
-  border: 2px solid rgba(0, 0, 0, 0.12);
-}
 </style>

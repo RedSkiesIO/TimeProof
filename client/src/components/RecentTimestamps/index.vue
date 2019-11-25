@@ -2,7 +2,7 @@
   <div>
     <q-card
       flat
-      class="recent-timestamps q-pa-sm"
+      class="recent-timestamps"
     >
       <div class="row text-weight-bold text-h6">
         {{ $t('recentTimestamps') }}
@@ -146,7 +146,6 @@ export default {
 </script>
 <style lang="scss">
 .recent-timestamps {
-    border: 2px solid rgba(0, 0, 0, 0.12);
     width: 25em;
 }
 .stamp-item {

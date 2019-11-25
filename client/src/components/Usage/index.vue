@@ -2,7 +2,7 @@
   <div>
     <q-card
       flat
-      class=" usage-summary q-pa-sm"
+      class="left-box"
     >
       <div class="row text-weight-bold text-h6">
         {{ $t('usageSummary') }}

@@ -3,7 +3,7 @@
     <q-card
       v-if="key && user.secretKey"
       flat
-      class="account q-pa-sm"
+      class="left-box"
     >
       <div class="row justify-between text-weight-bold text-h6 q-mb-xs">
         <div>{{ $t('signingKey') }}</div>
@@ -68,7 +68,7 @@
     <q-card
       v-if="!key && user.secretKey"
       flat
-      class="account q-pa-sm"
+      class="left-box"
     >
       <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
         <div>{{ $t('signingKeyLocked') }}</div>
@@ -123,7 +123,7 @@
     <q-card
       v-if="!user.secretKey"
       flat
-      class="account q-pa-sm"
+      class="left-box"
     >
       <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
         <div>{{ $t('createKey') }}</div>
@@ -147,7 +147,9 @@
       </div>
       <div class="row justify-end" />
     </q-card>
-    <q-dialog v-model="newKey">
+    <q-dialog
+      v-model="newKey"
+    >
       <Import
         v-if="dialogMode==='import'"
         @close="newKey=false"

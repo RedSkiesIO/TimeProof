@@ -1,1 +1,19 @@
 // app global css in SCSS form
+body {
+    background: $background;
+}
+
+.q-card {
+    border-radius: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 12px;
+}
+
+.left-box {
+    width :350px;
+}
+
+.q-dialog__inner > div {
+    border-radius: 15px;
+    box-shadow: none;
+}

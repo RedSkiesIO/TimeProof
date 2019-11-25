@@ -2,7 +2,7 @@
   <div>
     <q-card
       flat
-      class="account q-pa-sm"
+      class="left-box"
     >
       <div class="row text-weight-bold text-h6 q-mb-xs">
         {{ $t('account') }}
@@ -92,9 +92,6 @@ export default {
 };
 </script>
 <style lang="scss">
-.account {
-    border: 2px solid rgba(0, 0, 0, 0.12);
-}
 
 .signing-key {
   width: 100%;
