@@ -107,4 +107,5 @@ export default {
   privateKey: 'Private Key',
   invalidKeystore: 'Invalid keystore file',
   invalidPasswordLength: 'Password must contain at least 8 characters',
+  verifyTimestamp: 'Verify a timestamp',
 };

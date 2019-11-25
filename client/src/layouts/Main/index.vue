@@ -15,6 +15,16 @@
           shrink
         >
           <q-route-tab
+            name="dashboard"
+            :label="$t('dashboard')"
+            to="/"
+          />
+          <q-route-tab
+            name="verify"
+            :label="$t('verify')"
+            to="/verify"
+          />
+          <q-route-tab
             name="about"
             :label="$t('about')"
             to="/about"

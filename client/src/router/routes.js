@@ -7,6 +7,13 @@ const routes = [
       { path: '', component: () => import('pages/Index.vue') },
     ],
   },
+  {
+    path: '/verify',
+    component: () => import('layouts/Main'),
+    children: [
+      { path: '', component: () => import('pages/Verify.vue') },
+    ],
+  },
 ];
 
 // Always leave this as last one
