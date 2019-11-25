@@ -151,7 +151,8 @@ export default {
 
     async addKey(password) {
       this.$refs.passwordInput.validate();
-      if (!this.$refs.passwordInput.hasError()) {
+      if (!this.$refs.passwordInput.hasError) {
+        console.log('called');
         let { keypair } = this;
 
         if (this.mode === 'new') {
