@@ -15,7 +15,10 @@
         <div><q-icon name="fas fa-envelope" /></div>
         <div>{{ user.email }}</div>
       </div>
-      <div class="row q-gutter-x-sm q-mb-xs">
+      <div
+        v-if="user.pubKey"
+        class="row q-gutter-x-sm q-mb-xs"
+      >
         <div><q-icon name="fas fa-key" /></div>
         <div
           class="overflow"

@@ -14,13 +14,13 @@
         <q-btn
           outline
           color="primary"
-          label="Keystore file"
+          :label="$t('keystoreFile')"
           @click="importKeystore=true"
         />
         <q-btn
           outline
           color="primary"
-          label="Private Key"
+          :label="$t('privateKey')"
           @click="importKey=true"
         />
       </div>
@@ -29,16 +29,16 @@
       v-if="importKey && !keypair"
       class="q-pa-lg q-gutter-y-sm justify-center"
     >
-      <div class="row">
+      <div class="row text-h6 text-weight-bold justify-center">
         {{ $t('enterSigningKey') }}
       </div>
-      <div class="row">
+      <div class="row justify-center">
         <q-input
           v-model="secretKey"
           :label="$t('signingKey')"
           :type="isPwd ? 'password' : 'text'"
           :error="!isValid"
-          class="q-my-sm signing-key"
+          class="q-my-sm justify-center signing-key"
         >
           <template v-slot:append>
             <q-icon
@@ -65,21 +65,28 @@
       v-if="importKeystore && !keypair"
       class="q-pa-lg q-gutter-y-sm justify-center"
     >
-      <div class="row">
+      <div class="row text-center justify-center text-h6 text-weight-bold">
         {{ $t('importKeystoreFile') }}
       </div>
-      <div class="row">
+      <div
+        v-if="user.pubKey"
+        class="row text-center justify-center"
+      >
+        {{ $t('overwriteKey') }} <br>
+        {{ $t('overwriteKeyDesc') }}
+      </div>
+      <div class="row justify-center">
         <q-input
           type="file"
           :error="!isValid"
           @input="validFile"
         >
           <template v-slot:error>
-            {{ $t('invalid keystore file') }}
+            {{ $t('invalidKeystoe') }}
           </template>
         </q-input>
       </div>
-      <div class="row">
+      <div class="row justify-center">
         <q-btn
           outline
           :label="$t('addKey')"
@@ -126,6 +133,15 @@ export default {
         return null;
       }
       return account;
+    },
+    user() {
+      if (this.account) {
+        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
+        if (user) {
+          return user[0];
+        }
+      }
+      return null;
     },
   },
 

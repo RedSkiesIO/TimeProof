@@ -1,20 +1,28 @@
 <template>
   <q-card
     flat
-    class="account q-pa-sm"
+    class="q-pa-sm"
   >
-    <div v-if="mode==='new'">
+    <div v-if="mode==='new' || mode==='import'">
       <div
         class="row justify-center text-weight-bold text-h6 q-mb-xs"
       >
-        <div>{{ $t('createKeyLabel') }}</div>
+        <div v-if="mode==='new'">
+          {{ $t('createKeyLabel') }}
+        </div>
+        <div v-else>
+          {{ $t('encryptKey') }}
+        </div>
       </div>
       <div class="row justify-center q-mb-sm text-weight-bold">
         {{ $t('newKeyDesc') }}
       </div>
-      <div class="row text-center justify-center">
-        PLEASE NOTE this will overwrite an existing signing key. <br>
-        Make sure you have created a backup if you want to keep it.
+      <div
+        v-if="user.pubKey"
+        class="row text-center justify-center"
+      >
+        {{ $t('overwriteKey') }} <br>
+        {{ $t('overwriteKeyDesc') }}
       </div>
     </div>
 
@@ -29,24 +37,15 @@
       </div>
     </div>
 
-    <div v-if="mode==='import'">
-      <div
-        class="row justify-center text-weight-bold text-h6 q-mb-xs"
-      >
-        <div>{{ $t('encryptKey') }}</div>
-      </div>
-      <div class="row text-center justify-center">
-        {{ $t('newKeyDesc') }}
-      </div>
-    </div>
-
-
     <div class="row">
       <q-input
+        ref="passwordInput"
         v-model="password"
         :label="$t('enterPassword')"
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"
+        :rules="mode !=='unlock' ?
+          [ val => val && val.length >= 9 || $t('invalidPasswordLength')] : []"
         class="q-ma-sm signing-key"
         @keyup.enter="buttonAction"
       >
@@ -71,12 +70,12 @@
       />
     </div>
     <div
-      v-if="mode==='new'"
+      v-if="mode==='new' || mode==='import'"
       class="q-pa-md justify-center text-center text-weight-bold"
     >
-      <span class="text-red">DO NOT FORGET</span> to save your password.
-      You will need this<br><span class="text-red">Password + Keystore File</span>
-      to unlock your signing key.
+      <span class="text-red">{{ $t('doNotForget') }}</span> {{ $t('savePassword') }}
+      <br><span class="text-red">{{ $t('passwordKeystore') }}</span>
+      {{ $t('unlockSigningKey') }}
     </div>
   </q-card>
 </template>
@@ -151,22 +150,25 @@ export default {
 
 
     async addKey(password) {
-      let { keypair } = this;
+      this.$refs.passwordInput.validate();
+      if (!this.$refs.passwordInput.hasError()) {
+        let { keypair } = this;
 
-      if (this.mode === 'new') {
-        keypair = this.$keypair.new();
+        if (this.mode === 'new') {
+          keypair = this.$keypair.new();
+        }
+        const encrypted = await this.$crypto.encrypt(keypair.secretKey, password);
+
+        await User.update({
+          data: {
+            accountIdentifier: this.account.accountIdentifier,
+            pubKey: keypair.publicKey,
+            secretKey: encrypted,
+          },
+        });
+
+        await this.unlockKey(password);
       }
-      const encrypted = await this.$crypto.encrypt(keypair.secretKey, password);
-
-      await User.update({
-        data: {
-          accountIdentifier: this.account.accountIdentifier,
-          pubKey: keypair.publicKey,
-          secretKey: encrypted,
-        },
-      });
-
-      await this.unlockKey(password);
     },
 
     async unlockKey(password) {
