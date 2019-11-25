@@ -71,6 +71,19 @@ export default {
       });
     },
 
+    async fetchTimestamps(page) {
+      const timestamps = (await this.$axios.get(`${process.env.API}GetStamps/${page}/100${process.env.GET_STAMP_KEY}`)).data.value;
+      return timestamps.map(file => ({
+        txId: file.stampDocumentProof.transactionId,
+        hash: file.stampDocumentProof.userProof.hash,
+        signature: file.stampDocumentProof.userProof.signature,
+        accountIdentifier: this.user.accountIdentifier,
+        name: file.fileName,
+        date: file.stampDocumentProof.timeStamp,
+        type: this.re.exec(file.fileName)[1],
+      }));
+    },
+
     async start() {
       if (this.account) {
         const token = await this.$auth.getToken();
@@ -97,19 +110,16 @@ export default {
         try {
           const getTotal = await this.$axios.get(`${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
           const totalTs = getTotal.data.value;
-          if (totalTs > 0 && totalTs <= 100) {
-            const timestamps = await this.$axios.get(`${process.env.API}GetStamps/1/${totalTs}${process.env.GET_STAMP_KEY}`);
-            const files = timestamps.data.value.map(file => ({
-              txId: file.stampDocumentProof.transactionId,
-              hash: file.stampDocumentProof.userProof.hash,
-              signature: file.stampDocumentProof.userProof.signature,
-              accountIdentifier: this.user.accountIdentifier,
-              name: file.fileName,
-              date: file.stampDocumentProof.timeStamp,
-              type: this.re.exec(file.fileName)[1],
-            }));
+          const paginate = Math.ceil(totalTs / 100);
+          if (paginate > 0) {
+            const results = [];
+            for (let i = 1; i <= paginate; i += 1) {
+              results.push(this.fetchTimestamps(i));
+            }
+            const timestamps = (await Promise.all(results)).flat();
+
             await Timestamp.create({
-              data: files,
+              data: timestamps,
             });
           }
 
