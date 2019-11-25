@@ -287,6 +287,16 @@ export default {
     async sendProof() {
       this.visible = true;
       try {
+        if (Date.now() > this.user.tokenExpires) {
+          const token = await this.$auth.getToken();
+          this.$axios.defaults.headers.common.Authorization = `Bearer ${token.accessToken}`;
+          User.update({
+            data: {
+              accountIdentifier: this.account.accountIdentifier,
+              tokenExpires: token.idToken.expiration,
+            },
+          });
+        }
         const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
           fileName: this.file.name,
           hash: this.file.base32Hash,

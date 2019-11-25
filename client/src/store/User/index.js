@@ -17,6 +17,7 @@ export default class User extends Model {
       timestampsUsed: this.attr(0),
       totalTimestamps: this.attr(0),
       timestamps: this.hasMany(Timestamp, 'accountIdentifier'),
+      tokenExpires: this.attr(''),
     };
   }
 }

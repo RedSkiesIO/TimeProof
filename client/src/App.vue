@@ -72,8 +72,6 @@ export default {
     },
 
     async start() {
-      console.log(this.$store.state);
-
       if (this.account) {
         console.log(this.account);
         const token = await this.$auth.getToken();
@@ -84,6 +82,7 @@ export default {
               accountIdentifier: this.account.accountIdentifier,
               name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
               email: this.account.idToken.emails[0],
+              tokenExpires: token.idToken.expiration,
             },
           });
         } else if (this.user) {
@@ -92,6 +91,7 @@ export default {
               accountIdentifier: this.account.accountIdentifier,
               name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
               email: this.account.idToken.emails[0],
+              tokenExpires: token.idToken.expiration,
             },
           });
         }
