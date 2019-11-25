@@ -97,7 +97,7 @@ export default {
         try {
           const getTotal = await this.$axios.get(`${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
           const totalTs = getTotal.data.value;
-          if (totalTs > 0) {
+          if (totalTs > 0 && totalTs <= 100) {
             const timestamps = await this.$axios.get(`${process.env.API}GetStamps/1/${totalTs}${process.env.GET_STAMP_KEY}`);
             const files = timestamps.data.value.map(file => ({
               txId: file.stampDocumentProof.transactionId,

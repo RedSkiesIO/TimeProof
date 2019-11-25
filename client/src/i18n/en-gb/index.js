@@ -1,6 +1,7 @@
 
 export default {
   documentSigner: 'Document Signer',
+  dashboard: 'Dashboard',
   // AddFile
   selectFile: 'Select your File',
   dragDrop: 'Drag and Drop your file to',
