@@ -65,7 +65,7 @@
           </div>
         </div>
       </q-scroll-area>
-      <div class="row text-weight-bold justify-end">
+      <div class="row text-weight-bold justify-end q-mt-md">
         {{ $t('totalTimestamps') }}: {{ user.timestampsUsed }}
       </div>
     </q-card>

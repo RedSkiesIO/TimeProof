@@ -56,33 +56,10 @@
         </div>
       </div>
 
-      <div
-        v-if="proof.type"
-        class="row proof-item justify-between"
-      >
-        <div class="col-auto">
-          {{ $t('type') }}:
-        </div>
-        <div class="col-auto">
-          {{ proof.type }}
-        </div>
-      </div>
-
-      <div
-        v-if="proof.size "
-        class="row proof-item justify-between"
-      >
-        <div class="col-auto">
-          {{ $t('size') }}:
-        </div>
-        <div class="col-auto">
-          {{ proof.size }}
-        </div>
-      </div>
       <div v-if="!proof.verify || (proof.verify && proof.verified)">
         <div class="row proof-item justify-between">
           <div class="col-auto">
-            {{ $t('signed') }}:
+            {{ $t('date') }}:
           </div>
           <div
             v-if="ready"

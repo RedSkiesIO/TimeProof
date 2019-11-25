@@ -58,7 +58,7 @@ const crypto = {
       publicKey: user.pubKey,
       cipher: user.secretKey,
     };
-    this.downloadObjectAsJson(obj, 'test');
+    this.downloadObjectAsJson(obj, 'timestamper-keystore');
   },
 
   downloadObjectAsJson(exportObj, exportName) {
