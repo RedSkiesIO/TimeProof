@@ -73,7 +73,6 @@ export default {
 
     async start() {
       if (this.account) {
-        console.log(this.account);
         const token = await this.$auth.getToken();
         this.$axios.defaults.headers.common.Authorization = `Bearer ${token.accessToken}`;
         if (!this.user) {
