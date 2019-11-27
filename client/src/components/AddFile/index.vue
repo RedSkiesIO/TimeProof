@@ -297,16 +297,21 @@ export default {
             },
           });
         }
-        const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
+        const tx = await this.$axios.post('http://localhost:7071/api/timestamp', {
           fileName: this.file.name,
           hash: this.file.base32Hash,
           publicKey: this.user.pubKey,
           signature: this.file.signature,
         });
 
-        if (tx.data.success) {
+        if (tx.data.value) {
+          console.log('success');
+
+          // this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
+          const timestamp = await this.$web3(tx.data.value.stampDocumentProof.blockNumber);
+          console.log(timestamp);
           this.file.txId = tx.data.value.stampDocumentProof.transactionId;
-          this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
+          this.file.timestamp = timestamp * 1000;
           const timestamps = this.user.timestampsUsed + 1;
           User.update({
             data: {
@@ -320,6 +325,7 @@ export default {
           this.confirmed = true;
         }
       } catch (e) {
+        console.log(e);
         this.error = true;
         this.visible = false;
       }
