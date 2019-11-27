@@ -71,15 +71,16 @@ export default {
       });
     },
 
-    async fetchTimestamps(page) {
-      const timestamps = (await this.$axios.get(`${process.env.API}GetStamps/${page}/100${process.env.GET_STAMP_KEY}`)).data.value;
+    async fetchTimestamps() {
+      const { timestamps } = (await this.$axios.get(`http://localhost:7071/api/getTimestamps/${this.user.accountIdentifier}`)).data;
       return timestamps.map(file => ({
-        txId: file.stampDocumentProof.transactionId,
-        hash: file.stampDocumentProof.userProof.hash,
-        signature: file.stampDocumentProof.userProof.signature,
+        txId: file.id,
+        hash: file.fileHash,
+        signature: file.signature,
+        pubKey: file.publicKey.toLowerCase(),
         accountIdentifier: this.user.accountIdentifier,
         name: file.fileName,
-        date: file.stampDocumentProof.timeStamp,
+        date: file.timestamp,
         type: this.re.exec(file.fileName)[1],
       }));
     },
@@ -108,26 +109,29 @@ export default {
           });
         }
         try {
-          const getTotal = await this.$axios.get(`${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
-          const totalTs = getTotal.data.value;
-          const paginate = Math.ceil(totalTs / 100);
-          if (paginate > 0) {
-            const results = [];
-            for (let i = 1; i <= paginate; i += 1) {
-              results.push(this.fetchTimestamps(i));
-            }
-            const timestamps = (await Promise.all(results)).flat();
+          // const getTotal = await this.$axios.get(
+          // `${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
+          // const totalTs = getTotal.data.value;
+          // const paginate = Math.ceil(totalTs / 100);
+          // // if (paginate > 0) {
+          //   const results = [];
+          //   for (let i = 1; i <= paginate; i += 1) {
+          //     results.push(this.fetchTimestamps(i));
+          //   }
+          //   const timestamps = (await Promise.all(results)).flat();
 
-            await Timestamp.create({
-              data: timestamps,
-            });
-          }
+          const timestamps = await this.fetchTimestamps();
+
+          await Timestamp.create({
+            data: timestamps,
+          });
+          // }
 
           User.update({
             data: {
               accountIdentifier: this.account.accountIdentifier,
               timestampsUsed: this.timestampsUsed,
-              totalTimestamps: totalTs,
+              totalTimestamps: timestamps.length,
             },
           });
         } catch (e) {

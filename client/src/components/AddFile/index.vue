@@ -304,14 +304,15 @@ export default {
           signature: this.file.signature,
         });
 
-        if (tx.data.value) {
+        if (tx.data.success) {
+          console.log(tx.data);
           console.log('success');
-
-          // this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
-          const timestamp = await this.$web3(tx.data.value.stampDocumentProof.blockNumber);
-          console.log(timestamp);
-          this.file.txId = tx.data.value.stampDocumentProof.transactionId;
-          this.file.timestamp = timestamp * 1000;
+          // const timestamp = await this.$web3.getTimestamp(
+          //   tx.data.value.stampDocumentProof.blockNumber,
+          // );
+          // console.log(timestamp);
+          this.file.txId = tx.data.value.id;
+          this.file.timestamp = tx.data.value.timestamp;
           const timestamps = this.user.timestampsUsed + 1;
           User.update({
             data: {
@@ -332,35 +333,29 @@ export default {
     },
 
     async verifyProof() {
-      this.$refs.proofId.validate();
-      if (!this.$refs.proofId.hasError) {
-        this.file.verify = true;
-        const txId = this.proofId.replace(/\s+/g, '');
-        try {
-          const tx = await this.$axios.get(`${process.env.API}VerifyStampDocument/${txId.toUpperCase()}${process.env.VERIFY_KEY}`);
-
-          if (tx.data.success) {
-            const fileHash = tx.data.value.stampDocumentProof.userProof.hash;
-            if (fileHash === this.file.base32Hash.toLowerCase()) {
-              this.file.txId = tx.data.value.stampDocumentProof.transactionId;
-              this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
-              this.file.signature = tx.data.value.stampDocumentProof.userProof.signature;
-              this.file.pubKey = tx.data.value.stampDocumentProof.userProof.publicKey;
-              this.file.verified = true;
-            } else {
-              this.file.error = this.$t('filesDoNotMatch');
-              this.file.verified = false;
-            }
-          } else {
-            this.file.error = this.$t('noProofFound');
-            this.file.verified = false;
-          }
-          this.confirmed = true;
-        } catch (e) {
+      this.file.verify = true;
+      const txId = this.proofId.replace(/\s+/g, '');
+      try {
+        const tx = await this.$web3.verifyTimestamp(txId, this.file.base32Hash.toLowerCase());
+        console.log(tx);
+        if (tx && tx.verified) {
+          this.file.txId = txId;
+          this.file.timestamp = tx.timestamp;
+          this.file.signature = tx.signature;
+          this.file.pubKey = tx.publicKey;
+          this.file.verified = true;
+        } else if (tx && !tx.verified) {
+          this.file.error = this.$t('filesDoNotMatch');
+          this.file.verified = false;
+        } else {
           this.file.error = this.$t('noProofFound');
           this.file.verified = false;
-          this.confirmed = true;
         }
+        this.confirmed = true;
+      } catch (e) {
+        this.file.error = this.$t('noProofFound');
+        this.file.verified = false;
+        this.confirmed = true;
       }
     },
   },

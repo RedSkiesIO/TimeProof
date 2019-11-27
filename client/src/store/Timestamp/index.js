@@ -10,6 +10,7 @@ export default class Timestamp extends Model {
       txId: this.attr(''),
       hash: this.attr(''),
       signature: this.attr(''),
+      pubkey: this.attr(''),
       accountIdentifier: this.attr(''),
       name: this.attr(''),
       date: this.attr(''),
