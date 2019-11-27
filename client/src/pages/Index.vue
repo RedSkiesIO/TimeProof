@@ -78,7 +78,7 @@
       </div>
     </div>
 
-    <q-card
+    <div
       v-else
       flat
       class="q-pa-xl flex flex-center column text-center"
@@ -94,7 +94,7 @@
         class="q-mt-md"
         @click="$auth.signIn()"
       />
-    </q-card>
+    </div>
   </q-page>
 </template>
 

@@ -1,12 +1,17 @@
 <template>
   <q-page class="flex justify-center">
     <div
-      v-if="isLoggedIn"
       class="q-mt-lg"
     >
-      <div class="row q-mb-md justify-center text-h5 text-weight-bold">
-        {{ $t('verifyTimestamp') }}
+      <div class="column q-mb-md justify-center text-center text-primary">
+        <div class="col text-h4  text-weight-bold justify-center">
+          {{ $t('verifyTimestamp') }}
+        </div>
+        <div class="col text-h6">
+          Check if a timstamp exists on the blockchain
+        </div>
       </div>
+
       <div
         class="row q-gutter-x-lg"
       >
@@ -19,24 +24,6 @@
         </div>
       </div>
     </div>
-
-    <q-card
-      v-else
-      flat
-      class="q-pa-xl flex flex-center column text-center"
-    >
-      <div class="text-h6 text-weight-bold text-grey-6">
-        {{ $t('notSignedIn') }}
-      </div>
-      <q-btn
-        unelevated
-        flat
-        color="blue"
-        :label="$t('signUpSignIn')"
-        class="q-mt-md"
-        @click="$auth.signIn()"
-      />
-    </q-card>
   </q-page>
 </template>
 
@@ -47,22 +34,6 @@ export default {
   name: 'Verify',
   components: {
     AddFile,
-  },
-
-  data() {
-    return {
-      tab: 'verify',
-    };
-  },
-
-  computed: {
-    isLoggedIn() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
-        return false;
-      }
-      return true;
-    },
   },
 };
 </script>
