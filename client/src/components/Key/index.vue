@@ -262,6 +262,7 @@ export default {
         await this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
         this.$emit('sign');
         this.$emit('closeUnlock');
+        this.password = null;
       } else {
         this.isValid = false;
         setTimeout(() => {
