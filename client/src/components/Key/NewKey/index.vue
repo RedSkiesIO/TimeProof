@@ -41,6 +41,7 @@
       <q-input
         ref="passwordInput"
         v-model="password"
+        autofocus
         :label="$t('enterPassword')"
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"

@@ -9,7 +9,7 @@ Vue.prototype.$web3 = {
       const blockInfo = await web3.eth.getBlock(block);
       return blockInfo.timestamp * 1000;
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
     return null;
   },
