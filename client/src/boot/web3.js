@@ -15,7 +15,6 @@ Vue.prototype.$web3 = {
   },
 
   async verifyTimestamp(id, hash) {
-    console.log(id);
     try {
       const tx = await web3.eth.getTransaction(id);
       const info = JSON.parse(Web3.utils.hexToUtf8(tx.input));

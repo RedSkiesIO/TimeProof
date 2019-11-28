@@ -109,23 +109,10 @@ export default {
           });
         }
         try {
-          // const getTotal = await this.$axios.get(
-          // `${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
-          // const totalTs = getTotal.data.value;
-          // const paginate = Math.ceil(totalTs / 100);
-          // // if (paginate > 0) {
-          //   const results = [];
-          //   for (let i = 1; i <= paginate; i += 1) {
-          //     results.push(this.fetchTimestamps(i));
-          //   }
-          //   const timestamps = (await Promise.all(results)).flat();
-
           const timestamps = await this.fetchTimestamps();
-
           await Timestamp.create({
             data: timestamps,
           });
-          // }
 
           User.update({
             data: {
