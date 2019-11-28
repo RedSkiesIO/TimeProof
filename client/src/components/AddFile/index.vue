@@ -297,7 +297,7 @@ export default {
             },
           });
         }
-        const tx = await this.$axios.post('http://localhost:7071/api/timestamp', {
+        const tx = await this.$axios.post('https://document-timestamp.azurewebsites.net/api/timestamp', {
           fileName: this.file.name,
           hash: this.file.base32Hash,
           publicKey: this.user.pubKey,
@@ -305,12 +305,6 @@ export default {
         });
 
         if (tx.data.success) {
-          console.log(tx.data);
-          console.log('success');
-          // const timestamp = await this.$web3.getTimestamp(
-          //   tx.data.value.stampDocumentProof.blockNumber,
-          // );
-          // console.log(timestamp);
           this.file.txId = tx.data.value.id;
           this.file.timestamp = tx.data.value.timestamp;
           const timestamps = this.user.timestampsUsed + 1;
@@ -337,7 +331,6 @@ export default {
       const txId = this.proofId.replace(/\s+/g, '');
       try {
         const tx = await this.$web3.verifyTimestamp(txId, this.file.base32Hash.toLowerCase());
-        console.log(tx);
         if (tx && tx.verified) {
           this.file.txId = txId;
           this.file.timestamp = tx.timestamp;

@@ -43,6 +43,13 @@
           label="Download Certificate"
           @click="getCertificate"
         />
+        <a
+          class="text-blue q-mt-sm"
+          :href="etherscanTx"
+          target="_blank"
+        >
+          View Transaction
+        </a>
       </div>
     </div>
 
@@ -83,7 +90,7 @@
             v-else
             class="col-auto q-pl-sm"
           >
-            {{ proof.pubKey }}
+            {{ proof.pubKey.toLowerCase() }}
           </div>
         </div>
         <div class="row proof-item justify-between">
@@ -202,6 +209,10 @@ export default {
   },
 
   computed: {
+    etherscanTx() {
+      return `https://kovan.etherscan.io/tx/${this.proof.txId}`;
+    },
+
     user() {
       if (User.all().length > 0) {
         return User.query().first();
@@ -224,6 +235,10 @@ export default {
   },
 
   methods: {
+    viewTx() {
+
+    },
+
     copy(text) {
       navigator.clipboard.writeText(text).then(() => {
         this.copyLabel = this.$t('copied');
