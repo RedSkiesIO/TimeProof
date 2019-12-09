@@ -15,11 +15,11 @@
       <div
         class="row q-gutter-x-lg"
       >
-        <div class="verify">
+        <div>
           <q-card
             flat
           >
-            <AddFile :mode="'verify'" />
+            <Timestamps />
           </q-card>
         </div>
       </div>
@@ -28,12 +28,12 @@
 </template>
 
 <script>
-import AddFile from '../components/AddFile';
+import Timestamps from '../components/Timestamps';
 
 export default {
-  name: 'Verify',
+  name: 'Dashboard',
   components: {
-    AddFile,
+    Timestamps,
   },
 };
 </script>
@@ -42,7 +42,7 @@ export default {
   padding: 0;
 }
 
-.verify .q-uploader__list {
+.sign .q-uploader__list {
     border-radius: 15px;
     width: 80vw;
     border: 2px dashed lightgrey;

@@ -19,7 +19,7 @@
           <q-card
             flat
           >
-            <AddFile :mode="'verify'" />
+            <AddFile :mode="'sign'" />
           </q-card>
         </div>
       </div>
@@ -31,7 +31,7 @@
 import AddFile from '../components/AddFile';
 
 export default {
-  name: 'Verify',
+  name: 'Stamp',
   components: {
     AddFile,
   },
@@ -42,7 +42,7 @@ export default {
   padding: 0;
 }
 
-.verify .q-uploader__list {
+.sign .q-uploader__list {
     border-radius: 15px;
     width: 80vw;
     border: 2px dashed lightgrey;

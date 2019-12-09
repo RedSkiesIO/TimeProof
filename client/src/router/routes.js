@@ -14,6 +14,20 @@ const routes = [
       { path: '', component: () => import('pages/Verify.vue') },
     ],
   },
+  {
+    path: '/stamp',
+    component: () => import('layouts/Main'),
+    children: [
+      { path: '', component: () => import('pages/Stamp.vue') },
+    ],
+  },
+  {
+    path: '/dashboard',
+    component: () => import('layouts/Main'),
+    children: [
+      { path: '', component: () => import('pages/Dashboard.vue') },
+    ],
+  },
 ];
 
 // Always leave this as last one

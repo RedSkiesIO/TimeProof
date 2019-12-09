@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh lpR fFf">
     <q-header
       flat
       unelevated
@@ -49,6 +49,26 @@
         </q-tabs>
       </q-toolbar>
     </q-header>
+
+    <q-drawer
+      v-model="drawer"
+      show-if-above
+      :width="200"
+      :breakpoint="500"
+      bordered
+    >
+      <div class="q-mt-xl columm text-weight-bold text-h6">
+        <div class="col q-px-lg q-py-sm">
+          DASHBOARD
+        </div>
+        <div class="col q-px-lg q-py-sm">
+          STAMP
+        </div>
+        <div class="col q-px-lg q-py-sm">
+          VERIFY
+        </div>
+      </div>
+    </q-drawer>
 
     <q-page-container>
       <router-view v-if="display" />
@@ -111,6 +131,24 @@
 <script>
 import User from '../../store/User';
 
+const menuList = [
+  {
+    icon: 'inbox',
+    label: 'DASHBOARD',
+    separator: true,
+  },
+  {
+    icon: 'send',
+    label: 'Stamp',
+    separator: false,
+  },
+  {
+    icon: 'delete',
+    label: 'Verify',
+    separator: false,
+  },
+];
+
 export default {
   name: 'MainLayout',
 
@@ -126,6 +164,9 @@ export default {
       tab: '',
       dialog: false,
       position: 'top',
+      left: true,
+      menuList,
+      drawer: true,
     };
   },
 
@@ -178,5 +219,11 @@ export default {
 
 .user-dialog .q-dialog__backdrop {
     background: none;
+}
+
+.left-nav .q-item-section {
+  text-transform: 'uppercase';
+  font-weight: 'bold';
+  font-size: large;
 }
 </style>
