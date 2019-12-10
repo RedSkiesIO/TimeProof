@@ -120,7 +120,6 @@
             @click="scope.reset()"
           >{{ $t('differentFile') }}</span>
         </div>
-
         <Proof
           v-if="confirmed"
           :proof="file"
@@ -392,6 +391,6 @@ export default {
 }
 
 .add-border {
-border: 1px solid lighgrey;
+border: 1px solid lightgray;
 }
 </style>
