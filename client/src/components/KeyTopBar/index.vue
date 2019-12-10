@@ -3,8 +3,11 @@
     <q-card
       v-if="key && user.secretKey"
       flat
-      class="signing-box"
+      content-class="q-pa-xl top-box"
     >
+      <div class="row justify-between text-weight-bold text-h6 q-mb-xs">
+        <div>{{ $t('signingKey') }}</div>
+      </div>
       <div class="column bg-red-1 q-pa-sm">
         <div class="row text-center text-weight-bold text-red justify-center">
           {{ $t('backupKey') }}
@@ -47,36 +50,40 @@
           @click="lockKey"
         />
       </div>
-      <div
-        class="row justify-center text-blue q-mb-sm"
-        @click="openImportDialog"
-      >
-        {{ $t('importKey') }}
+      <div class="row">
+        <div
+          class="text-blue q-mb-sm"
+          @click="openImportDialog"
+        >
+          {{ $t('importKey') }}
+        </div>
+        <div
+          class=" text-blue"
+          @click="openNewKeyDialog"
+        >
+          {{ $t('newKey') }}
+        </div>
       </div>
-      <div
-        class="row justify-center text-blue"
-        @click="openNewKeyDialog"
-      >
-        {{ $t('newKey') }}
-      </div>
+
       <div class="row justify-end" />
     </q-card>
 
     <q-card
       v-if="!key && user.secretKey"
       flat
-      class="signing-box"
+      class="top-box"
     >
-      <div class="q-mt-md q-px-sm">
-        <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
-          <div>{{ $t('signingKeyLocked') }}</div>
-        </div>
-        <div class="row justify-center">
-          {{ $t('signingKeyLockedDesc') }}
-        </div>
-        <div class="row">
+      <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
+        <div>{{ $t('signingKeyLocked') }}</div>
+      </div>
+      <div class="row justify-center">
+        {{ $t('signingKeyLockedDesc') }}
+      </div>
+      <div class="row justify-center">
+        <div class="col-5">
           <q-input
             v-model="password"
+            dense
             :label="$t('enterPassword')"
             :type="isPwd ? 'password' : 'text'"
             :error="!isValid"
@@ -95,7 +102,7 @@
             </template>
           </q-input>
         </div>
-        <div class="row justify-center q-mb-sm">
+        <div class="col-2 q-ml-sm unlock-button">
           <q-btn
             outline
             :label="$t('unlock')"
@@ -103,26 +110,36 @@
             @click="unlockKey(password)"
           />
         </div>
+      </div>
+      <!-- <div class="row justify-center q-mb-sm">
+        <q-btn
+          outline
+          :label="$t('unlock')"
+          color="primary"
+          @click="unlockKey(password)"
+        />
+      </div> -->
+      <div class="row justify-center">
         <div
-          class="row justify-center text-blue q-mb-sm"
+          class="text-blue q-mb-sm"
           @click="openImportDialog"
         >
           {{ $t('importKey') }}
         </div>
         <div
-          class="row justify-center text-blue"
+          class=" text-blue"
           @click="openNewKeyDialog"
         >
           {{ $t('newKey') }}
         </div>
-        <div class="row justify-end" />
       </div>
+      <div class="row justify-end" />
     </q-card>
 
     <q-card
       v-if="!user.secretKey"
       flat
-      class="signing-box"
+      class="top-box"
     >
       <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
         <div>{{ $t('createKey') }}</div>
@@ -291,10 +308,7 @@ export default {
   display: flex;
 }
 
-.signing-box {
-  height: 314px;
-}
-.q-card {
-  border: 1px solid lightgrey;
+.unlock-button {
+  margin-top: 12px;
 }
 </style>

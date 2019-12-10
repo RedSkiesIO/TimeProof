@@ -4,9 +4,6 @@
       flat
       class="left-box"
     >
-      <div class="row text-weight-bold text-h6 q-mb-xs">
-        {{ $t('account') }}
-      </div>
       <div class="row q-gutter-x-sm q-mb-xs">
         <div><q-icon name="fas fa-user" /></div>
         <div>{{ user.name }}</div>

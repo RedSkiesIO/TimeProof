@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="proof">
     <div
       v-if="ready"
       id="proof"
-      class="q-pa-sm flex flex-center column text-center"
+      class="q-px-lg flex flex-center column text-center q-pt-lg"
     >
       <q-icon
         v-if="proof.verify && !proof.verified"
@@ -53,7 +53,7 @@
       </div>
     </div>
 
-    <div class="column">
+    <div class="column q-px-md">
       <div class="row proof-item justify-between">
         <div class="col-auto">
           {{ $t('file') }}:
@@ -177,7 +177,7 @@
     </div>
     <div
       v-if="!scope.dialog"
-      class="q-mt-sm text-blue text-center"
+      class="q-mt-sm text-blue text-center q-pb-md"
       @click="scope.reset()"
     >
       {{ $t('anotherFile') }}
@@ -289,4 +289,5 @@ export default {
 .copy-button {
   right: -10px;
 }
+
 </style>

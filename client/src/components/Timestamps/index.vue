@@ -1,19 +1,19 @@
 <template>
   <div>
+    <div class="row text-weight-bold text-h6 justify-start text-weight-bold">
+      <q-icon
+        class="icon-spacing q-mr-sm"
+        name="fas fa-history"
+        size="22px"
+      />
+      Timestamp History
+    </div>
     <q-card
       flat
       class="timestamp-list q-pa-md"
     >
-      <div class="row text-weight-bold text-h6 q-pb-md justify-between">
-        {{ $t('timestamps') }}
-        <div class="flex text-body1 q-gutter-x-md">
-          <div @click="$emit('close')">
-            <q-icon
-              size="sm"
-              name="close"
-            />
-          </div>
-        </div>
+      <div class="row text-weight-bold justify-end q-mr-sm">
+        {{ $t('totalTimestamps') }}: {{ user.timestampsUsed }}
       </div>
       <div class="text-uppercase text-weight-bold text-primary row">
         <div
@@ -65,9 +65,6 @@
           </div>
         </div>
       </q-scroll-area>
-      <div class="row text-weight-bold justify-end q-mt-md">
-        {{ $t('totalTimestamps') }}: {{ user.timestampsUsed }}
-      </div>
     </q-card>
     <q-dialog v-model="confirmed">
       <q-card>
@@ -192,9 +189,8 @@ export default {
 </script>
 <style lang="scss">
 .timestamp-list {
-    border: 2px solid rgba(0, 0, 0, 0.12);
     min-width: 52rem;
-    width: 80vw;
+    width: 70vw;
 }
 .stamp-item2 {
   border-top: 1px solid $grey-4;

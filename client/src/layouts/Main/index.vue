@@ -14,21 +14,6 @@
           indicator-color="primary"
           shrink
         >
-          <q-route-tab
-            name="dashboard"
-            :label="$t('dashboard')"
-            to="/"
-          />
-          <q-route-tab
-            name="verify"
-            :label="$t('verify')"
-            to="/verify"
-          />
-          <q-route-tab
-            name="about"
-            :label="$t('about')"
-            to="/about"
-          />
           <q-tab
             v-if="!isLoggedIn"
             name="signin"
@@ -40,10 +25,9 @@
             class="flex"
           >
             <q-tab
-              size="sm"
-              name="account"
-              icon="account_circle"
-              @click="dialog=true"
+              name="logout"
+              :label="$t('logout')"
+              @click="logOut"
             />
           </div>
         </q-tabs>
@@ -51,21 +35,40 @@
     </q-header>
 
     <q-drawer
+      v-if="isLoggedIn"
       v-model="drawer"
       show-if-above
-      :width="200"
+      :width="250"
       :breakpoint="500"
       bordered
     >
-      <div class="q-mt-xl columm text-weight-bold text-h6">
-        <div class="col q-px-lg q-py-sm">
-          DASHBOARD
+      <div class="q-mt-lg columm text-weight-bold text-h6 justify-end text-left">
+        <div class="col q-px-lg">
+          <q-btn
+            flat
+            color="primary"
+            label="Dashboard"
+            size="lg"
+            to="/dashboard"
+          />
         </div>
-        <div class="col q-px-lg q-py-sm">
-          STAMP
+        <div class="col q-px-lg">
+          <q-btn
+            flat
+            color="primary"
+            label="Stamp"
+            size="lg"
+            to="/stamp"
+          />
         </div>
-        <div class="col q-px-lg q-py-sm">
-          VERIFY
+        <div class="col q-px-lg">
+          <q-btn
+            flat
+            color="primary"
+            label="Verify"
+            size="lg"
+            to="/verify"
+          />
         </div>
       </div>
     </q-drawer>

@@ -4,11 +4,8 @@
       flat
       class="left-box"
     >
-      <div class="row text-weight-bold text-h6">
-        {{ $t('usageSummary') }}
-      </div>
       <div class="row q-gutter-x-md">
-        <div class="col column flex-center">
+        <div class="col-auto column flex-center">
           <q-knob
             v-model="usedPercentage"
             readonly
@@ -22,7 +19,7 @@
             {{ $t('timestampsUsed') }}: {{ timestampsUsed }}
           </div>
         </div>
-        <div class="col column q-gutter-y-md">
+        <div class="col-auto column q-gutter-y-md">
           <div class="column">
             <div>{{ $t('subscription') }}:</div>
             <div class="text-green">

@@ -109,4 +109,5 @@ export default {
   invalidKeystore: 'Invalid keystore file',
   invalidPasswordLength: 'Password must contain at least 8 characters',
   verifyTimestamp: 'Verify a timestamp',
+  createTimestamp: 'Create a timestamp',
 };

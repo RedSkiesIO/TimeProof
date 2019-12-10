@@ -16,11 +16,7 @@
         class="row q-gutter-x-lg"
       >
         <div class="verify">
-          <q-card
-            flat
-          >
-            <AddFile :mode="'verify'" />
-          </q-card>
+          <AddFile :mode="'verify'" />
         </div>
       </div>
     </div>
@@ -43,9 +39,9 @@ export default {
 }
 
 .verify .q-uploader__list {
-    border-radius: 15px;
-    width: 80vw;
-    border: 2px dashed lightgrey;
+    width: 50vw;
+    background-color: white;
+    padding: 0;
 }
 
 </style>

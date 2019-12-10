@@ -8,10 +8,13 @@
     :factory="hashFile"
   >
     <template v-slot:list="scope">
-      <div v-if="scope.files < 1">
+      <div
+        v-if="scope.files < 1"
+        class="bg-white dash-border"
+      >
         <div
 
-          class="q-mt-xl q-pa-xl flex flex-center column text-center"
+          class="q-my-xl q-pa-xl flex flex-center column text-center"
         >
           <q-icon
             name="backup"
@@ -35,7 +38,10 @@
             >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
         </div>
       </div>
-      <div v-else-if="error">
+      <div
+        v-else-if="error"
+        class="bg-white"
+      >
         <div
 
           class="q-mt-xl q-pa-xl flex flex-center column text-center"
@@ -57,6 +63,7 @@
       </div>
       <div
         v-else
+        class="bg-white"
       >
         <div
           v-if="!confirmed"
@@ -109,7 +116,7 @@
           </div>
 
           <span
-            class="q-mt-sm text-blue"
+            class="q-mt-sm text-blue q-pb-md"
             @click="scope.reset()"
           >{{ $t('differentFile') }}</span>
         </div>
@@ -118,6 +125,7 @@
           v-if="confirmed"
           :proof="file"
           :scope="scope"
+          class="add-border"
         />
       </div>
       <q-dialog v-model="dialog">
@@ -372,14 +380,18 @@ export default {
 }
 
 .q-uploader--bordered {
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 15px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
+    border: 0px solid rgba(0, 0, 0, 0.12);
 }
 
 .q-field__append .q-icon {
   display: none;
 }
 
+.dash-border {
+  border: 2px dashed rgba(0, 0, 0, 0.12);
+}
+
+.add-border {
+border: 1px solid lighgrey;
+}
 </style>
