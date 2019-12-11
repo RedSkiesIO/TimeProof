@@ -8,7 +8,7 @@
         class="column justify-center"
         style="height: 100%;"
       >
-        <div class="row justify-between">
+        <div class="row justify-between q-px-sm">
           <div class="col-auto column flex-center">
             <q-knob
               v-model="usedPercentage"
