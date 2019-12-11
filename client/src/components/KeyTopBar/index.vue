@@ -64,7 +64,6 @@
           {{ $t('newKey') }}
         </div>
       </div>
-
       <div class="row justify-end" />
     </q-card>
 
@@ -119,19 +118,21 @@
           @click="unlockKey(password)"
         />
       </div> -->
-      <div class="row justify-center">
-        <div
-          class="text-blue q-mb-sm"
+      <div class="row justify-center q-gutter-x-xs">
+        <q-btn
+          flat
+          color="blue"
+          size="md"
+          label="import key"
           @click="openImportDialog"
-        >
-          {{ $t('importKey') }}
-        </div>
-        <div
-          class=" text-blue"
+        />
+        <q-btn
+          flat
+          color="blue"
+          size="md"
+          label="new key"
           @click="openNewKeyDialog"
-        >
-          {{ $t('newKey') }}
-        </div>
+        />
       </div>
       <div class="row justify-end" />
     </q-card>

@@ -13,7 +13,7 @@
       class="timestamp-list q-pa-md"
     >
       <div class="row text-weight-bold justify-end q-mr-sm">
-        {{ $t('totalTimestamps') }}: {{ user.timestampsUsed }}
+        {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
       </div>
       <div class="text-uppercase text-weight-bold text-primary row">
         <div

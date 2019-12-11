@@ -73,7 +73,6 @@ export default {
 
     async fetchTimestamps() {
       const { timestamps } = (await this.$axios.get(`https://document-timestamp.azurewebsites.net/api/getTimestamps/${this.user.accountIdentifier}`)).data;
-      console.log(timestamps);
       return timestamps.map(file => ({
         txId: file.id,
         hash: file.fileHash,
@@ -89,7 +88,7 @@ export default {
     async start() {
       if (this.account) {
         const token = await this.$auth.getToken();
-        this.$axios.defaults.headers.common.Authorization = `Bearer ${token.accessToken}`;
+        this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
         if (!this.user) {
           User.insert({
             data: {
