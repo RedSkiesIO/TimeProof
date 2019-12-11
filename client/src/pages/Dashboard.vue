@@ -3,8 +3,11 @@
     <div
       v-if="isLoggedIn"
       class="q-my-lg"
+      style="width:71.5vw"
     >
-      <div class="row q-gutter-x-lg q-mb-md">
+      <div
+        class="row q-gutter-x-lg q-mb-md"
+      >
         <div class="col">
           <div class="row text-h6">
             <q-icon
@@ -44,7 +47,7 @@
         v-if="user.timestamps.length > 0"
         class="row q-mt-lg q-gutter-x-lg"
       >
-        <div>
+        <div style="width:100%">
           <Timestamps />
         </div>
       </div>

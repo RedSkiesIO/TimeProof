@@ -188,10 +188,7 @@ export default {
 };
 </script>
 <style lang="scss">
-.timestamp-list {
-    min-width: 52rem;
-    width: 70vw;
-}
+
 .stamp-item2 {
   border-top: 1px solid $grey-4;
   padding: 1rem 0;
