@@ -23,7 +23,7 @@
           <div><q-icon name="fas fa-key" /></div>
           <div
             class="overflow"
-            style="width:80%;"
+            style="width:70%;"
             @click="copy(user.pubKey)"
           >
             {{ user.pubKey.toLowerCase() }}
