@@ -9,9 +9,6 @@
         <div class="row text-center text-weight-bold text-red justify-center">
           {{ $t('backupKey') }}
         </div>
-        <div class="row text-center justify-center">
-          {{ $t('backupKeyDesc') }}
-        </div>
         <div class="row justify-center q-mt-sm">
           <q-btn
             outline
@@ -35,10 +32,17 @@
               class="cursor-pointer"
               @click="isPwd = !isPwd"
             />
+            <q-btn
+              outline
+              round
+              color="primary"
+              icon="lock"
+              @click="lockKey"
+            />
           </template>
         </q-input>
       </div>
-      <div class="row justify-center q-mb-sm">
+      <!-- <div class="row justify-center q-mb-sm">
         <q-btn
           outline
           round
@@ -46,18 +50,22 @@
           icon="lock"
           @click="lockKey"
         />
-      </div>
-      <div
-        class="row justify-center text-blue q-mb-sm"
-        @click="openImportDialog"
-      >
-        {{ $t('importKey') }}
-      </div>
-      <div
-        class="row justify-center text-blue"
-        @click="openNewKeyDialog"
-      >
-        {{ $t('newKey') }}
+      </div> -->
+      <div class="row justify-center q-gutter-x-xs">
+        <q-btn
+          flat
+          color="blue"
+          size="md"
+          label="import key"
+          @click="openImportDialog"
+        />
+        <q-btn
+          flat
+          color="blue"
+          size="md"
+          label="new key"
+          @click="openNewKeyDialog"
+        />
       </div>
       <div class="row justify-end" />
     </q-card>
@@ -67,7 +75,7 @@
       flat
       class="signing-box"
     >
-      <div class="q-mt-md q-px-sm">
+      <div class="q-mt-xs q-px-sm">
         <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
           <div>{{ $t('signingKeyLocked') }}</div>
         </div>
@@ -89,31 +97,42 @@
                 class="cursor-pointer"
                 @click="isPwd = !isPwd"
               />
+              <q-btn
+                outline
+                round
+                icon="lock_open"
+                color="primary"
+                @click="unlockKey(password)"
+              />
             </template>
             <template v-slot:error>
               {{ $t('wrongPassword') }}
             </template>
           </q-input>
         </div>
-        <div class="row justify-center q-mb-sm">
+        <!-- <div class="row justify-center q-mb-sm">
           <q-btn
             outline
             :label="$t('unlock')"
             color="primary"
             @click="unlockKey(password)"
           />
-        </div>
-        <div
-          class="row justify-center text-blue q-mb-sm"
-          @click="openImportDialog"
-        >
-          {{ $t('importKey') }}
-        </div>
-        <div
-          class="row justify-center text-blue"
-          @click="openNewKeyDialog"
-        >
-          {{ $t('newKey') }}
+        </div> -->
+        <div class="row justify-center q-gutter-x-xs">
+          <q-btn
+            flat
+            color="blue"
+            size="md"
+            label="import key"
+            @click="openImportDialog"
+          />
+          <q-btn
+            flat
+            color="blue"
+            size="md"
+            label="new key"
+            @click="openNewKeyDialog"
+          />
         </div>
         <div class="row justify-end" />
       </div>
@@ -294,10 +313,10 @@ export default {
 .signing-key .q-field__append .q-icon {
   display: flex;
 }
-
 .signing-box {
-  height: 314px;
+  height: 220px;
 }
+
 .q-card {
   border: 1px solid lightgrey;
 }

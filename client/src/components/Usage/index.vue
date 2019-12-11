@@ -2,37 +2,42 @@
   <div>
     <q-card
       flat
-      class="left-box"
+      class="dash-top-box left-box"
     >
-      <div class="row q-gutter-x-md">
-        <div class="col-auto column flex-center">
-          <q-knob
-            v-model="usedPercentage"
-            readonly
-            size="70px"
-            :thickness="0.22"
-            color="blue"
-            track-color="blue-3"
-            class="text-blue q-ma-md"
-          />
-          <div>
-            {{ $t('timestampsUsed') }}: {{ timestampsUsed }}
-          </div>
-        </div>
-        <div class="col-auto column q-gutter-y-md">
-          <div class="column">
-            <div>{{ $t('subscription') }}:</div>
-            <div class="text-green">
-              {{ $t(user.tier) }} {{ $t('tier') }}
+      <div
+        class="column justify-center"
+        style="height: 100%;"
+      >
+        <div class="row justify-between">
+          <div class="col-auto column flex-center">
+            <q-knob
+              v-model="usedPercentage"
+              readonly
+              size="70px"
+              :thickness="0.22"
+              color="blue"
+              track-color="blue-3"
+              class="text-blue q-ma-md"
+            />
+            <div>
+              {{ $t('timestampsUsed') }}: {{ timestampsUsed }}
             </div>
           </div>
-          <div class="column q-gutter-y-sm">
-            <div>{{ $t('moreTimestamps') }}</div>
-            <q-btn
-              outline
-              color="primary"
-              :label="$t('upgrade')"
-            />
+          <div class="col-auto column q-gutter-y-md">
+            <div class="column">
+              <div>{{ $t('subscription') }}:</div>
+              <div class="text-green">
+                {{ $t(user.tier) }} {{ $t('tier') }}
+              </div>
+            </div>
+            <div class="column q-gutter-y-sm">
+              <div>{{ $t('moreTimestamps') }}</div>
+              <q-btn
+                outline
+                color="primary"
+                :label="$t('upgrade')"
+              />
+            </div>
           </div>
         </div>
       </div>

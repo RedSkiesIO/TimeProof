@@ -3,10 +3,11 @@
     <q-header
       flat
       unelevated
+      class="bg-primary text-white"
     >
       <q-toolbar>
-        <q-toolbar-title>
-          {{ $t('documentSigner') }}
+        <q-toolbar-title class="text-h5 text-weight-bold">
+          Trustamp
         </q-toolbar-title>
         <q-space />
         <q-tabs
@@ -38,12 +39,12 @@
       v-if="isLoggedIn"
       v-model="drawer"
       show-if-above
-      :width="250"
+      :width="200"
       :breakpoint="500"
-      bordered
+      content-class="bg-primary text-white"
     >
       <div class="q-mt-lg columm text-weight-bold text-h6 justify-end text-left">
-        <div class="col q-px-lg">
+        <!-- <div class="col q-px-lg">
           <q-btn
             flat
             color="primary"
@@ -69,7 +70,45 @@
             size="lg"
             to="/verify"
           />
-        </div>
+        </div> -->
+        <q-list>
+          <q-item
+            v-ripple
+            clickable
+            to="/dashboard"
+          >
+            <q-item-section avatar>
+              <q-icon name="fas fa-home" />
+            </q-item-section>
+            <q-item-section>
+              Dashboard
+            </q-item-section>
+          </q-item>
+          <q-item
+            v-ripple
+            clickable
+            to="/stamp"
+          >
+            <q-item-section avatar>
+              <q-icon name="fas fa-stamp" />
+            </q-item-section>
+            <q-item-section>
+              Stamp
+            </q-item-section>
+          </q-item>
+          <q-item
+            v-ripple
+            clickable
+            to="/verify"
+          >
+            <q-item-section avatar>
+              <q-icon name="fas fa-fingerprint" />
+            </q-item-section>
+            <q-item-section>
+              Verify
+            </q-item-section>
+          </q-item>
+        </q-list>
       </div>
     </q-drawer>
 
@@ -209,6 +248,18 @@ export default {
       e.preventDefault();
       this.$auth.logout();
     },
+    drawerClick(e) {
+      // if in "mini" state and user
+      // click on drawer, we switch it to "normal" mode
+      if (this.miniState) {
+        this.miniState = false;
+
+        // notice we have registered an event with capture flag;
+        // we need to stop further propagation as this click is
+        // intended for switching drawer to "normal" mode only
+        e.stopPropagation();
+      }
+    },
   },
 };
 </script>
@@ -228,5 +279,9 @@ export default {
   text-transform: 'uppercase';
   font-weight: 'bold';
   font-size: large;
+}
+
+.q-item.q-router-link--active {
+  color: #e0e0e0;
 }
 </style>

@@ -8,34 +8,40 @@
     :factory="hashFile"
   >
     <template v-slot:list="scope">
-      <div
-        v-if="scope.files < 1"
-        class="bg-white dash-border"
-      >
+      <div v-if="scope.files < 1">
         <div
-
-          class="q-my-xl q-pa-xl flex flex-center column text-center"
+          class="bg-white dash-border"
         >
-          <q-icon
-            name="backup"
-            class="text-grey-4"
-            style="font-size: 100px"
-          />
+          <div
 
-          <span
-            v-if="mode==='sign'"
-            class="text-h6 text-weight-bold text-grey-6"
-          >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
-          <span
-            v-else
-            class="text-h6 text-weight-bold text-grey-6"
-          >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+            class="q-my-xl q-pa-xl flex flex-center column text-center"
+          >
+            <q-icon
+              name="backup"
+              class="text-grey-4"
+              style="font-size: 100px"
+            />
 
-          <span class="text-body1 text-grey-7">
-            {{ $t('or') }} <span
-              class="text-blue"
-              @click="scope.pickFiles()"
-            >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
+            <span
+              v-if="mode==='sign'"
+              class="text-h6 text-weight-bold text-grey-6"
+            >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
+            <span
+              v-else
+              class="text-h6 text-weight-bold text-grey-6"
+            >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+
+            <span class="text-body1 text-grey-7">
+              {{ $t('or') }} <span
+                class="text-blue"
+                @click="scope.pickFiles()"
+              >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
+          </div>
+        </div>
+        <div
+          class="row text-primary text-h6 justify-center q-mt-sm"
+        >
+          The file never leaves your system
         </div>
       </div>
       <div

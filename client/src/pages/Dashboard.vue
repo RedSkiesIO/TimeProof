@@ -5,7 +5,7 @@
       class="q-my-lg"
     >
       <div class="row q-gutter-x-lg q-mb-md">
-        <div class="col-auto">
+        <div class="col">
           <div class="row text-h6">
             <q-icon
               class="icon-spacing q-mr-sm text-weight-bold"
@@ -14,20 +14,10 @@
             />
             Your Account
           </div>
-          <Account />
-
-
-          <div class="row q-mt-lg text-h6 text-weight-bold">
-            <q-icon
-              class="icon-spacing q-mr-sm"
-              name="fas fa-tachometer-alt"
-              size="sm"
-            />
-            Usage Summary
-          </div>
-          <Usage />
+          <Account class="dash-top-box" />
         </div>
-        <div class="col-auto">
+
+        <div class="col">
           <div class="row text-h6 text-weight-bold">
             <q-icon
               class="icon-spacing q-mr-sm"
@@ -37,6 +27,17 @@
             Your Signing key
           </div>
           <Key />
+        </div>
+        <div class="col">
+          <div class="row text-h6 text-weight-bold">
+            <q-icon
+              class="icon-spacing q-mr-sm"
+              name="fas fa-tachometer-alt"
+              size="sm"
+            />
+            Usage Summary
+          </div>
+          <Usage />
         </div>
       </div>
       <div
@@ -119,5 +120,9 @@ export default {
 
 .icon-spacing {
   margin-top: 4px;
+}
+
+.dash-top-box {
+  height: 220px;
 }
 </style>

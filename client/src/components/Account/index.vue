@@ -2,30 +2,35 @@
   <div>
     <q-card
       flat
-      class="left-box"
+      class="dash-top-box left-box text-weight-bold"
     >
-      <div class="row q-gutter-x-sm q-mb-xs">
-        <div><q-icon name="fas fa-user" /></div>
-        <div>{{ user.name }}</div>
-      </div>
-      <div class="row q-gutter-x-sm q-mb-xs">
-        <div><q-icon name="fas fa-envelope" /></div>
-        <div>{{ user.email }}</div>
-      </div>
       <div
-        v-if="user.pubKey"
-        class="row q-gutter-x-sm q-mb-xs"
+        class="column justify-center q-gutter-y-md q-pa-md"
+        style="height:100%"
       >
-        <div><q-icon name="fas fa-key" /></div>
+        <div class="row q-gutter-x-sm q-mb-xs">
+          <div><q-icon name="fas fa-user" /></div>
+          <div>{{ user.name }}</div>
+        </div>
+        <div class="row q-gutter-x-sm q-mb-xs">
+          <div><q-icon name="fas fa-envelope" /></div>
+          <div>{{ user.email }}</div>
+        </div>
         <div
-          class="overflow"
-          style="width:90%;"
-          @click="copy(user.pubKey)"
+          v-if="user.pubKey"
+          class="row q-gutter-x-sm q-mb-xs"
         >
-          {{ user.pubKey.toLowerCase() }}
-          <q-tooltip>
-            {{ copyLabel }}
-          </q-tooltip>
+          <div><q-icon name="fas fa-key" /></div>
+          <div
+            class="overflow"
+            style="width:80%;"
+            @click="copy(user.pubKey)"
+          >
+            {{ user.pubKey.toLowerCase() }}
+            <q-tooltip>
+              {{ copyLabel }}
+            </q-tooltip>
+          </div>
         </div>
       </div>
     </q-card>
