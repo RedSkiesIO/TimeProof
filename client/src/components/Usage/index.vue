@@ -9,7 +9,7 @@
         style="height: 100%;"
       >
         <div class="row justify-between q-px-sm">
-          <div class="col-auto column flex-center">
+          <div class="col-auto column flex-center q-mr-md">
             <q-knob
               v-model="usedPercentage"
               readonly

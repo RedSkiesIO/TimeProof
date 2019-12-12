@@ -8,7 +8,7 @@
       <div
         class="row q-gutter-x-lg q-mb-md"
       >
-        <div class="col">
+        <div class="col-xl col-lg-auto col-md-auto col-sm-auto">
           <div class="row text-h6">
             <q-icon
               class="icon-spacing q-mr-sm text-weight-bold"
@@ -20,7 +20,7 @@
           <Account class="dash-top-box" />
         </div>
 
-        <div class="col">
+        <div class="col-xl col-lg-auto col-md-auto col-sm-auto">
           <div class="row text-h6 text-weight-bold">
             <q-icon
               class="icon-spacing q-mr-sm"
@@ -31,7 +31,7 @@
           </div>
           <Key />
         </div>
-        <div class="col">
+        <div class="col-xl col-lg-auto col-md-auto col-sm-auto">
           <div class="row text-h6 text-weight-bold">
             <q-icon
               class="icon-spacing q-mr-sm"
