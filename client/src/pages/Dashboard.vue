@@ -8,7 +8,7 @@
       <div
         class="row q-gutter-x-lg q-mb-md"
       >
-        <div class="col-xl col-lg-auto col-md-auto col-sm-auto">
+        <div class="col">
           <div class="row text-h6">
             <q-icon
               class="icon-spacing q-mr-sm text-weight-bold"
@@ -19,19 +19,7 @@
           </div>
           <Account class="dash-top-box" />
         </div>
-
-        <div class="col-xl col-lg-auto col-md-auto col-sm-auto">
-          <div class="row text-h6 text-weight-bold">
-            <q-icon
-              class="icon-spacing q-mr-sm"
-              name="fas fa-key"
-              size="sm"
-            />
-            Your Signing key
-          </div>
-          <Key />
-        </div>
-        <div class="col-xl col-lg-auto col-md-auto col-sm-auto">
+        <div class="col">
           <div class="row text-h6 text-weight-bold">
             <q-icon
               class="icon-spacing q-mr-sm"
@@ -74,9 +62,8 @@
 
 <script>
 import Timestamps from '../components/Timestamps';
-import Account from '../components/Account';
+import Account from '../components/AccountBox';
 import Usage from '../components/Usage';
-import Key from '../components/Key';
 import User from '../store/User';
 
 
@@ -86,7 +73,6 @@ export default {
     Timestamps,
     Account,
     Usage,
-    Key,
   },
 
   computed: {

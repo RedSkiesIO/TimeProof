@@ -28,6 +28,13 @@ const routes = [
       { path: '', component: () => import('pages/Dashboard.vue') },
     ],
   },
+  {
+    path: '/account',
+    component: () => import('layouts/Main'),
+    children: [
+      { path: '', component: () => import('pages/Account.vue') },
+    ],
+  },
 ];
 
 // Always leave this as last one

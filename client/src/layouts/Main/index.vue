@@ -44,33 +44,6 @@
       content-class="bg-primary text-white"
     >
       <div class="q-mt-lg columm text-weight-bold text-h6 justify-end text-left">
-        <!-- <div class="col q-px-lg">
-          <q-btn
-            flat
-            color="primary"
-            label="Dashboard"
-            size="lg"
-            to="/dashboard"
-          />
-        </div>
-        <div class="col q-px-lg">
-          <q-btn
-            flat
-            color="primary"
-            label="Stamp"
-            size="lg"
-            to="/stamp"
-          />
-        </div>
-        <div class="col q-px-lg">
-          <q-btn
-            flat
-            color="primary"
-            label="Verify"
-            size="lg"
-            to="/verify"
-          />
-        </div> -->
         <q-list>
           <q-item
             v-ripple
