@@ -17,7 +17,7 @@
             />
             Your Account
           </div>
-          <Account class="dash-top-box" />
+          <Account />
         </div>
         <div class="col">
           <div class="row text-h6 text-weight-bold">

@@ -2,7 +2,7 @@
   <div>
     <q-card
       flat
-      class="dash-top-box left-box text-weight-bold"
+      class="left-box text-weight-bold"
     >
       <div
         class="column justify-center q-gutter-y-md"

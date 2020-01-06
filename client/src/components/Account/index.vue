@@ -14,6 +14,7 @@
         flat
         color="blue"
         label="Edit Profile"
+        @click="editProfile"
       />
       <q-btn
         flat
@@ -46,6 +47,12 @@
           <q-tooltip>
             {{ copyLabel }}
           </q-tooltip>
+        </div>
+      </div>
+      <div class="row q-gutter-x-sm">
+        <div>membership:</div>
+        <div class="text-green">
+          free tier
         </div>
       </div>
     </div>
@@ -105,7 +112,14 @@ export default {
         console.error('Async: Could not copy text: ', err);
       });
     },
+
+    editProfile(e) {
+      e.preventDefault();
+      this.$auth.editProfile();
+    },
   },
+
+
 };
 </script>
 <style lang="scss">
