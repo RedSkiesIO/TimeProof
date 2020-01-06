@@ -1,7 +1,12 @@
 <template>
-  <div>
-    <AccountDetails />
-    <AccountKey />
+  <div class="q-pa-md">
+    <div class="row justify-center text-h6 text-weight-bold">
+      Account details
+    </div>
+    <div class="row q-mt-sm q-gutter-x-md">
+      <AccountDetails />
+      <AccountKey />
+    </div>
   </div>
 </template>
 <script>

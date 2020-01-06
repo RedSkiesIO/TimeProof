@@ -1,40 +1,55 @@
 <template>
-  <div>
-    <q-card
-      flat
-      class="dash-top-box left-box text-weight-bold"
+  <q-card
+    flat
+    class="row"
+  >
+    <div class="column justify-center q-mx-md">
+      <div class="row justify-center q-mb-sm">
+        <q-avatar size="100px">
+          <img src="https://cdn.quasar.dev/img/avatar.png">
+        </q-avatar>
+      </div>
+
+      <q-btn
+        flat
+        color="blue"
+        label="Edit Profile"
+      />
+      <q-btn
+        flat
+        color="blue"
+        label="change password"
+      />
+    </div>
+    <div
+      class="column justify-center q-gutter-y-md"
+      style="height:100%"
     >
+      <div class="row q-gutter-x-sm q-mb-xs">
+        <div><q-icon name="fas fa-user" /></div>
+        <div>{{ user.name }}</div>
+      </div>
+      <div class="row q-gutter-x-sm q-mb-xs">
+        <div><q-icon name="fas fa-envelope" /></div>
+        <div>{{ user.email }}</div>
+      </div>
       <div
-        class="column justify-center q-gutter-y-md q-pa-md"
-        style="height:100%"
+        v-if="user.pubKey"
+        class="row q-gutter-x-sm q-mb-xs"
       >
-        <div class="row q-gutter-x-sm q-mb-xs">
-          <div><q-icon name="fas fa-user" /></div>
-          <div>{{ user.name }}</div>
-        </div>
-        <div class="row q-gutter-x-sm q-mb-xs">
-          <div><q-icon name="fas fa-envelope" /></div>
-          <div>{{ user.email }}</div>
-        </div>
+        <div><q-icon name="fas fa-key" /></div>
         <div
-          v-if="user.pubKey"
-          class="row q-gutter-x-sm q-mb-xs"
+          class="row overflow"
+          @click="copy(user.pubKey)"
         >
-          <div><q-icon name="fas fa-key" /></div>
-          <div
-            class="overflow"
-            style="width:90%;"
-            @click="copy(user.pubKey)"
-          >
-            {{ user.pubKey.toLowerCase() }}
-            <q-tooltip>
-              {{ copyLabel }}
-            </q-tooltip>
-          </div>
+          {{ user.pubKey.toLowerCase() }}
+          <q-tooltip>
+            {{ copyLabel }}
+          </q-tooltip>
         </div>
       </div>
-    </q-card>
-  </div>
+    </div>
+  </q-card>
 </template>
 <script>
 import User from '../../store/User';
