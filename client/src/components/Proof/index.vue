@@ -12,6 +12,12 @@
         style="font-size: 100px"
       />
       <q-icon
+        v-else-if="proof.blockNumber===-1"
+        name="fas fa-clock"
+        class="text-grey"
+        style="font-size: 100px"
+      />
+      <q-icon
         v-else
         name="fas fa-check-circle"
         class="text-green"
@@ -29,6 +35,14 @@
         <div class="text-body2">
           {{ proof.error }}
         </div>
+      </div>
+      <div
+        v-else-if="proof.blockNumber === -1"
+        class="column"
+      >
+        <span
+          class="text-h6 q-my-sm"
+        >Your time stamp is on it's way</span>
       </div>
       <div
         v-else

@@ -250,6 +250,7 @@ export default {
           date: file.timestamp,
           type: file.type,
           size: file.size,
+          blockNumber: file.blockNumber,
         },
       });
     },
@@ -310,7 +311,7 @@ export default {
             },
           });
         }
-        const tx = await this.$axios.post('https://document-timestamp.azurewebsites.net/api/timestamp', {
+        const tx = await this.$axios.post('http://localhost:7071/api/timestamp', {
           fileName: this.file.name,
           hash: this.file.base32Hash,
           publicKey: this.user.pubKey,
@@ -318,8 +319,11 @@ export default {
         });
 
         if (tx.data.success) {
+          console.log(tx.data);
+
           this.file.txId = tx.data.value.id;
           this.file.timestamp = tx.data.value.timestamp;
+          this.file.blockNumber = tx.data.value.blockNumber;
           const timestamps = this.user.timestampsUsed + 1;
           User.update({
             data: {

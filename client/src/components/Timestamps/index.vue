@@ -58,6 +58,19 @@
             {{ getDate(stamp.date) }}
           </div>
           <div
+            v-if="stamp.blockNumber === -1"
+            class="col q-pr-sm text-center"
+          >
+            <q-chip
+              square
+              color="orange"
+              text-color="white"
+            >
+              pending
+            </q-chip>
+          </div>
+          <div
+            v-else
             class="col q-pr-sm text-right text-blue"
             @click="getCertificate(stamp)"
           >
@@ -196,6 +209,11 @@ export default {
 
 .stamp-item2:hover {
   background: $grey-2;
+}
+
+.stamp-item2 .q-chip {
+  margin: 0;
+  height: 1.5em;
 }
 
 .overflow {

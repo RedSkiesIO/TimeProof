@@ -35,4 +35,16 @@ Vue.prototype.$web3 = {
       return null;
     }
   },
+
+  async updateTimestamps(timestamps) {
+    return timestamps.filter(async ({ id }) => web3.eth.getTransactionReceipt(id))
+      .map(async ({ id, blockNumber }) => {
+        const { timestamp } = await web3.eth.getBlock(blockNumber);
+        return {
+          id,
+          blockNumber,
+          timestamp,
+        };
+      });
+  },
 };

@@ -67,6 +67,7 @@ export default {
           date: file.timestamp,
           type: file.type,
           size: file.size,
+          blockNumber: file.blockNumber,
         },
       });
     },
@@ -82,8 +83,10 @@ export default {
         name: file.fileName,
         date: file.timestamp,
         type: this.re.exec(file.fileName)[1],
+        blockNumber: file.blockNumber,
       }));
     },
+
 
     async start() {
       if (this.account) {
@@ -110,6 +113,11 @@ export default {
         }
         try {
           const timestamps = await this.fetchTimestamps();
+
+          const pendingStamps = timestamps.filter(({ blockNumber }) => blockNumber === -1);
+
+          if (pendingStamps) await this.$web3.updateTimestamps(pendingStamps);
+
           await Timestamp.create({
             data: timestamps,
           });

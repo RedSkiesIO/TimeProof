@@ -20,4 +20,8 @@ export default class User extends Model {
       tokenExpires: this.attr(''),
     };
   }
+
+  get pendingTimestamps() {
+    return this.timestamps.filter(({ blockNumber }) => blockNumber === -1);
+  }
 }
