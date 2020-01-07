@@ -114,13 +114,19 @@ export default {
         try {
           const timestamps = await this.fetchTimestamps();
 
-          const pendingStamps = timestamps.filter(({ blockNumber }) => blockNumber === -1);
-
-          if (pendingStamps) await this.$web3.updateTimestamps(pendingStamps);
-
           await Timestamp.create({
             data: timestamps,
           });
+
+          const pendingStamps = timestamps.filter(({ blockNumber }) => blockNumber === -1);
+
+          if (pendingStamps) {
+            const ts = await this.$web3.updateTimestamps(pendingStamps);
+            if (ts.length > 0) {
+              ts.forEach((stamp) => { this.insertTimestamp(stamp); });
+            }
+          }
+
 
           User.update({
             data: {
