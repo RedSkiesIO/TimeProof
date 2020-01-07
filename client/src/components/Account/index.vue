@@ -3,13 +3,7 @@
     flat
     class="row"
   >
-    <div class="column justify-center q-mx-md">
-      <div class="row justify-center q-mb-sm">
-        <q-avatar size="100px">
-          <img src="https://cdn.quasar.dev/img/avatar.png">
-        </q-avatar>
-      </div>
-
+    <div class="column justify-center q-mx-sm">
       <q-btn
         flat
         color="blue"
@@ -20,11 +14,17 @@
         flat
         color="blue"
         label="change password"
+        @click="forgotPassword"
+      />
+      <q-btn
+        flat
+        color="blue"
+        label="upgrade plan"
       />
     </div>
     <div
-      class="column justify-center q-gutter-y-md"
-      style="height:100%"
+      class="column justify-center q-gutter-y-md q-mr-sm"
+      style="height:100%; margin-top: -9px;"
     >
       <div class="row q-gutter-x-sm q-mb-xs">
         <div><q-icon name="fas fa-user" /></div>
@@ -49,10 +49,18 @@
           </q-tooltip>
         </div>
       </div>
-      <div class="row q-gutter-x-sm">
-        <div>membership:</div>
-        <div class="text-green">
-          free tier
+      <div class="row q-gutter-x-md">
+        <div class="">
+          <div>membership:</div>
+          <div class="text-primary">
+            free tier
+          </div>
+        </div>
+        <div class="">
+          <div>your allowance:</div>
+          <div class="text-primary">
+            50 timestamps per month
+          </div>
         </div>
       </div>
     </div>
@@ -117,6 +125,13 @@ export default {
       e.preventDefault();
       this.$auth.editProfile();
     },
+
+    forgotPassword(e) {
+      e.preventDefault();
+      this.$auth.forgotPassword();
+    },
+
+
   },
 
 

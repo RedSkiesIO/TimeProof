@@ -8,7 +8,7 @@
       <div
         class="row q-gutter-x-lg q-mb-md"
       >
-        <div class="col">
+        <div class="col-auto">
           <div class="row text-h6">
             <q-icon
               class="icon-spacing q-mr-sm text-weight-bold"
@@ -19,7 +19,7 @@
           </div>
           <Account />
         </div>
-        <div class="col">
+        <div class="col-auto">
           <div class="row text-h6 text-weight-bold">
             <q-icon
               class="icon-spacing q-mr-sm"

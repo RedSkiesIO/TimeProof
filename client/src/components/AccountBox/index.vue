@@ -2,10 +2,10 @@
   <div>
     <q-card
       flat
-      class="left-box text-weight-bold"
+      class="left-box text-weight-bold q-px-md"
     >
       <div
-        class="column justify-center q-gutter-y-md"
+        class="column justify-center q-gutter-y-md q-px-md"
         style="height:100%"
       >
         <div class="row q-gutter-x-sm q-mb-xs q-mt-lg">
@@ -16,9 +16,12 @@
           <div><q-icon name="fas fa-envelope" /></div>
           <div>{{ user.email }}</div>
         </div>
-        <div class="row justify-center">
+        <div
+          class="row justify-center"
+          style="margin-top: 9px;"
+        >
           <q-item to="/account">
-            <q-item-section>
+            <q-item-section class="text-blue text-uppercase">
               View Account
             </q-item-section>
           </q-item>
