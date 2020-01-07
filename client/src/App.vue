@@ -60,7 +60,7 @@ export default {
       Timestamp.insert({
         data: {
           txId: file.txId,
-          hash: file.base32Hash,
+          hash: file.hash,
           signature: file.signature,
           accountIdentifier: this.user.accountIdentifier,
           name: file.name,
@@ -113,6 +113,7 @@ export default {
         }
         try {
           const timestamps = await this.fetchTimestamps();
+          console.log(timestamps);
 
           await Timestamp.create({
             data: timestamps,
@@ -122,6 +123,7 @@ export default {
 
           if (pendingStamps) {
             const ts = await this.$web3.updateTimestamps(pendingStamps);
+            console.log(ts);
             if (ts.length > 0) {
               ts.forEach((stamp) => { this.insertTimestamp(stamp); });
             }

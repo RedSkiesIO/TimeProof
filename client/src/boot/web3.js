@@ -40,8 +40,9 @@ Vue.prototype.$web3 = {
     return timestamps.filter(async (stamp) => {
       const tx = await web3.eth.getTransactionReceipt(stamp.txId);
       if (tx) {
-        const { timestamp } = await web3.eth.getBlock(stamp.blockNumber);
-        stamp.timestamp = timestamp;
+        console.log(tx.blockNumber);
+        const { timestamp } = await web3.eth.getBlock(tx.blockNumber);
+        stamp.date = timestamp * 1000;
         stamp.blockNumber = tx.blockNumber;
         return true;
       }
