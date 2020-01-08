@@ -55,7 +55,10 @@
             class=" col text-left"
             @click="timestampDialog(stamp)"
           >
-            {{ getDate(stamp.date) }}
+            <span v-if="stamp.blockNumber !== -1">
+              {{ getDate(stamp.date) }}
+
+            </span>
           </div>
           <div
             v-if="stamp.blockNumber === -1"

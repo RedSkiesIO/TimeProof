@@ -83,7 +83,19 @@
             {{ $t('date') }}:
           </div>
           <div
-            v-if="ready"
+            v-if="proof.blockNumber === -1"
+            class="col-auto"
+          >
+            <q-chip
+              square
+              color="orange"
+              text-color="white"
+            >
+              pending
+            </q-chip>
+          </div>
+          <div
+            v-if="ready && proof.blockNumber !== -1"
             class="col-auto"
           >
             {{ getDate }}
