@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex justify-center text-primary">
-<div class="q-pa-md">
+    <div class="q-pa-md">
       <div class="row justify-center text-h6 text-weight-bold">
         Account details
       </div>

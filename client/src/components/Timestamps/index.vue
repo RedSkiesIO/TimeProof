@@ -74,7 +74,7 @@
           </div>
           <div
             v-else
-            class="col q-pr-sm text-right text-blue"
+            class="col q-pr-sm text-right text-blue cursor-pointer"
             @click="getCertificate(stamp)"
           >
             {{ $t('downloadCertificate') }}
