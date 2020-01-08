@@ -56,17 +56,11 @@ export default {
   },
 
   methods: {
-    async insertTimestamp(file) {
-      Timestamp.insert({
+    async updateTimestamp(file) {
+      Timestamp.update({
+        where: file.txId,
         data: {
-          txId: file.txId,
-          hash: file.hash,
-          signature: file.signature,
-          accountIdentifier: this.user.accountIdentifier,
-          name: file.name,
-          date: file.timestamp,
-          type: file.type,
-          size: file.size,
+          date: file.date,
           blockNumber: file.blockNumber,
         },
       });
@@ -81,9 +75,9 @@ export default {
         pubKey: file.publicKey.toLowerCase(),
         accountIdentifier: this.user.accountIdentifier,
         name: file.fileName,
-        date: file.timestamp,
+        date: Number(file.timestamp),
         type: this.re.exec(file.fileName)[1],
-        blockNumber: file.blockNumber,
+        blockNumber: Number(file.blockNumber),
       }));
     },
 
@@ -113,7 +107,6 @@ export default {
         }
         try {
           const timestamps = await this.fetchTimestamps();
-          console.log(timestamps);
 
           await Timestamp.create({
             data: timestamps,
@@ -121,18 +114,18 @@ export default {
 
           const pendingStamps = timestamps.filter(({ blockNumber }) => blockNumber === -1);
 
-          if (pendingStamps) {
+          if (pendingStamps.length > 0) {
             const ts = await this.$web3.updateTimestamps(pendingStamps);
-            console.log(ts);
             if (ts.length > 0) {
-              ts.forEach((stamp) => { this.insertTimestamp(stamp); });
+              ts.forEach((stamp) => { this.updateTimestamp(stamp); });
+              this.$axios.post(`https://document-timestamp.azurewebsites.net/api/updatetimestamps/${this.account.accountIdentifier}`, ts);
             }
           }
 
 
           User.update({
+            where: this.account.accountIdentifier,
             data: {
-              accountIdentifier: this.account.accountIdentifier,
               timestampsUsed: this.timestampsUsed,
               totalTimestamps: timestamps.length,
             },

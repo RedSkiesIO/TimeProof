@@ -311,7 +311,7 @@ export default {
             },
           });
         }
-        const tx = await this.$axios.post('http://localhost:7071/api/timestamp', {
+        const tx = await this.$axios.post('https://document-timestamp.azurewebsites.net/api/timestamp', {
           fileName: this.file.name,
           hash: this.file.base32Hash,
           publicKey: this.user.pubKey,
