@@ -191,7 +191,7 @@
 <script>
 import User from '../../store/User';
 import NewKey from './NewKey';
-import Backup from './BackupKey';
+import Backup from './DownloadKey';
 import Import from './ImportKey';
 
 export default {
