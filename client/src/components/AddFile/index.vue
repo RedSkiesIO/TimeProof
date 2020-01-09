@@ -128,7 +128,8 @@
         </div>
         <Proof
           v-if="confirmed"
-          :proof="file"
+          :proof-id="txId"
+          :file="file"
           :scope="scope"
           class="add-border"
         />
@@ -190,6 +191,7 @@ export default {
       visible: false,
       error: false,
       re: /(?:\.([^.]+))?$/,
+      txId: null,
     };
   },
 
@@ -319,8 +321,6 @@ export default {
         });
 
         if (tx.data.success) {
-          console.log(tx.data);
-
           this.file.txId = tx.data.value.id;
           this.file.timestamp = tx.data.value.timestamp;
           this.file.blockNumber = tx.data.value.blockNumber;
@@ -332,7 +332,7 @@ export default {
             },
           });
           await this.insertTimestamp(this.file);
-
+          this.txId = tx.data.value.id;
           this.visible = false;
           this.confirmed = true;
         }

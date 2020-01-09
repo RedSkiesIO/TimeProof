@@ -1,5 +1,7 @@
 import Web3 from 'web3';
 import Vue from 'vue';
+import axios from 'axios';
+import Timestamp from '../store/Timestamp';
 
 const web3 = new Web3(new Web3.providers.HttpProvider('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9'));
 
@@ -36,16 +38,24 @@ Vue.prototype.$web3 = {
     }
   },
 
-  async updateTimestamps(timestamps) {
-    const updatedTimestamps = timestamps.map(async (stamp) => {
+  async updateTimestamps(user, timestamps) {
+    const updates = [];
+    const promises = timestamps.map(async (stamp) => {
       const tx = await web3.eth.getTransactionReceipt(stamp.txId);
       if (tx) {
         const { timestamp } = await web3.eth.getBlock(tx.blockNumber);
-        stamp.date = timestamp * 1000;
-        stamp.blockNumber = tx.blockNumber;
+        updates.push(await Timestamp.update({
+          where: stamp.txId,
+          data: {
+            date: timestamp * 1000,
+            blockNumber: tx.blockNumber,
+          },
+        }));
       }
-      return stamp;
     });
-    return Promise.all(updatedTimestamps);
+    await Promise.all(promises);
+    if (updates.length > 0) {
+      await axios.post(`https://document-timestamp.azurewebsites.net/api/updatetimestamps/${user.accountIdentifier}`, updates);
+    }
   },
 };

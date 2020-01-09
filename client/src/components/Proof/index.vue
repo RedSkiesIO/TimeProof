@@ -6,24 +6,12 @@
       class="q-px-lg flex flex-center column text-center q-pt-lg"
     >
       <q-icon
-        v-if="proof.verify && !proof.verified"
-        name="error"
-        class="text-red"
+        :name="icon.name"
+        :class="icon.class"
         style="font-size: 100px"
       />
-      <q-icon
-        v-else-if="proof.blockNumber===-1"
-        name="fas fa-clock"
-        class="text-grey"
-        style="font-size: 100px"
-      />
-      <q-icon
-        v-else
-        name="fas fa-check-circle"
-        class="text-green"
-        style="font-size: 100px"
-      />
-      <span
+
+      <!-- <span
         v-if="proof.verify && proof.verified"
         class="text-h6 q-my-sm"
       >{{ $t('proofVerified') }}</span>
@@ -43,28 +31,36 @@
         <span
           class="text-h6 q-my-sm"
         >Your time stamp is on it's way</span>
-      </div>
-      <div
+      </div> -->
+      <!-- <div
         v-else
         class="column"
+      > -->
+      <span
+        class="text-h6 q-my-sm"
+      >{{ title }}</span>
+      <div
+        v-if="file.verify && !file.verified"
+        class="text-body2"
       >
-        <span
-          class="text-h6 q-my-sm"
-        >{{ $t('proofConfirmed') }}</span>
-        <q-btn
-          outline
-          color="primary"
-          label="Download Certificate"
-          @click="getCertificate"
-        />
-        <a
-          class="text-blue q-mt-sm"
-          :href="etherscanTx"
-          target="_blank"
-        >
-          View Transaction
-        </a>
+        {{ proof.error }}
       </div>
+      <q-btn
+        v-if="!file.verify && proof.blockNumber !== -1"
+        outline
+        color="primary"
+        label="Download Certificate"
+        @click="getCertificate"
+      />
+      <a
+        v-if="!file.verify && proof.blockNumber !== -1"
+        class="text-blue q-mt-sm"
+        :href="etherscanTx"
+        target="_blank"
+      >
+        View Transaction
+      </a>
+      <!-- </div> -->
     </div>
 
     <div class="column q-px-md">
@@ -149,7 +145,7 @@
         <div class="row proof-item justify-between">
           <div class="col">
             <q-input
-              v-model="proof.base32Hash"
+              v-model="proof.hash"
               filled
               readonly
               stack-label
@@ -163,7 +159,7 @@
                 color="grey"
                 icon="filter_none"
                 class="copy-button absolute-bottom-right"
-                @click="copy(proof.base32Hash)"
+                @click="copy(proof.hash)"
               >
                 <q-tooltip anchor="top middle">
                   {{ copyLabel }}
@@ -212,14 +208,21 @@
 </template>
 <script>
 import User from '../../store/User';
+import Timestamp from '../../store/Timestamp';
+
 
 export default {
   name: 'Proof',
 
   props: {
-    proof: {
+    file: {
       type: Object,
       required: true,
+    },
+    proofId: {
+      type: String,
+      default: null,
+      required: false,
     },
     scope: {
       type: Object,
@@ -246,10 +249,55 @@ export default {
       return null;
     },
 
+    proof() {
+      console.log(this.proofId);
+      return this.proofId ? Timestamp.find(this.proofId) : null;
+    },
+
     getDate() {
-      const date = new Date(this.proof.timestamp);
+      console.log(this.proof.date);
+      const date = new Date(this.proof.date);
+
       return `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`;
     },
+
+    icon() {
+      if (this.proof.verify && !this.proof.verified) {
+        return {
+          name: 'error',
+          class: 'text-red',
+        };
+      }
+
+      if (this.proof.blockNumber === -1) {
+        return {
+          name: 'fas fa-clock',
+          class: 'text-grey',
+        };
+      }
+
+      return {
+        name: 'fas fa-check-circle',
+        class: 'text-green',
+      };
+    },
+
+    title() {
+      if (this.proof.verify && !this.proof.verified) {
+        return this.$t('proofVerified');
+      }
+
+      if (this.proof.verify && !this.proof.verified) {
+        return this.$t('proofNotVerified');
+      }
+
+      if (this.proof.blockNumber === -1) {
+        return 'Your timestamp is on it\'s way';
+      }
+
+      return this.$t('proofConfirmed');
+    },
+
   },
 
   mounted() {
@@ -261,10 +309,6 @@ export default {
   },
 
   methods: {
-    viewTx() {
-
-    },
-
     copy(text) {
       navigator.clipboard.writeText(text).then(() => {
         this.copyLabel = this.$t('copied');

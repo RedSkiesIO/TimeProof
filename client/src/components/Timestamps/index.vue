@@ -94,7 +94,8 @@
 
         <Proof
           v-if="confirmed"
-          :proof="file"
+          :file="file"
+          :proof-id="txId"
           :scope="{dialog: true}"
         />
       </q-card>
@@ -115,7 +116,8 @@ export default {
   data() {
     return {
       confirmed: false,
-      file: null,
+      file: {},
+      txId: null,
       tiers: {
         free: 50,
         basic: 1000,
@@ -154,8 +156,8 @@ export default {
   },
 
   methods: {
-    timestampDialog(stamp) {
-      this.file = stamp;
+    timestampDialog({ txId }) {
+      this.txId = txId;
       this.confirmed = true;
     },
 

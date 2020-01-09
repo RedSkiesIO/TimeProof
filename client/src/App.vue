@@ -112,16 +112,12 @@ export default {
             data: timestamps,
           });
 
-          const pendingStamps = timestamps.filter(({ blockNumber }) => blockNumber === -1);
-
-          if (pendingStamps.length > 0) {
-            const ts = await this.$web3.updateTimestamps(pendingStamps);
-            if (ts.length > 0) {
-              ts.forEach((stamp) => { this.updateTimestamp(stamp); });
-              this.$axios.post(`https://document-timestamp.azurewebsites.net/api/updatetimestamps/${this.account.accountIdentifier}`, ts);
+          setInterval(async () => {
+            const pending = this.user.pendingTimestamps;
+            if (pending && pending.length > 0) {
+              await this.$web3.updateTimestamps(this.user, pending);
             }
-          }
-
+          }, 5000);
 
           User.update({
             where: this.account.accountIdentifier,
