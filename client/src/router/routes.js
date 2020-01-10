@@ -35,6 +35,13 @@ const routes = [
       { path: '', component: () => import('pages/Account.vue') },
     ],
   },
+  {
+    path: '/new-key',
+    component: () => import('layouts/Main'),
+    children: [
+      { path: '', component: () => import('pages/CreateKey') },
+    ],
+  },
 ];
 
 // Always leave this as last one
