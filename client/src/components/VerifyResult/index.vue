@@ -10,57 +10,15 @@
         :class="icon.class"
         style="font-size: 100px"
       />
-
-      <!-- <span
-        v-if="proof.verify && proof.verified"
-        class="text-h6 q-my-sm"
-      >{{ $t('proofVerified') }}</span>
-      <div
-        v-else-if="proof.verify && !proof.verified"
-        class="text-h6 q-my-sm"
-      >
-        <div>{{ $t('proofNotVerified') }}</div>
-        <div class="text-body2">
-          {{ proof.error }}
-        </div>
-      </div>
-      <div
-        v-else-if="proof.blockNumber === -1"
-        class="column"
-      >
-        <span
-          class="text-h6 q-my-sm"
-        >Your time stamp is on it's way</span>
-      </div> -->
-      <!-- <div
-        v-else
-        class="column"
-      > -->
       <span
         class="text-h6 q-my-sm"
       >{{ title }}</span>
       <div
-        v-if="file.verify && !file.verified"
+        v-if="proof.verify && !proof.verified"
         class="text-body2"
       >
         {{ proof.error }}
       </div>
-      <q-btn
-        v-if="!file.verify && proof.blockNumber !== -1"
-        outline
-        color="primary"
-        label="Download Certificate"
-        @click="getCertificate"
-      />
-      <a
-        v-if="!file.verify && proof.blockNumber !== -1"
-        class="text-blue q-mt-sm"
-        :href="etherscanTx"
-        target="_blank"
-      >
-        View Transaction
-      </a>
-      <!-- </div> -->
     </div>
 
     <div class="column q-px-md">
@@ -208,11 +166,9 @@
 </template>
 <script>
 import User from '../../store/User';
-import Timestamp from '../../store/Timestamp';
-
 
 export default {
-  name: 'Proof',
+  name: 'VerifyResult',
 
   props: {
     proof: {
@@ -249,13 +205,7 @@ export default {
       return null;
     },
 
-    proof() {
-      console.log(this.proofId);
-      return this.proofId ? Timestamp.find(this.proofId) : null;
-    },
-
     getDate() {
-      console.log(this.proof.date);
       const date = new Date(this.proof.date);
 
       return `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`;
@@ -322,27 +272,6 @@ export default {
 
     reset() {
       this.scope.reset();
-    },
-
-    getCertificate() {
-      const name = `${this.proof.timestamp}.pdf`;
-      const splitString = (string, index) => ({
-        one: string.substr(0, index),
-        two: string.substr(index),
-      });
-
-      const hash = splitString(this.proof.base32Hash.toLowerCase(), 65);
-      const proofId = splitString(this.proof.txId.toLowerCase(), 65);
-      const signature = splitString(this.proof.signature.toLowerCase(), 65);
-      const file = {
-        file: this.proof.name,
-        hash,
-        proofId,
-        signature,
-        user: this.user.name,
-        timestamp: this.getDate,
-      };
-      this.$pdf(name, file);
     },
   },
 };

@@ -126,10 +126,10 @@
             @click="scope.reset()"
           >{{ $t('differentFile') }}</span>
         </div>
-        <Proof
-          v-if="confirmed"
+        <VerifyResult
+          v-if="confirmed && file.verify"
           :proof-id="txId"
-          :file="file"
+          :proof="file"
           :scope="scope"
           class="add-border"
         />
@@ -159,14 +159,16 @@
 <script>
 import User from '../../store/User';
 import Timestamp from '../../store/Timestamp';
-import Proof from '../Proof';
+// import Proof from '../Proof';
+import VerifyResult from '../VerifyResult';
 import UnlockKey from '../Key/NewKey';
 import NewKey from '../Key';
 
 export default {
   name: 'AddFile',
   components: {
-    Proof,
+    // Proof,
+    VerifyResult,
     UnlockKey,
     NewKey,
   },
@@ -280,15 +282,15 @@ export default {
       reader.onload = (evt) => {
         const input = Buffer.from(evt.target.result);
         const output = new Uint8Array(64);
-        this.file.hash = this.$blake2b(output.length).update(input).digest();
-        this.file.base32Hash = this.$base32(this.file.hash).toLowerCase();
+        this.file.hashBuffer = this.$blake2b(output.length).update(input).digest();
+        this.file.hash = this.$base32(this.file.hashBuffer).toLowerCase();
       };
       reader.readAsArrayBuffer(files[0]);
     },
 
     signHash() {
       if (this.key) {
-        const sig = this.$keypair.signMessage(this.file.hash, this.key);
+        const sig = this.$keypair.signMessage(this.file.hashBuffer, this.key);
         this.file.signature = this.$base32(sig).toLowerCase();
         this.sendProof();
       } else if (!this.user.secretKey) {
@@ -347,10 +349,10 @@ export default {
       this.file.verify = true;
       const txId = this.proofId.replace(/\s+/g, '');
       try {
-        const tx = await this.$web3.verifyTimestamp(txId, this.file.base32Hash.toLowerCase());
+        const tx = await this.$web3.verifyTimestamp(txId, this.file.hash.toLowerCase());
         if (tx && tx.verified) {
           this.file.txId = txId;
-          this.file.timestamp = tx.timestamp;
+          this.file.date = tx.timestamp;
           this.file.signature = tx.signature;
           this.file.pubKey = tx.publicKey;
           this.file.verified = true;
