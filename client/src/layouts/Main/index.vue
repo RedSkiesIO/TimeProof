@@ -43,42 +43,20 @@
       :breakpoint="500"
       content-class="bg-primary text-white"
     >
-      <div class="q-mt-lg columm text-weight-bold text-h6 justify-end text-left">
+      <div class="q-mt-lg columm justify-end text-left">
         <q-list>
           <q-item
+            v-for="item in menuList"
+            :key="item.label"
             v-ripple
             clickable
-            to="/dashboard"
+            :to="item.route"
           >
             <q-item-section avatar>
-              <q-icon name="fas fa-home" />
+              <q-icon :name="item.icon" />
             </q-item-section>
             <q-item-section>
-              Dashboard
-            </q-item-section>
-          </q-item>
-          <q-item
-            v-ripple
-            clickable
-            to="/stamp"
-          >
-            <q-item-section avatar>
-              <q-icon name="fas fa-stamp" />
-            </q-item-section>
-            <q-item-section>
-              Stamp
-            </q-item-section>
-          </q-item>
-          <q-item
-            v-ripple
-            clickable
-            to="/verify"
-          >
-            <q-item-section avatar>
-              <q-icon name="fas fa-fingerprint" />
-            </q-item-section>
-            <q-item-section>
-              Verify
+              {{ item.label }}
             </q-item-section>
           </q-item>
         </q-list>
@@ -148,19 +126,19 @@ import User from '../../store/User';
 
 const menuList = [
   {
-    icon: 'inbox',
-    label: 'DASHBOARD',
-    separator: true,
+    icon: 'fas fa-home',
+    label: 'Dashboard',
+    route: '/dashboard',
   },
   {
-    icon: 'send',
+    icon: 'fas fa-stamp',
     label: 'Stamp',
-    separator: false,
+    route: '/stamp',
   },
   {
-    icon: 'delete',
+    icon: 'fas fa-fingerprint',
     label: 'Verify',
-    separator: false,
+    route: '/verify',
   },
 ];
 
@@ -255,6 +233,21 @@ export default {
 }
 
 .q-item.q-router-link--active {
-  color: #e0e0e0;
+  color: #ffffff;
+  font-weight: bold;
+}
+</style>
+<style lang="scss" scoped>
+.q-item__section--side > .q-icon {
+    font-size: 15px;
+}
+
+.q-item__section--avatar {
+  min-width: 0;
+  padding-bottom: 1px;
+}
+
+.q-item__section {
+  font-size: 15px;
 }
 </style>
