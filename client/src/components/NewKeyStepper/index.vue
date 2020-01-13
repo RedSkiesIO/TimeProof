@@ -12,7 +12,7 @@
         icon="settings"
         :done="step > 1"
       >
-        <EncryptKey />
+        <EncryptKey ref="form" />
       </q-step>
 
       <q-step
@@ -21,7 +21,7 @@
         icon="create_new_folder"
         :done="step > 2"
       >
-        <SaveKeystore />
+        <SaveKeystore :button-action="downloadKeystore" />
       </q-step>
 
       <q-step
@@ -46,7 +46,7 @@
             <q-btn
               color="primary"
               :label="step === 3 ? 'Go to Dashboard' : 'Continue'"
-              @click="$refs.stepper.next()"
+              @click="clickAction"
             />
           </div>
         </q-stepper-navigation>
@@ -58,6 +58,8 @@
 import EncryptKey from './EncryptKey';
 import SaveKeystore from './SaveKeystore';
 import Success from './Success';
+import User from '../../store/User';
+
 
 export default {
   name: 'NewKeyStepper',
@@ -71,6 +73,75 @@ export default {
     return {
       step: 1,
     };
+  },
+
+  computed: {
+    account() {
+      const account = this.$auth.account();
+      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+        return null;
+      }
+      return account;
+    },
+    user() {
+      if (this.account) {
+        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
+        if (user) {
+          return user[0];
+        }
+      }
+      return null;
+    },
+  },
+
+  methods: {
+
+    clickAction() {
+      switch (this.step) {
+        case 1:
+          this.addKey();
+          break;
+        case 3:
+          this.$router.push('/dashboard');
+          break;
+        default:
+          this.$refs.stepper.next();
+      }
+    },
+
+    async addKey() {
+      const { input } = this.$refs.form.$refs;
+      input.validate();
+
+      if (!input.hasError) {
+        let { keypair } = this;
+
+        keypair = this.$keypair.new();
+
+        const encrypted = await this.$crypto.encrypt(keypair.secretKey, input.value);
+        await User.update({
+          data: {
+            accountIdentifier: this.account.accountIdentifier,
+            pubKey: keypair.publicKey,
+            secretKey: encrypted,
+          },
+        });
+
+        await this.unlockKey(input.value);
+      }
+    },
+
+    async unlockKey() {
+      const decrypted = await this.$crypto.decrypt(
+        this.user.secretKey, this.$refs.form.$refs.input.value,
+      );
+      await this.$store.dispatch('settings/setAuthenticatedAccount', decrypted);
+      this.$refs.stepper.next();
+    },
+
+    downloadKeystore() {
+      this.$crypto.createKeystore(this.user);
+    },
   },
 };
 </script>

@@ -11,8 +11,9 @@ export default class User extends Model {
       accountIdentifier: this.attr(''),
       pubKey: this.attr(''),
       secretKey: this.attr(''),
-      name: this.attr('Satoshi Nakamoto'),
-      email: this.attr('user@email.com'),
+      givenName: this.attr(''),
+      familyName: this.attr(''),
+      email: this.attr(''),
       tier: this.attr('free'),
       timestampsUsed: this.attr(0),
       totalTimestamps: this.attr(0),
@@ -23,5 +24,9 @@ export default class User extends Model {
 
   get pendingTimestamps() {
     return this.timestamps.filter(({ blockNumber }) => blockNumber === -1);
+  }
+
+  get name() {
+    return `${this.givenName} ${this.familyName}`;
   }
 }

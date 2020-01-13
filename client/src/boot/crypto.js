@@ -53,7 +53,7 @@ const crypto = {
     }
   },
 
-  async createKeystore(user) {
+  createKeystore(user) {
     const obj = {
       publicKey: user.pubKey,
       cipher: user.secretKey,

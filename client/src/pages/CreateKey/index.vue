@@ -1,15 +1,18 @@
 <template>
   <div>
-    <NewKeyStepper />
+    <SigningKeyIntro />
+    <!-- <NewKeyStepper /> -->
   </div>
 </template>
 <script>
-import NewKeyStepper from '../../components/NewKeyStepper';
+import SigningKeyIntro from '../../components/SigningKeyIntro';
+// import NewKeyStepper from '../../components/NewKeyStepper';
 
 export default {
   name: 'CreateKey',
   components: {
-    NewKeyStepper,
+    SigningKeyIntro,
+    // NewKeyStepper,
   },
 };
 </script>

@@ -15,12 +15,15 @@
     </div>
     <div class="row justify-center text-center q-mt-md">
       <q-input
-        ref="newEncryptPassword"
+        ref="input"
         v-model="password"
+        type="password"
         filled
         autofocus
         :label="$t('enterPassword')"
         style="width: 25vw"
+        :rules="
+          [ val => val && val.length >= 8 || $t('invalidPasswordLength')]"
       />
     </div>
   </div>

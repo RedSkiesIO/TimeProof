@@ -18,6 +18,7 @@
         outline
         label="download keystore file"
         style="width: 250px"
+        @click="buttonAction"
       />
     </div>
   </div>
@@ -25,12 +26,13 @@
 <script>
 
 export default {
-  name: 'EncryptKey',
+  name: 'SaveKeystore',
 
-  data() {
-    return {
-      password: '',
-    };
+  props: {
+    buttonAction: {
+      required: true,
+      type: Function,
+    },
   },
 };
 </script>

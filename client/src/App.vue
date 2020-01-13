@@ -90,42 +90,49 @@ export default {
           User.insert({
             data: {
               accountIdentifier: this.account.accountIdentifier,
-              name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+              givenName: this.account.idToken.given_name,
+              familyName: this.account.idToken.family_name,
               email: this.account.idToken.emails[0],
               tokenExpires: token.idToken.expiration,
             },
           });
         } else if (this.user) {
+          console.log(this.account);
           User.update({
             data: {
               accountIdentifier: this.account.accountIdentifier,
-              name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+              givenName: this.account.idToken.given_name,
+              familyName: this.account.idToken.family_name,
               email: this.account.idToken.emails[0],
               tokenExpires: token.idToken.expiration,
             },
           });
         }
         try {
-          const timestamps = await this.fetchTimestamps();
+          if (!this.user.pubKey) {
+            this.$router.push('/new-key');
+          } else {
+            const timestamps = await this.fetchTimestamps();
 
-          await Timestamp.create({
-            data: timestamps,
-          });
+            await Timestamp.create({
+              data: timestamps,
+            });
 
-          setInterval(async () => {
-            const pending = this.user.pendingTimestamps;
-            if (pending && pending.length > 0) {
-              await this.$web3.updateTimestamps(this.user, pending);
-            }
-          }, 5000);
+            setInterval(async () => {
+              const pending = this.user.pendingTimestamps;
+              if (pending && pending.length > 0) {
+                await this.$web3.updateTimestamps(this.user, pending);
+              }
+            }, 5000);
 
-          User.update({
-            where: this.account.accountIdentifier,
-            data: {
-              timestampsUsed: this.timestampsUsed,
-              totalTimestamps: timestamps.length,
-            },
-          });
+            User.update({
+              where: this.account.accountIdentifier,
+              data: {
+                timestampsUsed: this.timestampsUsed,
+                totalTimestamps: timestamps.length,
+              },
+            });
+          }
         } catch (e) {
           console.log(e);
         }
