@@ -110,30 +110,29 @@ export default {
           });
         }
         try {
-          if (!this.user.pubKey) {
+          if (!this.user.secretKey) {
             this.$router.push('/new-key');
-          } else {
-            const timestamps = await this.fetchTimestamps();
-
-            await Timestamp.create({
-              data: timestamps,
-            });
-
-            setInterval(async () => {
-              const pending = this.user.pendingTimestamps;
-              if (pending && pending.length > 0) {
-                await this.$web3.updateTimestamps(this.user, pending);
-              }
-            }, 5000);
-
-            User.update({
-              where: this.account.accountIdentifier,
-              data: {
-                timestampsUsed: this.timestampsUsed,
-                totalTimestamps: timestamps.length,
-              },
-            });
           }
+          const timestamps = await this.fetchTimestamps();
+
+          await Timestamp.create({
+            data: timestamps,
+          });
+
+          setInterval(async () => {
+            const pending = this.user.pendingTimestamps;
+            if (pending && pending.length > 0) {
+              await this.$web3.updateTimestamps(this.user, pending);
+            }
+          }, 5000);
+
+          User.update({
+            where: this.account.accountIdentifier,
+            data: {
+              timestampsUsed: this.timestampsUsed,
+              totalTimestamps: timestamps.length,
+            },
+          });
         } catch (e) {
           console.log(e);
         }
