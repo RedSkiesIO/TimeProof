@@ -8,6 +8,7 @@
       <q-toolbar>
         <div
           class="logo text-center text-weight-bold"
+          @click="$router.push('/')"
         >
           Trustamp
         </div>
