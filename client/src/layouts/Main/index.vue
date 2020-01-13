@@ -8,7 +8,6 @@
       <q-toolbar>
         <div
           class="logo text-center text-weight-bold"
-          style="width: 176px; letter-spacing: 1px;"
         >
           Trustamp
         </div>
@@ -54,6 +53,7 @@
             v-ripple
             clickable
             :to="item.route"
+            :disable="currentPath === '/new-key'"
           >
             <q-item-section avatar>
               <q-icon :name="item.icon" />
@@ -195,6 +195,9 @@ export default {
       }
       return null;
     },
+    currentPath() {
+      return this.$route.path;
+    },
   },
 
   methods: {
@@ -248,6 +251,8 @@ export default {
 <style lang="scss" scoped>
 .logo {
   font-size: 1.35rem;
+  width: 176px;
+  letter-spacing: 2px;
 
 }
 .q-item__section--side > .q-icon {
