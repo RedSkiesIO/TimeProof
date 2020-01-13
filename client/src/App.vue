@@ -85,6 +85,7 @@ export default {
     async start() {
       if (this.account) {
         const token = await this.$auth.getToken();
+        console.log(token.idToken.rawIdToken);
         this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
         if (!this.user) {
           User.insert({

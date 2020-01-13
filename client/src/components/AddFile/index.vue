@@ -16,15 +16,14 @@
 
             class="q-my-xl q-pa-xl flex flex-center column text-center"
           >
-            <q-icon
-              name="backup"
-              class="text-grey-4"
-              style="font-size: 100px"
-            />
+            <img
+              src="~assets/add-file.svg"
+              style="height: 12vw"
+            >
 
             <span
               v-if="mode==='sign'"
-              class="text-h6 text-weight-bold text-grey-6"
+              class="q-pt-sm text-h6 text-weight-bold text-grey-6"
             >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
             <span
               v-else
@@ -126,6 +125,14 @@
             @click="scope.reset()"
           >{{ $t('differentFile') }}</span>
         </div>
+        <Proof
+          v-if="confirmed && !file.verify"
+          :proof-id="txId"
+          :file="file"
+          :scope="scope"
+          class="add-border"
+        />
+
         <VerifyResult
           v-if="confirmed && file.verify"
           :proof-id="txId"
@@ -159,7 +166,7 @@
 <script>
 import User from '../../store/User';
 import Timestamp from '../../store/Timestamp';
-// import Proof from '../Proof';
+import Proof from '../Proof';
 import VerifyResult from '../VerifyResult';
 import UnlockKey from '../Key/NewKey';
 import NewKey from '../Key';
@@ -167,7 +174,7 @@ import NewKey from '../Key';
 export default {
   name: 'AddFile',
   components: {
-    // Proof,
+    Proof,
     VerifyResult,
     UnlockKey,
     NewKey,
@@ -247,7 +254,7 @@ export default {
       Timestamp.insert({
         data: {
           txId: file.txId,
-          hash: file.base32Hash,
+          hash: file.hash,
           signature: file.signature,
           accountIdentifier: this.user.accountIdentifier,
           name: file.name,
@@ -307,7 +314,7 @@ export default {
       try {
         if (Date.now() > this.user.tokenExpires) {
           const token = await this.$auth.getToken();
-          this.$axios.defaults.headers.common.Authorization = `Bearer ${token.accessToken}`;
+          this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
           User.update({
             data: {
               accountIdentifier: this.account.accountIdentifier,
@@ -317,7 +324,7 @@ export default {
         }
         const tx = await this.$axios.post('https://document-timestamp.azurewebsites.net/api/timestamp', {
           fileName: this.file.name,
-          hash: this.file.base32Hash,
+          hash: this.file.hash,
           publicKey: this.user.pubKey,
           signature: this.file.signature,
         });

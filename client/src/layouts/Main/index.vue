@@ -6,9 +6,12 @@
       class="bg-primary text-white"
     >
       <q-toolbar>
-        <q-toolbar-title class="text-h5 text-weight-bold">
+        <div
+          class="logo text-center text-weight-bold"
+          style="width: 176px; letter-spacing: 1px;"
+        >
           Trustamp
-        </q-toolbar-title>
+        </div>
         <q-space />
         <q-tabs
           v-model="tab"
@@ -140,6 +143,11 @@ const menuList = [
     label: 'Verify',
     route: '/verify',
   },
+  {
+    icon: 'settings',
+    label: 'Settings',
+    route: '/account',
+  },
 ];
 
 export default {
@@ -238,6 +246,10 @@ export default {
 }
 </style>
 <style lang="scss" scoped>
+.logo {
+  font-size: 1.35rem;
+
+}
 .q-item__section--side > .q-icon {
     font-size: 15px;
 }

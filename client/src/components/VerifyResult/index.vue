@@ -60,14 +60,8 @@
           <div class="col-auto">
             {{ $t('signedBy') }}:
           </div>
+
           <div
-            v-if="!proof.verify"
-            class="col-auto q-pl-sm"
-          >
-            {{ user.name }} ({{ user.email }})
-          </div>
-          <div
-            v-else
             class="col-auto q-pl-sm"
           >
             {{ proof.pubKey.toLowerCase() }}
@@ -165,7 +159,6 @@
   </div>
 </template>
 <script>
-import User from '../../store/User';
 
 export default {
   name: 'VerifyResult',
@@ -196,13 +189,6 @@ export default {
   computed: {
     etherscanTx() {
       return `https://kovan.etherscan.io/tx/${this.proof.txId}`;
-    },
-
-    user() {
-      if (User.all().length > 0) {
-        return User.query().first();
-      }
-      return null;
     },
 
     getDate() {

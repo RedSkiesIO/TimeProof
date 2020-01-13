@@ -13,7 +13,7 @@
             <q-icon
               class="icon-spacing q-mr-sm text-weight-bold"
               name="account_circle"
-              size="sm"
+              size="1.25rem"
             />
             Your Account
           </div>
@@ -24,20 +24,15 @@
             <q-icon
               class="icon-spacing q-mr-sm"
               name="fas fa-tachometer-alt"
-              size="sm"
+              size="1.25rem"
             />
             Usage Summary
           </div>
           <Usage />
         </div>
       </div>
-      <div
-        v-if="user.timestamps.length > 0"
-        class="row q-mt-lg q-gutter-x-lg"
-      >
-        <div style="width:100%">
-          <Timestamps />
-        </div>
+      <div style="width:100%">
+        <Timestamps />
       </div>
     </div>
     <div

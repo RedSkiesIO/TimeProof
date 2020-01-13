@@ -9,7 +9,7 @@
       <q-step
         :name="1"
         title="Encrypt your key"
-        icon="settings"
+        icon="fas fa-key"
         :done="step > 1"
       >
         <EncryptKey ref="form" />
@@ -18,7 +18,7 @@
       <q-step
         :name="2"
         title="Backup your key file"
-        icon="create_new_folder"
+        icon="fas fa-file-download"
         :done="step > 2"
       >
         <SaveKeystore :button-action="downloadKeystore" />
@@ -26,8 +26,8 @@
 
       <q-step
         :name="3"
-        title="Success"
-        icon="assignment"
+        title="Signing key created"
+        icon="fas fa-thumbs-up"
       >
         <Success />
       </q-step>

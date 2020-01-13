@@ -16,7 +16,7 @@
         style="width: 50vw;"
       >
         To get you started on Trustamp we need to create your signing key. <br>
-        Your signing key is used to prove you're ownership of a timestamp.
+        Your signing key is used to prove your ownership of a timestamp.
         It's stored locally on your device so that only you have access to it.
       </div>
     </div>

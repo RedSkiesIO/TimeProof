@@ -4,7 +4,7 @@
       <q-icon
         class="icon-spacing q-mr-sm"
         name="fas fa-history"
-        size="22px"
+        size="1.25rem"
       />
       Timestamp History
     </div>
@@ -12,75 +12,96 @@
       flat
       class="timestamp-list q-pa-md"
     >
-      <div class="row text-weight-bold justify-end q-mr-sm">
-        {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
-      </div>
-      <div class="text-uppercase text-weight-bold text-primary row">
-        <div
-          class="col-3"
-        >
-          {{ $t('file') }}
+      <div v-if="timestamps.length > 0">
+        <div class="row text-weight-bold justify-end q-mr-sm">
+          {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
         </div>
-        <div class="col-5">
-          {{ $t('proofId') }}
+        <div class="text-uppercase text-weight-bold text-primary row">
+          <div
+            class="col-3"
+          >
+            {{ $t('file') }}
+          </div>
+          <div class="col-5">
+            {{ $t('proofId') }}
+          </div>
+          <div class="col-auto">
+            {{ $t('date') }}
+          </div>
         </div>
-        <div class="col-auto">
-          {{ $t('date') }}
-        </div>
-      </div>
-      <q-scroll-area style="height: 30rem;">
-        <div
-          v-for="stamp in timestamps"
-          :key="stamp.txId"
-          class="row stamp-item2"
-        >
+        <q-scroll-area style="height: 30rem;">
           <div
-            class="col-3 q-px-sm overflow"
-            @click="timestampDialog(stamp)"
+            v-for="stamp in timestamps"
+            :key="stamp.txId"
+            class="row stamp-item2"
           >
-            <q-icon
-              class="col-auto text-grey-6 q-pr-sm"
-              :name="fileIcon(stamp.type)"
-              style="font-size: 1.5em"
-            />
-            {{ stamp.name }}
-          </div>
-          <div
-            class="col-5 overflow"
-            @click="timestampDialog(stamp)"
-          >
-            {{ stamp.txId }}
-          </div>
-          <div
-            class=" col text-left"
-            @click="timestampDialog(stamp)"
-          >
-            <span v-if="stamp.blockNumber !== -1">
-              {{ getDate(stamp.date) }}
-
-            </span>
-          </div>
-          <div
-            v-if="stamp.blockNumber === -1"
-            class="col q-pr-sm text-center"
-          >
-            <q-chip
-              square
-              color="orange"
-              text-color="white"
+            <div
+              class="col-3 q-px-sm overflow"
+              @click="timestampDialog(stamp)"
             >
-              pending
-            </q-chip>
+              <q-icon
+                class="col-auto text-grey-6 q-pr-sm"
+                :name="fileIcon(stamp.type)"
+                style="font-size: 1.5em"
+              />
+              {{ stamp.name }}
+            </div>
+            <div
+              class="col-5 overflow"
+              @click="timestampDialog(stamp)"
+            >
+              {{ stamp.txId }}
+            </div>
+            <div
+              class=" col text-left"
+              @click="timestampDialog(stamp)"
+            >
+              <span v-if="stamp.blockNumber !== -1">
+                {{ getDate(stamp.date) }}
+
+              </span>
+            </div>
+            <div
+              v-if="stamp.blockNumber === -1"
+              class="col q-pr-sm text-center"
+            >
+              <q-chip
+                square
+                color="orange"
+                text-color="white"
+              >
+                pending
+              </q-chip>
+            </div>
+            <div
+              v-else
+              class="col q-pr-sm text-right text-blue cursor-pointer"
+              @click="getCertificate(stamp)"
+            >
+              {{ $t('downloadCertificate') }}
+            </div>
           </div>
-          <div
-            v-else
-            class="col q-pr-sm text-right text-blue cursor-pointer"
-            @click="getCertificate(stamp)"
-          >
-            {{ $t('downloadCertificate') }}
-          </div>
-        </div>
-      </q-scroll-area>
+        </q-scroll-area>
+      </div>
+      <div
+        v-else
+        class="flex column justify-center q-pa-md"
+      >
+        <img
+          src="~assets/no-timestamps.svg"
+          style="height: 12vw"
+        >
+        <span class="text-body1 text-center">
+          You haven't created any timestamps yet.
+          <br> Head over to the
+
+          <span
+            class="text-blue link"
+            @click="goToStamp"
+          >stamp</span>
+          section to get started
+        </span>
+      </div>
     </q-card>
     <q-dialog v-model="confirmed">
       <q-card>
@@ -156,6 +177,10 @@ export default {
   },
 
   methods: {
+    goToStamp() {
+      this.$router.push('/stamp');
+    },
+
     timestampDialog({ txId }) {
       this.txId = txId;
       this.confirmed = true;
@@ -206,6 +231,10 @@ export default {
 };
 </script>
 <style lang="scss">
+.link {
+  text-decoration: none;
+  color: inherit;
+}
 
 .stamp-item2 {
   border-top: 1px solid $grey-4;

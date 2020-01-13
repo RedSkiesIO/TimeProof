@@ -43,7 +43,7 @@
         v-if="file.verify && !file.verified"
         class="text-body2"
       >
-        {{ proof.error }}
+        {{ file.error }}
       </div>
       <q-btn
         v-if="!file.verify && proof.blockNumber !== -1"
@@ -239,12 +239,23 @@ export default {
 
   computed: {
     etherscanTx() {
-      return `https://kovan.etherscan.io/tx/${this.proof.txId}`;
+      return `https://kovan.etherscan.io/tx/${this.proofId}`;
+    },
+
+    account() {
+      const account = this.$auth.account();
+      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+        return null;
+      }
+      return account;
     },
 
     user() {
-      if (User.all().length > 0) {
-        return User.query().first();
+      if (this.account) {
+        const user = User.find(this.account.accountIdentifier);
+        if (user) {
+          return user;
+        }
       }
       return null;
     },
@@ -301,6 +312,7 @@ export default {
   },
 
   mounted() {
+    console.log(this.user.name);
     if (this.scope.dialog) {
       this.proof.timestamp = this.proof.date;
       this.proof.base32Hash = this.proof.hash;
