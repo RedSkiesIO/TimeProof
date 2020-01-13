@@ -27,7 +27,7 @@
             >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
             <span
               v-else
-              class="text-h6 text-weight-bold text-grey-6"
+              class="q-pt-sm text-h6 text-weight-bold text-grey-6"
             >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
 
             <span class="text-body1 text-grey-7">

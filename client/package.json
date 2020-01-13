@@ -1,8 +1,8 @@
 {
-  "name": "upgraded-giggle",
+  "name": "trustamp",
   "version": "0.0.1",
-  "description": "Document signing app",
-  "productName": "Upgraded Giggle",
+  "description": "Time stamping app",
+  "productName": "Trustamp",
   "cordovaId": "org.upgradedgiggle.atlascity.app",
   "capacitorId": "",
   "author": "stephenhorsfall <stephen.horsfall@atlascity.io>",
