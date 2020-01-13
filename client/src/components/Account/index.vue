@@ -53,13 +53,13 @@
         <div class="">
           <div>membership:</div>
           <div class="text-primary">
-            free tier
+            {{ user.tier }} tier
           </div>
         </div>
         <div class="">
           <div>your allowance:</div>
           <div class="text-primary">
-            50 timestamps per month
+            5 timestamps per month
           </div>
         </div>
       </div>
