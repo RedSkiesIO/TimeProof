@@ -144,7 +144,6 @@
 
         <VerifyResult
           v-if="confirmed && file.verify"
-          :proof-id="txId"
           :proof="file"
           :scope="scope"
           class="add-border"

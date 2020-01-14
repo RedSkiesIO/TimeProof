@@ -14,7 +14,7 @@
         class="text-h6 q-my-sm"
       >{{ title }}</span>
       <div
-        v-if="proof.verify && !proof.verified"
+        v-if="!proof.verified"
         class="text-body2"
       >
         {{ proof.error }}
@@ -31,25 +31,14 @@
         </div>
       </div>
 
-      <div v-if="!proof.verify || (proof.verify && proof.verified)">
+      <div v-if="proof.verified">
         <div class="row proof-item justify-between">
           <div class="col-auto">
             {{ $t('date') }}:
           </div>
+
           <div
-            v-if="proof.blockNumber === -1"
-            class="col-auto"
-          >
-            <q-chip
-              square
-              color="orange"
-              text-color="white"
-            >
-              pending
-            </q-chip>
-          </div>
-          <div
-            v-if="ready && proof.blockNumber !== -1"
+            v-if="ready"
             class="col-auto"
           >
             {{ getDate }}
@@ -168,11 +157,6 @@ export default {
       type: Object,
       required: true,
     },
-    proofId: {
-      type: String,
-      default: null,
-      required: false,
-    },
     scope: {
       type: Object,
       required: true,
@@ -198,17 +182,10 @@ export default {
     },
 
     icon() {
-      if (this.proof.verify && !this.proof.verified) {
+      if (!this.proof.verified) {
         return {
           name: 'error',
           class: 'text-red',
-        };
-      }
-
-      if (this.proof.blockNumber === -1) {
-        return {
-          name: 'fas fa-clock',
-          class: 'text-grey',
         };
       }
 
@@ -220,18 +197,10 @@ export default {
 
     title() {
       if (this.proof.verify && !this.proof.verified) {
-        return this.$t('proofVerified');
-      }
-
-      if (this.proof.verify && !this.proof.verified) {
         return this.$t('proofNotVerified');
       }
 
-      if (this.proof.blockNumber === -1) {
-        return 'Your timestamp is on it\'s way';
-      }
-
-      return this.$t('proofConfirmed');
+      return this.$t('proofVerified');
     },
 
   },
