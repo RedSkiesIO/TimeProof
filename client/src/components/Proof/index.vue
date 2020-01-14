@@ -11,56 +11,24 @@
         style="font-size: 100px"
       />
 
-      <!-- <span
-        v-if="proof.verify && proof.verified"
-        class="text-h6 q-my-sm"
-      >{{ $t('proofVerified') }}</span>
-      <div
-        v-else-if="proof.verify && !proof.verified"
-        class="text-h6 q-my-sm"
-      >
-        <div>{{ $t('proofNotVerified') }}</div>
-        <div class="text-body2">
-          {{ proof.error }}
-        </div>
-      </div>
-      <div
-        v-else-if="proof.blockNumber === -1"
-        class="column"
-      >
-        <span
-          class="text-h6 q-my-sm"
-        >Your time stamp is on it's way</span>
-      </div> -->
-      <!-- <div
-        v-else
-        class="column"
-      > -->
       <span
         class="text-h6 q-my-sm"
       >{{ title }}</span>
-      <div
-        v-if="file.verify && !file.verified"
-        class="text-body2"
-      >
-        {{ file.error }}
-      </div>
       <q-btn
-        v-if="!file.verify && proof.blockNumber !== -1"
+        v-if="proof.blockNumber !== -1"
         outline
         color="primary"
         label="Download Certificate"
         @click="getCertificate"
       />
       <a
-        v-if="!file.verify && proof.blockNumber !== -1"
+        v-if="proof.blockNumber !== -1"
         class="text-blue q-mt-sm"
         :href="etherscanTx"
         target="_blank"
       >
         View Transaction
       </a>
-      <!-- </div> -->
     </div>
 
     <div class="column q-px-md">
@@ -73,7 +41,7 @@
         </div>
       </div>
 
-      <div v-if="!proof.verify || (proof.verify && proof.verified)">
+      <div>
         <div class="row proof-item justify-between">
           <div class="col-auto">
             {{ $t('date') }}:
@@ -215,10 +183,6 @@ export default {
   name: 'Proof',
 
   props: {
-    file: {
-      type: Object,
-      required: true,
-    },
     proofId: {
       type: String,
       default: null,
@@ -294,14 +258,6 @@ export default {
     },
 
     title() {
-      if (this.proof.verify && !this.proof.verified) {
-        return this.$t('proofVerified');
-      }
-
-      if (this.proof.verify && !this.proof.verified) {
-        return this.$t('proofNotVerified');
-      }
-
       if (this.proof.blockNumber === -1) {
         return 'Your timestamp is on it\'s way';
       }
@@ -312,7 +268,6 @@ export default {
   },
 
   mounted() {
-    console.log(this.user.name);
     if (this.scope.dialog) {
       this.proof.timestamp = this.proof.date;
       this.proof.base32Hash = this.proof.hash;
@@ -338,23 +293,7 @@ export default {
 
     getCertificate() {
       const name = `${this.proof.timestamp}.pdf`;
-      const splitString = (string, index) => ({
-        one: string.substr(0, index),
-        two: string.substr(index),
-      });
-
-      const hash = splitString(this.proof.base32Hash.toLowerCase(), 65);
-      const proofId = splitString(this.proof.txId.toLowerCase(), 65);
-      const signature = splitString(this.proof.signature.toLowerCase(), 65);
-      const file = {
-        file: this.proof.name,
-        hash,
-        proofId,
-        signature,
-        user: this.user.name,
-        timestamp: this.getDate,
-      };
-      this.$pdf(name, file);
+      this.$pdf(name, this.proof.certificate);
     },
   },
 };

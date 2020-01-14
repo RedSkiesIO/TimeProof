@@ -38,17 +38,6 @@ export default {
       }
       return null;
     },
-
-    timestampsUsed() {
-      const d = new Date();
-      const thisMonth = `${d.getMonth()}${d.getFullYear()}`;
-      const timestamps = this.user.timestamps.filter((stamp) => {
-        const date = new Date(stamp.date);
-        const month = `${date.getMonth()}${date.getFullYear()}`;
-        return month === thisMonth;
-      });
-      return timestamps.length;
-    },
   },
 
   mounted() {
@@ -56,16 +45,6 @@ export default {
   },
 
   methods: {
-    async updateTimestamp(file) {
-      Timestamp.update({
-        where: file.txId,
-        data: {
-          date: file.date,
-          blockNumber: file.blockNumber,
-        },
-      });
-    },
-
     async fetchTimestamps() {
       const { timestamps } = (await this.$axios.get(`https://document-timestamp.azurewebsites.net/api/getTimestamps/${this.user.accountIdentifier}`)).data;
       return timestamps.map(file => ({
@@ -85,7 +64,6 @@ export default {
     async start() {
       if (this.account) {
         const token = await this.$auth.getToken();
-        console.log(token.idToken.rawIdToken);
         this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
         if (!this.user) {
           User.insert({
@@ -125,14 +103,6 @@ export default {
               await this.$web3.updateTimestamps(this.user, pending);
             }
           }, 5000);
-
-          User.update({
-            where: this.account.accountIdentifier,
-            data: {
-              timestampsUsed: this.timestampsUsed,
-              totalTimestamps: timestamps.length,
-            },
-          });
         } catch (e) {
           console.log(e);
         }

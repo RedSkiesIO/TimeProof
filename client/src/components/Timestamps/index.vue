@@ -12,7 +12,7 @@
       flat
       class="timestamp-list q-pa-md"
     >
-      <div v-if="timestamps.length > 0">
+      <div v-if="user.orderedTimestamps.length > 0">
         <div class="row text-weight-bold justify-end q-mr-sm">
           {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
         </div>
@@ -31,7 +31,7 @@
         </div>
         <q-scroll-area style="height: 30rem;">
           <div
-            v-for="stamp in timestamps"
+            v-for="stamp in user.orderedTimestamps"
             :key="stamp.txId"
             class="row stamp-item2"
           >
@@ -57,7 +57,7 @@
               @click="timestampDialog(stamp)"
             >
               <span v-if="stamp.blockNumber !== -1">
-                {{ getDate(stamp.date) }}
+                {{ stamp.timestampDate }}
 
               </span>
             </div>
@@ -166,14 +166,6 @@ export default {
       }
       return null;
     },
-    timestamps() {
-      const { timestamps } = this.user;
-      const ts = timestamps.slice(0);
-
-      ts.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      return ts.slice(0);
-    },
   },
 
   methods: {
@@ -184,11 +176,6 @@ export default {
     timestampDialog({ txId }) {
       this.txId = txId;
       this.confirmed = true;
-    },
-
-    getDate(time) {
-      const date = new Date(time);
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     },
 
     fileIcon(type) {
@@ -209,23 +196,7 @@ export default {
 
     getCertificate(stamp) {
       const name = `${stamp.date}.pdf`;
-      const splitString = (string, index) => ({
-        one: string.substr(0, index),
-        two: string.substr(index),
-      });
-
-      const hash = splitString(stamp.hash.toLowerCase(), 65);
-      const proofId = splitString(stamp.txId.toLowerCase(), 65);
-      const signature = splitString(stamp.signature.toLowerCase(), 65);
-      const file = {
-        file: stamp.name,
-        hash,
-        proofId,
-        signature,
-        user: this.user.name,
-        timestamp: this.getDate(stamp.date),
-      };
-      this.$pdf(name, file);
+      this.$pdf(name, stamp.certificate);
     },
   },
 };

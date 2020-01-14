@@ -79,13 +79,13 @@ export default {
       return null;
     },
     timestampsUsed() {
-      const used = this.user.timestampsUsed;
+      const used = this.user.monthlyAllowanceUsage;
       const { tier } = this.user;
 
       return `${used}/${this.tiers[tier]}`;
     },
     usedPercentage() {
-      return (this.user.timestampsUsed / this.tiers[this.user.tier]) * 100;
+      return (this.user.monthlyAllowanceUsage / this.tiers[this.user.tier]) * 100;
     },
 
   },

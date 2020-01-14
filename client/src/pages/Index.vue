@@ -156,7 +156,7 @@ export default {
       return null;
     },
     allowed() {
-      if (this.user.timestampsUsed <= this.tiers[this.user.tier]) {
+      if (this.user.monthlyAllowanceUsage <= this.tiers[this.user.tier]) {
         return true;
       }
       return false;
