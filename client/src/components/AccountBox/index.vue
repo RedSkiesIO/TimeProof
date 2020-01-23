@@ -42,7 +42,7 @@ export default {
       isPwd: true,
       tiers: {
         free: 50,
-        basic: 1000,
+        basic: 30,
         standard: 10000,
         premium: 100000,
       },
