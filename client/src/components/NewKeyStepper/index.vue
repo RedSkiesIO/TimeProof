@@ -21,7 +21,9 @@
         icon="fas fa-file-download"
         :done="step > 2"
       >
-        <SaveKeystore :button-action="downloadKeystore" />
+        <SaveKeystore
+          :button-action="downloadKeystore"
+        />
       </q-step>
 
       <q-step
@@ -45,6 +47,7 @@
             />
             <q-btn
               color="secondary"
+              :disable="step === 2 && disableButton"
               :label="step === 3 ? 'Go to Dashboard' : 'Continue'"
               @click="clickAction"
             />
@@ -72,6 +75,7 @@ export default {
   data() {
     return {
       step: 1,
+      disableButton: true,
     };
   },
 
@@ -140,6 +144,8 @@ export default {
     },
 
     downloadKeystore() {
+      console.log('called');
+      this.disableButton = false;
       this.$crypto.createKeystore(this.user);
     },
   },
