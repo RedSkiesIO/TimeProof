@@ -292,7 +292,7 @@ export default {
     },
 
     getCertificate() {
-      const name = `${this.proof.timestamp}.pdf`;
+      const name = `${this.proof.date}.pdf`;
       this.$pdf(name, this.proof.certificate);
     },
   },
