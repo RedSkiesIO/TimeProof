@@ -3,7 +3,7 @@
     <q-stepper
       ref="stepper"
       v-model="step"
-      color="primary"
+      color="secondary"
       animated
     >
       <q-step
@@ -38,13 +38,13 @@
             <q-btn
               v-if="step > 1"
               flat
-              color="primary"
+              color="secondary"
               label="Back"
               class="q-ml-sm"
               @click="$refs.stepper.previous()"
             />
             <q-btn
-              color="primary"
+              color="secondary"
               :label="step === 3 ? 'Go to Dashboard' : 'Continue'"
               @click="clickAction"
             />

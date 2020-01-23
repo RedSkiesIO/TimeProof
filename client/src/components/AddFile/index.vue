@@ -92,7 +92,7 @@
             v-if="mode==='sign'"
             unelevated
             size="lg"
-            color="primary"
+            color="secondary"
             :label="$t('sign')"
             @click="signHash"
           />
@@ -112,7 +112,7 @@
                 <q-btn
                   unelevated
                   rounded
-                  color="primary"
+                  color="secondary"
                   :label="$t('verify')"
                   @click="verifyProof"
                 />
@@ -165,7 +165,7 @@
       <q-inner-loading :showing="visible">
         <q-spinner-grid
           size="50px"
-          color="primary"
+          color="secondary"
         />
       </q-inner-loading>
     </template>

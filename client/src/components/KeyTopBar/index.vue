@@ -45,7 +45,7 @@
         <q-btn
           outline
           round
-          color="primary"
+          color="secondary"
           icon="lock"
           @click="lockKey"
         />
@@ -105,7 +105,7 @@
           <q-btn
             outline
             :label="$t('unlock')"
-            color="primary"
+            color="secondary"
             @click="unlockKey(password)"
           />
         </div>
@@ -114,7 +114,7 @@
         <q-btn
           outline
           :label="$t('unlock')"
-          color="primary"
+          color="secondary"
           @click="unlockKey(password)"
         />
       </div> -->
@@ -152,7 +152,7 @@
         <q-btn
           outline
           :label="$t('createKeyLabel')"
-          color="primary"
+          color="secondary"
           @click="newKey=true"
         />
       </div>

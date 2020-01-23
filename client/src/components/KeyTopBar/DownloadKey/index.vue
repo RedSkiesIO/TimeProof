@@ -9,7 +9,7 @@
     <div class="row justify-center">
       <q-btn
         outline
-        color="primary"
+        color="secondary"
         label="Download Keystore file"
         @click="$emit('backup')"
       />

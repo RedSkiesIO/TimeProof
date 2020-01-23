@@ -17,7 +17,7 @@
       <q-btn
         v-if="proof.blockNumber !== -1"
         outline
-        color="primary"
+        color="secondary"
         label="Download Certificate"
         @click="getCertificate"
       />

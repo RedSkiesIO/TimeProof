@@ -54,7 +54,7 @@
                   </div>
                   <q-btn
                     outline
-                    color="primary"
+                    color="secondary"
                     :label="$t('upgrade')"
                   />
                 </div>
