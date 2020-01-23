@@ -22,7 +22,7 @@
             <q-tabs
               v-model="tab"
               dense
-              class="bg-white text-primary"
+              class="bg-white text-secondary"
             >
               <q-tab
                 name="sign"

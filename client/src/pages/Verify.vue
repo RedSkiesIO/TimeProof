@@ -3,7 +3,7 @@
     <div
       class="q-mt-lg"
     >
-      <div class="column q-mb-md justify-center text-center text-primary">
+      <div class="column q-mb-md justify-center text-center text-secondary">
         <div class="col text-h4  text-weight-bold justify-center">
           {{ $t('verifyTimestamp') }}
         </div>

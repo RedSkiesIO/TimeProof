@@ -38,7 +38,7 @@
           </div>
         </div>
         <div
-          class="row text-primary text-h6 justify-center q-mt-sm"
+          class="row text-secondary text-h6 justify-center q-mt-sm"
         >
           The file never leaves your system
         </div>
@@ -79,7 +79,7 @@
             class="text-grey-4"
             style="font-size: 100px"
           />
-          <span class="q-mt-md text-h6 text-primary">
+          <span class="q-mt-md text-h6 text-secondary">
             {{ file.name }}</span>
           <span
             v-if="file.type"

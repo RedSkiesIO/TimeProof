@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex justify-center text-primary">
+  <q-page class="flex justify-center text-secondary">
     <div class="q-pa-md">
       <div class="row justify-center text-h6 text-weight-bold">
         Account details

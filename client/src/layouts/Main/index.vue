@@ -7,10 +7,13 @@
     >
       <q-toolbar>
         <div
-          class="logo text-center text-weight-bold"
+          class="logo text-center text-weight-bold q-pt-sm"
           @click="$router.push('/')"
         >
-          Trustamp
+          <img
+            src="~assets/logo.svg"
+            style="width: 175px"
+          >
         </div>
         <q-space />
         <q-tabs

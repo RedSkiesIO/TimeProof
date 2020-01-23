@@ -1,8 +1,8 @@
 {
-  "name": "trustamp",
+  "name": "timeproof",
   "version": "0.0.1",
   "description": "Time stamping app",
-  "productName": "Trustamp",
+  "productName": "Time Proof",
   "cordovaId": "org.upgradedgiggle.atlascity.app",
   "capacitorId": "",
   "author": "stephenhorsfall <stephen.horsfall@atlascity.io>",

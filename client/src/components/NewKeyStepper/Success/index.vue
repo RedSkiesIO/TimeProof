@@ -5,7 +5,7 @@
       style="height: 15vw"
     >
     <div class="text-box">
-      <div class="text-h4 text-weight-bold text-primary">
+      <div class="text-h4 text-weight-bold text-secondary">
         You're all set!
       </div>
       <div class="encrypt-desc text-body2">

@@ -1,9 +1,9 @@
 <template>
-  <q-page class="flex justify-center text-primary">
+  <q-page class="flex flex-center text-secondary">
     <div
       v-if="isLoggedIn"
       class="q-my-lg"
-      style="width:71.5vw"
+      style="width:75vw"
     >
       <div
         class="row q-gutter-x-lg q-mb-md"

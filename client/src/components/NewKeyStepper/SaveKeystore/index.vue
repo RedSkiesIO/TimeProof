@@ -4,7 +4,7 @@
       src="~assets/keystore.svg"
       style="height: 15vw"
     >
-    <div class="text-h6 text-primary">
+    <div class="text-h6 text-secondary">
       Save your keystore file
     </div>
     <div class="row justify-center text-center">

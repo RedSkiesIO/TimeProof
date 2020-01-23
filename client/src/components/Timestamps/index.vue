@@ -16,7 +16,7 @@
         <div class="row text-weight-bold justify-end q-mr-sm">
           {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
         </div>
-        <div class="text-uppercase text-weight-bold text-primary row">
+        <div class="text-uppercase text-weight-bold text-secondary row">
           <div
             class="col-3"
           >

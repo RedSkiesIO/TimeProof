@@ -3,7 +3,7 @@
     <div
       class="q-mt-lg"
     >
-      <!-- <div class="column justify-start  text-left text-primary">
+      <!-- <div class="column justify-start  text-left text-secondary">
        <div class="col text-h4  text-weight-bold justify-center">
           {{ $t('createTimestamp') }}
         </div>
@@ -16,7 +16,7 @@
           Stamp File
         </div>
       </div> -->
-      <div class="column q-mb-md justify-center text-center text-primary">
+      <div class="column q-mb-md justify-center text-center text-secondary">
         <div class="col text-h4  text-weight-bold justify-center">
           Create a timestamp
         </div>

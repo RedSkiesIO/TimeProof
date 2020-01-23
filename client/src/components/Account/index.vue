@@ -52,13 +52,13 @@
       <div class="row q-gutter-x-md">
         <div class="">
           <div>membership:</div>
-          <div class="text-primary">
+          <div class="text-secondary">
             {{ user.tier }} tier
           </div>
         </div>
         <div class="">
           <div>your allowance:</div>
-          <div class="text-primary">
+          <div class="text-secondary">
             5 timestamps per month
           </div>
         </div>

@@ -5,7 +5,7 @@
       style="height: 15vw"
     >
     <div class="text-box">
-      <div class="text-h6 text-primary">
+      <div class="text-h6 text-secondary">
         Choose a password to encrypt your key
       </div>
       <div class="encrypt-desc">

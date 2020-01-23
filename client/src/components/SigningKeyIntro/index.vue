@@ -7,15 +7,15 @@
       src="~assets/signing-key.svg"
       style="height: 15vw"
     >
-    <div class="text-h4 text-primary">
-      Welcome to Trustamp {{ user.givenName }}!
+    <div class="text-h4 text-secondary">
+      Welcome to Time Proof {{ user.givenName }}!
     </div>
     <div class="row justify-center">
       <div
         class="text-body1"
         style="width: 50vw;"
       >
-        To get you started on Trustamp we need to create your signing key. <br>
+        To get you started on Time Proof we need to create your signing key. <br>
         Your signing key is used to prove your ownership of a timestamp.
         It's stored locally on your device so that only you have access to it.
       </div>
