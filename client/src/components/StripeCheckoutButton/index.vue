@@ -6,6 +6,8 @@
       :items="[item]"
       :success-url="successUrl"
       :cancel-url="cancelUrl"
+      :metadata="stripeMetadata"
+      mode="subscription"
     >
       <template slot="checkout-button">
         <q-btn
@@ -43,8 +45,13 @@ export default {
     successUrl: 'http://localhost:6420/',
     cancelUrl: 'http://localhost:6420/upgrade',
   }),
-  mounted() {
-    console.log(this.item);
+  computed: {
+    stripeMetadata() {
+      const account = this.$auth.account();
+      return {
+        accountIdentifier: account.accountIdentifier,
+      };
+    },
   },
   methods: {
     checkout() {
