@@ -46,7 +46,7 @@ export default {
 
   methods: {
     async fetchTimestamps() {
-      const { timestamps } = (await this.$axios.get(`https://document-timestamp.azurewebsites.net/api/getTimestamps/${this.user.accountIdentifier}`)).data;
+      const { timestamps } = (await this.$axios.get(`${process.env.API}/getTimestamps/${this.user.accountIdentifier}`)).data;
       return timestamps.map(file => ({
         txId: file.id,
         hash: file.fileHash,
