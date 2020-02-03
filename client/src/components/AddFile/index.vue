@@ -335,7 +335,7 @@ export default {
             },
           });
         }
-        const tx = await this.$axios.post('https://document-timestamp.azurewebsites.net/api/timestamp', {
+        const tx = await this.$axios.post(`${process.env.API}/timestamp`, {
           fileName: this.file.name,
           hash: this.file.hash,
           publicKey: this.user.pubKey,

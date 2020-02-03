@@ -203,7 +203,7 @@ export default {
 
   computed: {
     etherscanTx() {
-      return `https://kovan.etherscan.io/tx/${this.proofId}`;
+      return `${process.env.ETHERSCAN}/${this.proofId}`;
     },
 
     account() {

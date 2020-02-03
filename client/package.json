@@ -27,6 +27,7 @@
     "storyboard-listener-console": "^3.1.4",
     "tweetnacl": "^1.0.1",
     "vue-i18n": "^8.0.0",
+    "vue-stripe-checkout": "^3.1.6",
     "vuex-persist": "^2.1.1",
     "web3": "^1.2.4"
   },

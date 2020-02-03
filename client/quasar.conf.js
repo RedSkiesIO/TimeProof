@@ -62,12 +62,16 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       scopeHoisting: true,
-      env: {
-        API: JSON.stringify('https://documentstamp.azurewebsites.net/api/'),
-        STAMP_KEY: JSON.stringify('?code=W4YaftqDNIXD6sXiuYgRmIiTOZZ6lk6Ttobr9jPOaIF1XC0dsOKmlg=='),
-        VERIFY_KEY: JSON.stringify('?code=hC362dyPjv3OwrNNL3XS1JDZs9CEzef/azXMVkyK1Uh3OyWcpdJ6Cg=='),
-        GET_STAMP_KEY: JSON.stringify('?code=b9KDXgDFC9M1pwY5639otMcZidDr3uif4ZS/27pDEZDOi5RoRWdr8w=='),
-        TOTAL_STAMP_KEY: JSON.stringify('?code=weyu0y41MJSgFyeIUs1aRJDPi0pjYaAr/gm4hwAFMTJXHr3d7z6OFg=='),
+      env: ctx.dev
+      ? {
+        API: JSON.stringify('http://localhost:7071/api'),
+        ETHERSCAN: JSON.stringify('https://kovan.etherscan.io/tx'),
+        INFURA: JSON.stringify('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9')
+      }
+      : {
+        API: JSON.stringify('https://document-timestamp.azurewebsites.net/api'),
+        ETHERSCAN: JSON.stringify('https://etherscan.io/tx'),
+        INFURA: JSON.stringify('https://mainnet.infura.io/v3/679bbc6759454bf58a924bfaf55576b9')
       },
       // vueRouterMode: 'history',
       // showProgress: false,

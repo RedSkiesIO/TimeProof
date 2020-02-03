@@ -42,6 +42,13 @@ const routes = [
       { path: '', component: () => import('pages/CreateKey') },
     ],
   },
+  {
+    path: '/upgrade',
+    component: () => import('layouts/Main'),
+    children: [
+      { path: '', component: () => import('pages/Upgrade') },
+    ],
+  },
 ];
 
 // Always leave this as last one
