@@ -9,7 +9,8 @@
     >
       <template slot="checkout-button">
         <q-btn
-          color="primary"
+          unelevated
+          style="color: #0047cc; background: #e5ecfa;"
           :label="label"
           @click="checkout"
         />
