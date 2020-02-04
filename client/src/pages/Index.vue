@@ -22,7 +22,7 @@
             <q-tabs
               v-model="tab"
               dense
-              class="bg-white text-primary"
+              class="bg-white text-secondary"
             >
               <q-tab
                 name="sign"
@@ -54,7 +54,7 @@
                   </div>
                   <q-btn
                     outline
-                    color="primary"
+                    color="secondary"
                     :label="$t('upgrade')"
                   />
                 </div>
@@ -78,7 +78,7 @@
       </div>
     </div>
 
-    <q-card
+    <div
       v-else
       flat
       class="q-pa-xl flex flex-center column text-center"
@@ -94,7 +94,7 @@
         class="q-mt-md"
         @click="$auth.signIn()"
       />
-    </q-card>
+    </div>
   </q-page>
 </template>
 
@@ -124,7 +124,7 @@ export default {
       tab: 'sign',
       tiers: {
         free: 50,
-        basic: 1000,
+        basic: 30,
         standard: 10000,
         premium: 100000,
       },
@@ -156,7 +156,7 @@ export default {
       return null;
     },
     allowed() {
-      if (this.user.timestampsUsed <= this.tiers[this.user.tier]) {
+      if (this.user.monthlyAllowanceUsage <= this.tiers[this.user.tier]) {
         return true;
       }
       return false;
@@ -173,11 +173,14 @@ export default {
 .q-panel {
   height: inherit;
 }
-
+.sign-verify .q-card {
+  padding: 0;
+  border: 0;
+}
 .sign-verify .q-card > div:first-child {
-    border-top: 2px solid rgba(0, 0, 0, 0.12);
-    border-left: 2px solid rgba(0, 0, 0, 0.12);
-    border-right: 2px solid rgba(0, 0, 0, 0.12);
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
 
 }
 

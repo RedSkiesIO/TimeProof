@@ -1,24 +1,26 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout view="hHh lpR fFf">
     <q-header
       flat
       unelevated
+      class="bg-primary text-white"
     >
       <q-toolbar>
-        <q-toolbar-title>
-          {{ $t('documentSigner') }}
-        </q-toolbar-title>
+        <div
+          class="logo text-center text-weight-bold q-pt-sm"
+          @click="$router.push('/')"
+        >
+          <img
+            src="~assets/logo.svg"
+            style="width: 175px"
+          >
+        </div>
         <q-space />
         <q-tabs
           v-model="tab"
           indicator-color="primary"
           shrink
         >
-          <q-route-tab
-            name="about"
-            :label="$t('about')"
-            to="/about"
-          />
           <q-tab
             v-if="!isLoggedIn"
             name="signin"
@@ -30,15 +32,43 @@
             class="flex"
           >
             <q-tab
-              size="sm"
-              name="account"
-              icon="account_circle"
-              @click="dialog=true"
+              name="logout"
+              :label="$t('logout')"
+              @click="logOut"
             />
           </div>
         </q-tabs>
       </q-toolbar>
     </q-header>
+
+    <q-drawer
+      v-if="isLoggedIn"
+      v-model="drawer"
+      show-if-above
+      :width="200"
+      :breakpoint="500"
+      content-class="bg-primary text-white"
+    >
+      <div class="q-mt-lg columm justify-end text-left">
+        <q-list>
+          <q-item
+            v-for="item in menuList"
+            :key="item.label"
+            v-ripple
+            clickable
+            :to="item.route"
+            :disable="currentPath === '/new-key'"
+          >
+            <q-item-section avatar>
+              <q-icon :name="item.icon" />
+            </q-item-section>
+            <q-item-section>
+              {{ item.label }}
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
+    </q-drawer>
 
     <q-page-container>
       <router-view v-if="display" />
@@ -101,6 +131,29 @@
 <script>
 import User from '../../store/User';
 
+const menuList = [
+  {
+    icon: 'fas fa-home',
+    label: 'Dashboard',
+    route: '/dashboard',
+  },
+  {
+    icon: 'fas fa-stamp',
+    label: 'Stamp',
+    route: '/stamp',
+  },
+  {
+    icon: 'fas fa-fingerprint',
+    label: 'Verify',
+    route: '/verify',
+  },
+  {
+    icon: 'settings',
+    label: 'Settings',
+    route: '/account',
+  },
+];
+
 export default {
   name: 'MainLayout',
 
@@ -116,6 +169,9 @@ export default {
       tab: '',
       dialog: false,
       position: 'top',
+      left: true,
+      menuList,
+      drawer: true,
     };
   },
 
@@ -143,6 +199,9 @@ export default {
       }
       return null;
     },
+    currentPath() {
+      return this.$route.path;
+    },
   },
 
   methods: {
@@ -154,6 +213,18 @@ export default {
     logOut(e) {
       e.preventDefault();
       this.$auth.logout();
+    },
+    drawerClick(e) {
+      // if in "mini" state and user
+      // click on drawer, we switch it to "normal" mode
+      if (this.miniState) {
+        this.miniState = false;
+
+        // notice we have registered an event with capture flag;
+        // we need to stop further propagation as this click is
+        // intended for switching drawer to "normal" mode only
+        e.stopPropagation();
+      }
     },
   },
 };
@@ -168,5 +239,36 @@ export default {
 
 .user-dialog .q-dialog__backdrop {
     background: none;
+}
+
+.left-nav .q-item-section {
+  text-transform: 'uppercase';
+  font-weight: 'bold';
+  font-size: large;
+}
+
+.q-item.q-router-link--active {
+  color: #ffffff;
+  font-weight: bold;
+}
+</style>
+<style lang="scss" scoped>
+.logo {
+  font-size: 1.35rem;
+  width: 176px;
+  letter-spacing: 2px;
+
+}
+.q-item__section--side > .q-icon {
+    font-size: 15px;
+}
+
+.q-item__section--avatar {
+  min-width: 0;
+  padding-bottom: 1px;
+}
+
+.q-item__section {
+  font-size: 15px;
 }
 </style>

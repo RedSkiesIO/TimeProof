@@ -2,7 +2,7 @@
   <div>
     <q-card
       flat
-      class="usage-summary q-pa-sm"
+      class="recent-timestamps"
     >
       <div class="row text-weight-bold text-h6">
         {{ $t('recentTimestamps') }}
@@ -77,7 +77,7 @@ export default {
       file: null,
       tiers: {
         free: 50,
-        basic: 1000,
+        basic: 30,
         standard: 10000,
         premium: 100000,
       },
@@ -145,9 +145,8 @@ export default {
 };
 </script>
 <style lang="scss">
-.usage-summary {
-    border: 2px solid rgba(0, 0, 0, 0.12);
-    max-width: 25em;
+.recent-timestamps {
+    width: 25em;
 }
 .stamp-item {
   border-top: 1px solid $grey-4;

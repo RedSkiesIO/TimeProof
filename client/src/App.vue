@@ -38,17 +38,6 @@ export default {
       }
       return null;
     },
-
-    timestampsUsed() {
-      const d = new Date();
-      const thisMonth = `${d.getMonth()}${d.getFullYear()}`;
-      const timestamps = this.user.timestamps.filter((stamp) => {
-        const date = new Date(stamp.date);
-        const month = `${date.getMonth()}${date.getFullYear()}`;
-        return month === thisMonth;
-      });
-      return timestamps.length;
-    },
   },
 
   mounted() {
@@ -56,71 +45,64 @@ export default {
   },
 
   methods: {
-    async insertTimestamp(file) {
-      Timestamp.insert({
-        data: {
-          txId: file.txId,
-          hash: file.base32Hash,
-          signature: file.signature,
-          accountIdentifier: this.user.accountIdentifier,
-          name: file.name,
-          date: file.timestamp,
-          type: file.type,
-          size: file.size,
-        },
-      });
+    async fetchTimestamps() {
+      const { timestamps } = (await this.$axios.get(`${process.env.API}/getTimestamps/${this.user.accountIdentifier}`)).data;
+      return timestamps.map(file => ({
+        txId: file.id,
+        hash: file.fileHash,
+        signature: file.signature,
+        pubKey: file.publicKey.toLowerCase(),
+        accountIdentifier: this.user.accountIdentifier,
+        name: file.fileName,
+        date: Number(file.timestamp),
+        type: this.re.exec(file.fileName)[1],
+        blockNumber: Number(file.blockNumber),
+      }));
     },
+
 
     async start() {
       if (this.account) {
         const token = await this.$auth.getToken();
-        this.$axios.defaults.headers.common.Authorization = `Bearer ${token.accessToken}`;
+        this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
         if (!this.user) {
-          const keypair = this.$keypair.new();
           User.insert({
             data: {
               accountIdentifier: this.account.accountIdentifier,
-              pubKey: keypair.publicKey,
-              secretKey: keypair.secretKey,
-              name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+              givenName: this.account.idToken.given_name,
+              familyName: this.account.idToken.family_name,
               email: this.account.idToken.emails[0],
+              tokenExpires: token.idToken.expiration,
             },
           });
         } else if (this.user) {
+          console.log(this.account);
           User.update({
             data: {
               accountIdentifier: this.account.accountIdentifier,
-              name: `${this.account.idToken.given_name} ${this.account.idToken.family_name}`,
+              givenName: this.account.idToken.given_name,
+              familyName: this.account.idToken.family_name,
               email: this.account.idToken.emails[0],
+              tokenExpires: token.idToken.expiration,
             },
           });
         }
         try {
-          const getTotal = await this.$axios.get(`${process.env.API}GetTotalStamps${process.env.TOTAL_STAMP_KEY}`);
-          const totalTs = getTotal.data.value;
-          if (totalTs > 0) {
-            const timestamps = await this.$axios.get(`${process.env.API}GetStamps/1/${totalTs}${process.env.GET_STAMP_KEY}`);
-            const files = timestamps.data.value.map(file => ({
-              txId: file.stampDocumentProof.transactionId,
-              hash: file.stampDocumentProof.userProof.hash,
-              signature: file.stampDocumentProof.userProof.signature,
-              accountIdentifier: this.user.accountIdentifier,
-              name: file.fileName,
-              date: file.stampDocumentProof.timeStamp,
-              type: this.re.exec(file.fileName)[1],
-            }));
-            await Timestamp.create({
-              data: files,
-            });
+          if (!this.user.secretKey) {
+            this.$router.push('/new-key');
           }
+          const timestamps = await this.fetchTimestamps();
 
-          User.update({
-            data: {
-              accountIdentifier: this.account.accountIdentifier,
-              timestampsUsed: this.timestampsUsed,
-              totalTimestamps: totalTs,
-            },
+          await Timestamp.create({
+            data: timestamps,
           });
+
+          setInterval(async () => {
+            const pending = this.user.pendingTimestamps;
+            if (pending && pending.length > 0) {
+              await this.$web3.updateTimestamps(this.user, pending);
+            }
+          }, 5000);
         } catch (e) {
           console.log(e);
         }

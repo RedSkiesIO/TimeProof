@@ -2,40 +2,42 @@
   <div>
     <q-card
       flat
-      class=" usage-summary q-pa-sm"
+      class="left-box"
     >
-      <div class="row text-weight-bold text-h6">
-        {{ $t('usageSummary') }}
-      </div>
-      <div class="row q-gutter-x-md">
-        <div class="column flex-center">
-          <q-knob
-            v-model="usedPercentage"
-            readonly
-            size="70px"
-            :thickness="0.22"
-            color="blue"
-            track-color="blue-3"
-            class="text-blue q-ma-md"
-          />
-          <div>
-            {{ $t('timestampsUsed') }}: {{ timestampsUsed }}
-          </div>
-        </div>
-        <div class="column q-gutter-y-md">
-          <div class="column">
-            <div>{{ $t('subscription') }}:</div>
-            <div class="text-green">
-              {{ $t(user.tier) }} {{ $t('tier') }}
+      <div
+        class="column justify-center"
+        style="height: 100%;"
+      >
+        <div class="row justify-between q-px-sm">
+          <div class="col-auto column flex-center q-mr-md">
+            <q-knob
+              v-model="usedPercentage"
+              readonly
+              size="70px"
+              :thickness="0.22"
+              color="blue"
+              track-color="blue-3"
+              class="text-blue q-ma-md"
+            />
+            <div>
+              {{ $t('timestampsUsed') }}: {{ timestampsUsed }}
             </div>
           </div>
-          <div class="column q-gutter-y-sm">
-            <div>{{ $t('moreTimestamps') }}</div>
-            <q-btn
-              outline
-              color="primary"
-              :label="$t('upgrade')"
-            />
+          <div class="col-auto column q-gutter-y-md">
+            <div class="column">
+              <div>{{ $t('subscription') }}:</div>
+              <div class="text-green">
+                {{ $t(user.tier) }} {{ $t('tier') }}
+              </div>
+            </div>
+            <div class="column q-gutter-y-sm">
+              <div>{{ $t('moreTimestamps') }}</div>
+              <q-btn
+                outline
+                color="secondary"
+                :label="$t('upgrade')"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -50,10 +52,9 @@ export default {
   data() {
     return {
       tiers: {
-        free: 50,
-        basic: 1000,
-        standard: 10000,
-        premium: 100000,
+        free: 5,
+        basic: 30,
+        premium: 200,
       },
     };
   },
@@ -77,13 +78,13 @@ export default {
       return null;
     },
     timestampsUsed() {
-      const used = this.user.timestampsUsed;
+      const used = this.user.monthlyAllowanceUsage;
       const { tier } = this.user;
 
       return `${used}/${this.tiers[tier]}`;
     },
     usedPercentage() {
-      return (this.user.timestampsUsed / this.tiers[this.user.tier]) * 100;
+      return (this.user.monthlyAllowanceUsage / this.tiers[this.user.tier]) * 100;
     },
 
   },
@@ -92,5 +93,6 @@ export default {
 <style lang="scss">
 .usage-summary {
     border: 2px solid rgba(0, 0, 0, 0.12);
+    max-width: 350px;
 }
 </style>

@@ -10,32 +10,43 @@
     <template v-slot:list="scope">
       <div v-if="scope.files < 1">
         <div
-
-          class="q-mt-xl q-pa-xl flex flex-center column text-center"
+          class="bg-white dash-border"
         >
-          <q-icon
-            name="backup"
-            class="text-grey-4"
-            style="font-size: 100px"
-          />
+          <div
 
-          <span
-            v-if="mode==='sign'"
-            class="text-h6 text-weight-bold text-grey-6"
-          >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
-          <span
-            v-else
-            class="text-h6 text-weight-bold text-grey-6"
-          >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+            class="q-my-xl q-pa-xl flex flex-center column text-center"
+          >
+            <img
+              src="~assets/add-file.svg"
+              style="height: 12vw"
+            >
 
-          <span class="text-body1 text-grey-7">
-            {{ $t('or') }} <span
-              class="text-blue"
-              @click="scope.pickFiles()"
-            >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
+            <span
+              v-if="mode==='sign'"
+              class="q-pt-sm text-h6 text-weight-bold text-grey-6"
+            >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
+            <span
+              v-else
+              class="q-pt-sm text-h6 text-weight-bold text-grey-6"
+            >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+
+            <span class="text-body1 text-grey-7">
+              {{ $t('or') }} <span
+                class="text-blue"
+                @click="scope.pickFiles()"
+              >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
+          </div>
+        </div>
+        <div
+          class="row text-secondary text-h6 justify-center q-mt-sm"
+        >
+          The file never leaves your system
         </div>
       </div>
-      <div v-else-if="error">
+      <div
+        v-else-if="error"
+        class="bg-white"
+      >
         <div
 
           class="q-mt-xl q-pa-xl flex flex-center column text-center"
@@ -57,6 +68,7 @@
       </div>
       <div
         v-else
+        class="bg-white"
       >
         <div
           v-if="!confirmed"
@@ -67,7 +79,7 @@
             class="text-grey-4"
             style="font-size: 100px"
           />
-          <span class="q-mt-md text-h6 text-primary">
+          <span class="q-mt-md text-h6 text-secondary">
             {{ file.name }}</span>
           <span
             v-if="file.type"
@@ -80,7 +92,7 @@
             v-if="mode==='sign'"
             unelevated
             size="lg"
-            color="primary"
+            color="secondary"
             :label="$t('sign')"
             @click="signHash"
           />
@@ -100,7 +112,7 @@
                 <q-btn
                   unelevated
                   rounded
-                  color="primary"
+                  color="secondary"
                   :label="$t('verify')"
                   @click="verifyProof"
                 />
@@ -109,21 +121,51 @@
           </div>
 
           <span
-            class="q-mt-sm text-blue"
+            class="q-mt-sm text-blue q-pb-md"
             @click="scope.reset()"
           >{{ $t('differentFile') }}</span>
         </div>
-
         <Proof
-          v-if="confirmed"
+          v-if="confirmed && !file.verify"
+          :proof-id="txId"
+          :scope="scope"
+          class="add-border"
+        />
+        <div class="row justify-center q-pa-md">
+          <q-btn
+            v-if="confirmed && !file.verify"
+            flat
+            label="Go back to the dashboard"
+            color="blue"
+            class="row justify-center q-pa-md text-blue"
+            @click="backToDashboard"
+          />
+        </div>
+
+        <VerifyResult
+          v-if="confirmed && file.verify"
           :proof="file"
           :scope="scope"
+          class="add-border"
         />
       </div>
+      <q-dialog v-model="dialog">
+        <UnlockKey
+          v-if="unlockKey"
+          mode="unlock"
+          @closeUnlock="dialog=false"
+          @sign="signHash"
+        />
+        <NewKey
+          v-if="newKey"
+          @close="dialog=false"
+          @sign="signHash"
+        />
+      </q-dialog>
       <q-inner-loading :showing="visible">
         <q-spinner-grid
           size="50px"
-          color="primary"
+          color="secondary"
         />
       </q-inner-loading>
     </template>
@@ -133,11 +175,17 @@
 import User from '../../store/User';
 import Timestamp from '../../store/Timestamp';
 import Proof from '../Proof';
+import VerifyResult from '../VerifyResult';
+import UnlockKey from '../Key/NewKey';
+import NewKey from '../Key';
 
 export default {
   name: 'AddFile',
   components: {
     Proof,
+    VerifyResult,
+    UnlockKey,
+    NewKey,
   },
 
   props: {
@@ -149,6 +197,9 @@ export default {
 
   data() {
     return {
+      dialog: false,
+      newKey: false,
+      unlockKey: false,
       file: null,
       confirmed: false,
       tab: 'sign',
@@ -157,6 +208,7 @@ export default {
       visible: false,
       error: false,
       re: /(?:\.([^.]+))?$/,
+      txId: null,
     };
   },
 
@@ -195,6 +247,10 @@ export default {
 
       return 'fas fa-file';
     },
+
+    key() {
+      return this.$store.state.settings.authenticatedAccount;
+    },
   },
 
   methods: {
@@ -202,17 +258,23 @@ export default {
       scope.reset();
       this.error = false;
     },
+
+    backToDashboard() {
+      this.$router.push('/dashboard');
+    },
+
     async insertTimestamp(file) {
       Timestamp.insert({
         data: {
           txId: file.txId,
-          hash: file.base32Hash,
+          hash: file.hash,
           signature: file.signature,
           accountIdentifier: this.user.accountIdentifier,
           name: file.name,
           date: file.timestamp,
           type: file.type,
           size: file.size,
+          blockNumber: file.blockNumber,
         },
       });
     },
@@ -240,33 +302,50 @@ export default {
       reader.onload = (evt) => {
         const input = Buffer.from(evt.target.result);
         const output = new Uint8Array(64);
-        this.file.hash = this.$blake2b(output.length).update(input).digest();
-        this.file.base32Hash = this.$base32(this.file.hash).toLowerCase();
+        this.file.hashBuffer = this.$blake2b(output.length).update(input).digest();
+        this.file.hash = this.$base32(this.file.hashBuffer).toLowerCase();
       };
       reader.readAsArrayBuffer(files[0]);
     },
 
     signHash() {
-      const sig = this.$keypair.signMessage(this.file.hash, this.user.secretKey);
-      this.file.signature = this.$base32(sig).toLowerCase();
-
-
-      this.sendProof();
+      if (this.key) {
+        const sig = this.$keypair.signMessage(this.file.hashBuffer, this.key);
+        this.file.signature = this.$base32(sig).toLowerCase();
+        this.sendProof();
+      } else if (!this.user.secretKey) {
+        this.newKey = true;
+        this.dialog = true;
+      } else {
+        this.unlockKey = true;
+        this.dialog = true;
+      }
     },
 
     async sendProof() {
       this.visible = true;
       try {
-        const tx = await this.$axios.post(`${process.env.API}StampDocument${process.env.STAMP_KEY}`, {
+        if (Date.now() > this.user.tokenExpires) {
+          const token = await this.$auth.getToken();
+          this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
+          User.update({
+            data: {
+              accountIdentifier: this.account.accountIdentifier,
+              tokenExpires: token.idToken.expiration,
+            },
+          });
+        }
+        const tx = await this.$axios.post(`${process.env.API}/timestamp`, {
           fileName: this.file.name,
-          hash: this.file.base32Hash,
+          hash: this.file.hash,
           publicKey: this.user.pubKey,
           signature: this.file.signature,
         });
 
         if (tx.data.success) {
-          this.file.txId = tx.data.value.stampDocumentProof.transactionId;
-          this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
+          this.file.txId = tx.data.value.id;
+          this.file.timestamp = tx.data.value.timestamp;
+          this.file.blockNumber = tx.data.value.blockNumber;
           const timestamps = this.user.timestampsUsed + 1;
           User.update({
             data: {
@@ -275,46 +354,40 @@ export default {
             },
           });
           await this.insertTimestamp(this.file);
-
+          this.txId = tx.data.value.id;
           this.visible = false;
           this.confirmed = true;
         }
       } catch (e) {
+        console.log(e);
         this.error = true;
         this.visible = false;
       }
     },
 
     async verifyProof() {
-      this.$refs.proofId.validate();
-      if (!this.$refs.proofId.hasError) {
-        this.file.verify = true;
-        const txId = this.proofId.replace(/\s+/g, '');
-        try {
-          const tx = await this.$axios.get(`${process.env.API}VerifyStampDocument/${txId.toUpperCase()}${process.env.VERIFY_KEY}`);
-
-          if (tx.data.success) {
-            const fileHash = tx.data.value.stampDocumentProof.userProof.hash;
-            if (fileHash === this.file.base32Hash.toLowerCase()) {
-              this.file.txId = tx.data.value.stampDocumentProof.transactionId;
-              this.file.timestamp = tx.data.value.stampDocumentProof.timeStamp;
-              this.file.signature = tx.data.value.stampDocumentProof.userProof.signature;
-              this.file.pubKey = tx.data.value.stampDocumentProof.userProof.publicKey;
-              this.file.verified = true;
-            } else {
-              this.file.error = this.$t('filesDoNotMatch');
-              this.file.verified = false;
-            }
-          } else {
-            this.file.error = this.$t('noProofFound');
-            this.file.verified = false;
-          }
-          this.confirmed = true;
-        } catch (e) {
+      this.file.verify = true;
+      const txId = this.proofId.replace(/\s+/g, '');
+      try {
+        const tx = await this.$web3.verifyTimestamp(txId, this.file.hash.toLowerCase());
+        if (tx && tx.verified) {
+          this.file.txId = txId;
+          this.file.date = tx.timestamp;
+          this.file.signature = tx.signature;
+          this.file.pubKey = tx.publicKey;
+          this.file.verified = true;
+        } else if (tx && !tx.verified) {
+          this.file.error = this.$t('filesDoNotMatch');
+          this.file.verified = false;
+        } else {
           this.file.error = this.$t('noProofFound');
           this.file.verified = false;
-          this.confirmed = true;
         }
+        this.confirmed = true;
+      } catch (e) {
+        this.file.error = this.$t('noProofFound');
+        this.file.verified = false;
+        this.confirmed = true;
       }
     },
   },
@@ -338,10 +411,18 @@ export default {
 }
 
 .q-uploader--bordered {
-    border: 2px solid rgba(0, 0, 0, 0.12);
+    border: 0px solid rgba(0, 0, 0, 0.12);
 }
- .q-field__append .q-icon {
-   display: none;
- }
 
+.q-field__append .q-icon {
+  display: none;
+}
+
+.dash-border {
+  border: 2px dashed rgba(0, 0, 0, 0.12);
+}
+
+.add-border {
+border: 1px solid lightgray;
+}
 </style>

@@ -1,72 +1,106 @@
 <template>
   <div>
+    <div class="row text-weight-bold text-h6 justify-start text-weight-bold">
+      <q-icon
+        class="icon-spacing q-mr-sm"
+        name="fas fa-history"
+        size="1.25rem"
+      />
+      Timestamp History
+    </div>
     <q-card
       flat
       class="timestamp-list q-pa-md"
     >
-      <div class="row text-weight-bold text-h6 q-pb-md justify-between">
-        {{ $t('timestamps') }}
-        <div class="flex text-body1 q-gutter-x-md">
-          <div @click="$emit('close')">
-            <q-icon
-              size="sm"
-              name="close"
-            />
+      <div v-if="user.orderedTimestamps.length > 0">
+        <div class="row text-weight-bold justify-end q-mr-sm">
+          {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
+        </div>
+        <div class="text-uppercase text-weight-bold text-secondary row">
+          <div
+            class="col-3"
+          >
+            {{ $t('file') }}
+          </div>
+          <div class="col-5">
+            {{ $t('proofId') }}
+          </div>
+          <div class="col-auto">
+            {{ $t('date') }}
           </div>
         </div>
+        <q-scroll-area style="height: 30rem;">
+          <div
+            v-for="stamp in user.orderedTimestamps"
+            :key="stamp.txId"
+            class="row stamp-item2"
+          >
+            <div
+              class="col-3 q-px-sm overflow"
+              @click="timestampDialog(stamp)"
+            >
+              <q-icon
+                class="col-auto text-grey-6 q-pr-sm"
+                :name="fileIcon(stamp.type)"
+                style="font-size: 1.5em"
+              />
+              {{ stamp.name }}
+            </div>
+            <div
+              class="col-5 overflow"
+              @click="timestampDialog(stamp)"
+            >
+              {{ stamp.txId }}
+            </div>
+            <div
+              class=" col text-left"
+              @click="timestampDialog(stamp)"
+            >
+              <span v-if="stamp.blockNumber !== -1">
+                {{ stamp.timestampDate }}
+
+              </span>
+            </div>
+            <div
+              v-if="stamp.blockNumber === -1"
+              class="col q-pr-sm text-center"
+            >
+              <q-chip
+                square
+                color="orange"
+                text-color="white"
+              >
+                pending
+              </q-chip>
+            </div>
+            <div
+              v-else
+              class="col q-pr-sm text-right text-blue cursor-pointer"
+              @click="getCertificate(stamp)"
+            >
+              {{ $t('downloadCertificate') }}
+            </div>
+          </div>
+        </q-scroll-area>
       </div>
-      <div class="text-uppercase text-weight-bold text-primary row">
-        <div
-          class="col-2"
+      <div
+        v-else
+        class="flex column justify-center q-pa-md"
+      >
+        <img
+          src="~assets/no-timestamps.svg"
+          style="height: 12vw"
         >
-          {{ $t('file') }}
-        </div>
-        <div class="col-6">
-          {{ $t('proofId') }}
-        </div>
-        <div class="col-auto">
-          {{ $t('date') }}
-        </div>
-      </div>
-      <q-scroll-area style="height: 30rem;">
-        <div
-          v-for="stamp in timestamps"
-          :key="stamp.txId"
-          class="row stamp-item2"
-        >
-          <div
-            class="col-2 q-px-sm overflow"
-            @click="timestampDialog(stamp)"
-          >
-            <q-icon
-              class="col-auto text-grey-6 q-pr-sm"
-              :name="fileIcon(stamp.type)"
-              style="font-size: 1.5em"
-            />
-            {{ stamp.name }}
-          </div>
-          <div
-            class="col-6 overflow"
-            @click="timestampDialog(stamp)"
-          >
-            {{ stamp.txId }}
-          </div>
-          <div
-            class=" col text-left"
-            @click="timestampDialog(stamp)"
-          >
-            {{ getDate(stamp.date) }}
-          </div>
-          <div
-            class="col q-pr-sm text-right text-blue"
-            @click="getCertificate(stamp)"
-          >
-            {{ $t('downloadCertificate') }}
-          </div>
-        </div>
-      </q-scroll-area>
-      <div class="row text-weight-bold justify-end">
-        {{ $t('totalTimestamps') }}: {{ user.timestampsUsed }}
+        <span class="text-body1 text-center">
+          You haven't created any timestamps yet.
+          <br> Head over to the
+
+          <span
+            class="text-blue link"
+            @click="goToStamp"
+          >stamp</span>
+          section to get started
+        </span>
       </div>
     </q-card>
     <q-dialog v-model="confirmed">
@@ -81,7 +115,8 @@
 
         <Proof
           v-if="confirmed"
-          :proof="file"
+          :file="file"
+          :proof-id="txId"
           :scope="{dialog: true}"
         />
       </q-card>
@@ -102,10 +137,11 @@ export default {
   data() {
     return {
       confirmed: false,
-      file: null,
+      file: {},
+      txId: null,
       tiers: {
         free: 50,
-        basic: 1000,
+        basic: 30,
         standard: 10000,
         premium: 100000,
       },
@@ -130,25 +166,16 @@ export default {
       }
       return null;
     },
-    timestamps() {
-      const { timestamps } = this.user;
-      const ts = timestamps.slice(0);
-
-      ts.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      return ts.slice(0);
-    },
   },
 
   methods: {
-    timestampDialog(stamp) {
-      this.file = stamp;
-      this.confirmed = true;
+    goToStamp() {
+      this.$router.push('/stamp');
     },
 
-    getDate(time) {
-      const date = new Date(time);
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    timestampDialog({ txId }) {
+      this.txId = txId;
+      this.confirmed = true;
     },
 
     fileIcon(type) {
@@ -169,33 +196,17 @@ export default {
 
     getCertificate(stamp) {
       const name = `${stamp.date}.pdf`;
-      const splitString = (string, index) => ({
-        one: string.substr(0, index),
-        two: string.substr(index),
-      });
-
-      const hash = splitString(stamp.hash.toLowerCase(), 65);
-      const proofId = splitString(stamp.txId.toLowerCase(), 65);
-      const signature = splitString(stamp.signature.toLowerCase(), 65);
-      const file = {
-        file: stamp.name,
-        hash,
-        proofId,
-        signature,
-        user: this.user.name,
-        timestamp: this.getDate(stamp.date),
-      };
-      this.$pdf(name, file);
+      this.$pdf(name, stamp.certificate);
     },
   },
 };
 </script>
 <style lang="scss">
-.timestamp-list {
-    border: 2px solid rgba(0, 0, 0, 0.12);
-    min-width: 52rem;
-    width: 80vw;
+.link {
+  text-decoration: none;
+  color: inherit;
 }
+
 .stamp-item2 {
   border-top: 1px solid $grey-4;
   padding: 1rem 0;
@@ -203,6 +214,11 @@ export default {
 
 .stamp-item2:hover {
   background: $grey-2;
+}
+
+.stamp-item2 .q-chip {
+  margin: 0;
+  height: 1.5em;
 }
 
 .overflow {
