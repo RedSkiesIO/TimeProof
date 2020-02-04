@@ -6,8 +6,7 @@
       :items="[item]"
       :success-url="successUrl"
       :cancel-url="cancelUrl"
-      :metadata="stripeMetadata"
-      mode="subscription"
+      :client-reference-id="accountId"
     >
       <template slot="checkout-button">
         <q-btn
@@ -46,11 +45,9 @@ export default {
     cancelUrl: 'http://localhost:6420/upgrade',
   }),
   computed: {
-    stripeMetadata() {
+    accountId() {
       const account = this.$auth.account();
-      return {
-        accountIdentifier: account.accountIdentifier,
-      };
+      return account.accountIdentifier;
     },
   },
   methods: {

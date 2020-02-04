@@ -101,12 +101,16 @@ export default {
   data: () => ({
     loading: false,
     publishableKey: 'pk_test_IRxZZJoqfYY2SSVj8arguq9k00mg8SQT5R',
-    items: [
-      { plan: 'plan_GeJGwbwuTvjjTi', quantity: 1 },
-    ],
     successUrl: 'http://localhost:6420/',
     cancelUrl: 'http://localhost:6420/upgrade',
+    items: [
+      {
+        plan: 'plan_GeJGwbwuTvjjTi',
+        quantity: 1,
+      },
+    ],
   }),
+
   methods: {
     checkout() {
       this.$refs.checkoutRef.redirectToCheckout();

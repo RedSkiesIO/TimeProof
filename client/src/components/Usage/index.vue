@@ -52,10 +52,9 @@ export default {
   data() {
     return {
       tiers: {
-        free: 50,
+        free: 5,
         basic: 30,
-        standard: 10000,
-        premium: 100000,
+        premium: 200,
       },
     };
   },
