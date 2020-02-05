@@ -1,0 +1,19 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "CosmosDbConnectionString": "AccountEndpoint=",
+    "NODE_API": "",
+    "ACCOUNT_ADDRESS": "",
+    "TO_ADDRESS": "",
+    "SECRET_KEY": "",
+    "CHAIN": "mainnet",
+    "GAS_PRICE": 3
+  },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "*",
+    "CORSCredentials": false
+  }
+}
