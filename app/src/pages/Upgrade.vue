@@ -82,7 +82,7 @@
             <div class="price-button-container">
               <StripeButton
                 label="Choose Plan"
-                :item="items[0]"
+                :item="items[1]"
               />
             </div>
           </q-card-section>
@@ -106,6 +106,10 @@ export default {
     items: [
       {
         plan: 'plan_GeJGwbwuTvjjTi',
+        quantity: 1,
+      },
+      {
+        plan: 'plan_Gga2y8jPcryhWJ',
         quantity: 1,
       },
     ],

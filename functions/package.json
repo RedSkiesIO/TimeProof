@@ -1,11 +1,13 @@
 {
-  "name": "TimestampFunctions",
+  "name": "timestamp-functions",
   "version": "1.0.0",
   "description": "",
   "scripts": {
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
+    "adal-node": "^0.2.1",
+    "axios": "^0.19.2",
     "base32-decode": "^1.0.0",
     "ethereumjs-tx": "^2.1.1",
     "jwt-decode": "^2.2.0",
