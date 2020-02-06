@@ -6,7 +6,7 @@
       :items="[item]"
       :success-url="successUrl"
       :cancel-url="cancelUrl"
-      :client-reference-id="accountId"
+      :client-reference-id="token"
     >
       <template slot="checkout-button">
         <q-btn
@@ -33,6 +33,10 @@ export default {
       required: true,
     },
     label: {
+      type: String,
+      required: true,
+    },
+    token: {
       type: String,
       required: true,
     },

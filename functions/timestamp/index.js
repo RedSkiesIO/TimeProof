@@ -13,7 +13,7 @@ module.exports = async function timestamp(context, req) {
     };
   }
 
-  const user = jwtDecode(req.headers.authorization);
+  const user = (jwtDecode(req.headers.authorization)).sub;
   const proof = verifyProof(req.body);
 
   if (proof === false) {
