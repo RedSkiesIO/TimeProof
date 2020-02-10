@@ -23,7 +23,7 @@ const saveDataToFile = (data, fileName, mimeType) => {
 };
 
 async function create(name, proof) {
-  const response = await fetch('../../statics/certificate.pdf');
+  const response = await fetch('../../statics/certificate2.pdf');
   const file = await response.arrayBuffer();
 
   const doc = await PDFDocument.load(file);
