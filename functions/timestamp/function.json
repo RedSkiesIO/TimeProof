@@ -22,6 +22,16 @@
       "createIfNotExists": true,
       "connectionStringSetting": "CosmosDbConnectionString",
       "direction": "out"
+    },
+    {
+      "name": "lastNonce",
+      "type": "cosmosDB",
+      "databaseName": "DocumentStamp",
+      "collectionName": "Timestamps",
+      "connectionStringSetting": "CosmosDbConnectionString",
+      "sqlQuery": "SELECT max(c.nonce) as latestNonce from c",
+      "direction": "in"
   }
-  ]
+  ],
+  "disabled": false
 }
