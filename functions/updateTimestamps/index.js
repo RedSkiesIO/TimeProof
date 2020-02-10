@@ -8,7 +8,8 @@ module.exports = async function timestamp(context, req, timestamps) {
       body: 'You are not authorized to access this resource',
     }
   }
-  const user = jwtDecode(req.headers.authorization);
+  const user = jwtDecode(req.headers.authorization).sub;
+  context.log(user);
   if (!req.params.id || user !== req.params.id) {
     return {
       status: 401,

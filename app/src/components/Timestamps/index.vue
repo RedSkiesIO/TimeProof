@@ -47,10 +47,29 @@
               {{ stamp.name }}
             </div>
             <div
-              class="col-5 overflow"
-              @click="timestampDialog(stamp)"
+              class="col-5 row overflow"
             >
-              {{ stamp.txId }}
+              <div
+                class=" col-10 overflow"
+                @click="timestampDialog(stamp)"
+              >
+                {{ stamp.txId }}
+              </div>
+              <div>
+                <q-btn
+                  flat
+                  rounded
+                  size="sm"
+                  color="grey"
+                  icon="filter_none"
+                  class="copy-button"
+                  @click="copy(stamp.txId)"
+                >
+                  <q-tooltip anchor="top middle">
+                    {{ copyLabel }}
+                  </q-tooltip>
+                </q-btn>
+              </div>
             </div>
             <div
               class=" col text-left"
@@ -136,6 +155,7 @@ export default {
 
   data() {
     return {
+      copyLabel: 'copy',
       confirmed: false,
       file: {},
       txId: null,
@@ -175,6 +195,17 @@ export default {
     timestampDialog({ txId }) {
       this.txId = txId;
       this.confirmed = true;
+    },
+
+    copy(text) {
+      navigator.clipboard.writeText(text.toLowerCase()).then(() => {
+        this.copyLabel = this.$t('copied');
+        setTimeout(() => {
+          this.copyLabel = this.$t('copyPubKey');
+        }, 1500);
+      }, (err) => {
+        console.error('Async: Could not copy text: ', err);
+      });
     },
 
     fileIcon(type) {
