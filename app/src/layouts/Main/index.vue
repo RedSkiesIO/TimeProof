@@ -44,30 +44,33 @@
     <q-drawer
       v-if="isLoggedIn"
       v-model="drawer"
+      side="left"
       show-if-above
       :width="200"
       :breakpoint="500"
       content-class="bg-primary text-white"
     >
-      <div class="q-mt-lg columm justify-end text-left">
-        <q-list>
-          <q-item
-            v-for="item in menuList"
-            :key="item.label"
-            v-ripple
-            clickable
-            :to="item.route"
-            :disable="currentPath === '/new-key'"
-          >
-            <q-item-section avatar>
-              <q-icon :name="item.icon" />
-            </q-item-section>
-            <q-item-section>
-              {{ item.label }}
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </div>
+      <q-scroll-area class="fit">
+        <div class="q-mt-lg columm justify-end text-left">
+          <q-list>
+            <q-item
+              v-for="item in menuList"
+              :key="item.label"
+              v-ripple
+              clickable
+              :to="item.route"
+              :disable="currentPath === '/new-key'"
+            >
+              <q-item-section avatar>
+                <q-icon :name="item.icon" />
+              </q-item-section>
+              <q-item-section>
+                {{ item.label }}
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
+      </q-scroll-area>
     </q-drawer>
 
     <q-page-container>
@@ -251,6 +254,10 @@ export default {
   color: #ffffff;
   font-weight: bold;
 }
+
+.q-drawer--left {
+  position: fixed;
+}
 </style>
 <style lang="scss" scoped>
 .logo {
@@ -271,4 +278,5 @@ export default {
 .q-item__section {
   font-size: 15px;
 }
+
 </style>

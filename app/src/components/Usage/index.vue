@@ -30,7 +30,19 @@
                 {{ $t(user.tier) }} {{ $t('tier') }}
               </div>
             </div>
-            <div class="column q-gutter-y-sm">
+            <div
+              class="column  absolute-bottom-right"
+              style="right: 52px; bottom: 30px;"
+            >
+              <div>{{ $t('Allowance') }}:</div>
+              <div class="text-green">
+                {{ tiers[user.tier] }} timestamps p/m
+              </div>
+            </div>
+            <div
+              class="column q-gutter-y-sm"
+              style="visibility: hidden;"
+            >
               <div>{{ $t('moreTimestamps') }}</div>
               <q-btn
                 outline
@@ -93,6 +105,6 @@ export default {
 <style lang="scss">
 .usage-summary {
     border: 2px solid rgba(0, 0, 0, 0.12);
-    max-width: 350px;
+    max-width: 400px;
 }
 </style>

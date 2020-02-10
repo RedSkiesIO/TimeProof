@@ -33,7 +33,7 @@
           <div
             v-for="stamp in user.orderedTimestamps"
             :key="stamp.txId"
-            class="row stamp-item2"
+            class="row stamp-item2 cursor-pointer"
           >
             <div
               class="col-3 q-px-sm overflow"
