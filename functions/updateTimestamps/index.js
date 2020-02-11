@@ -9,7 +9,6 @@ module.exports = async function timestamp(context, req, timestamps) {
     }
   }
   const user = jwtDecode(req.headers.authorization).sub;
-  context.log(user);
   if (!req.params.id || user !== req.params.id) {
     return {
       status: 401,

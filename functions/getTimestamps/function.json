@@ -21,7 +21,7 @@
         "databaseName": "DocumentStamp",
         "collectionName": "Timestamps",
         "connectionStringSetting": "CosmosDbConnectionString",
-        "sqlQuery": "SELECT * from c where c.user = {id}",
+        "sqlQuery": "SELECT * from c where c.user = {id} AND c.network = '%CHAIN%'",
         "direction": "in"
     }
     ]
