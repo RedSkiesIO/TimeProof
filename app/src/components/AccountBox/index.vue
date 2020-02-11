@@ -41,10 +41,9 @@ export default {
       copyLabel: this.$t('copyPubKey'),
       isPwd: true,
       tiers: {
-        free: 50,
+        free: 10,
         basic: 30,
-        standard: 10000,
-        premium: 100000,
+        premium: 200,
       },
     };
   },

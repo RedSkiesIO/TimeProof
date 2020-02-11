@@ -27,6 +27,7 @@
               <StripeButton
                 label="Choose Plan"
                 :item="items[0]"
+                :token="token"
               />
             </div>
           </q-card-section>
@@ -55,6 +56,7 @@
               <StripeButton
                 label="Choose Plan"
                 :item="items[0]"
+                :token="token"
               />
             </div>
           </q-card-section>
@@ -82,7 +84,8 @@
             <div class="price-button-container">
               <StripeButton
                 label="Choose Plan"
-                :item="items[0]"
+                :item="items[1]"
+                :token="token"
               />
             </div>
           </q-card-section>
@@ -99,6 +102,7 @@ export default {
     StripeButton,
   },
   data: () => ({
+    token: null,
     loading: false,
     publishableKey: 'pk_test_IRxZZJoqfYY2SSVj8arguq9k00mg8SQT5R',
     successUrl: 'http://localhost:6420/',
@@ -108,10 +112,20 @@ export default {
         plan: 'plan_GeJGwbwuTvjjTi',
         quantity: 1,
       },
+      {
+        plan: 'plan_Gga2y8jPcryhWJ',
+        quantity: 1,
+      },
     ],
   }),
-
+  mounted() {
+    this.getToken();
+  },
   methods: {
+    async getToken() {
+      const accessToken = await this.$auth.getToken();
+      this.token = accessToken.idToken.rawIdToken;
+    },
     checkout() {
       this.$refs.checkoutRef.redirectToCheckout();
     },
