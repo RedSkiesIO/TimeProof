@@ -29,7 +29,7 @@
       "databaseName": "DocumentStamp",
       "collectionName": "Timestamps",
       "connectionStringSetting": "CosmosDbConnectionString",
-      "sqlQuery": "SELECT max(c.nonce) as latestNonce from c",
+      "sqlQuery": "SELECT max(c.nonce) as latestNonce FROM c WHERE c.network = '%CHAIN%'",
       "direction": "in"
   }
   ],

@@ -32,13 +32,20 @@ module.exports = async function timestamp(context, req, lastNonce) {
 
   const web3js = new Web3(new Web3.providers.HttpProvider(process.env.NODE_API));
   const txData = web3js.utils.asciiToHex(proof);
-  const nonce = await web3js.eth.getTransactionCount(process.env.ACCOUNT_ADDRESS, 'pending');
-  let localNonce = nonce;
+  console.log(lastNonce);
+  let localNonce;
+  if (lastNonce.latestNonce) {
+   localNonce = lastNonce[0].latestNonce + 1;
+  } else {
+    localNonce = await web3js.eth.getTransactionCount(process.env.ACCOUNT_ADDRESS, 'pending');
+    context.log('fetchNonce: ', localNonce);
+  }
   context.log('LocalNonce: ', localNonce);
   context.log('DatabaseNonce: ', lastNonce[0]);
 
+  
 
-  function sendTransaction(accountNonce = nonce) {
+  function sendTransaction(accountNonce = localNonce) {
     const rawTransaction = {
       from: process.env.ACCOUNT_ADDRESS,
       nonce: accountNonce,
@@ -53,6 +60,24 @@ module.exports = async function timestamp(context, req, lastNonce) {
     const tx = new Tx.Transaction(rawTransaction, { chain: process.env.CHAIN });
     tx.sign(privateKey);
     const serializedTx = tx.serialize();
+    const hash = `0x${tx.hash().toString('hex')}`;
+
+    const value = {
+      id: hash,
+      fileName: req.body.fileName,
+      publicKey: req.body.publicKey,
+      txHash: hash,
+      timestamp: Date.now(),
+      blockNumber: -1,
+      fileHash: req.body.hash,
+      signature: req.body.signature,
+      nonce: accountNonce,
+      network: process.env.CHAIN,
+      user,
+    };
+    context.bindings.timestampDatabase = JSON.stringify(value);
+
+    context.log('Hash: ',`0x${tx.hash().toString('hex')}`);
     return new Promise((resolve, reject) => {
       let timestampTx;
       web3js.eth.sendSignedTransaction(`0x${serializedTx.toString('hex')}`, (error, txHash) => {
@@ -71,18 +96,6 @@ module.exports = async function timestamp(context, req, lastNonce) {
         }
 
         context.log(txHash);
-        const value = {
-          id: txHash,
-          fileName: req.body.fileName,
-          publicKey: req.body.publicKey,
-          txHash: txHash,
-          timestamp: Date.now(),
-          blockNumber: -1,
-          fileHash: req.body.hash,
-          signature: req.body.signature,
-          nonce: accountNonce,
-          user,
-        };
         timestampTx = {
           body: {
             success: true,
@@ -97,7 +110,7 @@ module.exports = async function timestamp(context, req, lastNonce) {
   
   while (result.body === 'UPDATE_NONCE') {
 
-    localNonce = nonce + 1;
+    localNonce += 1;
     result = await sendTransaction(localNonce);
   }
   return result;
