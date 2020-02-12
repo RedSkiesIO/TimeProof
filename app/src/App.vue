@@ -8,7 +8,7 @@
 
 <script>
 import User from './store/User';
-import Timestamp from './store/Timestamp';
+//  import Timestamp from './store/Timestamp';
 
 export default {
   name: 'App',
@@ -45,21 +45,6 @@ export default {
   },
 
   methods: {
-    async fetchTimestamps() {
-      const { timestamps } = (await this.$axios.get(`${process.env.API}/getTimestamps/${this.user.accountIdentifier}`)).data;
-      return timestamps.map(file => ({
-        txId: file.id,
-        hash: file.fileHash,
-        signature: file.signature,
-        pubKey: file.publicKey.toLowerCase(),
-        accountIdentifier: this.user.accountIdentifier,
-        name: file.fileName,
-        date: Number(file.timestamp),
-        type: this.re.exec(file.fileName)[1],
-        blockNumber: Number(file.blockNumber),
-      }));
-    },
-
 
     async start() {
       if (this.account) {
@@ -94,11 +79,12 @@ export default {
           if (!this.user.secretKey) {
             this.$router.push('/new-key');
           }
-          const timestamps = await this.fetchTimestamps();
+          // const timestamps = await this.fetchTimestamps();
 
-          await Timestamp.create({
-            data: timestamps,
-          });
+          // await Timestamp.create({
+          //   data: timestamps,
+          // });
+          await this.user.fetchTimestamps();
 
           setInterval(async () => {
             const pending = this.user.pendingTimestamps;

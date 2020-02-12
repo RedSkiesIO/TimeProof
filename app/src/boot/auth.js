@@ -37,7 +37,15 @@ const auth = {
   },
 
   account() {
-    return myMSALObj.getAccount();
+    const account = myMSALObj.getAccount();
+    if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+      return null;
+    }
+    return account;
+  },
+
+  membership() {
+    return (this.account()).idToken.extension_membershipTier || 'free';
   },
 
   // acquire a token silently
@@ -99,3 +107,5 @@ myMSALObj.handleRedirectCallback(authCallback);
 
 
 Vue.prototype.$auth = auth;
+
+export default auth;
