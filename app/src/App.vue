@@ -63,6 +63,7 @@ export default {
 
     async start() {
       if (this.account) {
+        const membership = this.account.idToken.extension_membershipTier || 'free';
         const token = await this.$auth.getToken();
         this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
         if (!this.user) {
@@ -73,6 +74,7 @@ export default {
               familyName: this.account.idToken.family_name,
               email: this.account.idToken.emails[0],
               tokenExpires: token.idToken.expiration,
+              tier: membership,
             },
           });
         } else if (this.user) {
@@ -84,6 +86,7 @@ export default {
               familyName: this.account.idToken.family_name,
               email: this.account.idToken.emails[0],
               tokenExpires: token.idToken.expiration,
+              tier: membership,
             },
           });
         }

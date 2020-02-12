@@ -201,7 +201,7 @@ export default {
       navigator.clipboard.writeText(text.toLowerCase()).then(() => {
         this.copyLabel = this.$t('copied');
         setTimeout(() => {
-          this.copyLabel = this.$t('copyPubKey');
+          this.copyLabel = this.$t('copy');
         }, 1500);
       }, (err) => {
         console.error('Async: Could not copy text: ', err);
