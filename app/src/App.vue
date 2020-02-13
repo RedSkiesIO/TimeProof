@@ -22,16 +22,13 @@ export default {
 
   computed: {
     account() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
-        return null;
-      }
-      return account;
+      return this.$auth.account();
     },
 
     user() {
-      if (this.account) {
-        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
+      const account = this.$auth.account();
+      if (account) {
+        const user = User.query().whereId(account.accountIdentifier).with('timestamps').get();
         if (user) {
           return user[0];
         }
@@ -79,11 +76,7 @@ export default {
           if (!this.user.secretKey) {
             this.$router.push('/new-key');
           }
-          // const timestamps = await this.fetchTimestamps();
 
-          // await Timestamp.create({
-          //   data: timestamps,
-          // });
           await this.user.fetchTimestamps();
 
           setInterval(async () => {
