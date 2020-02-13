@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-vars */
 import Vue from 'vue';
 import {
-  degrees, PDFDocument, rgb, StandardFonts,
+  PDFDocument, rgb, StandardFonts,
 } from 'pdf-lib';
-import templatePDF from 'pdf-templater';
 
 
 const downloadURL = (data, fileName) => {
