@@ -20,6 +20,7 @@ export default class User extends Model {
       tier: this.attr('free'),
       timestamps: this.hasMany(Timestamp, 'accountIdentifier'),
       tokenExpires: this.attr(''),
+      upgrade: this.attr(false),
     };
   }
 

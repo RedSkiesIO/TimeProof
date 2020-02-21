@@ -28,6 +28,7 @@ const tokenRequest = {
   scopes: appConfig.b2cScopes,
 };
 
+
 // instantiate MSAL
 const myMSALObj = new Msal.UserAgentApplication(msalConfig);
 
@@ -59,6 +60,12 @@ const auth = {
       }).catch((error2) => {
         console.log('Failed token acquisition', error2);
       });
+    });
+  },
+
+  getTokenRedirect() {
+    return myMSALObj.acquireTokenRedirect(tokenRequest).catch((error) => {
+      console.log(error);
     });
   },
 

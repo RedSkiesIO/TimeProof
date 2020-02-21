@@ -49,6 +49,13 @@ const routes = [
       { path: '', component: () => import('pages/Upgrade') },
     ],
   },
+  {
+    path: '/upgrade-success',
+    component: () => import('layouts/Main'),
+    children: [
+      { path: '', component: () => import('pages/UpgradeSuccess') },
+    ],
+  },
 ];
 
 // Always leave this as last one

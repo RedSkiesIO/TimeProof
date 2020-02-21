@@ -6,7 +6,7 @@
       :items="[item]"
       :success-url="successUrl"
       :cancel-url="cancelUrl"
-      :client-reference-id="token"
+      :client-reference-id="accountId"
     >
       <template slot="checkout-button">
         <q-btn
@@ -45,8 +45,8 @@ export default {
   data: () => ({
     loading: false,
     publishableKey: 'pk_test_IRxZZJoqfYY2SSVj8arguq9k00mg8SQT5R',
-    successUrl: 'http://localhost:6420/',
-    cancelUrl: 'http://localhost:6420/upgrade',
+    successUrl: 'http://localhost:6420/#/upgrade-success',
+    cancelUrl: 'http://localhost:6420/#/upgrade',
   }),
   computed: {
     accountId() {

@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import encode from 'base32-encode';
-import decode from 'base32-decode';
+import encodeBase32 from 'base32-encode';
+import decodeBase32 from 'base32-decode';
 
 const mode = 'AES-GCM';
 const length = 256;
@@ -29,10 +29,10 @@ const crypto = {
       iv: window.crypto.getRandomValues(new Uint8Array(ivLength)),
     };
     const key = await this.genEncryptionKey(password, mode, length);
-    const encoded = new TextEncoder().encode(text);
+    const encoded = (new TextEncoder()).encode(text);
     return {
-      cipherText: encode(await window.crypto.subtle.encrypt(algo, key, encoded), 'RFC4648', { padding: false }),
-      iv: encode(algo.iv, 'RFC4648', { padding: false }),
+      cipherText: encodeBase32(await window.crypto.subtle.encrypt(algo, key, encoded), 'RFC4648', { padding: false }),
+      iv: encodeBase32(algo.iv, 'RFC4648', { padding: false }),
     };
   },
 
@@ -41,11 +41,11 @@ const crypto = {
       const algo = {
         name: mode,
         length,
-        iv: new Uint8Array(decode(encrypted.iv, 'RFC4648')),
+        iv: new Uint8Array(decodeBase32(encrypted.iv, 'RFC4648')),
       };
 
       const key = await this.genEncryptionKey(password, mode, length);
-      const decrypted = await window.crypto.subtle.decrypt(algo, key, decode(encrypted.cipherText, 'RFC4648'));
+      const decrypted = await window.crypto.subtle.decrypt(algo, key, decodeBase32(encrypted.cipherText, 'RFC4648'));
       return new TextDecoder().decode(decrypted);
     } catch (e) {
       console.log(e);
