@@ -1,0 +1,38 @@
+{
+    "bindings": [
+      {
+        "authLevel": "anonymous",
+        "type": "httpTrigger",
+        "direction": "in",
+        "name": "req",
+        "methods": [
+          "post"
+        ],
+        "route":"updatetimestamps/{id}"
+      },
+      {
+        "type": "http",
+        "direction": "out",
+        "name": "$return"
+      },
+      {
+        "name": "timestamps",
+        "type": "cosmosDB",
+        "databaseName": "DocumentStamp",
+        "collectionName": "Timestamps",
+        "connectionStringSetting": "CosmosDbConnectionString",
+        "sqlQuery": "SELECT * from c where c.user = {id}",
+        "direction": "in"
+      },
+      {
+        "name": "timestampDatabase",
+        "type": "cosmosDB",
+        "databaseName": "DocumentStamp",
+        "collectionName": "Timestamps",
+        "createIfNotExists": false,
+        "connectionStringSetting": "CosmosDbConnectionString",
+        "direction": "out"
+      }
+    ]
+  }
+  

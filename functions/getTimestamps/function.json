@@ -1,0 +1,29 @@
+{
+    "bindings": [
+      {
+        "authLevel": "anonymous",
+        "type": "httpTrigger",
+        "direction": "in",
+        "name": "req",
+        "methods": [
+          "get"
+        ],
+        "route":"gettimestamps/{id}"
+      },
+      {
+        "type": "http",
+        "direction": "out",
+        "name": "$return"
+      },
+      {
+        "name": "timestamps",
+        "type": "cosmosDB",
+        "databaseName": "DocumentStamp",
+        "collectionName": "Timestamps",
+        "connectionStringSetting": "CosmosDbConnectionString",
+        "sqlQuery": "SELECT * from c where c.user = {id} AND c.network = '%CHAIN%'",
+        "direction": "in"
+    }
+    ]
+  }
+  

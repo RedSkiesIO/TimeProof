@@ -1,0 +1,22 @@
+// app global css in SCSS form
+body {
+    background: white;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+.q-card {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 12px;
+}
+
+// .left-box {
+//     width :350px;
+// }
+
+.top-box {
+    width :50vw;
+}
+
+.q-dialog__inner > div {
+    box-shadow: none;
+}

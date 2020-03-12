@@ -1,0 +1,37 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "post"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    },
+    {
+      "name": "timestampDatabase",
+      "type": "cosmosDB",
+      "databaseName": "DocumentStamp",
+      "collectionName": "Timestamps",
+      "createIfNotExists": true,
+      "connectionStringSetting": "CosmosDbConnectionString",
+      "direction": "out"
+    },
+    {
+      "name": "lastNonce",
+      "type": "cosmosDB",
+      "databaseName": "DocumentStamp",
+      "collectionName": "Timestamps",
+      "connectionStringSetting": "CosmosDbConnectionString",
+      "sqlQuery": "SELECT max(c.nonce) as latestNonce FROM c WHERE c.network = '%CHAIN%'",
+      "direction": "in"
+  }
+  ],
+  "disabled": false
+}
