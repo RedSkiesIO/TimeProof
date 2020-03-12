@@ -101,24 +101,22 @@
               ref="proofId"
               v-model="proofId"
               outlined
-              rounded
               bottom-slots
-              :label="$t('proofId')"
+              :placeholder="$t('proofId')"
               lazy-rules
               :rules="[ val => val && val.length > 102
                 && val.length < 105 || $t('invalidProofId')]"
-            >
-              <template v-slot:append>
-                <q-btn
-                  unelevated
-                  rounded
-                  color="secondary"
-                  :label="$t('verify')"
-                  @click="verifyProof"
-                />
-              </template>
-            </q-input>
+            />
+            <div class="row justify-center q-pa-md">
+              <q-btn
+                unelevated
+                color="secondary"
+                :label="$t('verify')"
+                @click="verifyProof"
+              />
+            </div>
           </div>
+
 
           <span
             class="q-mt-sm text-blue q-pb-md"

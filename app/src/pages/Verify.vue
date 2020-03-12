@@ -39,7 +39,6 @@ export default {
 }
 
 .verify .q-uploader__list {
-    width: 50vw;
     background-color: white;
     padding: 0;
 }

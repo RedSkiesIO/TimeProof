@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex justify-center">
     <div
-      class="q-mt-lg"
+      class="q-mt-lg justify-center"
     >
       <!-- <div class="column justify-start  text-left text-secondary">
        <div class="col text-h4  text-weight-bold justify-center">
@@ -17,7 +17,7 @@
         </div>
       </div> -->
       <div class="column q-mb-md justify-center text-center text-secondary">
-        <div class="col text-h4  text-weight-bold justify-center">
+        <div class="col text-h4 text-weight-bold justify-center">
           Create a timestamp
         </div>
         <!-- <div class="col text-h6">
@@ -26,12 +26,15 @@
       </div>
       <div
         v-if="!key"
-        class="row q-mb-lg"
+        class="row q-mb-lg justify-center"
       >
         <Key />
       </div>
 
-      <div class="row sign">
+      <div
+        class="row sign"
+        style="width:100%"
+      >
         <AddFile
           :mode="'sign'"
         />
@@ -64,7 +67,6 @@ export default {
 }
 
 .sign .q-uploader__list {
-    width: 50vw;
     border: 0px dashed lightgrey;
     background-color: white;
     padding: 0;
