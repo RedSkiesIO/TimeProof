@@ -75,7 +75,7 @@
           class="q-pa-xl flex flex-center column text-center"
         >
           <q-icon
-            :name="fileIcon"
+            :name="fileIcon(file.type)"
             class="text-grey-4"
             style="font-size: 100px"
           />
@@ -117,7 +117,6 @@
               />
             </div>
           </div>
-
 
           <span
             class="q-mt-sm text-blue q-pb-md"
@@ -177,6 +176,7 @@ import Proof from '../Proof';
 import VerifyResult from '../VerifyResult';
 import UnlockKey from '../Key/NewKey';
 import NewKey from '../Key';
+import { fileIcon } from '../../util';
 
 export default {
   name: 'AddFile',
@@ -208,6 +208,7 @@ export default {
       error: false,
       re: /(?:\.([^.]+))?$/,
       txId: null,
+      fileIcon,
     };
   },
 
@@ -228,23 +229,6 @@ export default {
         }
       }
       return null;
-    },
-
-    fileIcon() {
-      const { type } = this.file;
-      if (type === 'pdf') {
-        return 'fas fa-file-pdf';
-      }
-
-      if (type === 'zip') {
-        return 'fas fa-file-archive';
-      }
-
-      if (type === 'png' || type === 'gif' || type === 'jpeg') {
-        return 'fas fa-file-image';
-      }
-
-      return 'fas fa-file';
     },
 
     key() {

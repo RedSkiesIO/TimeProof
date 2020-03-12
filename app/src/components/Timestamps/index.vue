@@ -145,6 +145,7 @@
 <script>
 import User from '../../store/User';
 import Proof from '../Proof';
+import { fileIcon } from '../../util';
 
 export default {
   name: 'Timestamps',
@@ -164,6 +165,7 @@ export default {
         basic: 30,
         premium: 200,
       },
+      fileIcon,
     };
   },
 
@@ -206,22 +208,6 @@ export default {
       }, (err) => {
         console.error('Async: Could not copy text: ', err);
       });
-    },
-
-    fileIcon(type) {
-      if (type === 'pdf') {
-        return 'fas fa-file-pdf';
-      }
-
-      if (type === 'zip') {
-        return 'fas fa-file-archive';
-      }
-
-      if (type === 'png' || type === 'gif' || type === 'jpeg') {
-        return 'fas fa-file-image';
-      }
-
-      return 'fas fa-file';
     },
 
     getCertificate(stamp) {
