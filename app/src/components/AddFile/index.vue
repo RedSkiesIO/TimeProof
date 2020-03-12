@@ -110,6 +110,7 @@
             <div class="row justify-center q-pa-md">
               <q-btn
                 unelevated
+                :disable="!proofId"
                 color="secondary"
                 :label="$t('verify')"
                 @click="verifyProof"
