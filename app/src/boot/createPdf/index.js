@@ -38,13 +38,40 @@ async function create(name, proof) {
   console.log(width, height);
 
   // Draw a string of text diagonally across the first page
-  firstPage.drawText(proof.file, {
-    x: 178.75,
-    y: 493.89,
-    size: 14,
-    font: helveticaFont,
-    color: rgb(0, 0, 0),
-  });
+
+  if (proof.file) {
+    try {
+      const freqIndex = 66;
+      const fileLength = proof.file.length;
+      if (fileLength > freqIndex) {
+        const freq = fileLength % freqIndex === 0
+          ? fileLength / freqIndex
+          : fileLength / freqIndex + 1;
+        const fileNameArr = new Array(Math.floor(freq)).fill('');
+        fileNameArr.every((fileName, index) => {
+          if (index === 2) {
+            fileName = (proof.file.slice(freqIndex * index, fileLength));
+          } else {
+            fileName = (proof.file.slice(freqIndex * index, freqIndex * index + freqIndex));
+          }
+          firstPage.drawText(fileName, {
+            x: 178.75,
+            y: 505 - index * 10,
+            size: 10,
+            font: helveticaFont,
+            color: rgb(0, 0, 0),
+          });
+
+          if (index === 2) {
+            return false;
+          }
+          return true;
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   firstPage.drawText(proof.timestamp, {
     x: 178.75,
