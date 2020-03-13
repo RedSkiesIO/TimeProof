@@ -3,7 +3,7 @@ import Vue from 'vue';
 import {
   PDFDocument, rgb, StandardFonts,
 } from 'pdf-lib';
-
+import pixelWidth from 'string-pixel-width';
 
 const downloadURL = (data, fileName) => {
   const a = document.createElement('a');
@@ -41,32 +41,31 @@ async function create(name, proof) {
 
   if (proof.file) {
     try {
-      const freqIndex = 66;
-      const fileLength = proof.file.length;
-      if (fileLength > freqIndex) {
-        const freq = fileLength % freqIndex === 0
-          ? fileLength / freqIndex
-          : fileLength / freqIndex + 1;
-        const fileNameArr = new Array(Math.floor(freq)).fill('');
-        fileNameArr.every((fileName, index) => {
-          if (index === 2) {
-            fileName = (proof.file.slice(freqIndex * index, fileLength));
-          } else {
-            fileName = (proof.file.slice(freqIndex * index, freqIndex * index + freqIndex));
-          }
-          firstPage.drawText(fileName, {
+      proof.file = proof.file.replace(/\n/g, '');
+      let str = '';
+      let index = 0;
+      for (let i = 0; i < proof.file.length; i += 1) {
+        str += proof.file[i];
+        const leng = pixelWidth(str, { font: 'helvetica', size: 10 });
+        if (leng > 358) {
+          firstPage.drawText(str, {
             x: 178.75,
             y: 505 - index * 10,
             size: 10,
             font: helveticaFont,
             color: rgb(0, 0, 0),
           });
-
-          if (index === 2) {
-            return false;
-          }
-          return true;
-        });
+          str = '';
+          index += 1;
+        } else if (i === proof.file.length - 1) {
+          firstPage.drawText(str, {
+            x: 178.75,
+            y: 505 - index * 10,
+            size: 10,
+            font: helveticaFont,
+            color: rgb(0, 0, 0),
+          });
+        }
       }
     } catch (err) {
       console.log(err);
