@@ -45,6 +45,7 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'prefer-promise-reject-errors': 'off',
     'linebreak-style': 0,
+    'no-bitwise': ["off", { "int32Hint": true }],
 
     // allow console.log during development only
     // 'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
