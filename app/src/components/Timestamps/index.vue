@@ -29,7 +29,7 @@
             {{ $t('date') }}
           </div>
         </div>
-        <q-scroll-area style="height: 30rem;">
+        <q-scroll-area style="height: 15rem;">
           <div
             v-for="stamp in user.orderedTimestamps"
             :key="stamp.txId"
