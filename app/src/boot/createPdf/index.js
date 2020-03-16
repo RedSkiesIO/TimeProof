@@ -3,7 +3,7 @@ import Vue from 'vue';
 import {
   PDFDocument, rgb, StandardFonts,
 } from 'pdf-lib';
-
+import pixelWidth from 'string-pixel-width';
 
 const downloadURL = (data, fileName) => {
   const a = document.createElement('a');
@@ -38,13 +38,39 @@ async function create(name, proof) {
   console.log(width, height);
 
   // Draw a string of text diagonally across the first page
-  firstPage.drawText(proof.file, {
-    x: 178.75,
-    y: 493.89,
-    size: 14,
-    font: helveticaFont,
-    color: rgb(0, 0, 0),
-  });
+
+  if (proof.file) {
+    try {
+      proof.file = proof.file.replace(/\n/g, '');
+      let str = '';
+      let index = 0;
+      for (let i = 0; i < proof.file.length; i += 1) {
+        str += proof.file[i];
+        const leng = pixelWidth(str, { font: 'helvetica', size: 10 });
+        if (leng > 358) {
+          firstPage.drawText(str, {
+            x: 178.75,
+            y: 505 - index * 10,
+            size: 10,
+            font: helveticaFont,
+            color: rgb(0, 0, 0),
+          });
+          str = '';
+          index += 1;
+        } else if (i === proof.file.length - 1) {
+          firstPage.drawText(str, {
+            x: 178.75,
+            y: 505 - index * 10,
+            size: 10,
+            font: helveticaFont,
+            color: rgb(0, 0, 0),
+          });
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   firstPage.drawText(proof.timestamp, {
     x: 178.75,

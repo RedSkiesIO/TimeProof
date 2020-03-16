@@ -52,6 +52,11 @@
         @click="$auth.signIn()"
       />
     </div>
+    <q-dialog v-model="user.firstTimeDialog">
+      <CreateFirstTimestampPopup
+        @closeDialog="closeTimestampDialog"
+      />
+    </q-dialog>
   </q-page>
 </template>
 
@@ -60,7 +65,7 @@ import Timestamps from '../components/Timestamps';
 import Account from '../components/AccountBox';
 import Usage from '../components/Usage';
 import User from '../store/User';
-
+import CreateFirstTimestampPopup from '../components/CreateFirstTimestampPopup';
 
 export default {
   name: 'Dashboard',
@@ -68,6 +73,7 @@ export default {
     Timestamps,
     Account,
     Usage,
+    CreateFirstTimestampPopup,
   },
 
   computed: {
@@ -94,6 +100,20 @@ export default {
       }
       return null;
     },
+  },
+
+  methods: {
+
+    async closeTimestampDialog() {
+      //  this.$store.dispatch('settings/setAuthenticatedAccount', null);
+      await User.update({
+        data: {
+          accountIdentifier: this.account.accountIdentifier,
+          firstTimeDialog: false,
+        },
+      });
+    },
+
   },
 };
 </script>

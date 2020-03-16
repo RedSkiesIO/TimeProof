@@ -25,6 +25,7 @@
     "quasar": "^1.0.0",
     "storyboard": "^3.1.4",
     "storyboard-listener-console": "^3.1.4",
+    "string-pixel-width": "^1.10.0",
     "tweetnacl": "^1.0.1",
     "vue-i18n": "^8.0.0",
     "vue-stripe-checkout": "^3.1.6",
