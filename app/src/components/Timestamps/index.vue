@@ -18,11 +18,11 @@
         </div>
         <div class="text-uppercase text-weight-bold text-secondary row">
           <div
-            class="col-3"
+            class="col-5"
           >
             {{ $t('file') }}
           </div>
-          <div class="col-5">
+          <div class="col-2">
             {{ $t('proofId') }}
           </div>
           <div class="col-auto">
@@ -36,7 +36,7 @@
             class="row stamp-item2 cursor-pointer"
           >
             <div
-              class="col-3 q-px-sm overflow"
+              class="col-5 q-px-sm overflow"
               @click="timestampDialog(stamp)"
             >
               <q-icon
@@ -47,14 +47,8 @@
               {{ stamp.name }}
             </div>
             <div
-              class="col-5 row overflow"
+              class="col-2 row overflow"
             >
-              <div
-                class=" col-10 overflow"
-                @click="timestampDialog(stamp)"
-              >
-                {{ stamp.txId }}
-              </div>
               <div>
                 <q-btn
                   flat
