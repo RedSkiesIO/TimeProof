@@ -21,6 +21,7 @@ export default class User extends Model {
       timestamps: this.hasMany(Timestamp, 'accountIdentifier'),
       tokenExpires: this.attr(''),
       upgrade: this.attr(false),
+      firstTimeDialog: this.attr(true),
     };
   }
 

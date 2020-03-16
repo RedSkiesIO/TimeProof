@@ -110,4 +110,7 @@ export default {
   invalidPasswordLength: 'Password must contain at least 8 characters',
   verifyTimestamp: 'Verify a timestamp',
   createTimestamp: 'Create a timestamp',
+  createFirstTimeStamp: 'Create first timestamp',
+  createFirstTimeStampContent: 'Create your first timestamp. if you want to start please click the button takes below',
+  cancel: 'Cancel',
 };
