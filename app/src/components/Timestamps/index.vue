@@ -22,7 +22,7 @@
           >
             {{ $t('file') }}
           </div>
-          <div class="col-2">
+          <div class="col-1">
             {{ $t('proofId') }}
           </div>
           <div class="col-auto">
@@ -33,11 +33,10 @@
           <div
             v-for="stamp in user.orderedTimestamps"
             :key="stamp.txId"
-            class="row stamp-item2 cursor-pointer"
+            class="row stamp-item2"
           >
             <div
               class="col-5 q-px-sm overflow"
-              @click="timestampDialog(stamp)"
             >
               <q-icon
                 class="col-auto text-grey-6 q-pr-sm"
@@ -47,7 +46,7 @@
               {{ stamp.name }}
             </div>
             <div
-              class="col-2 row overflow"
+              class="col-1 row overflow"
             >
               <div>
                 <q-btn
@@ -67,7 +66,6 @@
             </div>
             <div
               class=" col text-left"
-              @click="timestampDialog(stamp)"
             >
               <span v-if="stamp.blockNumber !== -1">
                 {{ stamp.timestampDate }}
@@ -89,7 +87,7 @@
             <div
               v-else
               class="col q-pr-sm text-right text-blue cursor-pointer"
-              @click="getCertificate(stamp)"
+              @click="timestampDialog(stamp)"
             >
               {{ $t('downloadCertificate') }}
             </div>
@@ -116,8 +114,10 @@
         </span>
       </div>
     </q-card>
-    <q-dialog v-model="confirmed">
-      <q-card>
+    <q-dialog
+      v-model="confirmed"
+    >
+      <q-card style="width:70%;max-width:1200px">
         <div class="row justify-end">
           <q-icon
             v-close-popup

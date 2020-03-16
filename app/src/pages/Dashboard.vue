@@ -105,7 +105,6 @@ export default {
   methods: {
 
     async closeTimestampDialog() {
-      //  this.$store.dispatch('settings/setAuthenticatedAccount', null);
       await User.update({
         data: {
           accountIdentifier: this.account.accountIdentifier,
