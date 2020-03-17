@@ -54,6 +54,7 @@ export default {
   tier: 'Tier',
   moreTimestamps: 'Need more timestamps?',
   upgrade: 'Upgrade',
+  needAnUpgrade: 'Need An Upgrade?',
   free: 'Free',
   basic: 'Basic',
   standard: 'Standard',
