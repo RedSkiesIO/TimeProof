@@ -39,7 +39,7 @@ export default class User extends Model {
 
   // static account() {
   //   const account = auth.account();
-  //   if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+  //   if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
   //     return null;
   //   }
   //   return account;
