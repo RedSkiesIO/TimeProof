@@ -133,14 +133,14 @@ export default {
   computed: {
     isLoggedIn() {
       const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
         return false;
       }
       return true;
     },
     account() {
       const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
         return null;
       }
       return account;
