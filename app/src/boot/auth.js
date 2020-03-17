@@ -39,7 +39,7 @@ const auth = {
 
   account() {
     const account = myMSALObj.getAccount();
-    if (!account || account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+    if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
       return null;
     }
     return account;
@@ -74,7 +74,7 @@ const auth = {
   },
 
   forgotPassword() {
-    msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_PasswordReset';
+    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_PasswordReset';
     const passwordReset = new Msal.UserAgentApplication(msalConfig);
     passwordReset.handleRedirectCallback((error, response) => {
       console.log(error, response);
@@ -83,11 +83,11 @@ const auth = {
       }
     });
     passwordReset.loginRedirect();
-    msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn';
+    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn';
   },
 
   editProfile() {
-    msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_EditProfile';
+    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_EditProfile';
     const editProfile = new Msal.UserAgentApplication(msalConfig);
     editProfile.handleRedirectCallback((error, response) => {
       console.log(error, response);
@@ -102,8 +102,8 @@ function authCallback(error, response) {
     if (error.message && error.message.indexOf('AADB2C90118') > -1) {
       auth.forgotPassword();
     }
-  } else if (response.account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
-    msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn';
+  } else if (response.account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
+    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn';
     auth.signIn();
   }
 
