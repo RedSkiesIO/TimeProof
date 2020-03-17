@@ -2,15 +2,15 @@ import Vue from 'vue';
 import * as Msal from 'msal';
 
 const appConfig = {
-  b2cScopes: ['https://timestamper.onmicrosoft.com/api/demo.read'],
+  b2cScopes: ['https://timeproof.onmicrosoft.com/api/read'],
   webApi: '',
 };
 
 // configuration to initialize msal
 const msalConfig = {
   auth: {
-    clientId: 'e4ab5c13-6a76-4784-a0f3-da7d50135fa3', // This is your client ID
-    authority: 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn', // This is your tenant info
+    clientId: 'caead9d0-3263-42b9-b25e-2ca36d0ff535', // This is your client ID
+    authority: 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn', // This is your tenant info
     validateAuthority: false,
     redirectURI: 'http://localhost:6420/',
   },
