@@ -31,23 +31,24 @@
               </div>
             </div>
             <div
-              class="column  absolute-bottom-right"
-              style="right: 52px; bottom: 30px;"
+              class="column"
             >
               <div>{{ $t('Allowance') }}:</div>
               <div class="text-green">
                 {{ tiers[user.tier] }} timestamps p/m
               </div>
             </div>
+          </div>
+          <div class="col-auto column q-gutter-y-md">
             <div
-              class="column q-gutter-y-sm"
-              style="visibility: hidden;"
+              class="column"
             >
               <div>{{ $t('moreTimestamps') }}</div>
               <q-btn
                 outline
                 color="secondary"
                 :label="$t('upgrade')"
+                @click.prevent="upgradeUser"
               />
             </div>
           </div>
@@ -97,6 +98,12 @@ export default {
     },
     usedPercentage() {
       return (this.user.monthlyAllowanceUsage / this.tiers[this.user.tier]) * 100;
+    },
+  },
+
+  methods: {
+    upgradeUser() {
+      this.$router.push('/upgrade');
     },
 
   },

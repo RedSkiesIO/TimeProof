@@ -29,6 +29,7 @@
     "tweetnacl": "^1.0.1",
     "vue-i18n": "^8.0.0",
     "vue-stripe-checkout": "^3.1.6",
+    "vue-stripe-elements-plus": "^0.3.2",
     "vuex-persist": "^2.1.1",
     "web3": "^1.2.4"
   },

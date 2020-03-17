@@ -52,7 +52,10 @@
         @click="$auth.signIn()"
       />
     </div>
-    <q-dialog v-model="user.firstTimeDialog">
+    <q-dialog
+      v-if="user"
+      v-model="user.firstTimeDialog"
+    >
       <CreateFirstTimestampPopup
         @closeDialog="closeTimestampDialog"
       />

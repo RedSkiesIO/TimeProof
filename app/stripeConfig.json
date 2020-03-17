@@ -1,0 +1,6 @@
+{
+    "stripeKey": "pk_test_xxxxxxxxxxxxxxxxxx",
+    "stripeOptions": {
+      "hidePostalCode": true
+    }
+  }
