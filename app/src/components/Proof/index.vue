@@ -14,13 +14,6 @@
       <span
         class="text-h6 q-my-sm"
       >{{ title }}</span>
-      <q-btn
-        v-if="proof.blockNumber !== -1"
-        outline
-        color="secondary"
-        label="Download Certificate"
-        @click="getCertificate"
-      />
       <a
         v-if="proof.blockNumber !== -1"
         class="text-blue q-mt-sm"
@@ -171,6 +164,15 @@
       @click="scope.reset()"
     >
       {{ $t('anotherFile') }}
+    </div>
+    <div class="q-px-lg flex flex-center column text-center q-pt-lg">
+      <q-btn
+        v-if="proof.blockNumber !== -1 && ready"
+        outline
+        color="secondary"
+        label="Download Certificate"
+        @click="getCertificate"
+      />
     </div>
   </div>
 </template>
