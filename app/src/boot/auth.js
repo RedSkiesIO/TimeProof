@@ -1,5 +1,8 @@
 import Vue from 'vue';
 import * as Msal from 'msal';
+import { sendEmail } from '../util';
+import config from '../i18n/en-gb';
+
 
 const appConfig = {
   b2cScopes: ['https://timestamper.onmicrosoft.com/api/demo.read'],
@@ -97,17 +100,32 @@ const auth = {
 };
 
 function authCallback(error, response) {
-  if (error) {
-    console.log(error);
-    if (error.message && error.message.indexOf('AADB2C90118') > -1) {
-      auth.forgotPassword();
+  try {
+    if (error) {
+      console.log(error);
+      if (error.message && error.message.indexOf('AADB2C90118') > -1) {
+        auth.forgotPassword();
+      }
+    } else if (response.account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
+      msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn';
+      auth.signIn();
     }
-  } else if (response.account.idToken.tfp !== 'B2C_1_TimestampSignUpSignIn') {
-    msalConfig.auth.authority = 'https://timestamper.b2clogin.com/timestamper.onmicrosoft.com/B2C_1_TimestampSignUpSignIn';
-    auth.signIn();
-  }
 
-  console.log(response);
+    console.log(response);
+
+    if (response.account.idToken.newUser) {
+      const content = {
+        templateId: config.welcomeEmailTemplate,
+        detail: {
+          to_name: response.account.idToken.given_name.concat(` ${response.account.idToken.family_name}`),
+          to_email: response.account.idToken.emails[0],
+        },
+      };
+      sendEmail(content);
+    }
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 myMSALObj.handleRedirectCallback(authCallback);

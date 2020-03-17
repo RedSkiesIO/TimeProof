@@ -1,3 +1,8 @@
+import emailjs from 'emailjs-com';
+import config from '../i18n/en-gb';
+
+emailjs.init(config.emailJsUser);
+
 const expand = (obj) => {
   Object.keys(obj).forEach((key) => {
     const subKeys = key.split('|');
@@ -21,3 +26,12 @@ const fileMap = expand({
 
 
 export const fileIcon = type => fileMap[type] || 'fas fa-file';
+
+export const sendEmail = async (emailContent) => {
+  emailjs.send(config.emailServiceId, emailContent.templateId, emailContent.detail)
+    .then(() => {
+      console.log('Sent!');
+    }, (err) => {
+      console.log(`Send email failed!\r\n Response:\n ${JSON.stringify(err)}`);
+    });
+};

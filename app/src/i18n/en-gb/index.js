@@ -113,4 +113,7 @@ export default {
   createFirstTimeStamp: 'Create first timestamp',
   createFirstTimeStampContent: 'Create your first timestamp. if you want to start please click the button takes below',
   cancel: 'Cancel',
+  welcomeEmailTemplate: 'template_WfCN0tzf',
+  emailServiceId: 'mailtrap_smtp_server',
+  emailJsUser: 'user_hU1w2bSSjwUiLbDz5Knga',
 };

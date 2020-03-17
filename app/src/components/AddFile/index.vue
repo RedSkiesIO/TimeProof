@@ -334,6 +334,7 @@ export default {
             data: {
               accountIdentifier: this.account.accountIdentifier,
               timestampsUsed: timestamps,
+              firstTimeDialog: false,
             },
           });
           await this.insertTimestamp(this.file);

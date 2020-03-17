@@ -87,7 +87,7 @@
     </q-page-container>
     <div class="user-dialog">
       <q-dialog
-        v-if="account"
+        v-if="account && user"
         v-model="dialog"
         :position="position"
         transition-show="fade"
