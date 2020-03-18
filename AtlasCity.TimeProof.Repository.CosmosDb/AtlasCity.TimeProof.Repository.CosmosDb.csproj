@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dawn.Guard" Version="1.11.0" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.10.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AtlasCity.TimeProof.Abstractions\AtlasCity.TimeProof.Abstractions.csproj" />
+    <ProjectReference Include="..\AtlasCity.TimeProof.Core.Lib\AtlasCity.TimeProof.Common.Lib.csproj" />
+  </ItemGroup>
+
+</Project>

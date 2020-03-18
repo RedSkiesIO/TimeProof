@@ -64,7 +64,7 @@ module.exports = function (ctx) {
       scopeHoisting: true,
       env: ctx.dev
       ? {
-        API: JSON.stringify('http://localhost:7071/api'),
+        API: JSON.stringify('http://localhost:64300/api'),
         ETHERSCAN: JSON.stringify('https://kovan.etherscan.io/tx'),
         INFURA: JSON.stringify('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9')
       }

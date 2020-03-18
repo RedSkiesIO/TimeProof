@@ -1,0 +1,38 @@
+﻿using System;
+using Newtonsoft.Json;
+
+namespace AtlasCity.TimeProof.Abstractions.DAO
+{
+    public class TimestampDao : DaoBase
+    {
+        [JsonProperty(PropertyName = "fileName")]
+        public string FileName { get; set; }
+
+        [JsonProperty(PropertyName = "publicKey")]
+        public string PublicKey { get; set; }
+
+        [JsonProperty(PropertyName = "txHash")]
+        public string Hash { get; set; }
+
+        [JsonProperty(PropertyName = "timestamp")]
+        public DateTime Timestamp { get; set; }
+
+        [JsonProperty(PropertyName = "blockNumber")]
+        public long BlockNumber { get; set; }
+
+        [JsonProperty(PropertyName = "fileHash")]
+        public string FileHash { get; set; }
+
+        [JsonProperty(PropertyName = "signature")]
+        public string Signature { get; set; }
+
+        [JsonProperty(PropertyName = "nonce")]
+        public long Nonce { get; set; }
+
+        [JsonProperty(PropertyName = "network")]
+        public string Network { get; set; }
+
+        [JsonProperty(PropertyName = "user")]
+        public string UserId { get; set; }
+    }
+}
