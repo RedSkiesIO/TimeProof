@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Please give us your payment details:</h1>
+    <h3>Please give us your payment details:</h3>
     <card
       class="stripe-card"
       :class="{ complete }"
@@ -17,7 +17,6 @@
     </button>
   </div>
 </template>
-
 <script>
 import { Card, createToken } from 'vue-stripe-elements-plus';
 import { stripeKey, stripeOptions } from '../../../stripeConfig.json';
@@ -30,9 +29,7 @@ export default {
       complete: false,
       stripeKey,
       stripeOptions,
-
       // see https://stripe.com/docs/stripe.js#element-options for details
-
     };
   },
 

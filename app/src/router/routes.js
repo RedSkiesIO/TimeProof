@@ -56,6 +56,13 @@ const routes = [
       { path: '', component: () => import('pages/UpgradeSuccess') },
     ],
   },
+  {
+    path: '/payment',
+    component: () => import('layouts/Main'),
+    children: [
+      { path: '', component: () => import('components/Payment') },
+    ],
+  },
 ];
 
 // Always leave this as last one
