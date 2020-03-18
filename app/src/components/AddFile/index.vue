@@ -325,10 +325,10 @@ export default {
           signature: this.file.signature,
         });
 
-        if (tx.data.success) {
-          this.file.txId = tx.data.value.id;
-          this.file.timestamp = tx.data.value.timestamp;
-          this.file.blockNumber = tx.data.value.blockNumber;
+        if (tx.data || tx.status === '201') {
+          this.file.txId = tx.data.id;
+          this.file.timestamp = tx.data.timestamp;
+          this.file.blockNumber = tx.data.blockNumber;
           const timestamps = this.user.timestampsUsed + 1;
           User.update({
             data: {
@@ -337,7 +337,7 @@ export default {
             },
           });
           await this.insertTimestamp(this.file);
-          this.txId = tx.data.value.id;
+          this.txId = tx.data.id;
           this.visible = false;
           this.confirmed = true;
         }
