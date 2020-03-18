@@ -82,10 +82,16 @@
               200 timestamps
             </div>
             <div class="price-button-container">
-              <StripeButton
+              <!-- <StripeButton
                 label="Choose Plan"
                 :item="items[1]"
                 :token="token"
+              /> -->
+              <q-btn
+                unelevated
+                style="color: #0047cc; background: #e5ecfa;"
+                label="Choose Plan"
+                @click="choosePlan"
               />
             </div>
           </q-card-section>
@@ -128,6 +134,9 @@ export default {
     },
     checkout() {
       this.$refs.checkoutRef.redirectToCheckout();
+    },
+    choosePlan() {
+      this.$router.push('/payment');
     },
   },
 };
