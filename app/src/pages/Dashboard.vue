@@ -6,9 +6,9 @@
       style="width:75vw"
     >
       <div
-        class="row q-gutter-x-lg q-mb-md"
+        class="q-gutter-x-lg q-mb-md"
       >
-        <div class="col-auto">
+        <!-- <div class="col-auto">
           <div class="row text-h6">
             <q-icon
               class="icon-spacing q-mr-sm text-weight-bold"
@@ -18,7 +18,7 @@
             Your Account
           </div>
           <Account />
-        </div>
+        </div> -->
         <div class="col-auto">
           <div class="row text-h6 text-weight-bold">
             <q-icon
@@ -52,7 +52,10 @@
         @click="$auth.signIn()"
       />
     </div>
-    <q-dialog v-model="user.firstTimeDialog">
+    <q-dialog
+      v-if="user"
+      v-model="user.firstTimeDialog"
+    >
       <CreateFirstTimestampPopup
         @closeDialog="closeTimestampDialog"
       />
@@ -62,7 +65,7 @@
 
 <script>
 import Timestamps from '../components/Timestamps';
-import Account from '../components/AccountBox';
+// import Account from '../components/AccountBox';
 import Usage from '../components/Usage';
 import User from '../store/User';
 import CreateFirstTimestampPopup from '../components/CreateFirstTimestampPopup';
@@ -71,7 +74,7 @@ export default {
   name: 'Dashboard',
   components: {
     Timestamps,
-    Account,
+    // Account,
     Usage,
     CreateFirstTimestampPopup,
   },
