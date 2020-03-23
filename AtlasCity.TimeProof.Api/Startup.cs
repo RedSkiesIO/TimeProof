@@ -1,11 +1,17 @@
+using System;
 using AtlasCity.TimeProof.Abstractions.Repository;
+using AtlasCity.TimeProof.Abstractions.Services;
+using AtlasCity.TimeProof.Common.Lib;
 using AtlasCity.TimeProof.Repository.CosmosDb;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Stripe;
 
 namespace AtlasCity.TimeProof.Api
 {
@@ -43,23 +49,30 @@ namespace AtlasCity.TimeProof.Api
             //    sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             //    sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             //})
-            //.AddCookie()
-            //.AddOpenIdConnect(options =>
+            //.AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
+            //.AddCookie();
+
+            //// Adds a default in-memory implementation of IDistributedCache.
+            //services.AddDistributedMemoryCache();
+            //services.AddSession(options =>
             //{
-            //    options.ClientId = "ef2503cc-df85-41b5-b7c2-0b965e12ec1d";
-            //    options.ClientSecret = "8.Q9tzIl7NGu=nt8rwwyymJgT=ichwM=";
-            //    options.Authority = "https://login.microsoftonline.com/timestamper.onmicrosoft.com";
-
-            //    options.ResponseType = "code";
-            //    options.GetClaimsFromUserInfoEndpoint = true;
+            //    options.IdleTimeout = TimeSpan.FromHours(1);
+            //    options.Cookie.HttpOnly = true;
+            //    options.Cookie.IsEssential = true;
             //});
-
-        //    services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
-        //.AddAzureADBearer(options => configuration.Bind("AzureAd", options));
 
             var endpointUrl = Configuration.GetSection("TransationCosmosDb:EndpointUrl").Value;
             var authorizationKey = Configuration.GetSection("TransationCosmosDb:AuthorizationKey").Value;
             services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
+            services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
+
+            var paymentApiKey = Configuration.GetSection("PaymentApiKey").Value;
+            var stripeClient = new StripeClient(paymentApiKey);
+            services.AddSingleton(new PaymentIntentService(stripeClient));
+            services.AddSingleton(new CustomerService(stripeClient));
+
+            services.AddSingleton<IPaymentService, StripePaymentService>();
+            services.AddSingleton<IUserService, UserService>();
 
             services.AddCors(options =>
             {
@@ -88,10 +101,8 @@ namespace AtlasCity.TimeProof.Api
             app.UseRouting();
 
             //app.UseAuthentication();
-
-            app.UseAuthorization();
-
-            //app.UseForwardedHeaders(new ForwardedHeadersOptions
+            //app.UseAuthorization();
+            ////app.UseForwardedHeaders(new ForwardedHeadersOptions
             //{
             //    RequireHeaderSymmetry = false,
             //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto

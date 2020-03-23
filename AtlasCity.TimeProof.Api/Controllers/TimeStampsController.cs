@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using Dawn;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using AtlasCity.TimeProof.Api.ActionResults;
 
 namespace AtlasCity.TimeProof.Api.Controllers
 {
@@ -27,20 +29,26 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
         [Route("gettimestamps/{id}")]
         [HttpGet]
-        // [Authorize]
-        public JsonResult Get([FromRoute] string id, CancellationToken cancellationToken)
+        //[Authorize]
+        public IActionResult Get([FromRoute] string id, CancellationToken cancellationToken)
         {
-            return Json(_timestampRepository.GetTimestampByUser(id, cancellationToken).GetAwaiter().GetResult());
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            return Ok(Json(_timestampRepository.GetTimestampByUser(id, cancellationToken).GetAwaiter().GetResult()));
         }
 
         [Route("timestamp")]
         [HttpPost]
-        public JsonResult AddTimeStamp([FromBody] TimestampDao newTimestamp, CancellationToken cancellationToken)
+        public IActionResult AddTimeStamp([FromBody] TimestampDao newTimestamp, CancellationToken cancellationToken)
         {
-            newTimestamp.UserId = "182225ec-ab88-4821-a2b7-31061de06090";
+            if (newTimestamp == null)
+                return BadRequest();
+
+            newTimestamp.UserId = "3ad6293f-811b-4238-b7f6-278f842ade61";
             var newTimeStamp = _timestampRepository.CreateTimestamp(newTimestamp, cancellationToken).GetAwaiter().GetResult();
 
-            return Json(newTimeStamp);
+            return new CreatedActionResult(newTimeStamp);
         }
     }
 }

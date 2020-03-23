@@ -10,7 +10,5 @@ namespace AtlasCity.TimeProof.Abstractions.Repository
         public Task<IEnumerable<TimestampDao>> GetTimestampByUser(string userId, CancellationToken cancellationToken);
 
         public Task<TimestampDao> CreateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken);
-
-        public Task<TimestampDao> UpdateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken);
     }
 }

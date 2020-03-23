@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace AtlasCity.TimeProof.Abstractions.DAO
 {
@@ -12,7 +10,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
             PaymentMethodTypes = new List<string> { "card" };
         }
 
-        public string UserId { get; set; }
+        public string PaymenCustomerId { get; set; }
 
         public long Amount { get; set; }
 
@@ -21,6 +19,5 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         public string Currency { get; private set; }
 
         public List<string> PaymentMethodTypes { get; private set; }
-
     }
 }

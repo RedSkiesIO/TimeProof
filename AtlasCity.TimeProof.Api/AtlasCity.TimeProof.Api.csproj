@@ -6,12 +6,14 @@
 
   <ItemGroup>
     <PackageReference Include="Dawn.Guard" Version="1.11.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Identity.Client" Version="4.10.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AtlasCity.TimeProof.Abstractions\AtlasCity.TimeProof.Abstractions.csproj" />
+    <ProjectReference Include="..\AtlasCity.TimeProof.Common.Lib\AtlasCity.TimeProof.Common.Lib.csproj" />
     <ProjectReference Include="..\AtlasCity.TimeProof.Repository.CosmosDb\AtlasCity.TimeProof.Repository.CosmosDb.csproj" />
   </ItemGroup>
 

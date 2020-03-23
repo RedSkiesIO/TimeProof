@@ -37,18 +37,11 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             Guard.Argument(timestamp, nameof(timestamp)).NotNull();
 
+            timestamp.Timestamp = DateTime.UtcNow;
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, timestamp, new RequestOptions(), false, cancellationToken);
 
             var newTimestamp = JsonConvert.DeserializeObject<TimestampDao>(response.Resource.ToString());
             return newTimestamp;
-        }
-
-        public async Task<TimestampDao> UpdateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
-        {
-            Guard.Argument(timestamp, nameof(timestamp)).NotNull();
-            Guard.Argument(timestamp.Id, nameof(timestamp.Id)).NotWhiteSpace("Timestamp identifier is missing for an update.");
-
-            throw new NotImplementedException();
         }
     }
 }

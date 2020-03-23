@@ -6,7 +6,7 @@
 
         public AzureAdB2COptions()
         {
-            AzureAdB2CInstance = "https://fabrikamb2c.b2clogin.com/tfp";
+            AzureAdB2CInstance = "https://timeproof.b2clogin.com";
         }
 
         public string ClientId { get; set; }
