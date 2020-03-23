@@ -1,97 +1,46 @@
 <template>
-  <q-page class="flex flex-center q-gutter-x-lg price-plans">
+  <q-page class="q-mt-md justify-start price-plans">
     <div
       class="row"
-      style="width: 75%"
+      style="width: 100%"
     >
-      <div class="col-4">
+      <div
+        v-for="item in planItems"
+        :key="item.plan"
+        :class="planClass"
+      >
         <q-card
           flat
         >
-          <div class="top-section bg-primary text-white text-center">
+          <div
+            class="top-section text-white text-center"
+            :style="{backgroundColor: item.color}"
+          >
             <div class="price-title">
-              Starter
+              {{ item.package }}
             </div>
             <div class="price text-weight-bold">
-              Free
+              {{ item.price }}
             </div>
             <div class="price-subtitle">
-              per month
+              {{ item.freq }}
             </div>
           </div>
           <q-card-section class="text-center">
             <div class="price-timestamps">
-              5 timestamps
-            </div>
-            <div class="price-button-container">
-              <StripeButton
-                label="Choose Plan"
-                :item="items[0]"
-                :token="token"
-              />
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="col-4">
-        <q-card
-          flat
-        >
-          <div class="top-section bg-primary text-white text-center">
-            <div class="price-title">
-              Basic
-            </div>
-            <div class="price text-weight-bold">
-              £5.99
-            </div>
-            <div class="price-subtitle">
-              per month
-            </div>
-          </div>
-          <q-card-section class="text-center">
-            <div class="price-timestamps">
-              30 timestamps
-            </div>
-            <div class="price-button-container">
-              <StripeButton
-                label="Choose Plan"
-                :item="items[0]"
-                :token="token"
-              />
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="col-4">
-        <q-card
-          flat
-        >
-          <div class="top-section bg-primary text-white text-center">
-            <div class="price-title">
-              Premium
-            </div>
-            <div class="price text-weight-bold">
-              £25.99
-            </div>
-            <div class="price-subtitle">
-              per month
-            </div>
-          </div>
-          <q-card-section class="text-center">
-            <div class="price-timestamps">
-              200 timestamps
+              {{ item.timestamps }} timestamps
             </div>
             <div class="price-button-container">
               <!-- <StripeButton
                 label="Choose Plan"
-                :item="items[1]"
+                :item="items[0]"
                 :token="token"
               /> -->
               <q-btn
                 unelevated
                 style="color: #0047cc; background: #e5ecfa;"
                 label="Choose Plan"
-                @click="choosePlan"
+                @click="choosePlan(item)"
               />
             </div>
           </q-card-section>
@@ -101,33 +50,79 @@
   </q-page>
 </template>
 <script>
-import StripeButton from '../components/StripeCheckoutButton';
+// import StripeButton from '../components/StripeCheckoutButton';
+import { mapActions } from 'vuex';
+
+const planItems = [
+  {
+    plan: 'plan_GeJGwbwuTvjjTi',
+    quantity: 1,
+    package: 'Starter',
+    price: 'Free',
+    freq: 'Per Month',
+    timestamps: 5,
+    color: 'green',
+  },
+  {
+    plan: 'plan_Gga2y8jPcryhWJ',
+    quantity: 1,
+    package: 'Basic',
+    price: 30.56,
+    freq: 'Per Month',
+    timestamps: 15,
+    color: 'blue',
+  },
+  {
+    plan: 'plan_ASDıuwbendnoquhw',
+    quantity: 1,
+    package: 'Premium',
+    price: 97.45,
+    freq: 'Per Year',
+    timestamps: 115,
+    color: 'orange',
+  },
+  {
+    plan: 'plan_Aojaosdjoıpj',
+    quantity: 1,
+    package: 'Gold',
+    price: 129.87,
+    freq: 'Per Year',
+    timestamps: 225,
+    color: 'purple',
+  },
+];
 
 export default {
   components: {
-    StripeButton,
+    // StripeButton,
   },
-  data: () => ({
-    token: null,
-    loading: false,
-    publishableKey: 'pk_test_IRxZZJoqfYY2SSVj8arguq9k00mg8SQT5R',
-    successUrl: 'http://localhost:6420/',
-    cancelUrl: 'http://localhost:6420/upgrade',
-    items: [
-      {
-        plan: 'plan_GeJGwbwuTvjjTi',
-        quantity: 1,
-      },
-      {
-        plan: 'plan_Gga2y8jPcryhWJ',
-        quantity: 1,
-      },
-    ],
-  }),
+  data() {
+    return {
+      token: null,
+      loading: false,
+      publishableKey: 'pk_test_IRxZZJoqfYY2SSVj8arguq9k00mg8SQT5R',
+      successUrl: 'http://localhost:6420/',
+      cancelUrl: 'http://localhost:6420/upgrade',
+      planItems,
+    };
+  },
+  computed: {
+
+    planClass: () => `col-${12 / planItems.length}`,
+  },
   mounted() {
     this.getToken();
   },
+  beforeRouteUpdate(to, from, next) {
+    console.log('LLLLLLLLLLLL');
+    console.log(from);
+    console.log(to);
+    next();
+  },
   methods: {
+    ...mapActions('settings', [
+      'setSellingProduct',
+    ]),
     async getToken() {
       const accessToken = await this.$auth.getToken();
       this.token = accessToken.idToken.rawIdToken;
@@ -135,7 +130,8 @@ export default {
     checkout() {
       this.$refs.checkoutRef.redirectToCheckout();
     },
-    choosePlan() {
+    choosePlan(item) {
+      this.setSellingProduct(item);
       this.$router.push('/payment');
     },
   },

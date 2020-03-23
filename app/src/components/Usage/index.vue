@@ -87,12 +87,12 @@
         />
         <div class="row justify-start items-center">
           <div class="col-md-5 q-ml-md self-center">
-            <div>
+            <!-- <div>
               {{ $t('subscription') }}:
               <span class="text-green">
                 {{ $t(user.tier) }} {{ $t('tier') }}
               </span>
-            </div>
+            </div> -->
           </div>
           <div class="col-md-4 q-mr-md self-center">
             <!-- <div>{{ $t('moreTimestamps') }}</div> -->

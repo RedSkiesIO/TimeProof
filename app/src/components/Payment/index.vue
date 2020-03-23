@@ -1,22 +1,25 @@
 <template>
-  <q-page class="flex flex-center q-gutter-x-lg price-plans">
+  <q-page class="flex flex-center price-plans">
     <div
-      class="row"
+      class="row justify-center"
       style="width: 100%"
     >
       <div class="col-6">
         <q-card
           flat
         >
-          <div class="top-section bg-indigo-4 text-white text-center">
+          <div
+            class="top-section text-white text-center"
+            :style="{backgroundColor: sellingProduct.color}"
+          >
             <div class="price-title">
-              Starter
+              {{ sellingProduct.package }}
             </div>
             <div class="price text-weight-bold">
-              £24,5
+              £ {{ sellingProduct.price }}
             </div>
             <div class="price-subtitle">
-              per month
+              {{ sellingProduct.freq }}
             </div>
           </div>
           <form id="payment-form">
@@ -171,6 +174,8 @@
   </q-page>
 </template>
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
 
   data() {
@@ -219,7 +224,17 @@ export default {
       loading: false,
     };
   },
-
+  computed: {
+    ...mapGetters({
+      sellingProduct: 'settings/getSellingProduct',
+    }),
+  },
+  watch: {
+    $route(to, from) {
+      console.log('PPPPPPPPPP');
+      console.log(to, from);
+    },
+  },
   mounted() {
     this.setUpStripe();
   },
@@ -402,6 +417,7 @@ export default {
       this.cardCvcError = '';
       this.cardExpiryError = '';
       this.cardNumberError = '';
+      this.cardNameError = '';
     },
 
     reset() {
@@ -445,7 +461,7 @@ export default {
     width: 200px;
   }
   .top-section {
-    padding: 40px 20px;
+    padding: 30px 15px;
   }
 
 }

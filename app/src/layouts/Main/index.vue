@@ -74,7 +74,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view v-if="display" />
+      <router-view v-if="display && isLoggedIn" />
       <q-inner-loading :showing="!display">
         <q-spinner-grid
           size="70px"

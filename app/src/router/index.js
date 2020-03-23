@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+// import store from '../store';
 
 import routes from './routes';
 
@@ -21,6 +22,21 @@ export default function (/* { store, ssrContext } */) {
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE,
   });
+
+  // Router.beforeEach((to, from, next) => {
+  // store.dispatch('fetchAccessToken');
+  // if (to.fullPath === '/dashborad') {
+  //   if (!store.state.accessToken) {
+  //     next('/');
+  //   }
+  // }
+  // if (to.fullPath === '/login') {
+  //   if (store.state.accessToken) {
+  //     next('/dashboard');
+  //   }
+  // }
+  // next();
+  // });
 
   return Router;
 }
