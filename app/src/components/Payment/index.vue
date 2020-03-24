@@ -16,7 +16,7 @@
             <div class="row col-12 justify-between">
               <q-card-section class="col-4">
                 <div
-                  class="text-overline"
+                  class="text-overline text-center"
                   :style="{backgroundColor: sellingProduct.color}"
                 >
                   <div class="text-weight-bold text-white plan-title">

@@ -151,7 +151,7 @@ const menuList = [
     route: '/verify',
   },
   {
-    icon: 'settings',
+    icon: 'fas fa-user',
     label: 'Account',
     route: '/account',
   },

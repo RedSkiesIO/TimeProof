@@ -17,6 +17,11 @@
           {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
         </div> -->
         <div class="text-uppercase text-weight-bold text-secondary row">
+          <q-icon
+            class="col-auto text-grey-6 q-ml-sm q-mr-md"
+            name="fas fa-file"
+            style="font-size: 1.2em"
+          />
           <div
             class="col-4"
           >
@@ -39,7 +44,7 @@
             class="row stamp-item2"
           >
             <div
-              class="col-4 q-px-sm overflow"
+              class="col-4 q-px-sm overflow q-mr-lg"
             >
               <q-icon
                 class="col-auto text-grey-6 q-pr-sm"
@@ -76,11 +81,11 @@
               </span>
             </div>
             <div
-              class="col-1 text-left"
+              class="col-1 text-right"
             >
               <span v-if="stamp.blockNumber !== -1">
                 {{ stamp.timestampDate.split(' ')[1] }}
-
+                {{ stamp.timestampDate.split(' ')[2] }}
               </span>
             </div>
             <div

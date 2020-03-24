@@ -18,7 +18,7 @@
             <div class="row col-12 justify-around">
               <q-card-section class="col-6">
                 <div
-                  class="text-overline"
+                  class="text-overline text-center"
                   :style="{backgroundColor: item.color}"
                 >
                   <div class="text-weight-bold text-white plan-title">
