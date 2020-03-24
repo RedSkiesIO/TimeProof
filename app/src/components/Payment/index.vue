@@ -56,7 +56,7 @@
                     id="name"
                     v-model="cardName"
                     name="name"
-                    class="col-6 payment-card-section combo-inputs-row"
+                    class="col-6 payment-card-section combo-inputs-row paymentInput"
                     placeholder="Name and Surname"
                     :class="{ 'uk-form-danger': cardNameError }"
                     required
@@ -495,7 +495,7 @@ export default {
 * The CSS shown here will not be introduced in the Quickstart guide, but
 * shows how you can use CSS to style your Element's container.
 */
-input,
+.paymentInput,
 .StripeElement {
   height: 40px;
 
@@ -509,11 +509,11 @@ input,
   transition: box-shadow 150ms ease;
 }
 
-input {
+.paymentInput {
   padding: 10px 12px;
 }
 
-input:focus,
+.paymentInput:focus,
 .StripeElement--focus {
   box-shadow: 0 1px 3px 0 #cfd7df;
 }
