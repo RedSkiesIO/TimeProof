@@ -86,4 +86,13 @@ export default class User extends Model {
       data: stamps,
     });
   }
+
+  async verifyUser() {
+    axios.get(`${process.env.API}/users/${this.email}`)
+      .then((result) => {
+        console.log(result);
+      }).catch((err) => {
+        console.log(err);
+      });
+  }
 }

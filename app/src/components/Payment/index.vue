@@ -193,6 +193,7 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import User from '../../store/User';
 
 export default {
 
@@ -246,6 +247,15 @@ export default {
     ...mapGetters({
       sellingProduct: 'settings/getSellingProduct',
     }),
+    user() {
+      if (this.$auth.account()) {
+        const user = User.query().whereId(this.$auth.account().accountIdentifier).with('timestamps').get();
+        if (user) {
+          return user[0];
+        }
+      }
+      return null;
+    },
   },
   watch: {
     $route(to, from) {
@@ -382,7 +392,7 @@ export default {
       }
     },
 
-    submitFormToCreateToken() {
+    async submitFormToCreateToken() {
       this.clearCardErrors();
       let valid = true;
 
@@ -406,6 +416,7 @@ export default {
         valid = false;
       }
       if (valid) {
+        await this.user.verifyUser();
         this.createToken();
       }
     },
