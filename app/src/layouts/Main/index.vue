@@ -74,7 +74,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view v-if="display && isLoggedIn" />
+      <router-view v-if="display && showMainMenu" />
       <q-inner-loading :showing="!display">
         <q-spinner-grid
           size="70px"
@@ -204,6 +204,9 @@ export default {
     },
     currentPath() {
       return this.$route.path;
+    },
+    showMainMenu() {
+      return this.$route.path === '/' || this.$route.path === '/new-key' || this.isLoggedIn;
     },
   },
 

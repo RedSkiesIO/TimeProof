@@ -13,20 +13,23 @@
       class="timestamp-list q-pa-md"
     >
       <div v-if="user.orderedTimestamps.length > 0">
-        <div class="row text-weight-bold justify-end q-mr-sm">
+        <!-- <div class="row text-weight-bold justify-end q-mr-sm">
           {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
-        </div>
+        </div> -->
         <div class="text-uppercase text-weight-bold text-secondary row">
           <div
-            class="col-5"
+            class="col-4"
           >
             {{ $t('file') }}
           </div>
           <div class="col-1">
             {{ $t('proofId') }}
           </div>
-          <div class="col-auto">
+          <div class="col-1">
             {{ $t('date') }}
+          </div>
+          <div class="col-1">
+            {{ $t('time') }}
           </div>
         </div>
         <q-scroll-area style="height: 15rem;">
@@ -36,7 +39,7 @@
             class="row stamp-item2"
           >
             <div
-              class="col-5 q-px-sm overflow"
+              class="col-4 q-px-sm overflow"
             >
               <q-icon
                 class="col-auto text-grey-6 q-pr-sm"
@@ -65,10 +68,18 @@
               </div>
             </div>
             <div
-              class=" col text-left"
+              class="col-1 text-left"
             >
               <span v-if="stamp.blockNumber !== -1">
-                {{ stamp.timestampDate }}
+                {{ stamp.timestampDate.split(' ')[0] }}
+
+              </span>
+            </div>
+            <div
+              class="col-1 text-left"
+            >
+              <span v-if="stamp.blockNumber !== -1">
+                {{ stamp.timestampDate.split(' ')[1] }}
 
               </span>
             </div>

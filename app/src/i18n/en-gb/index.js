@@ -66,6 +66,7 @@ export default {
   viewAll: 'View All',
   timestamps: 'Timestamps',
   date: 'Date',
+  time: 'Time',
   downloadCertificate: 'View/Download Certificate Button',
   somethingWrong: 'Something went wrong',
   tryAgain: 'Try Again',
