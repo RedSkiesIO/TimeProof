@@ -27,12 +27,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<IEnumerable<PricePlanDao>> GetPricePlans(CancellationToken cancellationToken)
         {
-            var response = Client.CreateDocumentQuery(_documentCollectionUri, $"select * from c").AsEnumerable();
-
-            if (response != null)
-                return response.Select(s => (PricePlanDao)s).AsEnumerable();
-
-            return null;
+            var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).AsEnumerable();
+            return response;
         }
 
         public async Task<PricePlanDao> GetPricePlanByTitle(string pricePlanTitle, CancellationToken cancellationToken)
@@ -40,11 +36,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             AtlasGuard.IsNullOrWhiteSpace(pricePlanTitle);
 
             var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).Where(s => s.Title.ToLower() == pricePlanTitle.ToLower()).AsEnumerable().FirstOrDefault();
-
-            if (response != null)
-                return response;
-
-            return null;
+            return response;
         }
 
         public async Task<PricePlanDao> AddPricePlans(PricePlanDao pricePlan, CancellationToken cancellationToken)
@@ -53,7 +45,6 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             AtlasGuard.IsNullOrWhiteSpace(pricePlan.Title);
 
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, pricePlan, new RequestOptions(), false, cancellationToken);
-
             return JsonConvert.DeserializeObject<PricePlanDao>(response.Resource.ToString());
         }
     }

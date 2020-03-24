@@ -20,7 +20,7 @@
         public string RedirectUri { get; set; }
 
         public string DefaultPolicy => SignUpSignInPolicyId;
-        public string Authority => $"{AzureAdB2CInstance}/{Tenant}/{DefaultPolicy}/v2.0";
+        public string Authority => $"{AzureAdB2CInstance}/{Tenant}/{DefaultPolicy}/oauth2/v2.0";
 
         public string ClientSecret { get; set; }
         public string ApiUrl { get; set; }

@@ -31,7 +31,8 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (string.IsNullOrWhiteSpace(email))
                 return BadRequest();
 
-            return new SuccessActionResult(_userService.GetUserByEmail(email, cancellationToken).GetAwaiter().GetResult());
+            var user = _userService.GetUserByEmail(email, cancellationToken).GetAwaiter().GetResult();
+            return new SuccessActionResult(user);
         }
 
         [Route("users")]

@@ -28,19 +28,15 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             AtlasGuard.IsNullOrWhiteSpace(email);
 
-            var response = Client.CreateDocumentQuery(_documentCollectionUri, $"select * from c where c.email = '{email}'").FirstOrDefault();
-
-            if (response != null)
-                return (UserDao)response;
-
-            return null;
+            var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri).Where(s => s.Email.ToLower() == email.ToLower()).AsEnumerable().FirstOrDefault();
+            return response;
         }
 
 
         public async Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken)
         {
             Guard.Argument(user, nameof(user)).NotNull();
-            Guard.Argument(user.Email, nameof(user.Email)).NotWhiteSpace("User email is missing for creating an user.");
+            AtlasGuard.IsNullOrWhiteSpace(user.Email);
 
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, user, new RequestOptions(), false, cancellationToken);
 

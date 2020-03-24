@@ -52,14 +52,7 @@ namespace AtlasCity.TimeProof.Api
             //.AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
             //.AddCookie();
 
-            //// Adds a default in-memory implementation of IDistributedCache.
-            //services.AddDistributedMemoryCache();
-            //services.AddSession(options =>
-            //{
-            //    options.IdleTimeout = TimeSpan.FromHours(1);
-            //    options.Cookie.HttpOnly = true;
-            //    options.Cookie.IsEssential = true;
-            //});
+            //services.AddAuthorization();
 
             var endpointUrl = Configuration.GetSection("TransationCosmosDb:EndpointUrl").Value;
             var authorizationKey = Configuration.GetSection("TransationCosmosDb:AuthorizationKey").Value;

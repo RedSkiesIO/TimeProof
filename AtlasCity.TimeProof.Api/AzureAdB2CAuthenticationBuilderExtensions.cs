@@ -110,7 +110,7 @@ namespace AtlasCity.TimeProof.Api
                     .WithRedirectUri(AzureAdB2COptions.RedirectUri)
                     .WithClientSecret(AzureAdB2COptions.ClientSecret)
                     .Build();
-                //new MSALStaticCache(signedInUserID, context.HttpContext).EnablePersistence(cca.UserTokenCache);
+                new MSALStaticCache(signedInUserID, context.HttpContext).EnablePersistence(cca.UserTokenCache);
 
                 try
                 {

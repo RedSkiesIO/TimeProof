@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
@@ -26,11 +27,10 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<IEnumerable<TimestampDao>> GetTimestampByUser(string userId, CancellationToken cancellationToken)
         {
-            Guard.Argument(userId, nameof(userId)).NotWhiteSpace("User identifier is missing for retrieving timestamps.");
+            AtlasGuard.IsNullOrWhiteSpace(userId);
 
-            var response = Client.CreateDocumentQuery(_documentCollectionUri, $"select * from c where c.user = '{userId}'").AsEnumerable();
-
-            return response.Select(s => (TimestampDao)s).AsEnumerable();
+            var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.UserId.ToLower() == userId.ToLower()).AsEnumerable();
+            return response;
         }
 
         public async Task<TimestampDao> CreateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
