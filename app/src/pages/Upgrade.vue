@@ -10,40 +10,63 @@
         :class="planClass"
       >
         <q-card
+          class="q-mt-md"
           flat
+          bordered
         >
-          <div
-            class="top-section text-white text-center"
-            :style="{backgroundColor: item.color}"
-          >
-            <div class="price-title">
-              {{ item.package }}
-            </div>
-            <div class="price text-weight-bold">
-              {{ item.price }}
-            </div>
-            <div class="price-subtitle">
-              {{ item.freq }}
-            </div>
-          </div>
-          <q-card-section class="text-center">
-            <div class="price-timestamps">
-              {{ item.timestamps }} timestamps
-            </div>
-            <div class="price-button-container">
-              <!-- <StripeButton
-                label="Choose Plan"
-                :item="items[0]"
-                :token="token"
-              /> -->
-              <q-btn
-                unelevated
-                style="color: #0047cc; background: #e5ecfa;"
-                label="Choose Plan"
-                @click="choosePlan(item)"
-              />
+          <q-card-section horizontal>
+            <div class="row col-12 justify-around">
+              <q-card-section class="col-6">
+                <div
+                  class="text-overline"
+                  :style="{backgroundColor: item.color}"
+                >
+                  <div class="text-weight-bold text-white plan-title">
+                    {{ item.package }}
+                  </div>
+                </div>
+              </q-card-section>
+
+              <q-card-section class="col-5">
+                <div class="price text-weight-bold">
+                  {{ item.price !== 'Free' ? `£${item.price}` : item.price }}
+                </div>
+                <div class="price-subtitle">
+                  {{ item.freq }}
+                </div>
+              </q-card-section>
             </div>
           </q-card-section>
+          <q-card-section>
+            <div class="text-h5 q-mt-sm q-mb-md">
+              Product Detail
+            </div>
+            <div class="text-caption text-grey">
+              Lorem ipsum dolor sit amet,
+              consectetur adipiscing elit,
+              sed do eiusmod tempor incididunt
+              ut labore et dolore magna aliqua.
+            </div>
+          </q-card-section>
+          <q-separator />
+
+          <q-card-actions class="row justify-between">
+            <q-btn
+              :disable="currentMemberShip === item.package"
+              flat
+              color="primary"
+              @click="choosePlan(item)"
+            >
+              Choose Plan
+            </q-btn>
+            <q-badge
+              v-if="currentMemberShip === item.package"
+              outline
+              class="q-ml-md"
+              color="orange"
+              label="Active"
+            />
+          </q-card-actions>
         </q-card>
       </div>
     </div>
@@ -107,8 +130,10 @@ export default {
     };
   },
   computed: {
-
     planClass: () => `col-${12 / planItems.length}`,
+    currentMemberShip() {
+      return this.$auth.account().idToken.extension_membershipTier || 'Starter';
+    },
   },
   mounted() {
     this.getToken();
@@ -144,12 +169,14 @@ export default {
     margin: 0 16px;
     border-radius: 20px;
   }
-
+  .plan-title{
+    font-size: 20px;
+  }
   .price-title {
     font-size: 18px;
   }
   .price {
-    font-size: 36px;
+    font-size: 24px;
   }
   .price-timestamps {
     padding: 16px 20px;

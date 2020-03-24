@@ -152,7 +152,7 @@ const menuList = [
   },
   {
     icon: 'settings',
-    label: 'Settings',
+    label: 'Account',
     route: '/account',
   },
 ];

@@ -6,145 +6,163 @@
     >
       <div class="col-6">
         <q-card
+          class="q-mt-md"
           flat
+          bordered
         >
-          <div
-            class="top-section text-white text-center"
-            :style="{backgroundColor: sellingProduct.color}"
+          <q-card-section
+            horizontal
           >
-            <div class="price-title">
-              {{ sellingProduct.package }}
+            <div class="row col-12 justify-between">
+              <q-card-section class="col-4">
+                <div
+                  class="text-overline"
+                  :style="{backgroundColor: sellingProduct.color}"
+                >
+                  <div class="text-weight-bold text-white plan-title">
+                    {{ sellingProduct.package }}
+                  </div>
+                </div>
+              </q-card-section>
+
+              <q-card-section class="col-4">
+                <div class="price text-weight-bold">
+                  {{ sellingProduct.price !== 'Free' ?
+                    `£${sellingProduct.price}` : sellingProduct.price }}
+                </div>
+                <div class="price-subtitle">
+                  {{ sellingProduct.freq }}
+                </div>
+              </q-card-section>
             </div>
-            <div class="price text-weight-bold">
-              £ {{ sellingProduct.price }}
-            </div>
-            <div class="price-subtitle">
-              {{ sellingProduct.freq }}
-            </div>
-          </div>
-          <form id="payment-form">
-            <div
-              v-if="anotherPaymentVisible"
-              id="payment-request-button"
-              ref="anotherpayment"
-            >
+          </q-card-section>
+          <q-card-section>
+            <form id="payment-form">
+              <div
+                v-if="anotherPaymentVisible"
+                id="payment-request-button"
+                ref="anotherpayment"
+              >
               <!-- A Stripe Element will be inserted here. -->
-            </div>
-            <q-card-section>
-              <div class="row">
-                <div class="col-3 payment-card-section">
-                  <label for="name">
-                    Name
+              </div>
+              <q-card-section>
+                <div class="row">
+                  <div class="col-3 payment-card-section">
+                    <label for="name">
+                      Name
+                    </label>
+                  </div>
+                  <input
+                    id="name"
+                    v-model="cardName"
+                    name="name"
+                    class="col-6 payment-card-section combo-inputs-row"
+                    placeholder="Name and Surname"
+                    :class="{ 'uk-form-danger': cardNameError }"
+                    required
+                  >
+                </div>
+                <div class="row">
+                  <label
+                    v-if="cardNameError"
+                    id="name-errors"
+                    class="field-error offset-4"
+                    role="alert"
+                  >
+                    {{ cardNameError }}
                   </label>
                 </div>
-                <input
-                  id="name"
-                  v-model="cardName"
-                  name="name"
-                  class="col-6 payment-card-section combo-inputs-row"
-                  placeholder="Name and Surname"
-                  :class="{ 'uk-form-danger': cardNameError }"
-                  required
-                >
-              </div>
-              <div class="row">
-                <label
-                  v-if="cardNameError"
-                  id="name-errors"
-                  class="field-error offset-4"
-                  role="alert"
-                >
-                  {{ cardNameError }}
-                </label>
-              </div>
-            </q-card-section>
-            <q-card-section>
-              <div class="row">
-                <div class="col-3 payment-card-section">
-                  <label for="card">
-                    Card Number
+              </q-card-section>
+              <q-card-section>
+                <div class="row">
+                  <div class="col-3 payment-card-section">
+                    <label for="card">
+                      Card Number
+                    </label>
+                  </div>
+                  <div
+                    id="card"
+                    ref="card"
+                    class="col-6 payment-card-section combo-inputs-row"
+                    :class="{ 'uk-form-danger': cardNumberError }"
+                  />
+                </div>
+                <div class="row">
+                  <label
+                    v-if="cardNumberError"
+                    id="card-errors"
+                    class="field-error offset-4"
+                    role="alert"
+                  >
+                    {{ cardNumberError }}
                   </label>
                 </div>
-                <div
-                  id="card"
-                  ref="card"
-                  class="col-6 payment-card-section combo-inputs-row"
-                  :class="{ 'uk-form-danger': cardNumberError }"
+              </q-card-section>
+              <q-card-section>
+                <div class="row">
+                  <div class="col-3 payment-card-section">
+                    <label for="cvv">
+                      Card CVC
+                    </label>
+                  </div>
+                  <div
+                    id="cvv"
+                    ref="cvv"
+                    class="col-6 payment-card-section combo-inputs-row"
+                    :class="{ 'uk-form-danger': cardCvcError }"
+                  />
+                </div>
+                <div class="row">
+                  <label
+                    v-if="cardCvcError"
+                    id="cvv-errors"
+                    class="field-error offset-4"
+                    role="alert"
+                  >
+                    {{ cardCvcError }}
+                  </label>
+                </div>
+              </q-card-section>
+              <q-card-section>
+                <div class="row">
+                  <div class="col-3 payment-card-section">
+                    <label for="expiry">
+                      Expiry
+                    </label>
+                  </div>
+                  <div
+                    id="expiry"
+                    ref="expiry"
+                    class="col-6 payment-card-section combo-inputs-row"
+                    :class="{ 'uk-form-danger': cardExpiryError }"
+                  />
+                </div>
+                <div class="row">
+                  <label
+                    v-if="cardExpiryError"
+                    id="expiry-errors"
+                    class="field-error offset-4"
+                    role="alert"
+                  >
+                    {{ cardExpiryError }}
+                  </label>
+                </div>
+              </q-card-section>
+              <q-separator />
+              <q-card-actions class="justify-center q-mt-lg q-mb-lg">
+                <q-btn
+                  class="self-center payment-button"
+                  label="SUBMIT PAYMENT"
+                  style="color: #ffffff; background: #32325d;"
+                  @click.prevent="submitFormToCreateToken"
                 />
-              </div>
-              <div class="row">
-                <label
-                  v-if="cardNumberError"
-                  id="card-errors"
-                  class="field-error offset-4"
-                  role="alert"
-                >
-                  {{ cardNumberError }}
-                </label>
-              </div>
-            </q-card-section>
-            <q-card-section>
-              <div class="row">
-                <div class="col-3 payment-card-section">
-                  <label for="cvv">
-                    Card CVC
-                  </label>
-                </div>
-                <div
-                  id="cvv"
-                  ref="cvv"
-                  class="col-6 payment-card-section combo-inputs-row"
-                  :class="{ 'uk-form-danger': cardCvcError }"
-                />
-              </div>
-              <div class="row">
-                <label
-                  v-if="cardCvcError"
-                  id="cvv-errors"
-                  class="field-error offset-4"
-                  role="alert"
-                >
-                  {{ cardCvcError }}
-                </label>
-              </div>
-            </q-card-section>
-            <q-card-section>
-              <div class="row">
-                <div class="col-3 payment-card-section">
-                  <label for="expiry">
-                    Expiry
-                  </label>
-                </div>
-                <div
-                  id="expiry"
-                  ref="expiry"
-                  class="col-6 payment-card-section combo-inputs-row"
-                  :class="{ 'uk-form-danger': cardExpiryError }"
-                />
-              </div>
-              <div class="row">
-                <label
-                  v-if="cardExpiryError"
-                  id="expiry-errors"
-                  class="field-error offset-4"
-                  role="alert"
-                >
-                  {{ cardExpiryError }}
-                </label>
-              </div>
-            </q-card-section>
-            <q-card-actions class="justify-center q-mt-lg q-mb-lg">
-              <q-btn
-                class="q-col-gutter-x-lg, q-col-gutter-y-lg self-center payment-button"
-                label="SUBMIT PAYMENT"
-                style="color: #ffffff; background: #32325d;"
-                @click.prevent="submitFormToCreateToken"
-              />
-            </q-card-actions>
-          </form>
+              </q-card-actions>
+            </form>
+          </q-card-section>
         </q-card>
       </div>
     </div>
+
     <q-dialog
       v-model="errorDialog"
       :position="position"
@@ -469,6 +487,9 @@ export default {
 <style>
 :root {
    --font-color: rgb(105, 115, 134);
+}
+.plan-title{
+  font-size: 24px;
 }
 /**
 * The CSS shown here will not be introduced in the Quickstart guide, but

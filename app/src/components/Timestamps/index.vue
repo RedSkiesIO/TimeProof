@@ -6,7 +6,7 @@
         name="fas fa-history"
         size="1.25rem"
       />
-      Timestamp History
+      History
     </div>
     <q-card
       flat
