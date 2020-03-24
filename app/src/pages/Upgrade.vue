@@ -41,11 +41,15 @@
             <div class="text-h5 q-mt-sm q-mb-md">
               Product Detail
             </div>
-            <div class="text-caption text-grey">
+            <div class="text-caption text-grey q-mb-md">
               Lorem ipsum dolor sit amet,
               consectetur adipiscing elit,
               sed do eiusmod tempor incididunt
               ut labore et dolore magna aliqua.
+            </div>
+            <div>
+              <strong class="plan-title">{{ item.timestamps }}</strong>
+              <span class="text-caption text-grey q-ml-sm">timestamps rights</span>
             </div>
           </q-card-section>
           <q-separator />
