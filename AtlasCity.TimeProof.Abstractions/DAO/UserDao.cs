@@ -2,11 +2,10 @@
 
 namespace AtlasCity.TimeProof.Abstractions.DAO
 {
-    public class UserDao
+    public class UserDao : DaoBase
     {
         public UserDao(string email)
         {
-            Guard.Argument(email, nameof(email)).NotWhiteSpace("email is missing for an user.");
             Email = email;
         }
 

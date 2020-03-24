@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AtlasCity.TimeProof.Abstractions\AtlasCity.TimeProof.Abstractions.csproj" />
-    <ProjectReference Include="..\AtlasCity.TimeProof.Core.Lib\AtlasCity.TimeProof.Common.Lib.csproj" />
+    <ProjectReference Include="..\AtlasCity.TimeProof.Common.Lib\AtlasCity.TimeProof.Common.Lib.csproj" />
   </ItemGroup>
 
 </Project>

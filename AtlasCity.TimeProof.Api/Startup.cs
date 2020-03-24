@@ -65,6 +65,7 @@ namespace AtlasCity.TimeProof.Api
             var authorizationKey = Configuration.GetSection("TransationCosmosDb:AuthorizationKey").Value;
             services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
+            services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));
 
             var paymentApiKey = Configuration.GetSection("PaymentApiKey").Value;
             var stripeClient = new StripeClient(paymentApiKey);

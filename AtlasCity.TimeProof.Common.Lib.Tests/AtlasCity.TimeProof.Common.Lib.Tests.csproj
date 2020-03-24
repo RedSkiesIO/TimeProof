@@ -6,6 +6,8 @@
     <IsPackable>false</IsPackable>
 
     <Platforms>AnyCPU</Platforms>
+
+    <AssemblyName>AtlasCity.TimeProof.Common.Lib.Unit.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -10,7 +10,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
             PaymentMethodTypes = new List<string> { "card" };
         }
 
-        public string PaymenCustomerId { get; set; }
+        public string PaymentCustomerId { get; set; }
 
         public long Amount { get; set; }
 

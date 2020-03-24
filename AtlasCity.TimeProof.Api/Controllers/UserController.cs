@@ -31,9 +31,10 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (string.IsNullOrWhiteSpace(email))
                 return BadRequest();
 
-            return Ok(Json(_userService.GetUserByEmail(email, cancellationToken).GetAwaiter().GetResult()));
+            return new SuccessActionResult(_userService.GetUserByEmail(email, cancellationToken).GetAwaiter().GetResult());
         }
 
+        [Route("users")]
         [HttpPost]
         public IActionResult CreateUser([FromBody] UserDao user, CancellationToken cancellationToken)
         {
@@ -41,7 +42,6 @@ namespace AtlasCity.TimeProof.Api.Controllers
                 return BadRequest();
 
             var newUser = _userService.CreateUser(user, cancellationToken).GetAwaiter().GetResult();
-
             return new CreatedActionResult(newUser);
         }
     }
