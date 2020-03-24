@@ -26,8 +26,8 @@ namespace AtlasCity.TimeProof.Common.Lib
         public async Task<string> ProcessPayment(PaymentDao payment, CancellationToken cancellationToken)
         {
             Guard.Argument(payment, nameof(payment)).NotNull();
-            Guard.Argument(payment.PaymenCustomerId, nameof(payment.PaymenCustomerId)).NotWhiteSpace("User identifier is missing for taking payment.");
-            Guard.Argument(payment.Email, nameof(payment.Email)).NotWhiteSpace("User email is missing for taking payment.");
+            AtlasGuard.IsNullOrWhiteSpace(payment.PaymentCustomerId);
+            AtlasGuard.IsNullOrWhiteSpace(payment.Email);
 
             var options = new PaymentIntentCreateOptions
             {
@@ -35,7 +35,7 @@ namespace AtlasCity.TimeProof.Common.Lib
                 Currency = payment.Currency,
                 PaymentMethodTypes = payment.PaymentMethodTypes,
                 ReceiptEmail = payment.Email,
-                Customer = payment.PaymenCustomerId
+                Customer = payment.PaymentCustomerId
             };
 
             var response = await _paymentIntentService.CreateAsync(options, null, cancellationToken);
@@ -46,7 +46,7 @@ namespace AtlasCity.TimeProof.Common.Lib
         public async Task<string> CreatePaymentCustomer(UserDao user, CancellationToken cancellationToken)
         {
             Guard.Argument(user, nameof(user)).NotNull();
-            Guard.Argument(user.Email, nameof(user.Email)).NotWhiteSpace("User email is missing for creating customer.");
+            AtlasGuard.IsNullOrWhiteSpace(user.Email);
 
             var options = new CustomerCreateOptions
             {
@@ -63,7 +63,7 @@ namespace AtlasCity.TimeProof.Common.Lib
 
         public async Task<UserDao> GetCustomerById(string stripeCustomerId, CancellationToken cancellationToken)
         {
-            Guard.Argument(stripeCustomerId, nameof(stripeCustomerId)).NotWhiteSpace("Stripe customer identifier is missing for customer retrieval.");
+            AtlasGuard.IsNullOrWhiteSpace(stripeCustomerId);
 
             var customer = await _customerService.GetAsync(stripeCustomerId, null, null, cancellationToken);
 

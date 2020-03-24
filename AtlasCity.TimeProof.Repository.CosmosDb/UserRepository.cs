@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
@@ -25,7 +26,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
-            Guard.Argument(email, nameof(email)).NotWhiteSpace("email is missing for retrieving an user.");
+            AtlasGuard.IsNullOrWhiteSpace(email);
 
             var response = Client.CreateDocumentQuery(_documentCollectionUri, $"select * from c where c.email = '{email}'").FirstOrDefault();
 

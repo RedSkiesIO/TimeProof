@@ -35,7 +35,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (string.IsNullOrWhiteSpace(id))
                 return BadRequest();
 
-            return Ok(Json(_timestampRepository.GetTimestampByUser(id, cancellationToken).GetAwaiter().GetResult()));
+            return new SuccessActionResult(_timestampRepository.GetTimestampByUser(id, cancellationToken).GetAwaiter().GetResult());
         }
 
         [Route("timestamp")]
