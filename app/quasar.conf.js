@@ -69,7 +69,7 @@ module.exports = function (ctx) {
         INFURA: JSON.stringify('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9')
       }
       : {
-        API: JSON.stringify('https://document-timestamp.azurewebsites.net/api'),
+        API: JSON.stringify('https://atlascitytimeproofapi.azurewebsites.net/api'),
         ETHERSCAN: JSON.stringify('https://etherscan.io/tx'),
         INFURA: JSON.stringify('https://mainnet.infura.io/v3/679bbc6759454bf58a924bfaf55576b9')
       },
