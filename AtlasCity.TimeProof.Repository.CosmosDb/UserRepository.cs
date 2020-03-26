@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
+using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Microsoft.Azure.Documents.Client;
@@ -32,7 +33,6 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             return response;
         }
 
-
         public async Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken)
         {
             Guard.Argument(user, nameof(user)).NotNull();
@@ -41,6 +41,20 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, user, new RequestOptions(), false, cancellationToken);
 
             return JsonConvert.DeserializeObject<UserDao>(response.Resource.ToString());
+        }
+
+        public async Task AddSetupIntent(string email, string setupIntentId, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNullOrWhiteSpace(email);
+            AtlasGuard.IsNullOrWhiteSpace(setupIntentId);
+
+            var user = await GetUserByEmail(email, cancellationToken);
+            if (user == null)
+                throw new UserException($"User with email '{email}' does not exists. Please create the user first");
+
+            user.SetupIntentId = setupIntentId;
+
+            await Client.UpsertDocumentAsync(_documentCollectionUri, user, null, false, cancellationToken);
         }
     }
 }

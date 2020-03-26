@@ -11,7 +11,10 @@ namespace AtlasCity.TimeProof.Abstractions.Services
 
         Task<string> CreatePaymentCustomer(UserDao customer, CancellationToken cancellationToken);
 
-        Task<UserDao> GetCustomerById(string stripeCustomerId, CancellationToken cancellationToken);
+        Task<UserDao> GetCustomerById(string paymentCustomerId, CancellationToken cancellationToken);
 
+        Task<SetupIntentDao> GetSetupIntent(string setupIntentId, CancellationToken cancellationToken);
+
+        Task<SetupIntentDao> CreateSetupIntent(string paymentCustomerId, CancellationToken cancellationToken);
     }
 }

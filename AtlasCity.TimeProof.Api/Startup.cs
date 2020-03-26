@@ -64,6 +64,7 @@ namespace AtlasCity.TimeProof.Api
             var stripeClient = new StripeClient(paymentApiKey);
             services.AddSingleton(new PaymentIntentService(stripeClient));
             services.AddSingleton(new CustomerService(stripeClient));
+            services.AddSingleton(new SetupIntentService(stripeClient));
 
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();

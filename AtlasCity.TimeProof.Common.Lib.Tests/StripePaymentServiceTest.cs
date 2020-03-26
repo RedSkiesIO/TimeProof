@@ -15,39 +15,45 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
     {
         Mock<PaymentIntentService> paymentIntentServiceMock;
         Mock<CustomerService> customerServiceMock;
+        Mock<SetupIntentService> setupIntentServiceMock;
+
+        StripePaymentService stripePaymentService;
 
         [TestInitialize]
         public void Setup()
         {
             paymentIntentServiceMock = new Mock<PaymentIntentService>();
             customerServiceMock = new Mock<CustomerService>();
+            setupIntentServiceMock = new Mock<SetupIntentService>();
+
+            stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object, setupIntentServiceMock.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Initilising_StripePaymentService_With_Null_PaymentIntentCreateOptions_Should_Throw_An_Exception()
         {
-            new StripePaymentService(null, customerServiceMock.Object);
+            new StripePaymentService(null, customerServiceMock.Object, setupIntentServiceMock.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Initilising_StripePaymentService_With_Null_CustomerService_Should_Throw_An_Exception()
         {
-            new StripePaymentService(paymentIntentServiceMock.Object, null);
+            new StripePaymentService(paymentIntentServiceMock.Object, null, setupIntentServiceMock.Object);
         }
 
         [TestMethod]
-        public void Initilising_StripePaymentService_With_Crrect_Parameters_Should_Not_Throw_An_Exception()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Initilising_StripePaymentService_With_Null_SetupIntentService_Should_Throw_An_Exception()
         {
-            new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
+            new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object, null);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_ProcessPayment_With_Null_PaymentDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.ProcessPayment(null, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -55,7 +61,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_ProcessPayment_With_Null_PaymentCustomerId_In_PaymentDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.ProcessPayment(new PaymentDao() { PaymentCustomerId = null }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -63,7 +68,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_Empty_PaymentCustomerId_In_PaymentDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.ProcessPayment(new PaymentDao() { PaymentCustomerId = string.Empty }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -71,7 +75,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_WhiteSpace_PaymentCustomerId_In_PaymentDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.ProcessPayment(new PaymentDao() { PaymentCustomerId = " " }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -79,7 +82,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_ProcessPayment_With_Null_Email_In_PaymentDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.ProcessPayment(new PaymentDao() { PaymentCustomerId = "TestId", Email = null }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -87,7 +89,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_Empty_Email_In_PaymentDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.ProcessPayment(new PaymentDao() { PaymentCustomerId = "TestId", Email = string.Empty }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -95,7 +96,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_WhiteSpace_Email_In_PaymentDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.ProcessPayment(new PaymentDao() { PaymentCustomerId = "TestId", Email = " " }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -104,7 +104,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         {
             paymentIntentServiceMock.Setup(s => s.CreateAsync(It.IsAny<PaymentIntentCreateOptions>(), It.IsAny<RequestOptions>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new PaymentIntent { StripeResponse = new StripeResponse(HttpStatusCode.OK, null, null) }));
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
+            
             var response = stripePaymentService.ProcessPayment(new PaymentDao() { PaymentCustomerId = "TestId", Email = "test@example.com" }, CancellationToken.None).GetAwaiter().GetResult();
             
             Assert.IsNotNull(response);
@@ -114,7 +114,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_CreatePaymentCustomer_With_Null_UserDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.ProcessPayment(null, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -122,24 +121,22 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_CreatePaymentCustomer_With_Null_Email_In_UserDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
-            stripePaymentService.CreatePaymentCustomer(new UserDao(null), CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.CreatePaymentCustomer(new UserDao { Email = null }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_CreatePaymentCustomer_With_Empty_Email_In_UserDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
-            stripePaymentService.CreatePaymentCustomer(new UserDao(string.Empty), CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.CreatePaymentCustomer(new UserDao { Email = string.Empty }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_CreatePaymentCustomer_With_WhiteSpace_Email_In_UserDao_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
-            stripePaymentService.CreatePaymentCustomer(new UserDao(" "), CancellationToken.None).GetAwaiter().GetResult();
+           
+            stripePaymentService.CreatePaymentCustomer(new UserDao { Email = " " }, CancellationToken.None).GetAwaiter().GetResult();
         }
        
         [TestMethod]
@@ -149,8 +146,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
             customerServiceMock.Setup(s => s.CreateAsync(It.IsAny<CustomerCreateOptions>(), It.IsAny<RequestOptions>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((Customer)null));
 
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
-            stripePaymentService.CreatePaymentCustomer(new UserDao("test@example.com"), CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.CreatePaymentCustomer(new UserDao { Email = "test@example.com" }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
@@ -159,8 +155,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
             customerServiceMock.Setup(s => s.CreateAsync(It.IsAny<CustomerCreateOptions>(), It.IsAny<RequestOptions>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new Customer {Id = "testIdentifer" }));
 
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
-            var userIdentifier = stripePaymentService.CreatePaymentCustomer(new UserDao("test@example.com"), CancellationToken.None).GetAwaiter().GetResult();
+            var userIdentifier = stripePaymentService.CreatePaymentCustomer(new UserDao { Email = "test@example.com" }, CancellationToken.None).GetAwaiter().GetResult();
 
             Assert.AreEqual("testIdentifer", userIdentifier);
         }
@@ -169,7 +164,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_GetCustomerById_With_Null_CustomerId_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.GetCustomerById(null, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -177,7 +171,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_GetCustomerById_With_Empty_CustomerId_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.GetCustomerById(string.Empty, CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -185,7 +178,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_GetCustomerById_With_WhiteSpace_CustomerId_Should_Throw_An_Exception()
         {
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.GetCustomerById(" ", CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -196,7 +188,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
             customerServiceMock.Setup(s => s.GetAsync("testCustomerIdentifier", It.IsAny<CustomerGetOptions>(), It.IsAny<RequestOptions>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((Customer)null));
 
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             stripePaymentService.GetCustomerById("testCustomerIdentifier", CancellationToken.None).GetAwaiter().GetResult();
         }
 
@@ -207,7 +198,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
                 .Returns(Task.FromResult(new Customer { Id = "testCustomerIdentifier", Email = "test@example.com", 
                     Address = new Address { Line1 = "testline1", Line2 = "testLine2", City = "testCity", State = "testSate", PostalCode = "testPostcode", Country = "testCountry" } }));
 
-            var stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object);
             var user = stripePaymentService.GetCustomerById("testCustomerIdentifier", CancellationToken.None).GetAwaiter().GetResult();
 
             Assert.IsNotNull(user);

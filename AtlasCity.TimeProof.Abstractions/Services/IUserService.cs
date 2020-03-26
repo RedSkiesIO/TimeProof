@@ -9,5 +9,7 @@ namespace AtlasCity.TimeProof.Abstractions.Services
         Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken);
 
         Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken);
+
+        Task<SetupIntentDao> CreateSetupIntent(string email, CancellationToken cancellationToken);
     }
 }

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace AtlasCity.TimeProof.Common.Lib
 {
@@ -32,7 +29,7 @@ namespace AtlasCity.TimeProof.Common.Lib
 
         public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
-            Guard.Argument(email, nameof(email)).NotWhiteSpace("email is missing for retrieving an user.");
+            AtlasGuard.IsNullOrWhiteSpace(email);
 
             return await _userRepository.GetUserByEmail(email, cancellationToken);
         }
@@ -40,13 +37,15 @@ namespace AtlasCity.TimeProof.Common.Lib
         public async Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken)
         {
             Guard.Argument(user, nameof(user)).NotNull();
-            Guard.Argument(user.Email, nameof(user.Email)).NotWhiteSpace("User email is missing for creating an user.");
+            AtlasGuard.IsNullOrWhiteSpace(user.Email);
+
+            UserDao existingPaymentCustomer = null;
 
             if (!string.IsNullOrWhiteSpace(user.PaymentCustomerId))
             {
                 try
                 {
-                    await _paymentService.GetCustomerById(user.PaymentCustomerId, cancellationToken);
+                    existingPaymentCustomer = await _paymentService.GetCustomerById(user.PaymentCustomerId, cancellationToken);
                 }
                 catch (PaymentException ex)
                 {
@@ -55,10 +54,17 @@ namespace AtlasCity.TimeProof.Common.Lib
                 }
             }
 
+            // If customer exists in payment service and email does not match, then something is wrong
+            if (existingPaymentCustomer != null && !existingPaymentCustomer.Email.Equals(user.Email))
+            {
+                throw new UserException($"User with payment customer identifier '{user.PaymentCustomerId}' already exiting with mismatch email ids. Expected: '{user.Email}', Actual: '{existingPaymentCustomer.Email}'");
+            }
+
             if (string.IsNullOrWhiteSpace(user.PaymentCustomerId))
             {
                 try
                 {
+                    _logger.LogInformation($"Creating payment customer in payment service with email '{user.Email}'");
                     user.PaymentCustomerId = await _paymentService.CreatePaymentCustomer(user, cancellationToken);
                 }
                 catch (PaymentException ex)
@@ -69,6 +75,34 @@ namespace AtlasCity.TimeProof.Common.Lib
             }
 
             return await _userRepository.CreateUser(user, cancellationToken);
+        }
+
+        public async Task<SetupIntentDao> CreateSetupIntent(string email, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNullOrWhiteSpace(email);
+
+            var user = await _userRepository.GetUserByEmail(email, cancellationToken);
+            if (user == null)
+                throw new UserException("Please create the user first.");
+
+            SetupIntentDao setupIntent = null;
+            
+            if (!string.IsNullOrWhiteSpace(user.SetupIntentId))
+            {
+                setupIntent = await _paymentService.GetSetupIntent(user.SetupIntentId, cancellationToken);
+                if (setupIntent != null)
+                    return setupIntent;
+
+                _logger.LogWarning($"Setup intent '{user.SetupIntentId}' is missing from the payment service");
+            }
+
+            if (setupIntent == null)
+            {
+                setupIntent = await _paymentService.CreateSetupIntent(user.PaymentCustomerId, cancellationToken);
+                await _userRepository.AddSetupIntent(user.Email, setupIntent.Id, cancellationToken);
+            }
+
+            return setupIntent;
         }
     }
 }

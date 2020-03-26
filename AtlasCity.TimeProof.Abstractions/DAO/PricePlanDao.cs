@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace AtlasCity.TimeProof.Abstractions.DAO
 {
@@ -16,7 +13,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         [JsonProperty(PropertyName = "price")]
         public long Price { get; set; }
 
-        [JsonProperty(PropertyName = "noofstamps")]
+        [JsonProperty(PropertyName = "noOfStamps")]
         public long NoOfStamps { get; set; }
     }
 }

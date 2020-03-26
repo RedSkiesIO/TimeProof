@@ -3,14 +3,15 @@ using Stripe;
 
 namespace AtlasCity.TimeProof.Common.Lib.Extensions
 {
-    public static class DaoExtensions
+    public static class CustomerExtensions
     {
         public static UserDao ToUserDao(this Customer customer)
         {
             if(customer != null)
             {
-                var user = new UserDao(customer.Email)
+                var user = new UserDao()
                 {
+                    Email = customer.Email,
                     PaymentCustomerId = customer.Id
                 };
 

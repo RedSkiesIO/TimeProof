@@ -24,7 +24,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             _userService = userService;
         }
 
-        [Route("users/{email}")]
+        [Route("user/{email}")]
         [HttpGet]
         public IActionResult Get([FromRoute] string email, CancellationToken cancellationToken)
         {
@@ -35,7 +35,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             return new SuccessActionResult(user);
         }
 
-        [Route("users")]
+        [Route("user")]
         [HttpPost]
         public IActionResult CreateUser([FromBody] UserDao user, CancellationToken cancellationToken)
         {
@@ -44,6 +44,17 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
             var newUser = _userService.CreateUser(user, cancellationToken).GetAwaiter().GetResult();
             return new CreatedActionResult(newUser);
+        }
+
+        [Route("user/intent/{email}")]
+        [HttpGet]
+        public IActionResult GetSetupIntent([FromRoute] string email, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest();
+
+            var setupIntent = _userService.CreateSetupIntent(email, cancellationToken).GetAwaiter().GetResult();
+            return new SuccessActionResult(setupIntent);
         }
     }
 }
