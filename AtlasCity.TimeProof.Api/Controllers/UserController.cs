@@ -46,14 +46,14 @@ namespace AtlasCity.TimeProof.Api.Controllers
             return new CreatedActionResult(newUser);
         }
 
-        [Route("user/intent/{email}")]
+        [Route("user/intent/{id}")]
         [HttpGet]
-        public IActionResult GetSetupIntent([FromRoute] string email, CancellationToken cancellationToken)
+        public IActionResult GetSetupIntent([FromRoute] string id, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(email))
+            if (string.IsNullOrWhiteSpace(id))
                 return BadRequest();
 
-            var setupIntent = _userService.CreateSetupIntent(email, cancellationToken).GetAwaiter().GetResult();
+            var setupIntent = _userService.CreateSetupIntent(id, cancellationToken).GetAwaiter().GetResult();
             return new SuccessActionResult(setupIntent);
         }
     }

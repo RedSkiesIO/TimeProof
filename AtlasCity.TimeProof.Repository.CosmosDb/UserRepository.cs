@@ -25,6 +25,14 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             _documentCollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId);
         }
 
+        public async Task<UserDao> GetUserById(string userId, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNullOrWhiteSpace(userId);
+
+            var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == userId.ToLower()).AsEnumerable().FirstOrDefault();
+            return response;
+        }
+
         public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNullOrWhiteSpace(email);

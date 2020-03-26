@@ -77,11 +77,11 @@ namespace AtlasCity.TimeProof.Common.Lib
             return await _userRepository.CreateUser(user, cancellationToken);
         }
 
-        public async Task<SetupIntentDao> CreateSetupIntent(string email, CancellationToken cancellationToken)
+        public async Task<SetupIntentDao> CreateSetupIntent(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNullOrWhiteSpace(email);
+            AtlasGuard.IsNullOrWhiteSpace(userId);
 
-            var user = await _userRepository.GetUserByEmail(email, cancellationToken);
+            var user = await _userRepository.GetUserById(userId, cancellationToken);
             if (user == null)
                 throw new UserException("Please create the user first.");
 
