@@ -10,6 +10,10 @@ namespace AtlasCity.TimeProof.Abstractions.Services
 
         Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken);
 
+        Task DeleteUser(string userId, CancellationToken cancellationToken);
+
         Task<SetupIntentDao> CreateSetupIntent(string userId, CancellationToken cancellationToken);
+
+        Task<PaymentResponseDao> ProcessPayment(PaymentDao payment, CancellationToken cancellationToken);
     }
 }

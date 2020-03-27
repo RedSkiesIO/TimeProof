@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
+using AtlasCity.TimeProof.Api.Extensions;
 using AtlasCity.TimeProof.Common.Lib;
 using AtlasCity.TimeProof.Repository.CosmosDb;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -11,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using Stripe;
 
 namespace AtlasCity.TimeProof.Api
@@ -37,7 +40,7 @@ namespace AtlasCity.TimeProof.Api
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -69,6 +72,9 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();
 
+            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
+            services.AddSingleton(Log.Logger);
+
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins,
@@ -81,8 +87,7 @@ namespace AtlasCity.TimeProof.Api
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger logger)
         {
             if (env.IsDevelopment())
             {
@@ -92,6 +97,8 @@ namespace AtlasCity.TimeProof.Api
             app.UseCors(MyAllowSpecificOrigins);
 
             app.UseHttpsRedirection();
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 
@@ -103,7 +110,7 @@ namespace AtlasCity.TimeProof.Api
             //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             //});
 
-
+            app.ConfigureExceptionHandler(logger);
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

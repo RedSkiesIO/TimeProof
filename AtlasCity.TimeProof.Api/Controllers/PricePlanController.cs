@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Api.ActionResults;
-using Dawn;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace AtlasCity.TimeProof.Api.Controllers
 {
@@ -11,13 +11,13 @@ namespace AtlasCity.TimeProof.Api.Controllers
     [Route("api")]
     public class PricePlanController : Controller
     {
-        private readonly ILogger<PricePlanController> _logger;
+        private readonly ILogger _logger;
         private readonly IPricePlanRepository _pricePlanRepository;
 
-        public PricePlanController(ILogger<PricePlanController> logger, IPricePlanRepository pricePlanRepository)
+        public PricePlanController(ILogger logger, IPricePlanRepository pricePlanRepository)
         {
-            Guard.Argument(logger, nameof(logger)).NotNull();
-            Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
+            AtlasGuard.IsNotNull(logger);
+            AtlasGuard.IsNotNull(pricePlanRepository);
 
             _logger = logger;
             _pricePlanRepository = pricePlanRepository;

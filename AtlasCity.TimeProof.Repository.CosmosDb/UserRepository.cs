@@ -7,6 +7,7 @@ using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
+using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
@@ -49,6 +50,20 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, user, new RequestOptions(), false, cancellationToken);
 
             return JsonConvert.DeserializeObject<UserDao>(response.Resource.ToString());
+        }
+
+        public async Task DeleteUser(string userId, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNullOrWhiteSpace(userId);
+
+            try
+            {
+                await Client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, userId), new RequestOptions { }, cancellationToken);
+            }
+            catch (DocumentClientException ex)
+            {
+                throw new UserException($"Unable to delete user '{userId}'.", ex);
+            }
         }
 
         public async Task AddSetupIntent(string email, string setupIntentId, CancellationToken cancellationToken)

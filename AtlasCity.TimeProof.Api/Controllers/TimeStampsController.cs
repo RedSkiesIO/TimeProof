@@ -1,13 +1,10 @@
 ﻿using System.Threading;
-using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
-using Dawn;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using AtlasCity.TimeProof.Api.ActionResults;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace AtlasCity.TimeProof.Api.Controllers
 {
@@ -15,13 +12,13 @@ namespace AtlasCity.TimeProof.Api.Controllers
     [Route("api")]
     public class TimeStampsController : Controller
     {
-        private readonly ILogger<TimeStampsController> _logger;
+        private readonly ILogger _logger;
         private readonly ITimestampRepository _timestampRepository;
 
-        public TimeStampsController(ILogger<TimeStampsController> logger, ITimestampRepository timestampRepository)
+        public TimeStampsController(ILogger logger, ITimestampRepository timestampRepository)
         {
-            Guard.Argument(logger, nameof(logger)).NotNull();
-            Guard.Argument(timestampRepository, nameof(timestampRepository)).NotNull();
+            AtlasGuard.IsNotNull(logger);
+            AtlasGuard.IsNotNull(timestampRepository);
 
             _logger = logger;
             _timestampRepository = timestampRepository;

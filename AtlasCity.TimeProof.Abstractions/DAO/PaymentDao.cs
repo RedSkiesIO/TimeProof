@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 
 namespace AtlasCity.TimeProof.Abstractions.DAO
 {
     public class PaymentDao
     {
-        public string PaymentCustomerId { get; set; }
+        [JsonProperty(PropertyName = "userId")]
+        public string UserId { get; set; }
 
+        [JsonProperty(PropertyName = "paymentMethodId")]
+        public string PaymentMethodId { get; set; }
+
+        [JsonProperty(PropertyName = "amount")]
         public long Amount { get; set; }
 
-        public string Email{ get; set; }
-
-        public string Currency = "gbp";
-
-        public List<string> PaymentMethodTypes = new List<string> { "card" };
+        [JsonProperty(PropertyName = "email")]
+        public string Email { get; set; }
     }
 }

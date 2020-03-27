@@ -10,5 +10,10 @@ namespace AtlasCity.TimeProof.Common.Lib.Extensions
             Guard.Argument(stringValue, nameof(stringValue)).NotEmpty("value is empty");
             Guard.Argument(stringValue, nameof(stringValue)).NotWhiteSpace("value has only white spaces");
         }
+
+        public static void IsNotNull(this object instance)
+        {
+            Guard.Argument(instance, nameof(instance)).NotNull();
+        }
     }
 }
