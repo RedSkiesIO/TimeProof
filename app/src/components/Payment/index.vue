@@ -335,7 +335,7 @@ export default {
       return null;
     },
     productImage() {
-      const imageData = new Identicon('d3b07384d113edec49eaa6238ad5ff00', 420).toString();
+      const imageData = new Identicon(Math.random().toString(15), 420).toString();
       return `data:image/png;base64,${imageData}`;
     },
 
