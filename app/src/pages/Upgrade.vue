@@ -82,7 +82,7 @@ import { mapActions } from 'vuex';
 
 const planItems = [
   {
-    plan: 'plan_GeJGwbwuTvjjTi',
+    plan: 'plan_1',
     quantity: 1,
     package: 'Starter',
     price: 'Free',
@@ -91,7 +91,7 @@ const planItems = [
     color: 'green',
   },
   {
-    plan: 'plan_Gga2y8jPcryhWJ',
+    plan: 'plan_2',
     quantity: 1,
     package: 'Basic',
     price: 30.56,
@@ -100,7 +100,7 @@ const planItems = [
     color: 'blue',
   },
   {
-    plan: 'plan_ASDıuwbendnoquhw',
+    plan: 'plan_3',
     quantity: 1,
     package: 'Premium',
     price: 97.45,
@@ -109,7 +109,7 @@ const planItems = [
     color: 'orange',
   },
   {
-    plan: 'plan_Aojaosdjoıpj',
+    plan: 'plan_4',
     quantity: 1,
     package: 'Gold',
     price: 129.87,

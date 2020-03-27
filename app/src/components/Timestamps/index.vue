@@ -23,11 +23,11 @@
             style="font-size: 1.2em"
           />
           <div
-            class="col-4"
+            class="col-5"
           >
             {{ $t('file') }}
           </div>
-          <div class="col-1">
+          <div class="col-2">
             {{ $t('proofId') }}
           </div>
           <div class="col-1">
@@ -44,7 +44,7 @@
             class="row stamp-item2"
           >
             <div
-              class="col-4 q-px-sm overflow q-mr-lg"
+              class="col-5 q-px-sm overflow q-mr-lg"
             >
               <q-icon
                 class="col-auto text-grey-6 q-pr-sm"
@@ -54,7 +54,7 @@
               {{ stamp.name }}
             </div>
             <div
-              class="col-1 row overflow"
+              class="col-2 row overflow"
             >
               <div>
                 <q-btn
@@ -81,7 +81,7 @@
               </span>
             </div>
             <div
-              class="col-1 text-right"
+              class="col-1 text-left"
             >
               <span v-if="stamp.blockNumber !== -1">
                 {{ stamp.timestampDate.split(' ')[1] }}

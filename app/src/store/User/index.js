@@ -3,6 +3,7 @@ import { Model } from '@vuex-orm/core';
 import axios from 'axios';
 // import auth from '../../boot/auth';
 import Timestamp from '../Timestamp';
+import Address from '../Address';
 
 export default class User extends Model {
   static entity = 'users';
@@ -19,6 +20,7 @@ export default class User extends Model {
       email: this.attr(''),
       tier: this.attr('free'),
       timestamps: this.hasMany(Timestamp, 'accountIdentifier'),
+      address: this.hasOne(Address, 'accountIdentifier'),
       tokenExpires: this.attr(''),
       upgrade: this.attr(false),
       firstTimeDialog: this.attr(true),
@@ -87,11 +89,49 @@ export default class User extends Model {
     });
   }
 
-  async verifyUser() {
-    axios.get(`${process.env.API}/users/${this.email}`)
-      .then((result) => {
-        console.log(result);
-      }).catch((err) => {
+  async verifyUserDetails() {
+    return axios.get(`${process.env.API}/user/${this.email}`)
+      .then(async (result) => {
+        if (!result || !result.data) {
+          console.log('DATATATTATATTATATA');
+          const data = {
+            email: this.email,
+            firstName: this.givenName,
+            lastName: this.familyName,
+            address: {
+              line1: this.address.line1,
+              line2: this.address.line2,
+              city: this.address.city,
+              state: this.address.state,
+              postcode: this.address.postcode,
+              country: this.address.country,
+            },
+          };
+          console.log(data);
+          const newUserResult = await axios.post(`${process.env.API}/user`, data);
+          console.log('New User created on Timeproof API');
+          console.log(newUserResult);
+          return newUserResult;
+        }
+        console.log('User is already exist in timeproof api');
+        console.log(result.data);
+        return result;
+      })
+      .then(async (userResult) => {
+        if (userResult && userResult.data) {
+          const intentResult = await axios.get(`${process.env.API}/user/intent/${userResult.data.id}`);
+          console.log('USER INTENT RESULT');
+          console.log(intentResult);
+          if (intentResult && intentResult.status === 200 && intentResult.data) {
+            intentResult.data.userId = userResult.data.id;
+            return intentResult;
+          }
+        }
+        return {
+          error: 'client secret key not found',
+        };
+      })
+      .catch((err) => {
         console.log(err);
       });
   }

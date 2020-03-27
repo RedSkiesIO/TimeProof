@@ -1,267 +1,344 @@
 <template>
-  <q-page class="flex flex-center price-plans">
-    <div
-      class="row justify-center"
-      style="width: 100%"
+  <div class="payment-page">
+    <main
+      id="main"
+      :class="{
+        loading: mainClassLoading,
+        success: mainClassSuccess,
+        processing: mainClassProcessing,
+        receiver: mainClassReceiver,
+        error: mainClassError,
+        checkout: mainClassCheckout}"
     >
-      <div class="col-6">
-        <q-card
-          class="q-mt-md"
-          flat
-          bordered
+      <div id="checkout">
+        <div
+          v-show="paymentRequestVisible"
+          id="payment-request"
+          :class="{visible: paymentRequestVisible}"
         >
-          <q-card-section
-            horizontal
-          >
-            <div class="row col-12 justify-between">
-              <q-card-section class="col-4">
-                <div
-                  class="text-overline text-center"
-                  :style="{backgroundColor: sellingProduct.color}"
+          <div id="payment-request-button" />
+        </div>
+        <form
+          id="payment-form"
+          method="POST"
+          action="/orders"
+          @submit.prevent="formSubmit"
+        >
+          <section>
+            <PaymentBilling
+              :show-relevant-payment-methods="showRelevantPaymentMethods"
+              :email="user.email"
+            />
+          </section>
+          <section>
+            <h2>Payment Information</h2>
+            <nav id="payment-methods">
+              <ul>
+                <li
+                  v-for="(item, index) in uiPaymentTypeList"
+                  :key="index"
                 >
-                  <div class="text-weight-bold text-white plan-title">
-                    {{ sellingProduct.package }}
-                  </div>
-                </div>
-              </q-card-section>
-
-              <q-card-section class="col-4">
-                <div class="price text-weight-bold">
-                  {{ sellingProduct.price !== 'Free' ?
-                    `£${sellingProduct.price}` : sellingProduct.price }}
-                </div>
-                <div class="price-subtitle">
-                  {{ sellingProduct.freq }}
-                </div>
-              </q-card-section>
-            </div>
-          </q-card-section>
-          <q-card-section>
-            <form id="payment-form">
-              <div
-                v-if="anotherPaymentVisible"
-                id="payment-request-button"
-                ref="anotherpayment"
-              >
-              <!-- A Stripe Element will be inserted here. -->
-              </div>
-              <q-card-section>
-                <div class="row">
-                  <div class="col-3 payment-card-section">
-                    <label for="name">
-                      Name
-                    </label>
-                  </div>
                   <input
-                    id="name"
-                    v-model="cardName"
-                    name="name"
-                    class="col-6 payment-card-section combo-inputs-row paymentInput"
-                    placeholder="Name and Surname"
-                    :class="{ 'uk-form-danger': cardNameError }"
-                    required
+                    :id="item.id"
+                    type="radio"
+                    name="payment"
+                    :value="item.value"
+                    checked
+                    @change.prevent="paymentTypeChange"
                   >
-                </div>
-                <div class="row">
-                  <label
-                    v-if="cardNameError"
-                    id="name-errors"
-                    class="field-error offset-4"
-                    role="alert"
-                  >
-                    {{ cardNameError }}
-                  </label>
-                </div>
-              </q-card-section>
-              <q-card-section>
-                <div class="row">
-                  <div class="col-3 payment-card-section">
-                    <label for="card">
-                      Card Number
-                    </label>
-                  </div>
+                  <label :for="item.id">{{ item.label }}</label>
+                </li>
+              </ul>
+            </nav>
+            <div
+              class="payment-info card"
+              :class="{visible: cardPaymentVisible}"
+            >
+              <fieldset>
+                <label>
+                  <span>Card</span>
                   <div
-                    id="card"
-                    ref="card"
-                    class="col-6 payment-card-section combo-inputs-row"
-                    :class="{ 'uk-form-danger': cardNumberError }"
+                    id="card-element"
+                    class="field"
                   />
-                </div>
-                <div class="row">
-                  <label
-                    v-if="cardNumberError"
-                    id="card-errors"
-                    class="field-error offset-4"
-                    role="alert"
-                  >
-                    {{ cardNumberError }}
-                  </label>
-                </div>
-              </q-card-section>
-              <q-card-section>
-                <div class="row">
-                  <div class="col-3 payment-card-section">
-                    <label for="cvv">
-                      Card CVC
-                    </label>
-                  </div>
+                </label>
+              </fieldset>
+            </div>
+            <div
+              class="payment-info sepa_debit"
+              :class="{visible: sepaDebitPaymentVisible}"
+            >
+              <fieldset>
+                <label>
+                  <span>IBAN</span>
                   <div
-                    id="cvv"
-                    ref="cvv"
-                    class="col-6 payment-card-section combo-inputs-row"
-                    :class="{ 'uk-form-danger': cardCvcError }"
+                    id="iban-element"
+                    class="field"
                   />
-                </div>
-                <div class="row">
-                  <label
-                    v-if="cardCvcError"
-                    id="cvv-errors"
-                    class="field-error offset-4"
-                    role="alert"
-                  >
-                    {{ cardCvcError }}
-                  </label>
-                </div>
-              </q-card-section>
-              <q-card-section>
-                <div class="row">
-                  <div class="col-3 payment-card-section">
-                    <label for="expiry">
-                      Expiry
-                    </label>
-                  </div>
+                </label>
+              </fieldset>
+              <p class="notice">
+                By providing your IBAN and confirming this payment,
+                you’re authorizing Payments Demo and Stripe, our payment
+                provider, to send instructions to your bank to debit your account.
+                You’re entitled to a refund under the terms
+                and conditions of your agreement with your bank.
+              </p>
+            </div>
+            <div
+              class="payment-info ideal"
+              :class="{visible: idealPaymentVisible}"
+            >
+              <fieldset>
+                <label>
+                  <span>iDEAL Bank</span>
                   <div
-                    id="expiry"
-                    ref="expiry"
-                    class="col-6 payment-card-section combo-inputs-row"
-                    :class="{ 'uk-form-danger': cardExpiryError }"
+                    id="ideal-bank-element"
+                    class="field"
                   />
-                </div>
-                <div class="row">
-                  <label
-                    v-if="cardExpiryError"
-                    id="expiry-errors"
-                    class="field-error offset-4"
-                    role="alert"
-                  >
-                    {{ cardExpiryError }}
-                  </label>
-                </div>
-              </q-card-section>
-              <q-separator />
-              <q-card-actions class="justify-center q-mt-lg q-mb-lg">
-                <q-btn
-                  class="self-center payment-button"
-                  label="SUBMIT PAYMENT"
-                  style="color: #ffffff; background: #32325d;"
-                  @click.prevent="submitFormToCreateToken"
-                />
-              </q-card-actions>
-            </form>
-          </q-card-section>
-        </q-card>
+                </label>
+              </fieldset>
+            </div>
+            <div
+              class="payment-info redirect"
+              :class="{visible: redirectPaymentVisible}"
+            >
+              <p class="notice">
+                You’ll be redirected to the banking site to complete your payment.
+              </p>
+            </div>
+            <div
+              class="payment-info receiver"
+              :class="{visible: receiverPaymentVisible}"
+            >
+              <p class="notice">
+                Payment information will be provided after you place the order.
+              </p>
+            </div>
+            <div
+              class="payment-info wechat"
+              :class="{visible: wechatPaymentVisible}"
+            >
+              <div id="wechat-qrcode" />
+              <p
+                class="notice"
+                :style="{display: wechatPaymentInfoNoticeDisplay}"
+              >
+                Click the button below to generate a QR code for WeChat.
+              </p>
+            </div>
+          </section>
+          <button
+            class="payment-button"
+            type="submit"
+            :disabled="submitButtonDisable"
+          >
+            {{ submitButtonText }}
+          </button>
+        </form>
+        <div
+          id="card-errors"
+          class="element-errors"
+          :class="{ visible: cardErrorVisible}"
+        >
+          {{ cardErrorContent }}
+        </div>
+        <div
+          id="iban-errors"
+          class="element-errors"
+          :class="{ visible: ibanErrorVisible}"
+        >
+          {{ ibanErrorContent }}
+        </div>
       </div>
-    </div>
-
-    <q-dialog
-      v-model="errorDialog"
-      :position="position"
-    >
-      <q-card style="width: 350px">
-        <q-card-section class="row items-center no-wrap stripeError">
-          <div>
-            <div class="text-weight-bold">
-              Payment
-            </div>
-            <div class="text-grey">
-              {{ stripeError }}
-            </div>
+      <div id="confirmation">
+        <div class="status processing">
+          <h1>Completing your order…</h1>
+          <p>
+            We’re just waiting for the confirmation
+            from your bank… This might take a moment but feel free to close this page.
+          </p>
+          <p>We’ll send your receipt via email shortly.</p>
+        </div>
+        <div class="status success">
+          <h1>Thanks for your order!</h1>
+          <p>Woot! You successfully made a payment with Stripe.</p>
+          <p class="note">
+            {{ confirmationElementNote }}
+          </p>
+        </div>
+        <div class="status receiver">
+          <h1>Thanks! One last step!</h1>
+          <p>Please make a payment using the details below to complete your order.</p>
+          <div class="info">
+            {{ receiverInfo }}
           </div>
-
-          <q-space />
-
-          <q-btn
-            flat
-            round
-            icon="close"
-            @click="closeErrorDialog"
-          />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-  </q-page>
+        </div>
+        <div class="status error">
+          <h1>Oops, payment failed.</h1>
+          <p>
+            It looks like your order could not
+            be paid at this time. Please try again or select a different payment option.
+          </p>
+          <p class="error-message">
+            {{ confirmationElementErrorMessage }}
+          </p>
+        </div>
+      </div>
+    </main>
+    <aside id="summary">
+      <div class="header">
+        <h1>Order Summary</h1>
+      </div>
+      <div id="order-items" />
+      <div id="order-total">
+        <div class="line-item demo">
+          <div id="demo">
+            <p class="label">
+              Demo in test mode
+            </p>
+            <p class="note">
+              You can copy and paste the following test cards to trigger different scenarios:
+            </p>
+            <table class="note">
+              <tr>
+                <td>Default US card:</td>
+                <td class="card-number">
+                  4242<span />4242<span />4242<span />4242
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a
+                    href="https://stripe.com/guides/strong-customer-authentication"
+                    target="_blank"
+                  >Authentication</a> required:
+                </td>
+                <td class="card-number">
+                  4000<span />0027<span />6000<span />3184
+                </td>
+              </tr>
+            </table>
+            <p class="note">
+              See the <a
+                href="https://stripe.com/docs/testing#cards"
+                target="_blank"
+              >docs</a> for a full list of test cards.
+              Non-card payments will redirect to test pages.
+            </p>
+          </div>
+        </div>
+        <div class="line-item">
+          <img
+            class="image"
+            :src="productImage"
+            :alt="sellingProduct.package"
+          >
+          <div class="label">
+            <p class="product">
+              {{ sellingProduct.package }}
+            </p>
+            <p class="sku">
+              {{ Object.values([sellingProduct.package,'Package']).join(' ') }}
+            </p>
+          </div>
+          <p class="count">
+            1
+          </p>
+          <p class="price">
+            {{ sellingProduct.price }}
+          </p>`;
+        </div>
+        <div class="line-item total">
+          <p class="label">
+            Total
+          </p>
+          <p
+            class="price"
+          >
+            {{ paymentStore.formatPrice(sellingProduct.price, config.currency) }}
+          </p>
+        </div>
+      </div>
+    </aside>
+  </div>
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import Identicon from 'identicon.js';
 import User from '../../store/User';
+import PaymentBilling from '../PaymentBilling';
+import paymentStore from './paymentStore';
+import config from './config';
+import stripe from './stripeModule';
+import { paymentMethods, uiPaymentTypeList } from './paymentMethods';
 
 export default {
 
+  components: {
+    PaymentBilling,
+  },
   data() {
     return {
-      card: {
-        cvc: '',
-        number: '',
-        expiry: '',
-      },
-
+      elements: null,
+      paymentStore,
+      config,
+      stripe,
       errorDialog: false,
       position: 'top',
-
-      // Custom styling can be passed to options when creating an Element.
-      // (Note that this demo uses a wider set of styles than the guide below.)
-      style: {
-        base: {
-          color: '#32325d',
-          fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-          fontSmoothing: 'antialiased',
-          fontSize: '16px',
-          '::placeholder': {
-            color: '#aab7c4',
-          },
-        },
-        invalid: {
-          color: '#fa755a',
-          iconColor: '#fa755a',
-        },
-      },
-      // elements
-      cardNumber: '',
-      cardExpiry: '',
-      cardCvc: '',
-      cardName: '',
-      stripe: null,
-
-      // errors
-      stripeError: '',
-      cardCvcError: '',
-      cardExpiryError: '',
-      cardNumberError: '',
-      cardNameError: '',
-
-      anotherPaymentVisible: true,
-      loading: false,
+      cardErrorContent: null,
+      cardErrorVisible: false,
+      ibanErrorContent: null,
+      ibanErrorVisible: false,
+      submitButtonDisable: true,
+      paymentRequestVisible: false,
+      mainClassSuccess: false,
+      mainClassProcessing: false,
+      mainClassReceiver: false,
+      mainClassError: false,
+      mainClassCheckout: false,
+      mainClassLoading: true,
+      cardPaymentVisible: true,
+      idealPaymentVisible: false,
+      sepaDebitPaymentVisible: false,
+      wechatPaymentVisible: false,
+      redirectPaymentVisible: false,
+      receiverPaymentVisible: false,
+      submitButtonText: 'Pay',
+      confirmationElementNote: 'We just sent your receipt to your email address',
+      confirmationElementErrorMessage: null,
+      wechatPaymentInfoNoticeDisplay: 'none',
+      paymentIntent: null,
+      card: null,
+      iban: null,
+      idealBank: null,
+      paymentType: 'card',
+      receiverInfo: null,
+      uiPaymentTypeList,
+      style: config.paymentButtonStyle,
     };
   },
+
   computed: {
     ...mapGetters({
       sellingProduct: 'settings/getSellingProduct',
     }),
     user() {
       if (this.$auth.account()) {
-        const user = User.query().whereId(this.$auth.account().accountIdentifier).with('timestamps').get();
+        const user = User.query().whereId(this.$auth.account().accountIdentifier)
+          .with('timestamps').with('address')
+          .get();
         if (user) {
           return user[0];
         }
       }
       return null;
     },
-  },
-  watch: {
-    $route(to, from) {
-      console.log('PPPPPPPPPP');
-      console.log(to, from);
+    productImage() {
+      const imageData = new Identicon('d3b07384d113edec49eaa6238ad5ff00', 420).toString();
+      return `data:image/png;base64,${imageData}`;
     },
+
   },
   mounted() {
     this.setUpStripe();
@@ -270,282 +347,609 @@ export default {
   methods: {
     async setUpStripe() {
       if (window.Stripe === undefined) {
-        alert('Stripe V3 library not loaded!');
+        console.log('Stripe V3 library not loaded!');
       } else {
-        this.stripe = window.Stripe('pk_test_GZYfG6M52r52tEHYj4G5mUkz');
+        this.elements = this.stripe.elements();
+        this.setupCard();
+        this.setupIban();
+        this.setupIdealBank();
+        this.setupPaymentRequest();
+        this.setupRest();
+        this.formProcess();
+      }
+    },
 
-        const elements = this.stripe.elements();
+    async setupCard() {
+      // Create a Card Element and pass some custom styles to it.
+      this.card = this.elements.create('card', { style: this.style });
 
-        const paymentRequest = this.stripe.paymentRequest({
-          country: 'GB',
-          currency: 'gbp',
-          total: {
-            label: 'Demo total',
-            amount: 10,
-          },
-          requestPayerName: true,
-          requestPayerEmail: true,
-        });
+      // Mount the Card Element on the page.
+      this.card.mount('#card-element');
 
-        const prButton = elements.create('paymentRequestButton', {
-          paymentRequest,
-          style: {
-            paymentRequestButton: {
-              type: 'default',
-              // One of 'default', 'book', 'buy', or 'donate'
-              // Defaults to 'default'
+      // Monitor change events on the Card Element to display any errors.
+      this.card.on('change', ({ error, complete }) => {
+        if (error) {
+          this.cardErrorContent = error.message;
+          this.cardErrorVisible = true;
+        } else {
+          this.cardErrorVisible = false;
+          this.submitButtonDisable = !complete;
+        }
+      });
+    },
 
-              theme: 'dark',
-              // One of 'dark', 'light', or 'light-outline'
-              // Defaults to 'dark'
+    async setupIban() {
+      // Create a IBAN Element and pass the right options for styles and supported countries.
+      const ibanOptions = {
+        style: this.style,
+        supportedCountries: ['SEPA'],
+      };
+      this.iban = this.elements.create('iban', ibanOptions);
 
-              height: '64px',
-              // Defaults to '40px'. The width is always '100%'.
+      // Mount the IBAN Element on the page.
+      this.iban.mount('#iban-element');
+
+      // Monitor change events on the IBAN Element to display any errors.
+      this.iban.on('change', ({ error, bankName, complete }) => {
+        if (error) {
+          this.ibanErrorContent = error.message;
+          this.ibanErrorVisible = true;
+        } else {
+          this.ibanErrorVisible = false;
+          if (bankName) {
+            this.updateButtonLabel('sepa_debit', bankName);
+          }
+        }
+        this.submitButtonDisable = !complete;
+      });
+    },
+
+    async setupIdealBank() {
+      // Create a iDEAL Bank Element and pass the style options,
+      // along with an extra `padding` property.
+      this.idealBank = this.elements.create('idealBank', {
+        style: { base: Object.assign({ padding: '10px 15px' }, this.style.base) },
+      });
+
+      // Mount the iDEAL Bank Element on the page.
+      this.idealBank.mount('#ideal-bank-element');
+    },
+
+    // Update the main button to reflect the payment method being selected.
+    updateButtonLabel(paymentMethod, bankName) {
+      // get payment total
+      const amount = paymentStore.formatPrice(this.sellingProduct.price, this.config.currency);
+      const { name } = paymentMethods[paymentMethod];
+      let label = `Pay ${amount}`;
+      if (paymentMethod !== 'card') {
+        label = `Pay ${amount} with ${name}`;
+      }
+      if (paymentMethod === 'wechat') {
+        label = `Generate QR code to pay ${amount} with ${name}`;
+      }
+      if (paymentMethod === 'sepa_debit' && bankName) {
+        label = `Debit ${amount} from ${bankName}`;
+      }
+      this.submitButtonText = label;
+    },
+
+    async setupPaymentRequest() {
+      let paymentIntent;// define it
+
+      // Create the payment request.
+      const paymentRequest = stripe.paymentRequest({
+        country: config.country,
+        currency: config.currency,
+        total: {
+          label: 'Total',
+          amount: 1231,
+        },
+        requestShipping: true,
+        requestPayerEmail: true,
+        shippingOptions: config.shippingOptions,
+      });
+
+      // Callback when a payment method is created.
+      paymentRequest.on('paymentmethod', async (event) => {
+        // Confirm the PaymentIntent with the payment method returned from the payment request.
+        const { error } = await stripe.confirmCardPayment(
+          paymentIntent.client_secret,
+          {
+            payment_method: event.paymentMethod.id,
+            shipping: {
+              name: event.shippingAddress.recipient,
+              phone: event.shippingAddress.phone,
+              address: {
+                line1: event.shippingAddress.addressLine[0],
+                city: event.shippingAddress.city,
+                postal_code: event.shippingAddress.postalCode,
+                state: event.shippingAddress.region,
+                country: event.shippingAddress.country,
+              },
             },
           },
-        });
-
-        (async () => {
-          // Check the availability of the Payment Request API first.
-          console.log('KKKKKKKKKKKKKKKKK');
-          const result = await paymentRequest.canMakePayment();
-          console.log(result);
-          console.log(prButton);
-          if (result) {
-            prButton.mount(this.$refs.anotherpayment);
-          } else {
-            this.anotherPaymentVisible = false;
-          }
-        })();
-
-        paymentRequest.on('paymentmethod', async (ev) => {
-          // Confirm the PaymentIntent without handling potential next actions (yet).
-          const clientSecret = '';
-          const { error: confirmError } = await this.stripe.confirmCardPayment(
-            clientSecret,
-            { payment_method: ev.paymentMethod.id },
-            { handleActions: false },
+          { handleActions: false },
+        );
+        if (error) {
+          // Report to the browser that the payment failed.
+          event.complete('fail');
+          this.handlePayment({ error });
+        } else {
+          // Report to the browser that the confirmation was successful, prompting
+          // it to close the browser payment method collection interface.
+          event.complete('success');
+          // Let Stripe.js handle the rest of the payment flow, including 3D Secure if needed.
+          const response = await stripe.confirmCardPayment(
+            paymentIntent.client_secret,
           );
+          this.handlePayment(response);
+        }
+      });
 
-          if (confirmError) {
-            // Report to the browser that the payment failed, prompting it to
-            // re-show the payment interface, or show an error message and close
-            // the payment interface.
-            ev.complete('fail');
-          } else {
-            // Report to the browser that the confirmation was successful, prompting
-            // it to close the browser payment method collection interface.
-            ev.complete('success');
-            // Let Stripe.js handle the rest of the payment flow.
-            const { error, paymentIntent } = await this.stripe.confirmCardPayment(clientSecret);
-            if (error) {
-              console.log(error);
-              // The payment failed -- ask your customer for a new payment method.
+      // Callback when the shipping address is updated.
+      paymentRequest.on('shippingaddresschange', (event) => {
+        event.updateWith({ status: 'success' });
+      });
+
+      // Callback when the shipping option is changed.
+      paymentRequest.on('shippingoptionchange', async (event) => {
+        // Update the PaymentIntent to reflect the shipping cost.
+        const response = await paymentStore.updatePaymentIntentWithShippingCost(
+          paymentIntent.id,
+          paymentStore.getLineItems(),
+          event.shippingOption,
+        );
+        event.updateWith({
+          total: {
+            label: 'Total',
+            amount: response.paymentIntent.amount,
+          },
+          status: 'success',
+        });
+        const amount = paymentStore.formatPrice(
+          response.paymentIntent.amount,
+          config.currency,
+        );
+        this.submitButtonText = `Pay ${amount}`;
+      });
+
+      // Create the Payment Request Button.
+      const paymentRequestButton = this.elements.create('paymentRequestButton', {
+        paymentRequest,
+        //  style: {
+        //     paymentRequestButton: {
+        //       type: 'default',
+        //       // One of 'default', 'book', 'buy', or 'donate'
+        //       // Defaults to 'default'
+
+        //       theme: 'dark',
+        //       // One of 'dark', 'light', or 'light-outline'
+        //       // Defaults to 'dark'
+
+        //       height: '64px',
+        //       // Defaults to '40px'. The width is always '100%'.
+        //     },
+        //   },
+      });
+
+      // Check if the Payment Request is available (or Apple Pay on the Web).
+      const paymentRequestSupport = await paymentRequest.canMakePayment();
+      if (paymentRequestSupport) {
+        // Display the Pay button by mounting the Element in the DOM.
+        paymentRequestButton.mount('#payment-request-button');
+        // Replace the instruction.
+        document.querySelector('.instruction span').innerText = 'Or enter'; // TODO change it
+        // Show the payment request section.
+        this.paymentRequestVisible = true;
+      }
+    },
+
+    async handlePayment(paymentResponse, userId) {
+      // Handle new PaymentIntent result
+      let { setupIntent, error } = paymentResponse;
+      console.log('DDDDDDDDDDDDDD');
+      console.log(paymentResponse);
+      this.paymentResultUpdate(false, false, false, true, true);
+
+      if (error && error.setup_intent) {
+        setupIntent = error.setup_intent;
+        error = null;
+      }
+
+      if (error) {
+        this.confirmationElementErrorMessage = error.message;
+        this.paymentResultUpdate(false, false, false, true, false);
+      } else if (setupIntent.status === 'succeeded') {
+        // Success! Payment is confirmed. Update the interface to display the confirmation screen.
+        const paymentResult = await paymentStore.makePayment(userId, setupIntent.payment_method,
+          this.sellingProduct.price, this.user.email);
+        if (paymentResult && paymentResult.status === 200) {
+          this.confirmationElementNote = 'We just sent your receipt to your email address,';
+          this.paymentResultUpdate(true, false, false, false, true);
+        } else {
+          this.confirmationElementErrorMessage = paymentResult.data.error;
+          this.paymentResultUpdate(false, false, false, false, false);
+        }
+      } else if (setupIntent.status === 'processing') {
+        this.confirmationElementNote = 'We’ll send your receipt as soon as your payment is confirmed.';
+        this.paymentResultUpdate(true, false, false, false, false);
+      } else {
+        // Payment has failed.
+        this.paymentResultUpdate(false, false, false, false, false);
+      }
+    },
+
+    paymentResultUpdate(isSuccesss, isProcessing, isReceiver, isError, isSubmitButtonDisable) {
+      this.mainClassSuccess = isSuccesss;
+      this.mainClassProcessing = isProcessing;
+      this.mainClassReceiver = isReceiver;
+      this.mainClassError = isError;
+      this.submitButtonDisable = isSubmitButtonDisable;
+    },
+
+    showRelevantPaymentMethods(country) {
+      const form = document.getElementById('payment-form');
+      const paymentInputs = form.querySelectorAll('input[name=payment]');
+      for (let i = 0; i < paymentInputs.length; i += 1) {
+        const input = paymentInputs[i];
+        input.parentElement.classList.toggle(
+          'visible',
+          input.value === 'card'
+              || (config.paymentMethods.includes(input.value)
+                && paymentMethods[input.value].countries.includes(country)
+                && paymentMethods[input.value].currencies.includes(config.currency)),
+        );
+      }
+
+      // Hide the tabs if card is the only available option.
+      const paymentMethodsTabs = document.getElementById('payment-methods');
+      paymentMethodsTabs.classList.toggle(
+        'visible',
+        paymentMethodsTabs.querySelectorAll('li.visible').length > 1,
+      );
+
+      // Check the first payment option again.
+      paymentInputs[0].checked = 'checked';
+      this.cardPaymentVisible = true;
+      this.idealPaymentVisible = false;
+      this.sepaDebitPaymentVisible = false;
+      this.wechatPaymentVisible = false;
+      this.redirectPaymentVisible = false;
+      this.updateButtonLabel(paymentInputs[0].value);
+    },
+
+    async formSubmit() {
+      // Submit handler for our payment form.
+      console.log('SUSUSUSDUUSUSUUSUS');
+      // Disable the Pay button to prevent multiple click events.
+      this.submitButtonDisable = true;
+      this.submitButtonText = 'Processing…';
+      this.$root.$emit('rootMessageParent', 'getData');
+    },
+
+    async formProcess() {
+      const vm = this;
+      this.$root.$on('rootMessageChild', async (msg) => {
+        const data = msg;
+        console.log('GGGGGGGGGGGGGGGG');
+        console.log(data);
+
+        const addressFound = await paymentStore.updatePaymentAddress(this.user, data);
+
+        if (addressFound) {
+          // const {
+          //   name, email, line, city, state, postalCode, country,
+          // } = data;
+          // const shipping = {
+          //   name,
+          //   address: {
+          //     line1: line,
+          //     city,
+          //     postal_code: postalCode,
+          //     state,
+          //     country,
+          //   },
+          // };
+
+          const verifyResult = await this.user.verifyUserDetails();
+
+          if (verifyResult && verifyResult.data) {
+            if (vm.paymentType === 'card') {
+              // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
+              console.log('HELOOOOOOOOO');
+              console.log(verifyResult.data.clientSecret);
+              console.log(vm.card);
+              console.log(data.name);
+              const response = await stripe.confirmCardSetup(
+                verifyResult.data.clientSecret,
+                {
+                  payment_method: {
+                    card: vm.card,
+                    billing_details: {
+                      name: data.name,
+                    },
+                  },
+                },
+              );
+              // const response = await stripe.confirmCardPayment(
+              //   verifyResult.data.clientSecret,
+              //   {
+              //     payment_method: {
+              //       card: vm.card,
+              //       billing_details: {
+              //         name,
+              //       },
+              //     },
+              //     shipping,
+              //   },
+              // );
+              vm.handlePayment(response, verifyResult.data.userId);
+            } else if (vm.paymentType === 'sepa_debit') {
+              // Confirm the PaymentIntent with the IBAN Element.
+              const response = await stripe.confirmSepaDebitPayment(
+                verifyResult.data.clientSecret,
+                {
+                  payment_method: {
+                    sepa_debit: vm.iban,
+                    billing_details: {
+                      name: data.name,
+                      email: data.email,
+                    },
+                  },
+                },
+              );
+              vm.handlePayment(response);
             } else {
-              console.log(paymentIntent);
-              // The payment has succeeded.
+              // Prepare all the Stripe source common data.
+              const sourceData = {
+                type: vm.paymentType,
+                amount: vm.paymentIntent.amount,
+                currency: vm.paymentIntent.currency,
+                owner: {
+                  name: data.name,
+                  email: data.email,
+                },
+                redirect: {
+                  return_url: window.location.href,
+                },
+                statement_descriptor: 'Stripe Payments Demo',
+                metadata: {
+                  paymentIntent: vm.paymentIntent.id,
+                },
+              };
+
+              // Add extra source information which are specific to a payment method.
+              switch (vm.paymentType) {
+                case 'ideal':
+                  // Confirm the PaymentIntent with the iDEAL bank Element.
+                  // This will redirect to the banking site.
+                  stripe.confirmIdealPayment(vm.paymentIntent.client_secret, {
+                    payment_method: {
+                      ideal: vm.idealBank,
+                    },
+                    return_url: window.location.href,
+                  });
+                  return;
+                case 'sofort':
+                  // SOFORT: The country is required before redirecting to the bank.
+                  sourceData.sofort = {
+                    country: data.country,
+                  };
+                  break;
+                case 'ach_credit_transfer':
+                  // ACH Bank Transfer: Only supports USD payments,
+                  // edit the default config to try it.
+                  // In test mode, we can set the funds to be received via the owner email.
+                  sourceData.owner.email = `amount_${vm.paymentIntent.amount}@example.com`;
+                  break;
+                default: break;
+              }
+
+              // Create a Stripe source with the common data and extra information.
+              const { source } = await stripe.createSource(sourceData);
+              vm.handleSourceActiviation(source);
+            }
+          } else {
+            vm.handlePayment(verifyResult);
+          }
+        }
+      });
+    },
+
+    // Handle activation of payment sources not yet supported by PaymentIntents
+    handleSourceActiviation(source) {
+      switch (source.flow) {
+        case 'none': {
+        // Normally, sources with a `flow` value of `none` are chargeable right away,
+        // but there are exceptions, for instance for WeChat QR codes just below.
+          if (source.type === 'wechat') {
+            // Display the QR code.
+            // const qrCode = new QRCode('wechat-qrcode', {
+            //   text: source.wechat.qr_code_url,
+            //   width: 128,
+            //   height: 128,
+            //   colorDark: '#424770',
+            //   colorLight: '#f8fbfd',
+            //   correctLevel: QRCode.CorrectLevel.H,
+            // });
+            // Hide the previous text and update the call to action.
+            this.wechatPaymentInfoNoticeDisplay = 'none';
+            const amount = paymentStore.formatPrice(
+              source.amount, // get payment total
+              config.currency,
+            );
+            this.submitButtonText = `Scan this QR code on WeChat to pay ${amount}`;
+            // Start polling the PaymentIntent status.
+            this.pollPaymentIntentStatus(this.paymentIntent.id, 300000);
+          } else {
+            console.log('Unhandled none flow.', source);
+          }
+          break;
+        } case 'redirect': {
+          // Immediately redirect the customer.
+          this.submitButtonText = 'Redirecting…';
+          window.location.replace(source.redirect.url);
+          break;
+        } case 'code_verification': {
+          // Display a code verification input to verify the source.
+          break;
+        } case 'receiver': {
+          // Display the receiver address to send the funds to.
+          this.mainClassSuccess = true;
+          this.mainClassReceiver = true;
+          const amount = paymentStore.formatPrice(source.amount, config.currency);
+          switch (source.type) {
+            case 'ach_credit_transfer': {
+              // Display the ACH Bank Transfer information to the user.
+              const ach = source.ach_credit_transfer;
+              this.receiverInfo = `
+                <ul>
+                  <li>
+                    Amount:
+                    <strong>${amount}</strong>
+                  </li>
+                  <li>
+                    Bank Name:
+                    <strong>${ach.bank_name}</strong>
+                  </li>
+                  <li>
+                    Account Number:
+                    <strong>${ach.account_number}</strong>
+                  </li>
+                  <li>
+                    Routing Number:
+                    <strong>${ach.routing_number}</strong>
+                  </li>
+                </ul>`;
+              break;
+            } case 'multibanco': {
+              // Display the Multibanco payment information to the user.
+              const { multibanco } = source;
+              this.receiverInfo = `
+                <ul>
+                  <li>
+                    Amount (Montante):
+                    <strong>${amount}</strong>
+                  </li>
+                  <li>
+                    Entity (Entidade):
+                    <strong>${multibanco.entity}</strong>
+                  </li>
+                  <li>
+                    Reference (Referencia):
+                    <strong>${multibanco.reference}</strong>
+                  </li>
+                </ul>`;
+              break;
+            } default: {
+              console.log('Unhandled receiver flow.', source);
             }
           }
+          // Poll the PaymentIntent status.
+          this.pollPaymentIntentStatus(this.paymentIntent.id);
+          break;
+        } default: {
+          // Customer's PaymentIntent is received, pending payment confirmation.
+          break;
+        }
+      }
+    },
+
+    /**
+     * Monitor the status of a source after a redirect flow.
+     *
+     * This means there is a `source` parameter in the URL, and an active PaymentIntent.
+     * When this happens, we'll monitor the status of the PaymentIntent and present real-time
+     * information to the user.
+     */
+    async pollPaymentIntentStatus(
+      paymentIntent,
+      timeout = 30000,
+      interval = 500,
+      start = null,
+    ) {
+      start = start || Date.now();
+      console.log(timeout);
+      console.log(interval);
+      console.log(start);
+      // const endStates = ['succeeded', 'processing', 'canceled'];
+      // Retrieve the PaymentIntent status from our server.
+      // const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
+      // const response = await rawResponse.json();
+      // if (
+      //   !endStates.includes(response.paymentIntent.status)
+      //   && Date.now() < start + timeout
+      // ) {
+      // // Not done yet. Let's wait and check again.
+      //   setTimeout(
+      //     this.pollPaymentIntentStatus,
+      //     interval,
+      //     paymentIntent,
+      //     timeout,
+      //     interval,
+      //     start,
+      //   );
+      // } else {
+      //   this.handlePayment(response);
+      //   if (!endStates.includes(response.paymentIntent.status)) {
+      //   // Status has not changed yet. Let's time out.
+      //     console.warn(new Error('Polling timed out.'));
+      //   }
+      // }
+    },
+
+    async setupRest() {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('source') && url.searchParams.get('client_secret')) {
+        // Update the interface to display the processing screen.
+        this.mainClassSuccess = true;
+        this.mainClassProcessing = true;
+        this.mainClassCheckout = true;
+
+        const { source } = await stripe.retrieveSource({
+          id: url.searchParams.get('source'),
+          client_secret: url.searchParams.get('client_secret'),
         });
 
-        this.cardNumber = elements.create('cardNumber', { style: this.style, showIcon: true });
-        this.cardCvc = elements.create('cardCvc', { style: this.style });
-        this.cardExpiry = elements.create('cardExpiry', { style: this.style });
-
-        this.cardNumber.mount(this.$refs.card);
-        this.cardCvc.mount(this.$refs.cvv);
-        this.cardExpiry.mount(this.$refs.expiry);
-
-        this.listenForErrors();
-      }
-    },
-
-    listenForErrors() {
-      const vm = this;
-
-      this.cardNumber.addEventListener('change', (event) => {
-        vm.toggleError(event);
-        vm.cardNumberError = '';
-        vm.card.number = !!event.complete;
-      });
-
-      this.cardExpiry.addEventListener('change', (event) => {
-        vm.toggleError(event);
-        vm.cardExpiryError = '';
-        vm.card.expiry = !!event.complete;
-      });
-
-      this.cardCvc.addEventListener('change', (event) => {
-        vm.toggleError(event);
-        vm.cardCvcError = '';
-        vm.card.cvc = !!event.complete;
-      });
-    },
-
-    toggleError(event) {
-      if (event.error) {
-        this.stripeError = event.error.message;
-        this.openErrorDialog('top');
+        // Poll the PaymentIntent status.
+        this.pollPaymentIntentStatus(source.metadata.paymentIntent);
+      } else if (url.searchParams.get('payment_intent')) {
+        // Poll the PaymentIntent status.
+        this.pollPaymentIntentStatus(url.searchParams.get('payment_intent'));
       } else {
-        this.stripeError = '';
-        this.closeErrorDialog();
+        // Update the interface to display the checkout form.
+        this.mainClassCheckout = true;
+
+        // Create the PaymentIntent with the cart details.
+        // const response = await paymentStore.createPaymentIntent(
+        //   config.currency,
+        //   ['line', 'items'], // line items
+        // );
+        // eslint-disable-next-line prefer-destructuring
+        // this.paymentIntent = response.paymentIntent;
       }
+      this.mainClassLoading = false;
     },
 
-    async submitFormToCreateToken() {
-      this.clearCardErrors();
-      let valid = true;
+    paymentTypeChange(event) {
+      this.paymentType = event.target.value;
+      const { flow } = paymentMethods[this.paymentType];
+      // Update button label.
+      this.updateButtonLabel(this.paymentType);
 
-      if (!this.cardName) {
-        valid = false;
-        this.cardNameError = 'Card Name is Required';
-      }
-      if (!this.card.number) {
-        valid = false;
-        this.cardNumberError = 'Card Number is Required';
-      }
-      if (!this.card.cvc) {
-        valid = false;
-        this.cardCvcError = 'CVC is Required';
-      }
-      if (!this.card.expiry) {
-        valid = false;
-        this.cardExpiryError = 'Month is Required';
-      }
-      if (this.stripeError) {
-        valid = false;
-      }
-      if (valid) {
-        await this.user.verifyUser();
-        this.createToken();
-      }
-    },
-
-    async createToken() {
-      const { token, error } = await this.stripe.createToken(this.cardNumber);
-
-      // this.stripe.createToken(this.cardNumber).then((result) => {
-      if (error) {
-        this.stripeError = error.message;
-      } else {
-        alert('Thanks for donating.', token.id);
-        // send the token to your server
-        // clear the inputs
-      }
-      // });
-    },
-
-    clearElementsInputs() {
-      this.cardCvc.clear();
-      this.cardExpiry.clear();
-      this.cardNumber.clear();
-    },
-
-    clearCardErrors() {
-      this.stripeError = '';
-      this.cardCvcError = '';
-      this.cardExpiryError = '';
-      this.cardNumberError = '';
-      this.cardNameError = '';
-    },
-
-    reset() {
-      this.clearElementsInputs();
-      this.clearCardErrors();
-    },
-
-    openErrorDialog(position) {
-      this.position = position;
-      this.errorDialog = true;
-    },
-
-    closeErrorDialog() {
-      this.errorDialog = false;
+      // Show the relevant details, whether it's
+      // an extra element or extra information for the user.
+      this.cardPaymentVisible = this.paymentType === 'card';
+      this.idealPaymentVisible = this.paymentType === 'ideal';
+      this.sepaDebitPaymentVisible = this.paymentType === 'sepa_debit';
+      this.wechatPaymentVisible = this.paymentType === 'wechat';
+      this.cardErrorVisible = this.paymentType !== 'card';
+      this.redirectPaymentVisible = flow === 'redirect';
+      this.receiverPaymentVisible = flow === 'receiver';
     },
   },
 };
 </script>
-<style lang="scss" scoped>
-.price-plans {
-  .q-card{
-    padding: 0;
-    margin: 0 16px;
-    border-radius: 10px;
-  }
-
-  .price-title {
-    font-size: 18px;
-  }
-  .price {
-    font-size: 36px;
-  }
-  .payment-card-section {
-    padding: 16px 20px;
-    margin: 0 15px;
-    border-bottom: 1px solid lightgrey;
-    color: $secondary;
-    font-weight: bold;
-  }
-  .payment-button {
-    width: 200px;
-  }
-  .top-section {
-    padding: 30px 15px;
-  }
-
-}
-</style>
-<style>
-:root {
-   --font-color: rgb(105, 115, 134);
-}
-.plan-title{
-  font-size: 24px;
-}
-/**
-* The CSS shown here will not be introduced in the Quickstart guide, but
-* shows how you can use CSS to style your Element's container.
-*/
-.paymentInput,
-.StripeElement {
-  height: 40px;
-
-  color: #32325d;
-  background-color: white;
-  border: 1px solid transparent;
-  border-radius: 4px;
-
-  box-shadow: 0 1px 3px 0 gray;
-  -webkit-transition: box-shadow 150ms ease;
-  transition: box-shadow 150ms ease;
-}
-
-.paymentInput {
-  padding: 10px 12px;
-}
-
-.paymentInput:focus,
-.StripeElement--focus {
-  box-shadow: 0 1px 3px 0 #cfd7df;
-}
-
-.StripeElement--invalid {
-  border-color: #fa755a;
-}
-
-.StripeElement--webkit-autofill {
-  background-color: #fefde5 !important;
-}
-
-.field-error {
-  color: var(--font-color);
-  font-size: 13px;
-  line-height: 17px;
-  margin-top: 12px;
-}
-.combo-inputs-row {
-  box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
-    0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
-  border-radius: 7px;
-}
+<style lang="scss">
+  @import './index.scss';
 </style>

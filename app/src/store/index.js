@@ -5,6 +5,7 @@ import VuexPersist from 'vuex-persist';
 
 import User from './User';
 import Timestamp from './Timestamp';
+import Address from './Address';
 
 import settings from './settings';
 
@@ -15,6 +16,7 @@ const database = new VuexORM.Database();
 
 database.register(User);
 database.register(Timestamp);
+database.register(Address);
 
 const vuexPersist = new VuexPersist({
   key: 'upgraded-giggle',
@@ -25,6 +27,7 @@ const vuexPersist = new VuexPersist({
 if (process.env.DEV) {
   window.User = User;
   window.Timestamp = Timestamp;
+  window.Address = Address;
 }
 /*
  * If not building with SSR mode, you can
