@@ -5,6 +5,7 @@
       <label>
         <span>Name</span>
         <input
+          ref="name"
           v-model="name"
           name="name"
           class="field"
@@ -15,6 +16,7 @@
       <label>
         <span>Email</span>
         <input
+          ref="email"
           name="email"
           type="email"
           class="field"
@@ -27,6 +29,7 @@
       <label>
         <span>Address</span>
         <input
+          ref="address"
           v-model="address"
           name="address"
           class="field"
@@ -36,6 +39,7 @@
       <label>
         <span>City</span>
         <input
+          ref="city"
           v-model="city"
           name="city"
           class="field"
@@ -54,6 +58,7 @@
       <label class="zip">
         <span>{{ zipSpanText }}</span>
         <input
+          ref="postalCode"
           v-model="postalCode"
           name="postal_code"
           class="field"
@@ -67,6 +72,7 @@
           :class="countryClassName"
         >
           <select
+            ref="country"
             v-model="country"
             name="country"
             @change.prevent="countryChange"
@@ -141,23 +147,6 @@ export default {
   mounted() {
     this.country = config.country;
     this.selectCountry(this.country);
-    const vm = this;
-
-    this.$root.$on('rootMessageParent', async (msg) => {
-      if (msg) {
-        console.log('FFFFFFFFFFf');
-        console.log(msg);
-        this.$root.$emit('rootMessageChild', {
-          name: vm.name,
-          email: vm.email,
-          line: vm.address,
-          city: vm.city,
-          state: vm.state,
-          postalCode: vm.postalCode,
-          country: vm.country,
-        });
-      }
-    });
   },
   methods: {
     countryChange(event) {

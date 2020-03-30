@@ -20,8 +20,6 @@
         </div>
         <form
           id="payment-form"
-          method="POST"
-          action="/orders"
           @submit.prevent="formSubmit"
         >
           <section>
@@ -355,7 +353,6 @@ export default {
         this.setupIdealBank();
         this.setupPaymentRequest();
         this.setupRest();
-        this.formProcess();
       }
     },
 
@@ -619,58 +616,59 @@ export default {
     },
 
     async formSubmit() {
-      // Submit handler for our payment form.
-      console.log('SUSUSUSDUUSUSUUSUS');
       // Disable the Pay button to prevent multiple click events.
       this.submitButtonDisable = true;
       this.submitButtonText = 'Processing…';
-      this.$root.$emit('rootMessageParent', 'getData');
-    },
 
-    async formProcess() {
-      const vm = this;
-      this.$root.$on('rootMessageChild', async (msg) => {
-        const data = msg;
-        console.log('GGGGGGGGGGGGGGGG');
-        console.log(data);
+      const data = {
+        name: this.$refs.name,
+        email: this.$refs.email,
+        line: this.$refs.address,
+        city: this.$refs.city,
+        state: this.$refs.state,
+        postalCode: this.$refs.postalCode,
+        country: this.$refs.country,
+      };
+      console.log('GGGGGGGGGGGGGGGG');
+      console.log(data);
 
-        const addressFound = await paymentStore.updatePaymentAddress(this.user, data);
+      const addressFound = await paymentStore.updatePaymentAddress(this.user, data);
 
-        if (addressFound) {
-          // const {
-          //   name, email, line, city, state, postalCode, country,
-          // } = data;
-          // const shipping = {
-          //   name,
-          //   address: {
-          //     line1: line,
-          //     city,
-          //     postal_code: postalCode,
-          //     state,
-          //     country,
-          //   },
-          // };
+      if (addressFound) {
+        // const {
+        //   name, email, line, city, state, postalCode, country,
+        // } = data;
+        // const shipping = {
+        //   name,
+        //   address: {
+        //     line1: line,
+        //     city,
+        //     postal_code: postalCode,
+        //     state,
+        //     country,
+        //   },
+        // };
 
-          const verifyResult = await this.user.verifyUserDetails();
+        const verifyResult = await this.user.verifyUserDetails();
 
-          if (verifyResult && verifyResult.data) {
-            if (vm.paymentType === 'card') {
-              // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
-              console.log('HELOOOOOOOOO');
-              console.log(verifyResult.data.clientSecret);
-              console.log(vm.card);
-              console.log(data.name);
-              const response = await stripe.confirmCardSetup(
-                verifyResult.data.clientSecret,
-                {
-                  payment_method: {
-                    card: vm.card,
-                    billing_details: {
-                      name: data.name,
-                    },
+        if (verifyResult && verifyResult.data) {
+          if (this.paymentType === 'card') {
+            // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
+            console.log('HELOOOOOOOOO');
+            console.log(verifyResult.data.clientSecret);
+            console.log(this.card);
+            console.log(data.name);
+            const response = await stripe.confirmCardSetup(
+              verifyResult.data.clientSecret,
+              {
+                payment_method: {
+                  card: this.card,
+                  billing_details: {
+                    name: data.name,
                   },
                 },
-              );
+              },
+            );
               // const response = await stripe.confirmCardPayment(
               //   verifyResult.data.clientSecret,
               //   {
@@ -683,77 +681,76 @@ export default {
               //     shipping,
               //   },
               // );
-              vm.handlePayment(response, verifyResult.data.userId);
-            } else if (vm.paymentType === 'sepa_debit') {
-              // Confirm the PaymentIntent with the IBAN Element.
-              const response = await stripe.confirmSepaDebitPayment(
-                verifyResult.data.clientSecret,
-                {
-                  payment_method: {
-                    sepa_debit: vm.iban,
-                    billing_details: {
-                      name: data.name,
-                      email: data.email,
-                    },
+            this.handlePayment(response, verifyResult.data.userId);
+          } else if (this.paymentType === 'sepa_debit') {
+            // Confirm the PaymentIntent with the IBAN Element.
+            const response = await stripe.confirmSepaDebitPayment(
+              verifyResult.data.clientSecret,
+              {
+                payment_method: {
+                  sepa_debit: this.iban,
+                  billing_details: {
+                    name: data.name,
+                    email: data.email,
                   },
                 },
-              );
-              vm.handlePayment(response);
-            } else {
-              // Prepare all the Stripe source common data.
-              const sourceData = {
-                type: vm.paymentType,
-                amount: vm.paymentIntent.amount,
-                currency: vm.paymentIntent.currency,
-                owner: {
-                  name: data.name,
-                  email: data.email,
-                },
-                redirect: {
-                  return_url: window.location.href,
-                },
-                statement_descriptor: 'Stripe Payments Demo',
-                metadata: {
-                  paymentIntent: vm.paymentIntent.id,
-                },
-              };
-
-              // Add extra source information which are specific to a payment method.
-              switch (vm.paymentType) {
-                case 'ideal':
-                  // Confirm the PaymentIntent with the iDEAL bank Element.
-                  // This will redirect to the banking site.
-                  stripe.confirmIdealPayment(vm.paymentIntent.client_secret, {
-                    payment_method: {
-                      ideal: vm.idealBank,
-                    },
-                    return_url: window.location.href,
-                  });
-                  return;
-                case 'sofort':
-                  // SOFORT: The country is required before redirecting to the bank.
-                  sourceData.sofort = {
-                    country: data.country,
-                  };
-                  break;
-                case 'ach_credit_transfer':
-                  // ACH Bank Transfer: Only supports USD payments,
-                  // edit the default config to try it.
-                  // In test mode, we can set the funds to be received via the owner email.
-                  sourceData.owner.email = `amount_${vm.paymentIntent.amount}@example.com`;
-                  break;
-                default: break;
-              }
-
-              // Create a Stripe source with the common data and extra information.
-              const { source } = await stripe.createSource(sourceData);
-              vm.handleSourceActiviation(source);
-            }
+              },
+            );
+            this.handlePayment(response);
           } else {
-            vm.handlePayment(verifyResult);
+            // Prepare all the Stripe source common data.
+            const sourceData = {
+              type: this.paymentType,
+              amount: this.paymentIntent.amount,
+              currency: this.paymentIntent.currency,
+              owner: {
+                name: data.name,
+                email: data.email,
+              },
+              redirect: {
+                return_url: window.location.href,
+              },
+              statement_descriptor: 'Stripe Payments Demo',
+              metadata: {
+                paymentIntent: this.paymentIntent.id,
+              },
+            };
+
+            // Add extra source information which are specific to a payment method.
+            switch (this.paymentType) {
+              case 'ideal':
+                // Confirm the PaymentIntent with the iDEAL bank Element.
+                // This will redirect to the banking site.
+                stripe.confirmIdealPayment(this.paymentIntent.client_secret, {
+                  payment_method: {
+                    ideal: this.idealBank,
+                  },
+                  return_url: window.location.href,
+                });
+                return;
+              case 'sofort':
+                // SOFORT: The country is required before redirecting to the bank.
+                sourceData.sofort = {
+                  country: data.country,
+                };
+                break;
+              case 'ach_credit_transfer':
+                // ACH Bank Transfer: Only supports USD payments,
+                // edit the default config to try it.
+                // In test mode, we can set the funds to be received via the owner email.
+                sourceData.owner.email = `amount_${this.paymentIntent.amount}@example.com`;
+                break;
+              default: break;
+            }
+
+            // Create a Stripe source with the common data and extra information.
+            const { source } = await stripe.createSource(sourceData);
+            this.handleSourceActiviation(source);
           }
+        } else {
+          this.handlePayment(verifyResult);
         }
-      });
+      }
     },
 
     // Handle activation of payment sources not yet supported by PaymentIntents
