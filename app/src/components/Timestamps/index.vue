@@ -17,24 +17,27 @@
           {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
         </div> -->
         <div class="text-uppercase text-weight-bold text-secondary row">
-          <q-icon
-            class="col-auto text-grey-6 q-ml-sm q-mr-md"
-            name="fas fa-file"
-            style="font-size: 1.2em"
-          />
           <div
-            class="col-5"
+            class="col-4"
           >
+            <q-icon
+              class="col-auto text-grey-6 q-ml-sm q-mr-md"
+              name="fas fa-file"
+              style="font-size: 1.2em"
+            />
             {{ $t('file') }}
           </div>
           <div class="col-2">
             {{ $t('proofId') }}
           </div>
-          <div class="col-1">
+          <div class="col-2">
             {{ $t('date') }}
           </div>
-          <div class="col-1">
+          <div class="col-2">
             {{ $t('time') }}
+          </div>
+          <div class="col-2">
+            {{ $t('certificate') }}
           </div>
         </div>
         <q-scroll-area style="height: 15rem;">
@@ -44,7 +47,7 @@
             class="row stamp-item2"
           >
             <div
-              class="col-5 q-px-sm overflow q-mr-lg"
+              class="col-4 q-px-sm overflow"
             >
               <q-icon
                 class="col-auto text-grey-6 q-pr-sm"
@@ -73,7 +76,7 @@
               </div>
             </div>
             <div
-              class="col-1 text-left"
+              class="col-2 text-left"
             >
               <span v-if="stamp.blockNumber !== -1">
                 {{ stamp.timestampDate.split(' ')[0] }}
@@ -81,7 +84,7 @@
               </span>
             </div>
             <div
-              class="col-1 text-left"
+              class="col-2 text-left"
             >
               <span v-if="stamp.blockNumber !== -1">
                 {{ stamp.timestampDate.split(' ')[1] }}
@@ -90,7 +93,7 @@
             </div>
             <div
               v-if="stamp.blockNumber === -1"
-              class="col q-pr-sm text-center"
+              class="col-2 q-pr-sm text-left"
             >
               <q-chip
                 square
@@ -102,7 +105,7 @@
             </div>
             <div
               v-else
-              class="col q-pr-sm text-right text-blue cursor-pointer"
+              class="col-2 q-pr-sm text-blue cursor-pointer text-left"
               @click="timestampDialog(stamp)"
             >
               {{ $t('downloadCertificate') }}
