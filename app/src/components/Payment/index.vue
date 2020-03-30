@@ -24,6 +24,7 @@
         >
           <section>
             <PaymentBilling
+              ref="paymentBilling"
               :show-relevant-payment-methods="showRelevantPaymentMethods"
               :email="user.email"
             />
@@ -184,7 +185,10 @@
         </div>
       </div>
     </main>
-    <aside id="summary">
+    <aside
+      v-once
+      id="summary"
+    >
       <div class="header">
         <h1>Order Summary</h1>
       </div>
@@ -245,7 +249,7 @@
           </p>
           <p class="price">
             {{ sellingProduct.price }}
-          </p>`;
+          </p>
         </div>
         <div class="line-item total">
           <p class="label">
@@ -262,7 +266,7 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import Identicon from 'identicon.js';
 import User from '../../store/User';
 import PaymentBilling from '../PaymentBilling';
@@ -333,16 +337,29 @@ export default {
       return null;
     },
     productImage() {
-      const imageData = new Identicon(Math.random().toString(15), 420).toString();
+      let imageData;
+      if (this.sellingProduct) {
+        imageData = new Identicon(this.sellingProduct.plan.padEnd(15, '5e3d70a55'), 420).toString();
+      } else {
+        imageData = new Identicon(Math.random().toString(15), 420).toString();
+      }
       return `data:image/png;base64,${imageData}`;
     },
 
+  },
+  created() {
+    if (!this.sellingProduct) {
+      this.$router.push('/upgrade');
+    }
   },
   mounted() {
     this.setUpStripe();
   },
 
   methods: {
+    ...mapActions('settings', [
+      'setSellingProduct',
+    ]),
     async setUpStripe() {
       if (window.Stripe === undefined) {
         console.log('Stripe V3 library not loaded!');
@@ -544,9 +561,8 @@ export default {
     async handlePayment(paymentResponse, userId) {
       // Handle new PaymentIntent result
       let { setupIntent, error } = paymentResponse;
-      console.log('DDDDDDDDDDDDDD');
+      console.log('HANDLE PAYMENT');
       console.log(paymentResponse);
-      this.paymentResultUpdate(false, false, false, true, true);
 
       if (error && error.setup_intent) {
         setupIntent = error.setup_intent;
@@ -563,6 +579,7 @@ export default {
         if (paymentResult && paymentResult.status === 200) {
           this.confirmationElementNote = 'We just sent your receipt to your email address,';
           this.paymentResultUpdate(true, false, false, false, true);
+          this.setSellingProduct(null);
         } else {
           this.confirmationElementErrorMessage = paymentResult.data.error;
           this.paymentResultUpdate(false, false, false, false, false);
@@ -620,14 +637,17 @@ export default {
       this.submitButtonDisable = true;
       this.submitButtonText = 'Processing…';
 
+      console.log('FORM SUBMIT');
+      console.log(this.$refs.paymentBilling);
+
       const data = {
-        name: this.$refs.name,
-        email: this.$refs.email,
-        line: this.$refs.address,
-        city: this.$refs.city,
-        state: this.$refs.state,
-        postalCode: this.$refs.postalCode,
-        country: this.$refs.country,
+        name: this.$refs.paymentBilling.name,
+        email: this.$refs.paymentBilling.email,
+        line: this.$refs.paymentBilling.address,
+        city: this.$refs.paymentBilling.city,
+        state: this.$refs.paymentBilling.state,
+        postalCode: this.$refs.paymentBilling.postalCode,
+        country: this.$refs.paymentBilling.country,
       };
       console.log('GGGGGGGGGGGGGGGG');
       console.log(data);

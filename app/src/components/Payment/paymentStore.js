@@ -97,7 +97,7 @@ class Store {
 
     if (user.accountIdentifier) {
       const addressResult = Address.query()
-        .where('accountIdentifier', user.accountIdentifier).get();
+        .where('accountIdentifier', user.accountIdentifier).last();
 
       console.log('ADDDDRESSSSSSS');
       console.log(addressResult);
@@ -107,6 +107,7 @@ class Store {
         data: {
           accountIdentifier: user.accountIdentifier,
           address: {
+            addressId: user.accountIdentifier,
             accountIdentifier: user.accountIdentifier,
             line1: data.line,
             line2: '',

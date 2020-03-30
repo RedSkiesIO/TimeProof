@@ -5,7 +5,6 @@
       <label>
         <span>Name</span>
         <input
-          ref="name"
           v-model="name"
           name="name"
           class="field"
@@ -16,7 +15,6 @@
       <label>
         <span>Email</span>
         <input
-          ref="email"
           name="email"
           type="email"
           class="field"
@@ -29,7 +27,6 @@
       <label>
         <span>Address</span>
         <input
-          ref="address"
           v-model="address"
           name="address"
           class="field"
@@ -39,7 +36,6 @@
       <label>
         <span>City</span>
         <input
-          ref="city"
           v-model="city"
           name="city"
           class="field"
@@ -58,7 +54,6 @@
       <label class="zip">
         <span>{{ zipSpanText }}</span>
         <input
-          ref="postalCode"
           v-model="postalCode"
           name="postal_code"
           class="field"
@@ -72,7 +67,6 @@
           :class="countryClassName"
         >
           <select
-            ref="country"
             v-model="country"
             name="country"
             @change.prevent="countryChange"
