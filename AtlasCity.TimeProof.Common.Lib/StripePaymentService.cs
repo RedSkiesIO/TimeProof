@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
@@ -49,10 +50,11 @@ namespace AtlasCity.TimeProof.Common.Lib
             try
             {
                 var response = await _paymentIntentService.CreateAsync(options, cancellationToken: cancellationToken);
-                if(!response.Status.Equals("succeeded"))
+                if(response.StripeResponse.StatusCode != HttpStatusCode.OK)
                 {
-                    throw new PaymentServiceException($"Unable to take payment for user '{payment.UserId}', payment method '{payment.PaymentMethodId}' in stripe payment system. The status is '{response.Status}'.");
+                    throw new PaymentServiceException($"Unable to take payment for user '{payment.UserId}', payment method '{payment.PaymentMethodId}' in stripe payment system. The status is '{response.StripeResponse.StatusCode}' and content '{response.StripeResponse.Content}'.");
                 }
+
                 return response.StripeResponse.ToStripeResponseDao();
             }
             catch(StripeException ex)

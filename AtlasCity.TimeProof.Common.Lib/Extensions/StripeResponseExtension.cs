@@ -11,7 +11,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Extensions
             {
                 var stripeResponseDao = new PaymentResponseDao
                 {
-                   
+                    Content = stripeResponse.Content,
+                    RequestId = stripeResponse.RequestId,
                 };
 
                 return stripeResponseDao;
