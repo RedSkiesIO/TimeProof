@@ -141,23 +141,6 @@ export default {
   mounted() {
     this.country = config.country;
     this.selectCountry(this.country);
-    const vm = this;
-
-    this.$root.$on('rootMessageParent', async (msg) => {
-      if (msg) {
-        console.log('FFFFFFFFFFf');
-        console.log(msg);
-        this.$root.$emit('rootMessageChild', {
-          name: vm.name,
-          email: vm.email,
-          line: vm.address,
-          city: vm.city,
-          state: vm.state,
-          postalCode: vm.postalCode,
-          country: vm.country,
-        });
-      }
-    });
   },
   methods: {
     countryChange(event) {

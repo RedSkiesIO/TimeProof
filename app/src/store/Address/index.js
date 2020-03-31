@@ -7,7 +7,7 @@ export default class Address extends Model {
 
   static fields() {
     return {
-      addressId: this.increment(),
+      addressId: this.attr(''),
       accountIdentifier: this.attr(''),
       line1: this.attr(''),
       line2: this.attr(''),

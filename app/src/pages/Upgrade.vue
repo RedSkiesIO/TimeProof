@@ -77,7 +77,6 @@
   </q-page>
 </template>
 <script>
-// import StripeButton from '../components/StripeCheckoutButton';
 import { mapActions } from 'vuex';
 
 const planItems = [

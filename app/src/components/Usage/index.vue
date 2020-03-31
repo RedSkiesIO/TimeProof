@@ -20,7 +20,7 @@
               class="text-blue q-ma-md"
             /> -->
             <div
-              class="row text-h6 text-weight-bold q-mb-md"
+              class="row text-h4 text-weight-bold q-mb-md"
               :class="usedClass"
             >
               {{ timestampsUsed }}
@@ -53,7 +53,7 @@
               </div>
             </div> -->
             <div
-              class="text-brown row text-h6 text-weight-bold q-mb-md"
+              class="text-brown row text-h4 text-weight-bold q-mb-md"
             >
               {{ tiers[user.tier] }}
             </div>
@@ -69,7 +69,7 @@
             inset
           />
           <div class="col-3 column flex-center q-mr-md q-ml-md">
-            <div class="text-blue row text-h6 text-weight-bold q-mb-md">
+            <div class="text-blue row text-h4 text-weight-bold q-mb-md">
               {{ totalUsage }}
             </div>
             <div class="row text-h8 text-weight-bold q-mb-md">
