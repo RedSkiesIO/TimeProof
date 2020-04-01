@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
@@ -14,16 +13,19 @@ namespace AtlasCity.TimeProof.Common.Lib
     {
         private readonly ILogger _logger;
         private readonly IUserRepository _userRepository;
+        private readonly IPaymentRepository _paymentRepository;
         private readonly IPaymentService _paymentService;
 
-        public UserService(ILogger logger, IUserRepository userRepository, IPaymentService paymentService)
+        public UserService(ILogger logger, IUserRepository userRepository, IPaymentRepository paymentRepository, IPaymentService paymentService)
         {
             AtlasGuard.IsNotNull(logger);
             AtlasGuard.IsNotNull(userRepository);
+            AtlasGuard.IsNotNull(paymentRepository);
             AtlasGuard.IsNotNull(paymentService);
 
             _logger = logger;
             _userRepository = userRepository;
+            _paymentRepository = paymentRepository;
             _paymentService = paymentService;
         }
 
@@ -154,15 +156,14 @@ namespace AtlasCity.TimeProof.Common.Lib
                 paymentResponse = await _paymentService.ProcessPayment(payment, user.PaymentCustomerId, cancellationToken);
                 _logger.Information($"Collected payment for user '{user.Id}'.");
 
+                await _paymentRepository.CreatePaymentReceived(paymentResponse, cancellationToken);
+                return paymentResponse;
             }
             catch(PaymentServiceException ex)
             {
                 _logger.Error(ex, $"Unable to collect payment for user '{user.Id}'.");
                 throw ex;
-            }
-
-            // TODO: Store the payment in TimeProof repository
-            return paymentResponse;
+            }            
         }
     }
 }

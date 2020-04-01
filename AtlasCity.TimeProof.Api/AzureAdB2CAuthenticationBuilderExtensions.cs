@@ -41,15 +41,17 @@ namespace AtlasCity.TimeProof.Api
             public void Configure(string name, OpenIdConnectOptions options)
             {
                 options.ClientId = AzureAdB2COptions.ClientId;
+                options.ClientSecret = AzureAdB2COptions.ClientSecret;
                 options.Authority = AzureAdB2COptions.Authority;
                 options.UseTokenLifetime = true;
-                options.TokenValidationParameters = new TokenValidationParameters() { NameClaimType = "name" };
+                //options.TokenValidationParameters = new TokenValidationParameters() { NameClaimType = "sub" };
 
                 options.Events = new OpenIdConnectEvents()
                 {
                     OnRedirectToIdentityProvider = OnRedirectToIdentityProvider,
                     OnRemoteFailure = OnRemoteFailure,
-                    OnAuthorizationCodeReceived = OnAuthorizationCodeReceived
+                    OnAuthorizationCodeReceived = OnAuthorizationCodeReceived,
+                    OnAuthenticationFailed = OnAuthenticationFailed,
                 };
             }
 
@@ -74,6 +76,14 @@ namespace AtlasCity.TimeProof.Api
                     context.ProtocolMessage.Scope += $" offline_access {AzureAdB2COptions.ApiScopes}";
                     context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
                 }
+
+                context.ProtocolMessage.Scope = OpenIdConnectScope.OpenId;
+                context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.IdToken;
+                context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress.ToLower();
+                var redirectUri = context.ProtocolMessage.RedirectUri + context.Properties.Items[".redirect"];
+
+                context.ProtocolMessage.RedirectUri = redirectUri.Replace("signin-oidc/", "");
+
                 return Task.FromResult(0);
             }
 
@@ -125,6 +135,16 @@ namespace AtlasCity.TimeProof.Api
                     //TODO: Handle
                     throw;
                 }
+            }
+
+            public async Task OnAuthenticationFailed(AuthenticationFailedContext context)
+            {
+               
+            }
+
+            public async Task OnMessageReceived(MessageReceivedContext context)
+            {
+
             }
         }
     }

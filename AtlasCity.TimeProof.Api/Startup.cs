@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.Extensions;
@@ -47,21 +46,43 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            services.AddAuthentication(sharedOptions =>
+            {
+                sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
+            .AddCookie();
+
             //services.AddAuthentication(sharedOptions =>
             //{
             //    sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             //    sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            //})
-            //.AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
-            //.AddCookie();
+
+            //}).AddOpenIdConnect(options => {
+            //    //options.Authority = "https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/b2c_1_signupsignin/oauth2/v2.0/authorize";
+            //    options.Authority = "https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/b2c_1_signupsignin/v2.0/.well-known/openid-configuration";
+            //    options.ClientId = "caead9d0-3263-42b9-b25e-2ca36d0ff535";
+            //    options.ClientSecret = "KHTC4N=xG2NN59Ak:RzmzwSvs]EEi[EF";
+            //    options.UseTokenLifetime = true;
+            //});
 
             //services.AddAuthorization();
+
+            //services.AddDistributedMemoryCache();
+            //services.AddSession(options =>
+            //{
+            //    options.IdleTimeout = TimeSpan.FromHours(1);
+            //    options.Cookie.HttpOnly = true;
+            //    options.Cookie.IsEssential = true;
+            //});
 
             var endpointUrl = Configuration.GetSection("TransationCosmosDb:EndpointUrl").Value;
             var authorizationKey = Configuration.GetSection("TransationCosmosDb:AuthorizationKey").Value;
             services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));
+            services.AddSingleton<IPaymentRepository>(new PaymentRepository(endpointUrl, authorizationKey));
 
             var paymentApiKey = Configuration.GetSection("PaymentApiKey").Value;
             var stripeClient = new StripeClient(paymentApiKey);
@@ -71,6 +92,7 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();
+
 
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
             services.AddSingleton(Log.Logger);
@@ -102,8 +124,10 @@ namespace AtlasCity.TimeProof.Api
 
             app.UseRouting();
 
+            //app.UseSession();
+
             //app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthorization();
             ////app.UseForwardedHeaders(new ForwardedHeadersOptions
             //{
             //    RequireHeaderSymmetry = false,

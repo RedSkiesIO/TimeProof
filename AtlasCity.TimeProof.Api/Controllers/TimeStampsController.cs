@@ -3,6 +3,7 @@ using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Api.ActionResults;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -24,7 +25,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             _timestampRepository = timestampRepository;
         }
 
-        [Route("gettimestamp/{id}")]
+        [Route("getTimestamps/{id}")]
         [HttpGet]
         //[Authorize]
         public IActionResult Get([FromRoute] string id, CancellationToken cancellationToken)
