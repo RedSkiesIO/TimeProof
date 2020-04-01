@@ -350,3 +350,5 @@ Thumbs.db
 *.lock
 
 ./.vscode
+
+api_log*.txt
