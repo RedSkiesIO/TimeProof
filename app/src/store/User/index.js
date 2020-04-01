@@ -70,7 +70,7 @@ export default class User extends Model {
   async fetchTimestamps() {
     const re = /(?:\.([^.]+))?$/;
 
-    const { data, status } = await axios.get(`${process.env.API}/gettimestamp/${this.accountIdentifier}`);
+    const { data, status } = await axios.get(`${process.env.API}/getTimestamps/${this.accountIdentifier}`);
     if (status === 200 && data) {
       const stamps = data.map(file => ({
         txId: file.id,
