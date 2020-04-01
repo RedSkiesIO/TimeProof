@@ -4,11 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
+using AtlasCity.TimeProof.Common.Lib.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Stripe;
 
-namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
+namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
 {
     [TestClass]
     public class StripePaymentServiceTest

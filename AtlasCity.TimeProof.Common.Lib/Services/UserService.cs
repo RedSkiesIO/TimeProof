@@ -7,7 +7,7 @@ using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Serilog;
 
-namespace AtlasCity.TimeProof.Common.Lib
+namespace AtlasCity.TimeProof.Common.Lib.Services
 {
     public class UserService : IUserService
     {
@@ -15,18 +15,21 @@ namespace AtlasCity.TimeProof.Common.Lib
         private readonly IUserRepository _userRepository;
         private readonly IPaymentRepository _paymentRepository;
         private readonly IPaymentService _paymentService;
+        private readonly IEmailService _emailService;
 
-        public UserService(ILogger logger, IUserRepository userRepository, IPaymentRepository paymentRepository, IPaymentService paymentService)
+        public UserService(ILogger logger, IUserRepository userRepository, IPaymentRepository paymentRepository, IPaymentService paymentService, IEmailService emailService)
         {
             AtlasGuard.IsNotNull(logger);
             AtlasGuard.IsNotNull(userRepository);
             AtlasGuard.IsNotNull(paymentRepository);
             AtlasGuard.IsNotNull(paymentService);
+            AtlasGuard.IsNotNull(emailService);
 
             _logger = logger;
             _userRepository = userRepository;
             _paymentRepository = paymentRepository;
             _paymentService = paymentService;
+            _emailService = emailService;
         }
 
         public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
@@ -76,7 +79,10 @@ namespace AtlasCity.TimeProof.Common.Lib
                 }
             }
 
-            return await _userRepository.CreateUser(user, cancellationToken);
+            var newUser = await _userRepository.CreateUser(user, cancellationToken);
+
+            // TODO: Sudhir send a new user email
+            return newUser;
         }
 
         public async Task DeleteUser(string userId, CancellationToken cancellationToken)
@@ -150,6 +156,7 @@ namespace AtlasCity.TimeProof.Common.Lib
             if (string.IsNullOrWhiteSpace(user.PaymentCustomerId))
                 throw new UserException("PaymentCustomerId is missing. Please create the user first.");
 
+            //TODO: Sudhir match price plan from database and the amount
             PaymentResponseDao paymentResponse = null;
             try
             {
@@ -159,11 +166,11 @@ namespace AtlasCity.TimeProof.Common.Lib
                 await _paymentRepository.CreatePaymentReceived(paymentResponse, cancellationToken);
                 return paymentResponse;
             }
-            catch(PaymentServiceException ex)
+            catch (PaymentServiceException ex)
             {
                 _logger.Error(ex, $"Unable to collect payment for user '{user.Id}'.");
                 throw ex;
-            }            
+            }
         }
     }
 }

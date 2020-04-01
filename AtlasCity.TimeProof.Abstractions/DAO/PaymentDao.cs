@@ -15,5 +15,8 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
 
         [JsonProperty(PropertyName = "email")]
         public string Email { get; set; }
+
+        [JsonProperty(PropertyName = "pricePlanId")]
+        public string PricePlanId { get; set; }
     }
 }
