@@ -45,46 +45,32 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import User from '../../store/User';
 
 export default {
   name: 'UsageSummary',
-  data() {
-    return {
-      tiers: {
-        free: 10,
-        basic: 30,
-        premium: 200,
-      },
-    };
-  },
 
   computed: {
+    ...mapGetters({
+      products: 'settings/getProducts',
+    }),
     account() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-        return null;
-      }
-      return account;
+      return this.$auth.account();
     },
-
     user() {
-      if (this.account) {
-        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
-        if (user) {
-          return user[0];
-        }
-      }
-      return null;
+      return this.$auth.user(false, true, 'timestamps');
+    },
+    allowedTimestamps(){
+      return this.products[this.user.tier].timestamps;
     },
     timestampsUsed() {
       const used = this.user.monthlyAllowanceUsage;
-      const { tier } = this.user;
 
-      return `${used}/${this.tiers[tier]}`;
+      return `${used}/${this.allowedTimestamps}`;
     },
     usedPercentage() {
-      return (this.user.monthlyAllowanceUsage / this.tiers[this.user.tier]) * 100;
+      return (this.user.monthlyAllowanceUsage / this.allowedTimestamps) * 100;
     },
 
   },

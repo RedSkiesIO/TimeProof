@@ -234,14 +234,14 @@
           <img
             class="image"
             :src="productImage"
-            :alt="sellingProduct.package"
+            :alt="sellingProduct.tier"
           >
           <div class="label">
             <p class="product">
-              {{ sellingProduct.package }}
+              {{ sellingProduct.tier }}
             </p>
             <p class="sku">
-              {{ Object.values([sellingProduct.package,'Package']).join(' ') }}
+              {{ Object.values([sellingProduct.tier,'Package']).join(' ') }}
             </p>
           </div>
           <p class="count">
@@ -268,7 +268,6 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import Identicon from 'identicon.js';
-import User from '../../store/User';
 import PaymentBilling from '../PaymentBilling';
 import paymentStore from './paymentStore';
 import config from './config';
@@ -326,15 +325,7 @@ export default {
       sellingProduct: 'settings/getSellingProduct',
     }),
     user() {
-      if (this.$auth.account()) {
-        const user = User.query().whereId(this.$auth.account().accountIdentifier)
-          .with('timestamps').with('address')
-          .get();
-        if (user) {
-          return user[0];
-        }
-      }
-      return null;
+      return this.$auth.user(true);
     },
     productImage() {
       let imageData;
@@ -560,36 +551,45 @@ export default {
 
     async handlePayment(paymentResponse, userId) {
       // Handle new PaymentIntent result
-      let { setupIntent, error } = paymentResponse;
-      console.log('HANDLE PAYMENT');
-      console.log(paymentResponse);
+      try {
+        let { setupIntent, error } = paymentResponse;
+        console.log('HANDLE PAYMENT');
+        console.log(paymentResponse);
 
-      if (error && error.setup_intent) {
-        setupIntent = error.setup_intent;
-        error = null;
-      }
+        if (error && error.setup_intent) {
+          setupIntent = error.setup_intent;
+          error = null;
+        }
 
-      if (error) {
-        this.confirmationElementErrorMessage = error.message;
-        this.paymentResultUpdate(false, false, false, true, false);
-      } else if (setupIntent.status === 'succeeded') {
-        // Success! Payment is confirmed. Update the interface to display the confirmation screen.
-        const paymentResult = await paymentStore.makePayment(userId, setupIntent.payment_method,
-          this.sellingProduct.price, this.user.email);
-        if (paymentResult && paymentResult.status === 200) {
-          this.confirmationElementNote = 'We just sent your receipt to your email address,';
-          this.paymentResultUpdate(true, false, false, false, true);
-          this.setSellingProduct(null);
+        if (error) {
+          this.confirmationElementErrorMessage = error.message;
+          paymentStore.updateUserSubscription('Starter');
+          this.paymentResultUpdate(false, false, false, true, false);
+        } else if (setupIntent.status === 'succeeded') {
+          // Success! Payment is confirmed. Update the interface to display the confirmation screen.
+          const paymentResult = await paymentStore.makePayment(userId, setupIntent.payment_method,
+            this.sellingProduct.price, this.user.email);
+          if (paymentResult && paymentResult.status === 200) {
+            this.confirmationElementNote = 'We just sent your receipt to your email address,';
+            paymentStore.updateUserSubscription(this.sellingProduct.tier);
+            this.paymentResultUpdate(true, false, false, false, true);
+            this.setSellingProduct(null);
+          } else {
+            this.confirmationElementErrorMessage = paymentResult.data.error;
+            paymentStore.updateUserSubscription('Starter');
+            this.paymentResultUpdate(false, false, false, false, false);
+          }
+        } else if (setupIntent.status === 'processing') {
+          this.confirmationElementNote = 'We’ll send your receipt as soon as your payment is confirmed.';
+          this.paymentResultUpdate(true, false, false, false, false);
         } else {
-          this.confirmationElementErrorMessage = paymentResult.data.error;
+          // Payment has failed.
+          paymentStore.updateUserSubscription('Starter');
           this.paymentResultUpdate(false, false, false, false, false);
         }
-      } else if (setupIntent.status === 'processing') {
-        this.confirmationElementNote = 'We’ll send your receipt as soon as your payment is confirmed.';
-        this.paymentResultUpdate(true, false, false, false, false);
-      } else {
-        // Payment has failed.
-        this.paymentResultUpdate(false, false, false, false, false);
+      } catch (err) {
+        console.log(err);
+        this.paymentResultUpdate(false, false, false, true, false);
       }
     },
 
@@ -673,11 +673,6 @@ export default {
 
         if (verifyResult && verifyResult.data) {
           if (this.paymentType === 'card') {
-            // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
-            console.log('HELOOOOOOOOO');
-            console.log(verifyResult.data.clientSecret);
-            console.log(this.card);
-            console.log(data.name);
             const response = await stripe.confirmCardSetup(
               verifyResult.data.clientSecret,
               {
@@ -689,6 +684,7 @@ export default {
                 },
               },
             );
+            // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
               // const response = await stripe.confirmCardPayment(
               //   verifyResult.data.clientSecret,
               //   {

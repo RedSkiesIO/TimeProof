@@ -61,7 +61,6 @@
   </div>
 </template>
 <script>
-import User from '../../store/User';
 import Proof from '../Proof';
 import { fileIcon } from '../../util';
 
@@ -76,32 +75,17 @@ export default {
     return {
       confirmed: false,
       file: null,
-      tiers: {
-        free: 10,
-        basic: 30,
-        premium: 200,
-      },
       fileIcon,
     };
   },
 
   computed: {
     account() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-        return null;
-      }
-      return account;
+      return this.$auth.account();
     },
 
     user() {
-      if (this.account) {
-        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
-        if (user) {
-          return user[0];
-        }
-      }
-      return null;
+      return this.$auth.user(false, true, 'timestamps');
     },
     timestamps() {
       const { timestamps } = this.user;

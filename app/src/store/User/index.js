@@ -2,6 +2,7 @@
 import { Model } from '@vuex-orm/core';
 import axios from 'axios';
 // import auth from '../../boot/auth';
+import moment from 'moment';
 import Timestamp from '../Timestamp';
 import Address from '../Address';
 
@@ -18,12 +19,14 @@ export default class User extends Model {
       givenName: this.attr(''),
       familyName: this.attr(''),
       email: this.attr(''),
-      tier: this.attr('free'),
+      tier: this.attr('Starter'),
       timestamps: this.hasMany(Timestamp, 'accountIdentifier'),
       address: this.hasOne(Address, 'accountIdentifier'),
       tokenExpires: this.attr(''),
       upgrade: this.attr(false),
       firstTimeDialog: this.attr(true),
+      subscriptionStart: this.attr(moment().toISOString()),
+      subscriptionEnd: this.attr(moment().add(1, 'months').toISOString()),
     };
   }
 
@@ -52,13 +55,9 @@ export default class User extends Model {
   // }
 
   get monthlyAllowanceUsage() {
-    const d = new Date();
-    const thisMonth = `${d.getMonth()}${d.getFullYear()}`;
-    const timestamps = this.timestamps.filter((stamp) => {
-      const date = new Date(stamp.date);
-      const month = `${date.getMonth()}${date.getFullYear()}`;
-      return month === thisMonth;
-    });
+    const timestamps = this.timestamps.filter(stamp => moment(new Date(stamp.date))
+      .isBetween(moment(this.subscriptionStart),
+        moment(this.subscriptionEnd), null, '[]'));
     return timestamps.length;
   }
 
@@ -71,22 +70,24 @@ export default class User extends Model {
   async fetchTimestamps() {
     const re = /(?:\.([^.]+))?$/;
 
-    const { timestamps } = (await axios.get(`${process.env.API}/getTimestamps/${this.accountIdentifier}`)).data;
-    const stamps = timestamps.map(file => ({
-      txId: file.id,
-      hash: file.fileHash,
-      signature: file.signature,
-      pubKey: file.publicKey.toLowerCase(),
-      accountIdentifier: this.accountIdentifier,
-      name: file.fileName,
-      date: Number(file.timestamp),
-      type: re.exec(file.fileName)[1],
-      blockNumber: Number(file.blockNumber),
-    }));
+    const { data, status } = await axios.get(`${process.env.API}/gettimestamp/${this.accountIdentifier}`);
+    if (status === 200 && data) {
+      const stamps = data.map(file => ({
+        txId: file.id,
+        hash: file.fileHash,
+        signature: file.signature,
+        pubKey: file.publicKey.toLowerCase(),
+        accountIdentifier: this.accountIdentifier,
+        name: file.fileName,
+        date: Number(file.timestamp),
+        type: re.exec(file.fileName)[1],
+        blockNumber: Number(file.blockNumber),
+      }));
 
-    await Timestamp.create({
-      data: stamps,
-    });
+      await Timestamp.create({
+        data: stamps,
+      });
+    }
   }
 
   async verifyUserDetails() {

@@ -1,4 +1,8 @@
-import { SET_AUTHENTICATED_ACCOUNT, SET_SELLING_PRODUCT } from './mutationTypes';
+import {
+  SET_AUTHENTICATED_ACCOUNT,
+  SET_SELLING_PRODUCT,
+  SET_PRODUCTS,
+} from './mutationTypes';
 
 export default {
   [SET_AUTHENTICATED_ACCOUNT]: (state, account) => {
@@ -6,5 +10,8 @@ export default {
   },
   [SET_SELLING_PRODUCT]: (state, product) => {
     state.sellingProduct = product;
+  },
+  [SET_PRODUCTS]: (state, products) => {
+    state.products = products;
   },
 };

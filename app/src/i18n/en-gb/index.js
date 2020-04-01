@@ -116,4 +116,5 @@ export default {
   createFirstTimeStampContent: 'Create your first timestamp. if you want to start please click the button takes below',
   cancel: 'Cancel',
   certificate: 'Certificate',
+  upgradeToCreateMoreProofs: 'Upgrade to create more proofs',
 };

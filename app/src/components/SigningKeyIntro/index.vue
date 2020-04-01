@@ -33,7 +33,6 @@
   </div>
 </template>
 <script>
-import User from '../../store/User';
 
 export default {
   name: 'SigningKeyIntro',
@@ -47,20 +46,10 @@ export default {
 
   computed: {
     account() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-        return null;
-      }
-      return account;
+      return this.$auth.account();
     },
     user() {
-      if (this.account) {
-        const user = User.find(this.account.accountIdentifier);
-        if (user) {
-          return user;
-        }
-      }
-      return null;
+      return this.$auth.user();
     },
   },
 

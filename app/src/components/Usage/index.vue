@@ -55,7 +55,7 @@
             <div
               class="text-brown row text-h4 text-weight-bold q-mb-md"
             >
-              {{ tiers[user.tier] }}
+              {{ allowedTimestamps }}
             </div>
             <div class="row text-h8 text-weight-bold q-mb-md">
               Stamps Allowed
@@ -85,78 +85,52 @@
           horizontal
           inset
         />
-        <div class="row justify-start items-center">
-          <div class="col-md-5 q-ml-md self-center">
-            <!-- <div>
-              {{ $t('subscription') }}:
-              <span class="text-green">
-                {{ $t(user.tier) }} {{ $t('tier') }}
-              </span>
-            </div> -->
-          </div>
-          <div class="col-md-4 q-mr-md self-center">
-            <!-- <div>{{ $t('moreTimestamps') }}</div> -->
-            <q-btn
-              outline
-              no-caps
-              color="secondary"
-              :label="$t('needAnUpgrade')"
-              @click.prevent="upgradeUser"
-            />
-          </div>
+        <div class="row justify-center items-center">
+          <q-btn
+            outline
+            no-caps
+            :color="upgradeButtonColor"
+            :label="upgradeButtonLabel"
+            @click.prevent="upgradeUser"
+          />
         </div>
       </div>
     </q-card>
   </div>
 </template>
 <script>
-import User from '../../store/User';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'UsageSummary',
-  data() {
-    return {
-      tiers: {
-        free: 10,
-        basic: 30,
-        premium: 200,
-      },
-    };
-  },
 
   computed: {
-    account() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-        return null;
-      }
-      return account;
-    },
-
+    ...mapGetters({
+      products: 'settings/getProducts',
+    }),
     user() {
-      if (this.account) {
-        const user = User.query().whereId(this.account.accountIdentifier).with('timestamps').get();
-        if (user) {
-          return user[0];
-        }
-      }
-      return null;
+      return this.$auth.user(false, true, 'timestamps');
+    },
+    allowedTimestamps() {
+      return this.products[this.user.tier].timestamps;
     },
     timestampsUsed() {
-      const used = this.user.monthlyAllowanceUsage;
-      // const { tier } = this.user;
-
-      // return `${used}/${this.tiers[tier]}`;
-      return used;
+      return this.user.monthlyAllowanceUsage;
     },
     totalUsage() {
       return this.user.totalTimestamps;
     },
     usedPercentage() {
-      return (this.user.monthlyAllowanceUsage / this.tiers[this.user.tier]) * 100;
+      return (this.user.monthlyAllowanceUsage / this.allowedTimestamps) * 100;
     },
     usedClass() {
-      return this.usedPercentage > 100 ? 'text-red' : 'text-green';
+      return this.usedPercentage >= 100 ? 'text-red' : 'text-green';
+    },
+    upgradeButtonColor() {
+      return this.usedPercentage >= 100 ? 'red' : 'secondary';
+    },
+    upgradeButtonLabel() {
+      return this.usedPercentage >= 100 ? this.$t('upgradeToCreateMoreProofs') : this.$t('needAnUpgrade');
     },
   },
 

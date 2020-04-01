@@ -177,9 +177,7 @@
   </div>
 </template>
 <script>
-import User from '../../store/User';
 import Timestamp from '../../store/Timestamp';
-
 
 export default {
   name: 'Proof',
@@ -209,21 +207,11 @@ export default {
     },
 
     account() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-        return null;
-      }
-      return account;
+      return this.$auth.account();
     },
 
     user() {
-      if (this.account) {
-        const user = User.find(this.account.accountIdentifier);
-        if (user) {
-          return user;
-        }
-      }
-      return null;
+      return this.$auth.user();
     },
 
     proof() {

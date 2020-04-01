@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import * as Msal from 'msal';
+import User from '../store/User';
 
 const appConfig = {
   b2cScopes: ['https://timeproof.onmicrosoft.com/api/read'],
@@ -45,8 +46,28 @@ const auth = {
     return account;
   },
 
+  user(withAll, withDependency, specifiedDependency) {
+    let user;
+    const account = this.account();
+    if (account) {
+      if (withAll) {
+        user = User.query().whereId(account.accountIdentifier).withAll().get();
+      } else if (withDependency) {
+        user = User.query().whereId(account.accountIdentifier).with(specifiedDependency).get();
+      } else {
+        user = User.query().whereId(account.accountIdentifier).get();
+      }
+
+      if (user) {
+        return user[0];
+      }
+    }
+
+    return null;
+  },
+
   membership() {
-    return (this.account()).idToken.extension_membershipTier || 'free';
+    return (this.account()).idToken.extension_membershipTier || this.user().tier;
   },
 
   // acquire a token silently

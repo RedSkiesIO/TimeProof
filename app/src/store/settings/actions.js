@@ -1,4 +1,8 @@
-import { SET_AUTHENTICATED_ACCOUNT, SET_SELLING_PRODUCT } from './mutationTypes';
+import {
+  SET_AUTHENTICATED_ACCOUNT,
+  SET_SELLING_PRODUCT,
+  SET_PRODUCTS,
+} from './mutationTypes';
 // import Router from '../../router';
 
 // const router = Router();
@@ -12,5 +16,8 @@ export default {
     // this.$router.push({ name: 'payment', params: { price: 25.6 } });
     // this.$router.push({ path: `/payment/${price}` });
     // router.push('/payment');
+  },
+  setProducts: ({ commit }, products) => {
+    commit(SET_PRODUCTS, products);
   },
 };

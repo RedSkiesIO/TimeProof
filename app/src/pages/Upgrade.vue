@@ -5,9 +5,9 @@
       style="width: 100%"
     >
       <div
-        v-for="item in planItems"
+        v-for="item in products"
         :key="item.plan"
-        :class="planClass"
+        class="col-3"
       >
         <q-card
           class="q-mt-md"
@@ -22,14 +22,14 @@
                   :style="{backgroundColor: item.color}"
                 >
                   <div class="text-weight-bold text-white plan-title">
-                    {{ item.package }}
+                    {{ item.tier }}
                   </div>
                 </div>
               </q-card-section>
 
               <q-card-section class="col-5">
                 <div class="price text-weight-bold">
-                  {{ item.price !== 'Free' ? `£${item.price}` : item.price }}
+                  {{ item.price !== 0 ? `£${item.price}` : item.price }}
                 </div>
                 <div class="price-subtitle">
                   {{ item.freq }}
@@ -56,7 +56,7 @@
 
           <q-card-actions class="row justify-between">
             <q-btn
-              :disable="currentMemberShip === item.package"
+              :disable="currentMemberShip === item.tier"
               flat
               color="primary"
               @click="choosePlan(item)"
@@ -64,7 +64,7 @@
               Choose Plan
             </q-btn>
             <q-badge
-              v-if="currentMemberShip === item.package"
+              v-if="currentMemberShip === item.tier"
               outline
               class="q-ml-md"
               color="orange"
@@ -77,75 +77,26 @@
   </q-page>
 </template>
 <script>
-import { mapActions } from 'vuex';
-
-const planItems = [
-  {
-    plan: 'plan_1',
-    quantity: 1,
-    package: 'Starter',
-    price: 'Free',
-    freq: 'Per Month',
-    timestamps: 5,
-    color: 'green',
-  },
-  {
-    plan: 'plan_2',
-    quantity: 1,
-    package: 'Basic',
-    price: 30.56,
-    freq: 'Per Month',
-    timestamps: 15,
-    color: 'blue',
-  },
-  {
-    plan: 'plan_3',
-    quantity: 1,
-    package: 'Premium',
-    price: 97.45,
-    freq: 'Per Year',
-    timestamps: 115,
-    color: 'orange',
-  },
-  {
-    plan: 'plan_4',
-    quantity: 1,
-    package: 'Gold',
-    price: 129.87,
-    freq: 'Per Year',
-    timestamps: 225,
-    color: 'purple',
-  },
-];
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  components: {
-    // StripeButton,
-  },
+
   data() {
     return {
       token: null,
       loading: false,
-      publishableKey: 'pk_test_IRxZZJoqfYY2SSVj8arguq9k00mg8SQT5R',
-      successUrl: 'http://localhost:6420/',
-      cancelUrl: 'http://localhost:6420/upgrade',
-      planItems,
     };
   },
   computed: {
-    planClass: () => `col-${12 / planItems.length}`,
+    ...mapGetters({
+      products: 'settings/getProducts',
+    }),
     currentMemberShip() {
-      return this.$auth.account().idToken.extension_membershipTier || 'Starter';
+      return this.$auth.account().idToken.extension_membershipTier || this.$auth.user().tier;
     },
   },
   mounted() {
     this.getToken();
-  },
-  beforeRouteUpdate(to, from, next) {
-    console.log('LLLLLLLLLLLL');
-    console.log(from);
-    console.log(to);
-    next();
   },
   methods: {
     ...mapActions('settings', [
@@ -154,9 +105,6 @@ export default {
     async getToken() {
       const accessToken = await this.$auth.getToken();
       this.token = accessToken.idToken.rawIdToken;
-    },
-    checkout() {
-      this.$refs.checkoutRef.redirectToCheckout();
     },
     choosePlan(item) {
       this.setSellingProduct(item);

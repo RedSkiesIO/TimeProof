@@ -4,11 +4,12 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-restricted-syntax */
-
+import moment from 'moment';
 import axios from 'axios';
 import config from './config';
 import User from '../../store/User';
 import Address from '../../store/Address';
+import auth from '../../boot/auth';
 
 class Store {
   constructor() {
@@ -149,6 +150,30 @@ class Store {
     console.log(paymentResult);
 
     return paymentResult;
+  }
+
+  async updateUserSubscription(tier) {
+    let subscription;
+
+    try {
+      if (tier !== 'Starter') {
+        subscription = {
+          subscriptionStart: moment().toISOString(),
+          subscriptionEnd: moment().add(1, 'months').toISOString(),
+        };
+      }
+
+      User.update({
+        data: {
+          accountIdentifier: auth.account().accountIdentifier,
+          tier,
+          ...subscription,
+        },
+      });
+    } catch (err) {
+      console.log('updateUserSubscription');
+      console.log(err);
+    }
   }
 }
 

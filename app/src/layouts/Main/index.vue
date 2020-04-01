@@ -48,18 +48,21 @@
       show-if-above
       :width="200"
       :breakpoint="500"
+      :height="900"
       content-class="bg-primary text-white"
     >
       <q-scroll-area class="fit">
-        <div class="q-mt-lg columm justify-end text-left">
+        <div class="q-mt-lg columm justify-between text-left">
           <q-list>
             <q-item
               v-for="item in menuList"
               :key="item.label"
               v-ripple
               clickable
+              :class="item.redirect? 'fixed-bottom' : ''"
               :to="item.route"
               :disable="currentPath === '/new-key'"
+              @click="redirectToExternalUrl(item.redirect)"
             >
               <q-item-section avatar>
                 <q-icon :name="item.icon" />
@@ -132,7 +135,6 @@
 </template>
 
 <script>
-import User from '../../store/User';
 
 const menuList = [
   {
@@ -154,6 +156,12 @@ const menuList = [
     icon: 'fas fa-user',
     label: 'Account',
     route: '/account',
+  },
+  {
+    icon: 'fas fa-info-circle',
+    label: 'Need Help ?',
+    route: '/',
+    redirect: 'https://www.timeproof.it/faq',
   },
 ];
 
@@ -180,27 +188,13 @@ export default {
 
   computed: {
     isLoggedIn() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-        return false;
-      }
-      return true;
+      return !!this.account;
     },
     account() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-        return null;
-      }
-      return account;
+      return this.$auth.account();
     },
     user() {
-      if (this.account) {
-        const user = User.find(this.account.accountIdentifier);
-        if (user) {
-          return user;
-        }
-      }
-      return null;
+      return this.$auth.user();
     },
     currentPath() {
       return this.$route.path;
@@ -230,6 +224,11 @@ export default {
         // we need to stop further propagation as this click is
         // intended for switching drawer to "normal" mode only
         e.stopPropagation();
+      }
+    },
+    redirectToExternalUrl(url) {
+      if (url) {
+        window.open(url);
       }
     },
   },

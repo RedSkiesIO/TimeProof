@@ -103,9 +103,11 @@
               outlined
               bottom-slots
               :placeholder="$t('proofId')"
+              :rules="[
+                val => !!val || '* Required',
+                val => val.length === 36 || $t('invalidProofId'),
+              ]"
               lazy-rules
-              :rules="[ val => val && val.length > 102
-                && val.length < 105 || $t('invalidProofId')]"
             />
             <div class="row justify-center q-pa-md">
               <q-btn
@@ -214,21 +216,11 @@ export default {
 
   computed: {
     account() {
-      const account = this.$auth.account();
-      if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-        return null;
-      }
-      return account;
+      return this.$auth.account();
     },
 
     user() {
-      if (this.account) {
-        const user = User.find(this.account.accountIdentifier);
-        if (user) {
-          return user;
-        }
-      }
-      return null;
+      return this.$auth.user();
     },
 
     key() {
