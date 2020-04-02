@@ -21,5 +21,13 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
 
         [JsonProperty(PropertyName = "address")]
         public AddressDao Address { get; set; }
+
+        public string FullName
+        {
+            get
+            {
+                return $"{FirstName} {LastName}".TrimEnd(" ".ToCharArray());
+            }
+        }
     }
 }

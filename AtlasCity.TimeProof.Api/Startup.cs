@@ -1,8 +1,11 @@
 using System;
+using System.Net;
+using System.Net.Mail;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.Extensions;
 using AtlasCity.TimeProof.Common.Lib;
+using AtlasCity.TimeProof.Common.Lib.Services;
 using AtlasCity.TimeProof.Repository.CosmosDb;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -44,6 +47,9 @@ namespace AtlasCity.TimeProof.Api
         {
             services.AddControllers();
 
+            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
+            services.AddSingleton(Log.Logger);
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddAuthentication(sharedOptions =>
@@ -84,6 +90,14 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPaymentRepository>(new PaymentRepository(endpointUrl, authorizationKey));
 
+            var client = new SmtpClient(Configuration.GetSection("SMTPEmail:HostName").Value, int.Parse(Configuration.GetSection("SMTPEmail:Port").Value));
+            client.UseDefaultCredentials = false;
+            client.Credentials = new NetworkCredential(Configuration.GetSection("SMTPEmail:UserName").Value, Configuration.GetSection("SMTPEmail:Password").Value);
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.EnableSsl = true;
+
+            services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
+
             var paymentApiKey = Configuration.GetSection("PaymentApiKey").Value;
             var stripeClient = new StripeClient(paymentApiKey);
             services.AddSingleton(new PaymentIntentService(stripeClient));
@@ -93,9 +107,6 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();
 
-
-            Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
-            services.AddSingleton(Log.Logger);
 
             services.AddCors(options =>
             {

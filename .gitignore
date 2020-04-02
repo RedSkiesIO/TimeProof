@@ -350,4 +350,5 @@ Thumbs.db
 *.lock
 
 ./.vscode
+api_log*.txt
 app/package-lock.json

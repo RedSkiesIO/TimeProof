@@ -9,7 +9,7 @@ using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Stripe;
 
-namespace AtlasCity.TimeProof.Common.Lib
+namespace AtlasCity.TimeProof.Common.Lib.Services
 {
     public class StripePaymentService : IPaymentService
     {
@@ -37,7 +37,7 @@ namespace AtlasCity.TimeProof.Common.Lib
             AtlasGuard.IsNullOrWhiteSpace(paymentCustomerId);
 
             var options = new PaymentIntentCreateOptions
-            {               
+            {
                 Amount = payment.Amount,
                 Currency = "gbp",
                 Customer = paymentCustomerId,
@@ -50,14 +50,14 @@ namespace AtlasCity.TimeProof.Common.Lib
             try
             {
                 var response = await _paymentIntentService.CreateAsync(options, cancellationToken: cancellationToken);
-                if(response.StripeResponse.StatusCode != HttpStatusCode.OK)
+                if (response.StripeResponse.StatusCode != HttpStatusCode.OK)
                 {
                     throw new PaymentServiceException($"Unable to take payment for user '{payment.UserId}', payment method '{payment.PaymentMethodId}' in stripe payment system. The status is '{response.StripeResponse.StatusCode}' and content '{response.StripeResponse.Content}'.");
                 }
 
                 return response.StripeResponse.ToStripeResponseDao();
             }
-            catch(StripeException ex)
+            catch (StripeException ex)
             {
                 throw new PaymentServiceException($"Unable to take payment for user '{payment.UserId}', payment method '{payment.PaymentMethodId}' in stripe payment system.", ex);
             }
@@ -123,7 +123,7 @@ namespace AtlasCity.TimeProof.Common.Lib
             throw new PaymentServiceException($"Unable to create customer with customer identifier '{paymentCustomerId}' in stripe payment system.");
         }
 
-        public async Task DeletePaymentCustomer(string paymentCustomerId, CancellationToken cancellationToken) 
+        public async Task DeletePaymentCustomer(string paymentCustomerId, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNullOrWhiteSpace(paymentCustomerId);
             try

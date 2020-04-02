@@ -25,7 +25,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             _timestampRepository = timestampRepository;
         }
 
-        [Route("getTimestamps/{id}")]
+        [Route("gettimestamps/{id}")]
         [HttpGet]
         //[Authorize]
         public IActionResult Get([FromRoute] string id, CancellationToken cancellationToken)
