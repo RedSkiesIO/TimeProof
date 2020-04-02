@@ -22,6 +22,13 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         [JsonProperty(PropertyName = "address")]
         public AddressDao Address { get; set; }
 
+        // TODO: Sudhir calculate
+        [JsonProperty(PropertyName = "remainingTimeStamps")]
+        public long RemainingTimeStamps { get; set; } = 10;
+
+        [JsonProperty(PropertyName = "pricePlanId")]
+        public string PricePlanId { get; set; }
+
         public string FullName
         {
             get

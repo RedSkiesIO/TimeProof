@@ -1,6 +1,9 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
@@ -13,23 +16,32 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
     {
         private readonly ILogger _logger;
         private readonly IUserRepository _userRepository;
-        private readonly IPaymentRepository _paymentRepository;
+        private readonly IPricePlanRepository _pricePlanRepository;
         private readonly IPaymentService _paymentService;
         private readonly IEmailService _emailService;
+        private readonly IEmailTemplateHelper _emailTemplateHelper;
 
-        public UserService(ILogger logger, IUserRepository userRepository, IPaymentRepository paymentRepository, IPaymentService paymentService, IEmailService emailService)
+        public UserService(
+            ILogger logger,
+            IUserRepository userRepository,
+            IPricePlanRepository pricePlanRepository,
+            IPaymentService paymentService,
+            IEmailService emailService,
+            IEmailTemplateHelper emailTemplateHelper)
         {
             AtlasGuard.IsNotNull(logger);
             AtlasGuard.IsNotNull(userRepository);
-            AtlasGuard.IsNotNull(paymentRepository);
+            AtlasGuard.IsNotNull(pricePlanRepository);
             AtlasGuard.IsNotNull(paymentService);
             AtlasGuard.IsNotNull(emailService);
+            AtlasGuard.IsNotNull(emailTemplateHelper);
 
             _logger = logger;
             _userRepository = userRepository;
-            _paymentRepository = paymentRepository;
+            _pricePlanRepository = pricePlanRepository;
             _paymentService = paymentService;
             _emailService = emailService;
+            _emailTemplateHelper = emailTemplateHelper;
         }
 
         public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
@@ -44,7 +56,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             AtlasGuard.IsNotNull(user);
             AtlasGuard.IsNullOrWhiteSpace(user.Email);
 
-            UserDao existingPaymentCustomer = null;
+            PaymentCustomerDao existingPaymentCustomer = null;
 
             if (!string.IsNullOrWhiteSpace(user.PaymentCustomerId))
             {
@@ -60,7 +72,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             }
 
             // If customer exists in payment service and email does not match, then something is wrong
-            if (existingPaymentCustomer != null && !existingPaymentCustomer.Email.Equals(user.Email))
+            if (existingPaymentCustomer != null && !existingPaymentCustomer.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new UserException($"User with payment customer identifier '{user.PaymentCustomerId}' already exiting with mismatch email ids. Expected: '{user.Email}', Actual: '{existingPaymentCustomer.Email}'.");
             }
@@ -79,9 +91,23 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 }
             }
 
-            var newUser = await _userRepository.CreateUser(user, cancellationToken);
+            var freePricePlan = await _pricePlanRepository.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken);
+            user.PricePlanId = freePricePlan.Id;
 
-            // TODO: Sudhir send a new user email
+            var newUser = await _userRepository.CreateUser(user, cancellationToken);
+            _logger.Information($"Successfully created user with email '{user.Email}'");
+
+            var emailBody = await _emailTemplateHelper.GetWelcomeEmailBody(user.FullName, cancellationToken);
+            var emailMessage = new EmailDao
+            {
+                ToAddress = user.Email,
+                ToName = user.FullName,
+                FromAddress = Constants.AutomatedEmailFromAddress,
+                Subject = Constants.WelcomeEmailSubject,
+                HtmlBody = emailBody
+            };
+
+            await _emailService.SendEmail(emailMessage, cancellationToken);
             return newUser;
         }
 
@@ -113,63 +139,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             catch (UserException ex)
             {
                 _logger.Error(ex, $"Unable to delete user '{user.Id}'.");
-            }
-        }
-
-        public async Task<SetupIntentDao> CreateSetupIntent(string userId, CancellationToken cancellationToken)
-        {
-            AtlasGuard.IsNullOrWhiteSpace(userId);
-
-            var user = await _userRepository.GetUserById(userId, cancellationToken);
-            if (user == null)
-                throw new UserException("Please create the user first.");
-
-            SetupIntentDao setupIntent = null;
-
-            if (!string.IsNullOrWhiteSpace(user.SetupIntentId))
-            {
-                setupIntent = await _paymentService.GetSetupIntent(user.SetupIntentId, cancellationToken);
-                if (setupIntent != null)
-                    return setupIntent;
-
-                _logger.Warning($"Setup intent '{user.SetupIntentId}' is missing from the payment service.");
-            }
-
-            if (setupIntent == null)
-            {
-                setupIntent = await _paymentService.CreateSetupIntent(user.PaymentCustomerId, cancellationToken);
-                await _userRepository.AddSetupIntent(user.Email, setupIntent.Id, cancellationToken);
-            }
-
-            return setupIntent;
-        }
-
-        public async Task<PaymentResponseDao> ProcessPayment(PaymentDao payment, CancellationToken cancellationToken)
-        {
-            AtlasGuard.IsNotNull(payment);
-            AtlasGuard.IsNullOrWhiteSpace(payment.UserId);
-
-            var user = await _userRepository.GetUserById(payment.UserId, cancellationToken);
-            if (user == null)
-                throw new UserException("Please create the user first.");
-
-            if (string.IsNullOrWhiteSpace(user.PaymentCustomerId))
-                throw new UserException("PaymentCustomerId is missing. Please create the user first.");
-
-            //TODO: Sudhir match price plan from database and the amount
-            PaymentResponseDao paymentResponse = null;
-            try
-            {
-                paymentResponse = await _paymentService.ProcessPayment(payment, user.PaymentCustomerId, cancellationToken);
-                _logger.Information($"Collected payment for user '{user.Id}'.");
-
-                await _paymentRepository.CreatePaymentReceived(paymentResponse, cancellationToken);
-                return paymentResponse;
-            }
-            catch (PaymentServiceException ex)
-            {
-                _logger.Error(ex, $"Unable to collect payment for user '{user.Id}'.");
-                throw ex;
             }
         }
     }

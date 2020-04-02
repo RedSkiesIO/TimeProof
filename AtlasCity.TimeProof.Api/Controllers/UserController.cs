@@ -14,14 +14,17 @@ namespace AtlasCity.TimeProof.Api.Controllers
     {
         private readonly ILogger _logger;
         private readonly IUserService _userService;
+        private readonly IUserSubscriptionService _userSubscriptionService;
 
-        public UserController(ILogger logger, IUserService userService)
+        public UserController(ILogger logger, IUserService userService, IUserSubscriptionService userSubscriptionService)
         {
             AtlasGuard.IsNotNull(logger);
             AtlasGuard.IsNotNull(userService);
+            AtlasGuard.IsNotNull(userSubscriptionService);
 
             _logger = logger;
             _userService = userService;
+            _userSubscriptionService = userSubscriptionService;
         }
 
         [Route("user/{email}")]
@@ -46,17 +49,6 @@ namespace AtlasCity.TimeProof.Api.Controllers
             return new CreatedActionResult(newUser);
         }
 
-        [Route("user/intent/{id}")]
-        [HttpGet]
-        public IActionResult GetSetupIntent([FromRoute] string id, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-                return BadRequest();
-
-            var setupIntent = _userService.CreateSetupIntent(id, cancellationToken).GetAwaiter().GetResult();
-            return new SuccessActionResult(setupIntent);
-        }
-
         [Route("user/{id}")]
         [HttpDelete]
         public IActionResult DeleteUser([FromRoute] string id, CancellationToken cancellationToken)
@@ -68,6 +60,17 @@ namespace AtlasCity.TimeProof.Api.Controllers
             return new NoContentActionResult();
         }
 
+        [Route("user/intent/{id}")]
+        [HttpGet]
+        public IActionResult GetSetupIntent([FromRoute] string id, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            var setupIntent = _userSubscriptionService.CreateSetupIntent(id, cancellationToken).GetAwaiter().GetResult();
+            return new SuccessActionResult(setupIntent);
+        }
+
         [Route("user/payment")]
         [HttpPost]
         public IActionResult ProcessPayment([FromBody] PaymentDao payment, CancellationToken cancellationToken)
@@ -75,7 +78,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (payment == null)
                 return BadRequest();
 
-            var paymentResponse = _userService.ProcessPayment(payment, cancellationToken).GetAwaiter().GetResult();
+            var paymentResponse = _userSubscriptionService.ProcessPayment(payment, cancellationToken).GetAwaiter().GetResult();
             return new SuccessActionResult(paymentResponse);
         }
     }

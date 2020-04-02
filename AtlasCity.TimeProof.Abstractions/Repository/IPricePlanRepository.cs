@@ -9,6 +9,8 @@ namespace AtlasCity.TimeProof.Abstractions.Repository
     {
         Task<IEnumerable<PricePlanDao>> GetPricePlans(CancellationToken cancellationToken);
 
+        Task<PricePlanDao> GetPricePlanById(string pricePlanId, CancellationToken cancellationToken);
+
         Task<PricePlanDao> GetPricePlanByTitle(string pricePlanName, CancellationToken cancellationToken);
 
         Task<PricePlanDao> AddPricePlans(PricePlanDao pricePlan, CancellationToken cancellationToken);

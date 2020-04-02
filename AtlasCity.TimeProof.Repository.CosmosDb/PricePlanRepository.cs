@@ -31,6 +31,14 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             return response;
         }
 
+        public async Task<PricePlanDao> GetPricePlanById(string pricePlanId, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNullOrWhiteSpace(pricePlanId);
+
+            var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == pricePlanId.ToLower()).AsEnumerable().FirstOrDefault();
+            return response;
+        }
+
         public async Task<PricePlanDao> GetPricePlanByTitle(string pricePlanTitle, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNullOrWhiteSpace(pricePlanTitle);

@@ -1,6 +1,7 @@
 using System.Configuration;
 using System.Linq;
 using System.Threading;
+using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,7 +28,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
         {
             var starterPricePlan= new PricePlanDao
             {
-                Title = "free",
+                Title = Constants.FreePricePlanTitle,
                 Description = "Starter pack with free time stamps",
                 Price = 0,
                 NoOfStamps = 5
@@ -35,7 +36,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
 
             var basicPricePlan = new PricePlanDao
             {
-                Title = "Basic",
+                Title = "basic",
                 Description = "Basic pack with few number of time stamps",
                 Price = 599,
                 NoOfStamps = 30

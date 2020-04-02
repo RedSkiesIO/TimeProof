@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Mail;
+using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.Extensions;
@@ -98,6 +99,10 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
 
+            var timeProofLoginUri = Configuration.GetSection("TransationCosmosDb:EndpointUrl").Value;
+            services.AddSingleton<IEmailTemplateHelper>(new EmailTemplateHelper(timeProofLoginUri));
+
+
             var paymentApiKey = Configuration.GetSection("PaymentApiKey").Value;
             var stripeClient = new StripeClient(paymentApiKey);
             services.AddSingleton(new PaymentIntentService(stripeClient));
@@ -106,8 +111,9 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IUserSubscriptionService, UserSubscriptionService>();
 
-
+            
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins,

@@ -5,14 +5,14 @@ namespace AtlasCity.TimeProof.Common.Lib.Extensions
 {
     public static class CustomerExtensions
     {
-        public static UserDao ToUserDao(this Customer customer)
+        public static PaymentCustomerDao ToPaymentCustomerDao(this Customer customer)
         {
             if(customer != null)
             {
-                var user = new UserDao()
+                var user = new PaymentCustomerDao()
                 {
                     Email = customer.Email,
-                    PaymentCustomerId = customer.Id
+                    Id = customer.Id
                 };
 
                 user.Address = customer.Address.ToAddressDao();
