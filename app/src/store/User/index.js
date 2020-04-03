@@ -4,6 +4,7 @@ import axios from 'axios';
 import moment from 'moment';
 import Timestamp from '../Timestamp';
 import Address from '../Address';
+import Tier from '../../util/tier';
 
 export default class User extends Model {
   static entity = 'users';
@@ -18,7 +19,7 @@ export default class User extends Model {
       givenName: this.attr(''),
       familyName: this.attr(''),
       email: this.attr(''),
-      tier: this.attr('Starter'),
+      tier: this.attr(Tier.Free),
       timestamps: this.hasMany(Timestamp, 'accountIdentifier'),
       address: this.hasOne(Address, 'accountIdentifier'),
       tokenExpires: this.attr(''),
@@ -28,6 +29,9 @@ export default class User extends Model {
       subscriptionEnd: this.attr(moment().add(1, 'months').toISOString()),
       selectedCardNumber: this.attr(''),
       cardExpirationDate: this.attr(''),
+      userId: this.attr(''),
+      clientSecret: this.attr(''),
+      customerId: this.attr(''),
     };
   }
 
@@ -119,6 +123,7 @@ export default class User extends Model {
           console.log('USER INTENT RESULT');
           console.log(intentResult);
           if (intentResult && intentResult.status === 200 && intentResult.data) {
+            intentResult.data.userId = userResult.data.id;
             return intentResult;
           }
         }

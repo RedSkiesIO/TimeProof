@@ -10,6 +10,7 @@ import config from './config';
 import User from '../../store/User';
 import Address from '../../store/Address';
 import auth from '../../boot/auth';
+import Tier from '../../util/tier';
 
 class Store {
   constructor() {
@@ -155,10 +156,10 @@ class Store {
   async updateUserSubscription(tier, card) {
     let subscription;
     let cardInfo;
-    console.log('BBBBBBBBBB');
+    console.log('UPDATE USER SUBSCRIPTION');
     console.log(card);
     try {
-      if (tier !== 'Free') {
+      if (tier !== Tier.Free) {
         subscription = {
           subscriptionStart: moment().toISOString(),
           subscriptionEnd: moment().add(1, 'months').toISOString(),
@@ -181,7 +182,7 @@ class Store {
         },
       });
     } catch (err) {
-      console.log('updateUserSubscription');
+      console.log('HATA updateUserSubscription');
       console.log(err);
     }
   }

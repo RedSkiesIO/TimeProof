@@ -563,7 +563,6 @@ export default {
 
         if (error) {
           this.confirmationElementErrorMessage = error.message;
-          paymentStore.updateUserSubscription('Starter');
           this.paymentResultUpdate(false, false, false, true, false);
         } else if (setupIntent.status === 'succeeded') {
           // Success! Payment is confirmed. Update the interface to display the confirmation screen.
@@ -576,7 +575,6 @@ export default {
             this.setSellingProduct(null);
           } else {
             this.confirmationElementErrorMessage = paymentResult.data.error;
-            paymentStore.updateUserSubscription('Starter');
             this.paymentResultUpdate(false, false, false, false, false);
           }
         } else if (setupIntent.status === 'processing') {
@@ -584,7 +582,6 @@ export default {
           this.paymentResultUpdate(true, false, false, false, false);
         } else {
           // Payment has failed.
-          paymentStore.updateUserSubscription('Starter');
           this.paymentResultUpdate(false, false, false, false, false);
         }
       } catch (err) {
@@ -669,12 +666,10 @@ export default {
         //   },
         // };
 
-        const verifyResult = await this.user.verifyUserDetails();
-
-        if (verifyResult && verifyResult.data) {
+        if (this.user.userId && this.user.clientSecret) {
           if (this.paymentType === 'card') {
             const response = await stripe.confirmCardSetup(
-              verifyResult.data.clientSecret,
+              this.user.userId,
               {
                 payment_method: {
                   card: this.card,
@@ -697,11 +692,11 @@ export default {
               //     shipping,
               //   },
               // );
-            this.handlePayment(response, verifyResult.data.userId);
+            this.handlePayment(response, this.user.userId);
           } else if (this.paymentType === 'sepa_debit') {
             // Confirm the PaymentIntent with the IBAN Element.
             const response = await stripe.confirmSepaDebitPayment(
-              verifyResult.data.clientSecret,
+              this.user.clientSecret,
               {
                 payment_method: {
                   sepa_debit: this.iban,
@@ -764,7 +759,7 @@ export default {
             this.handleSourceActiviation(source);
           }
         } else {
-          this.handlePayment(verifyResult);
+          this.handlePayment({ error: { message: 'User not found' } });
         }
       }
     },

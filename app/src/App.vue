@@ -11,6 +11,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { mapActions } from 'vuex';
 import User from './store/User';
+import Tier from './util/tier';
 
 export default {
   name: 'App',
@@ -55,7 +56,7 @@ export default {
         const token = await this.$auth.getToken();
         this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
         if (!this.user) {
-          const membership = this.account.idToken.extension_membershipTier || 'Free';
+          const membership = this.account.idToken.extension_membershipTier || Tier.Free;
           User.insert({
             data: {
               accountIdentifier: this.account.accountIdentifier,
@@ -80,7 +81,18 @@ export default {
           });
         }
         try {
-          this.user.verifyUserDetails();
+          const verifyResult = this.user.verifyUserDetails();
+
+          if (verifyResult && verifyResult.data) {
+            User.update({
+              data: {
+                accountIdentifier: this.account.accountIdentifier,
+                userId: verifyResult.data.userId,
+                clientSecret: verifyResult.data.clientSecret,
+                customerId: verifyResult.data.customerId,
+              },
+            });
+          }
 
           if (!this.user.secretKey) {
             this.$router.push('/new-key');
