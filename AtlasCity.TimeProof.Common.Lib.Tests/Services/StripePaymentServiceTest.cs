@@ -227,7 +227,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
 
         [TestMethod]
         [ExpectedException(typeof(PaymentServiceException))]
-        public void Calling_GetCustomerById_With_Valid_UserDao_And_Payment_CustomerService_Return_Null_Should_Throw_An_Exception()
+        public void Calling_GetCustomerById_With_Valid_PaymentCustomer_Return_Null_Should_Throw_An_Exception()
         {
             customerServiceMock.Setup(s => s.GetAsync("testCustomerIdentifier", It.IsAny<CustomerGetOptions>(), It.IsAny<RequestOptions>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult((Customer)null));
@@ -236,25 +236,25 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         }
 
         [TestMethod]
-        public void Calling_GetCustomerById_With_Valid_UserDao_And_Payment_CustomerService_Return_Valid_Response_Should_Not_Throw_An_Exception()
+        public void Calling_GetCustomerById_With_Valid_PaymentCustomer_Return_Valid_Response_And_Should_Not_Throw_An_Exception()
         {
             customerServiceMock.Setup(s => s.GetAsync("testCustomerIdentifier", It.IsAny<CustomerGetOptions>(), It.IsAny<RequestOptions>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new Customer { Id = "testCustomerIdentifier", Email = "test@example.com", 
                     Address = new Address { Line1 = "testline1", Line2 = "testLine2", City = "testCity", State = "testSate", PostalCode = "testPostcode", Country = "testCountry" } }));
 
-            var user = stripePaymentService.GetCustomerById("testCustomerIdentifier", CancellationToken.None).GetAwaiter().GetResult();
+            var paymentCustomer = stripePaymentService.GetCustomerById("testCustomerIdentifier", CancellationToken.None).GetAwaiter().GetResult();
 
-            Assert.IsNotNull(user);
-            Assert.AreEqual("testCustomerIdentifier", user.PaymentCustomerId);
-            Assert.AreEqual("test@example.com", user.Email);
+            Assert.IsNotNull(paymentCustomer);
+            Assert.AreEqual("testCustomerIdentifier", paymentCustomer.Id);
+            Assert.AreEqual("test@example.com", paymentCustomer.Email);
            
-            Assert.IsNotNull(user.Address);
-            Assert.AreEqual("testline1", user.Address.Line1);
-            Assert.AreEqual("testLine2", user.Address.Line2);
-            Assert.AreEqual("testCity", user.Address.City);
-            Assert.AreEqual("testSate", user.Address.State);
-            Assert.AreEqual("testPostcode", user.Address.Postcode);
-            Assert.AreEqual("testCountry", user.Address.Country);
+            Assert.IsNotNull(paymentCustomer.Address);
+            Assert.AreEqual("testline1", paymentCustomer.Address.Line1);
+            Assert.AreEqual("testLine2", paymentCustomer.Address.Line2);
+            Assert.AreEqual("testCity", paymentCustomer.Address.City);
+            Assert.AreEqual("testSate", paymentCustomer.Address.State);
+            Assert.AreEqual("testPostcode", paymentCustomer.Address.Postcode);
+            Assert.AreEqual("testCountry", paymentCustomer.Address.Country);
         }
     }
 }

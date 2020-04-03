@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 using System.Threading;
+using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Common.Lib.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,6 +22,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         [TestInitialize]
         public void Setup()
         {
+            //TODO: Sudhir Read values from config
             smtpClient = new SmtpClient("smtp.office365.com", 587);
             smtpClient.UseDefaultCredentials = false;
             smtpClient.Credentials = new NetworkCredential("noreply@atlascity.io", "on6TSs4SNaVwXUqQQHJaU2dioYxBnS");
@@ -57,21 +59,21 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_SendEmail_With_Null_ToAddress_In_EmailDao_Should_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = null, ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = "Test Subject", HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = null, ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = "Test Subject", HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_SendEmail_With_Empty_ToAddress_In_EmailDao_Should_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = string.Empty, ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = "Test Subject", HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = string.Empty, ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = "Test Subject", HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_SendEmail_With_WhiteSpace_ToAddress_In_EmailDao_Should_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = " ", ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = "Test Subject", HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = " ", ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = "Test Subject", HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
 
@@ -100,49 +102,49 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_SendEmail_With_Null_Subject_In_EmailDao_Should_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = null, HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = null, HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_SendEmail_With_Empty_Subject_In_EmailDao_Should_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = string.Empty, HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = string.Empty, HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_SendEmail_With_WhiteSpace_Subject_In_EmailDao_Should_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = " ", HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = " ", HtmlBody = "<html><body>Test Body</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_SendEmail_With_Null_Body_In_EmailDao_Should_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = "Test Subject", HtmlBody = null }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = "Test Subject", HtmlBody = null }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_SendEmail_With_Empty_Body_In_EmailDao_Should_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = "Test Subject", HtmlBody = string.Empty }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = "Test Subject", HtmlBody = string.Empty }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_SendEmail_With_WhiteSpace_Body_In_EmailDao_Should_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = "Test Subject", HtmlBody = " " }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = "test@example.com", ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = "Test Subject", HtmlBody = " " }, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [Ignore("Don't want to send email every time test is run.")]
         [TestMethod]
         public void Calling_SendEmail_With_Valid_EmailDao_Should_Not_Throw_An_Exception()
         {
-            emailService.SendEmail(new EmailDao() { ToAddress = "sudhir.tibrewal@atlascity.io", ToName = "Test Name", FromAddress = "noreply@atlascity.io", Subject = "TimeProof Test", HtmlBody = $"<html><body>TimeProof Test : {DateTime.UtcNow.ToLongDateString()}</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
+            emailService.SendEmail(new EmailDao() { ToAddress = "sudhir.tibrewal@atlascity.io", ToName = "Test Name", FromAddress = Constants.AutomatedEmailFromAddress, Subject = "TimeProof Test", HtmlBody = $"<html><body>TimeProof Test : {DateTime.UtcNow.ToLongDateString()}</body></html>" }, CancellationToken.None).GetAwaiter().GetResult();
         }
     }
 }

@@ -139,12 +139,10 @@ namespace AtlasCity.TimeProof.Api
 
             public async Task OnAuthenticationFailed(AuthenticationFailedContext context)
             {
-               
             }
 
             public async Task OnMessageReceived(MessageReceivedContext context)
             {
-
             }
         }
     }

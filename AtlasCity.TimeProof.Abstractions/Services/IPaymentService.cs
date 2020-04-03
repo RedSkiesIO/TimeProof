@@ -10,7 +10,7 @@ namespace AtlasCity.TimeProof.Abstractions.Services
 
         Task<string> CreatePaymentCustomer(UserDao customer, CancellationToken cancellationToken);
 
-        Task<UserDao> GetCustomerById(string paymentCustomerId, CancellationToken cancellationToken);
+        Task<PaymentCustomerDao> GetCustomerById(string paymentCustomerId, CancellationToken cancellationToken);
 
         Task DeletePaymentCustomer(string paymentCustomerId, CancellationToken cancellationToken);
 

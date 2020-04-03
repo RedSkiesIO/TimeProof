@@ -81,14 +81,14 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             throw new PaymentServiceException($"Unable to create customer with email '{options.Email}' in stripe payment system.");
         }
 
-        public async Task<UserDao> GetCustomerById(string paymentCustomerId, CancellationToken cancellationToken)
+        public async Task<PaymentCustomerDao> GetCustomerById(string paymentCustomerId, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNullOrWhiteSpace(paymentCustomerId);
 
             var customer = await _customerService.GetAsync(paymentCustomerId, cancellationToken: cancellationToken);
 
             if (customer != null)
-                return customer.ToUserDao();
+                return customer.ToPaymentCustomerDao();
 
             throw new PaymentServiceException($"Unable to find customer with '{paymentCustomerId}' identifier in stripe payment system.");
         }
