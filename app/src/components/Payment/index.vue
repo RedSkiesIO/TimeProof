@@ -248,7 +248,7 @@
             1
           </p>
           <p class="price">
-            {{ sellingProduct.price }}
+            {{ amount }}
           </p>
         </div>
         <div class="line-item total">
@@ -258,7 +258,7 @@
           <p
             class="price"
           >
-            {{ paymentStore.formatPrice(sellingProduct.price, config.currency) }}
+            {{ amount }}
           </p>
         </div>
       </div>
@@ -326,6 +326,9 @@ export default {
     }),
     user() {
       return this.$auth.user(true);
+    },
+    amount() {
+      return paymentStore.formatPrice(this.sellingProduct.price, config.currency);
     },
     productImage() {
       let imageData;
@@ -423,17 +426,16 @@ export default {
     // Update the main button to reflect the payment method being selected.
     updateButtonLabel(paymentMethod, bankName) {
       // get payment total
-      const amount = paymentStore.formatPrice(this.sellingProduct.price, this.config.currency);
       const { name } = paymentMethods[paymentMethod];
-      let label = `Pay ${amount}`;
+      let label = `Pay ${this.amount}`;
       if (paymentMethod !== 'card') {
-        label = `Pay ${amount} with ${name}`;
+        label = `Pay ${this.amount} with ${name}`;
       }
       if (paymentMethod === 'wechat') {
-        label = `Generate QR code to pay ${amount} with ${name}`;
+        label = `Generate QR code to pay ${this.amount} with ${name}`;
       }
       if (paymentMethod === 'sepa_debit' && bankName) {
-        label = `Debit ${amount} from ${bankName}`;
+        label = `Debit ${this.amount} from ${bankName}`;
       }
       this.submitButtonText = label;
     },
@@ -564,10 +566,10 @@ export default {
         if (error) {
           this.confirmationElementErrorMessage = error.message;
           this.paymentResultUpdate(false, false, false, true, false);
-        } else if (setupIntent.status === 'succeeded') {
+        } else if (setupIntent && setupIntent.status === 'succeeded') {
           // Success! Payment is confirmed. Update the interface to display the confirmation screen.
           const paymentResult = await paymentStore.makePayment(userId, setupIntent.payment_method,
-            this.sellingProduct.price, this.user.email);
+            this.sellingProduct.price, this.user.email, this.sellingProduct.id);
           if (paymentResult && paymentResult.status === 200) {
             this.confirmationElementNote = 'We just sent your receipt to your email address,';
             paymentStore.updateUserSubscription(this.sellingProduct.title, this.card);
@@ -577,7 +579,7 @@ export default {
             this.confirmationElementErrorMessage = paymentResult.data.error;
             this.paymentResultUpdate(false, false, false, false, false);
           }
-        } else if (setupIntent.status === 'processing') {
+        } else if (setupIntent && setupIntent.status === 'processing') {
           this.confirmationElementNote = 'We’ll send your receipt as soon as your payment is confirmed.';
           this.paymentResultUpdate(true, false, false, false, false);
         } else {
@@ -669,7 +671,7 @@ export default {
         if (this.user.userId && this.user.clientSecret) {
           if (this.paymentType === 'card') {
             const response = await stripe.confirmCardSetup(
-              this.user.userId,
+              this.user.clientSecret,
               {
                 payment_method: {
                   card: this.card,

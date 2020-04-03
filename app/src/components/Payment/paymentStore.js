@@ -85,8 +85,8 @@ class Store {
 
   // Format a price (assuming a two-decimal currency like EUR or USD for simplicity).
   formatPrice(amount, currency) {
-    const price = amount.toFixed(2);
-    const numberFormat = new Intl.NumberFormat('en-US', {
+    const price = (amount / 100).toFixed(2);
+    const numberFormat = new Intl.NumberFormat('en-GB', {
       style: 'currency',
       currency,
       currencyDisplay: 'symbol',
@@ -139,13 +139,13 @@ class Store {
     return addressFound;
   }
 
-  async makePayment(userId, paymentMethodId, amount, email) {
+  async makePayment(userId, paymentMethodId, amount, email, pricePlanId) {
     console.log('BEFORE PAYMENT');
     console.log({
-      userId, paymentMethodId, amount, email,
+      userId, paymentMethodId, amount, email, pricePlanId,
     });
     const paymentResult = await axios.post(`${process.env.API}/user/payment`, {
-      userId, paymentMethodId, amount: amount * 100, email,
+      userId, paymentMethodId, amount, email, pricePlanId,
     });
     console.log('AFTER PAYMENT RESULT');
     console.log(paymentResult);

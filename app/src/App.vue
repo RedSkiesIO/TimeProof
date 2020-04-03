@@ -81,8 +81,9 @@ export default {
           });
         }
         try {
-          const verifyResult = this.user.verifyUserDetails();
-
+          const verifyResult = await this.user.verifyUserDetails();
+          console.log('WOWOWOWOOWOWOWw');
+          console.log(verifyResult);
           if (verifyResult && verifyResult.data) {
             User.update({
               data: {

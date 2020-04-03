@@ -31,7 +31,7 @@
 
               <q-card-section class="col-6 text-right">
                 <div class="price text-weight-bold">
-                  {{ `£${item.price}` }}
+                  {{ `£${(item.price/100).toFixed(2)}` }}
                 </div>
                 <div class="price-subtitle">
                   Per Month
