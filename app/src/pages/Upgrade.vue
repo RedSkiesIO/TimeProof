@@ -1,13 +1,15 @@
 <template>
-  <q-page class="q-mt-md justify-start price-plans">
+  <q-page
+    class="q-mt-md justify-start price-plans"
+  >
     <div
       class="row"
-      style="width: 100%"
+      style="width: 100%; height: '300px'"
     >
       <div
         v-for="item in products"
-        :key="item.plan"
-        class="col-3"
+        :key="item.id"
+        class="col-4"
       >
         <q-card
           class="q-mt-md"
@@ -22,17 +24,17 @@
                   :style="{backgroundColor: item.color}"
                 >
                   <div class="text-weight-bold text-white plan-title">
-                    {{ item.tier }}
+                    {{ item.title }}
                   </div>
                 </div>
               </q-card-section>
 
-              <q-card-section class="col-5">
+              <q-card-section class="col-6 text-right">
                 <div class="price text-weight-bold">
-                  {{ item.price !== 0 ? `£${item.price}` : item.price }}
+                  {{ `£${item.price}` }}
                 </div>
                 <div class="price-subtitle">
-                  {{ item.freq }}
+                  Per Month
                 </div>
               </q-card-section>
             </div>
@@ -42,13 +44,10 @@
               Product Detail
             </div>
             <div class="text-caption text-grey q-mb-md">
-              Lorem ipsum dolor sit amet,
-              consectetur adipiscing elit,
-              sed do eiusmod tempor incididunt
-              ut labore et dolore magna aliqua.
+              {{ item.description }}
             </div>
             <div>
-              <strong class="plan-title">{{ item.timestamps }}</strong>
+              <strong class="plan-title">{{ item.noOfStamps }}</strong>
               <span class="text-caption text-grey q-ml-sm">timestamps rights</span>
             </div>
           </q-card-section>
@@ -56,7 +55,7 @@
 
           <q-card-actions class="row justify-between">
             <q-btn
-              :disable="currentMemberShip === item.tier"
+              :disable="currentMemberShip === item.title"
               flat
               color="primary"
               @click="choosePlan(item)"
@@ -64,7 +63,7 @@
               Choose Plan
             </q-btn>
             <q-badge
-              v-if="currentMemberShip === item.tier"
+              v-if="currentMemberShip === item.title"
               outline
               class="q-ml-md"
               color="orange"

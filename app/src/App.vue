@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import moment from 'moment';
 import { mapActions } from 'vuex';
 import User from './store/User';
@@ -30,44 +31,16 @@ export default {
     },
   },
   async created() {
-    this.setProducts({
-      Starter: {
-        plan: 'plan_1',
-        quantity: 1,
-        tier: 'Starter',
-        price: 0,
-        freq: 'Per Month',
-        timestamps: 10,
-        color: 'green',
-      },
-      Basic: {
-        plan: 'plan_2',
-        quantity: 1,
-        tier: 'Basic',
-        price: 30.56,
-        freq: 'Per Month',
-        timestamps: 30,
-        color: 'blue',
-      },
-      Premium: {
-        plan: 'plan_3',
-        quantity: 1,
-        tier: 'Premium',
-        price: 97.45,
-        freq: 'Per Year',
-        timestamps: 115,
-        color: 'orange',
-      },
-      Gold: {
-        plan: 'plan_4',
-        quantity: 1,
-        tier: 'Gold',
-        price: 129.87,
-        freq: 'Per Year',
-        timestamps: 225,
-        color: 'purple',
-      },
-    });
+    const { data, status } = await axios.get(`${process.env.API}/priceplans`);
+    const productsData = {};
+    const colorList = ['orange', 'green', 'blue'];
+    if (status === 200 && data) {
+      data.forEach((plan, index) => {
+        productsData[plan.title] = plan;
+        productsData[plan.title].color = colorList[index];
+      });
+      this.setProducts(productsData);
+    }
   },
   mounted() {
     this.start();
@@ -82,7 +55,7 @@ export default {
         const token = await this.$auth.getToken();
         this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
         if (!this.user) {
-          const membership = this.account.idToken.extension_membershipTier || 'Starter';
+          const membership = this.account.idToken.extension_membershipTier || 'Free';
           User.insert({
             data: {
               accountIdentifier: this.account.accountIdentifier,
@@ -107,6 +80,8 @@ export default {
           });
         }
         try {
+          this.user.verifyUserDetails();
+
           if (!this.user.secretKey) {
             this.$router.push('/new-key');
           }

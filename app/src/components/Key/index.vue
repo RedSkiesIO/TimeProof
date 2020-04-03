@@ -3,7 +3,7 @@
     <q-card
       v-if="key && user.secretKey"
       flat
-      class="signing-box"
+      class="signing-box bg-grey-2"
     >
       <div class="column bg-red-1 q-pa-sm">
         <div class="row text-center text-weight-bold text-red justify-center">
@@ -73,7 +73,7 @@
     <q-card
       v-if="!key && user.secretKey"
       flat
-      class="signing-box"
+      class="signing-box bg-grey-2"
     >
       <div class="q-mt-xs q-px-sm">
         <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
@@ -141,7 +141,7 @@
     <q-card
       v-if="!user.secretKey"
       flat
-      class="signing-box"
+      class="signing-box bg-grey-2"
     >
       <div
         class="column flex-center"

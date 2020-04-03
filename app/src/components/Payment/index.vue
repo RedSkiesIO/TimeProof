@@ -234,14 +234,14 @@
           <img
             class="image"
             :src="productImage"
-            :alt="sellingProduct.tier"
+            :alt="sellingProduct.title"
           >
           <div class="label">
             <p class="product">
-              {{ sellingProduct.tier }}
+              {{ sellingProduct.title }}
             </p>
             <p class="sku">
-              {{ Object.values([sellingProduct.tier,'Package']).join(' ') }}
+              {{ Object.values([sellingProduct.title,'Package']).join(' ') }}
             </p>
           </div>
           <p class="count">
@@ -330,7 +330,7 @@ export default {
     productImage() {
       let imageData;
       if (this.sellingProduct) {
-        imageData = new Identicon(this.sellingProduct.plan.padEnd(15, '5e3d70a55'), 420).toString();
+        imageData = new Identicon(this.sellingProduct.id, 420).toString();
       } else {
         imageData = new Identicon(Math.random().toString(15), 420).toString();
       }
@@ -571,7 +571,7 @@ export default {
             this.sellingProduct.price, this.user.email);
           if (paymentResult && paymentResult.status === 200) {
             this.confirmationElementNote = 'We just sent your receipt to your email address,';
-            paymentStore.updateUserSubscription(this.sellingProduct.tier);
+            paymentStore.updateUserSubscription(this.sellingProduct.title, this.card);
             this.paymentResultUpdate(true, false, false, false, true);
             this.setSellingProduct(null);
           } else {

@@ -1,7 +1,7 @@
 <template>
   <q-card
     flat
-    class="row"
+    class="row bg-grey-2"
   >
     <div class="column justify-center q-mx-sm">
       <q-btn
@@ -16,11 +16,6 @@
         label="change password"
         @click="forgotPassword"
       />
-      <!-- <q-btn
-        flat
-        color="blue"
-        label="upgrade plan"
-      /> -->
     </div>
     <div
       class="column justify-center q-gutter-y-md q-mr-sm"
@@ -49,20 +44,6 @@
           </q-tooltip>
         </div>
       </div>
-      <!-- <div class="row q-gutter-x-md">
-        <div class="">
-          <div>membership:</div>
-          <div class="text-secondary">
-            {{ user.tier }} tier
-          </div>
-        </div>
-        <div class="">
-          <div>your allowance:</div>
-          <div class="text-secondary">
-            5 timestamps per month
-          </div>
-        </div>
-      </div> -->
     </div>
   </q-card>
 </template>

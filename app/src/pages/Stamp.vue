@@ -93,7 +93,7 @@ export default {
       return moment(this.user.subscriptionEnd).format('DD/MM/YYYY');
     },
     userHasReachedToLimit() {
-      return this.user.monthlyAllowanceUsage >= this.products[this.user.tier].timestamps;
+      return this.user.monthlyAllowanceUsage >= this.products[this.user.tier].noOfStamps;
     },
   },
 };

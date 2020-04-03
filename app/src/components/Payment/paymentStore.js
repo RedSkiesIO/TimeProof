@@ -152,14 +152,23 @@ class Store {
     return paymentResult;
   }
 
-  async updateUserSubscription(tier) {
+  async updateUserSubscription(tier, card) {
     let subscription;
-
+    let cardInfo;
+    console.log('BBBBBBBBBB');
+    console.log(card);
     try {
-      if (tier !== 'Starter') {
+      if (tier !== 'Free') {
         subscription = {
           subscriptionStart: moment().toISOString(),
           subscriptionEnd: moment().add(1, 'months').toISOString(),
+        };
+      }
+
+      if (card !== null) {
+        cardInfo = {
+          selectedCardNumber: `${card.exp_month} / ${card.exp_year}`,
+          cardExpirationDate: `**** **** **** ${card.last4}`,
         };
       }
 
@@ -167,6 +176,7 @@ class Store {
         data: {
           accountIdentifier: auth.account().accountIdentifier,
           tier,
+          ...cardInfo,
           ...subscription,
         },
       });

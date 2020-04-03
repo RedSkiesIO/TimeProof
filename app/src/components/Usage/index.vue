@@ -112,7 +112,7 @@ export default {
       return this.$auth.user(false, true, 'timestamps');
     },
     allowedTimestamps() {
-      return this.products[this.user.tier].timestamps;
+      return this.products[this.user.tier].noOfStamps;
     },
     timestampsUsed() {
       return this.user.monthlyAllowanceUsage;

@@ -1,7 +1,6 @@
 /* eslint-disable import/no-cycle */
 import { Model } from '@vuex-orm/core';
 import axios from 'axios';
-// import auth from '../../boot/auth';
 import moment from 'moment';
 import Timestamp from '../Timestamp';
 import Address from '../Address';
@@ -27,6 +26,8 @@ export default class User extends Model {
       firstTimeDialog: this.attr(true),
       subscriptionStart: this.attr(moment().toISOString()),
       subscriptionEnd: this.attr(moment().add(1, 'months').toISOString()),
+      selectedCardNumber: this.attr(''),
+      cardExpirationDate: this.attr(''),
     };
   }
 
@@ -41,18 +42,6 @@ export default class User extends Model {
   get totalTimestamps() {
     return this.timestamps.length;
   }
-
-  // static account() {
-  //   const account = auth.account();
-  //   if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-  //     return null;
-  //   }
-  //   return account;
-  // }
-
-  // static membership() {
-  //   return (User.account()).idToken.extension_membershipTier || 'free';
-  // }
 
   get monthlyAllowanceUsage() {
     const timestamps = this.timestamps.filter(stamp => moment(new Date(stamp.date))
@@ -95,18 +84,24 @@ export default class User extends Model {
       .then(async (result) => {
         if (!result || !result.data) {
           console.log('DATATATTATATTATATA');
-          const data = {
-            email: this.email,
-            firstName: this.givenName,
-            lastName: this.familyName,
-            address: {
+
+          let address;
+          if (this.address) {
+            address = {
               line1: this.address.line1,
               line2: this.address.line2,
               city: this.address.city,
               state: this.address.state,
               postcode: this.address.postcode,
               country: this.address.country,
-            },
+            };
+          }
+
+          const data = {
+            email: this.email,
+            firstName: this.givenName,
+            lastName: this.familyName,
+            ...address,
           };
           console.log(data);
           const newUserResult = await axios.post(`${process.env.API}/user`, data);
@@ -124,7 +119,6 @@ export default class User extends Model {
           console.log('USER INTENT RESULT');
           console.log(intentResult);
           if (intentResult && intentResult.status === 200 && intentResult.data) {
-            intentResult.data.userId = userResult.data.id;
             return intentResult;
           }
         }
