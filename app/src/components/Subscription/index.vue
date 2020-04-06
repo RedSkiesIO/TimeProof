@@ -45,7 +45,10 @@
       <div
         class="col-md-5"
       >
-        <div class="row">
+        <div
+          v-show="saveMode"
+          class="row"
+        >
           <label class="col-md-1">
             <span>Card:</span>
           </label>
@@ -54,22 +57,24 @@
             class="field col-md-7"
           />
         </div>
-        <div class="row">
-          <label class="col-md-1">
-            <span>Card Number:</span>
-          </label>
+        <div v-show="!saveMode">
+          <div class="row">
+            <label class="col-md-4">
+              <span>Card Number:</span>
+            </label>
 
-          <div class="field col-md-7">
-            {{ user.selectedCardNumber }}
+            <div class="field col-md-6">
+              {{ user.selectedCardNumber }}
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <label class="col-md-1">
-            <span>Expiration Date:</span>
-          </label>
+          <div class="row">
+            <label class="col-md-4">
+              <span>Expiration Date:</span>
+            </label>
 
-          <div class="field col-md-7">
-            {{ user.cardExpirationDate }}
+            <div class="field col-md-6">
+              {{ user.cardExpirationDate }}
+            </div>
           </div>
         </div>
       </div>
@@ -77,20 +82,20 @@
         class="col-md-2"
       >
         <q-btn
-          v-if="card === null && cardSaveDisable"
+          v-if="user.selectedCardNumber === null && !saveMode"
           flat
           no-caps
           color="blue"
           label="Add"
-          @click="setupCard"
+          @click="addCard"
         />
         <q-btn
-          v-else-if="card !== null && cardSaveDisable"
+          v-else-if="user.selectedCardNumber !== null && !saveMode"
           flat
           no-caps
           color="blue"
           label="Change"
-          @click="saveCard"
+          @click="changeCard"
         />
         <q-btn
           v-else
@@ -156,6 +161,7 @@ export default {
       card: null,
       loading: false,
       cardInfo: null,
+      saveMode: false,
       style: config.paymentButtonStyle,
       cardSaveDisable: true,
       cardMessageVisible: false,
@@ -253,6 +259,14 @@ export default {
         console.log(err);
       }
       this.loading = false;
+    },
+    addCard() {
+      this.saveMode = true;
+      this.setupCard();
+    },
+    changeCard() {
+      this.saveMode = true;
+      this.setupCard();
     },
   },
 };
