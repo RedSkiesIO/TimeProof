@@ -54,6 +54,24 @@
             class="field col-md-7"
           />
         </div>
+        <div class="row">
+          <label class="col-md-1">
+            <span>Card Number:</span>
+          </label>
+
+          <div class="field col-md-7">
+            {{ user.selectedCardNumber }}
+          </div>
+        </div>
+        <div class="row">
+          <label class="col-md-1">
+            <span>Expiration Date:</span>
+          </label>
+
+          <div class="field col-md-7">
+            {{ user.cardExpirationDate }}
+          </div>
+        </div>
       </div>
       <div
         class="col-md-2"

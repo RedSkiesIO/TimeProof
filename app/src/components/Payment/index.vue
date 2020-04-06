@@ -78,7 +78,7 @@
               </fieldset>
               <p class="notice">
                 By providing your IBAN and confirming this payment,
-                you’re authorizing Payments Demo and Stripe, our payment
+                you’re authorizing Payments Demo, our payment
                 provider, to send instructions to your bank to debit your account.
                 You’re entitled to a refund under the terms
                 and conditions of your agreement with your bank.
@@ -161,7 +161,7 @@
         </div>
         <div class="status success">
           <h1>Thanks for your order!</h1>
-          <p>Woot! You successfully made a payment with Stripe.</p>
+          <p>Woot! You successfully made a payment.</p>
           <p class="note">
             {{ confirmationElementNote }}
           </p>
@@ -373,7 +373,7 @@ export default {
 
       // Mount the Card Element on the page.
       this.card.mount('#card-element');
-
+      console.log(this.card);
       // Monitor change events on the Card Element to display any errors.
       this.card.on('change', ({ error, complete }) => {
         if (error) {
@@ -670,6 +670,8 @@ export default {
 
         if (this.user.userId && this.user.clientSecret) {
           if (this.paymentType === 'card') {
+            console.log('BEFORE CONFIRM INTENT');
+            console.log(this.card);
             const response = await stripe.confirmCardSetup(
               this.user.clientSecret,
               {
@@ -679,21 +681,24 @@ export default {
                     name: data.name,
                   },
                 },
+                save_payment_method: true,
               },
             );
+            console.log(response);
+            console.log('AFTER CONFIRM INTENT');
             // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
-              // const response = await stripe.confirmCardPayment(
-              //   verifyResult.data.clientSecret,
-              //   {
-              //     payment_method: {
-              //       card: vm.card,
-              //       billing_details: {
-              //         name,
-              //       },
-              //     },
-              //     shipping,
-              //   },
-              // );
+            // const response = await stripe.confirmCardPayment(
+            //   verifyResult.data.clientSecret,
+            //   {
+            //     payment_method: {
+            //       card: vm.card,
+            //       billing_details: {
+            //         name,
+            //       },
+            //     },
+            //     shipping,
+            //   },
+            // );
             this.handlePayment(response, this.user.userId);
           } else if (this.paymentType === 'sepa_debit') {
             // Confirm the PaymentIntent with the IBAN Element.
