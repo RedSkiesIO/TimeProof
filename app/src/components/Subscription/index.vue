@@ -82,7 +82,7 @@
         class="col-md-2"
       >
         <q-btn
-          v-if="user.selectedCardNumber === null && !saveMode"
+          v-if="!user.selectedCardNumber && !saveMode"
           flat
           no-caps
           color="blue"
@@ -90,7 +90,7 @@
           @click="addCard"
         />
         <q-btn
-          v-else-if="user.selectedCardNumber !== null && !saveMode"
+          v-else-if="user.selectedCardNumber && !saveMode"
           flat
           no-caps
           color="blue"
@@ -148,6 +148,7 @@ import { mapGetters } from 'vuex';
 import moment from 'moment';
 import stripe from '../Payment/stripeModule';
 import config from '../Payment/config';
+import User from '../../store/User';
 
 export default {
   name: 'AccountSubscription',
@@ -181,6 +182,9 @@ export default {
       return this.products[this.user.tier];
     },
   },
+  created() {
+    this.getPaymentMethod();
+  },
   mounted() {
     this.setUpStripe();
   },
@@ -195,10 +199,10 @@ export default {
 
     async setupCard() {
       // Create a Card Element and pass some custom styles to it.
-      this.card = this.elements.getElement('card');
-      if (!this.card) {
-        this.card = this.elements.create('card', { style: this.style });
-      }
+      // this.card = this.elements.getElement('card');
+
+      this.card = this.elements.create('card', { style: this.style });
+
 
       // Mount the Card Element on the page.
       this.card.mount('#card-element');
@@ -220,9 +224,19 @@ export default {
     async saveCard() {
       try {
         this.loading = true;
-        const verifyResult = await this.user.verifyUserDetails();
-        const response = await stripe.confirmCardSetup(
-          verifyResult.data.clientSecret,
+        // const { paymentMethod } = await stripe.createPaymentMethod({
+        //   type: 'card',
+        //   card: this.card,
+        //   billing_details: {
+        //     name: this.user.name,
+        //     email: this.user.email,
+        //   },
+        // });
+        // console.log('PATMENT METHOD CARD');
+        // console.log(paymentMethod);
+
+        let { setupIntent, error } = await stripe.confirmCardSetup(
+          this.user.clientSecret,
           {
             payment_method: {
               card: this.card,
@@ -232,15 +246,16 @@ export default {
             },
           },
         );
-        let { setupIntent, error } = response;
+        // let { setupIntent, error } = response;
         console.log('SAVE CARD');
-        console.log(response);
+        // console.log(setupIntent);
 
         if (error && error.setup_intent) {
           setupIntent = error.setup_intent;
           error = null;
         }
 
+        console.log(setupIntent);
         this.cardMessageVisible = true;
         if (error) {
           this.cardMessageSuccessful = false;
@@ -258,7 +273,13 @@ export default {
       } catch (err) {
         console.log(err);
       }
+
+      setTimeout(() => {
+        this.cardMessageVisible = false;
+      }, 2000);
+
       this.loading = false;
+      this.saveMode = false;
     },
     addCard() {
       this.saveMode = true;
@@ -267,6 +288,20 @@ export default {
     changeCard() {
       this.saveMode = true;
       this.setupCard();
+    },
+    async getPaymentMethod() {
+      const { data, status } = await this.$axios.get(`${process.env.API}/user/paymentmethod/${this.user.userId}`);
+      console.log('PAYMENT METHOD RESULT');
+      console.log(data);
+      if (status === 200 && data && data.card) {
+        User.update({
+          data: {
+            accountIdentifier: this.user.accountIdentifier,
+            selectedCardNumber: `**** **** **** ${data.card.last4}`,
+            cardExpirationDate: `${data.card.expMonth} /  ${data.card.expYear}`,
+          },
+        });
+      }
     },
   },
 };

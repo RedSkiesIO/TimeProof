@@ -153,11 +153,9 @@ class Store {
     return paymentResult;
   }
 
-  async updateUserSubscription(tier, card) {
+  async updateUserSubscription(tier) {
     let subscription;
-    let cardInfo;
     console.log('UPDATE USER SUBSCRIPTION');
-    console.log(card);
     try {
       if (tier !== Tier.Free) {
         subscription = {
@@ -166,18 +164,10 @@ class Store {
         };
       }
 
-      if (card !== null) {
-        cardInfo = {
-          selectedCardNumber: `${card.exp_month} / ${card.exp_year}`,
-          cardExpirationDate: `**** **** **** ${card.last4}`,
-        };
-      }
-
       User.update({
         data: {
           accountIdentifier: auth.account().accountIdentifier,
           tier,
-          ...cardInfo,
           ...subscription,
         },
       });

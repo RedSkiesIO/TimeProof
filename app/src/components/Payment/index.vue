@@ -572,7 +572,7 @@ export default {
             this.sellingProduct.price, this.user.email, this.sellingProduct.id);
           if (paymentResult && paymentResult.status === 200) {
             this.confirmationElementNote = 'We just sent your receipt to your email address,';
-            paymentStore.updateUserSubscription(this.sellingProduct.title, this.card);
+            paymentStore.updateUserSubscription(this.sellingProduct.title);
             this.paymentResultUpdate(true, false, false, false, true);
             this.setSellingProduct(null);
           } else {
