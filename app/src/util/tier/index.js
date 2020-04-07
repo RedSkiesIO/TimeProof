@@ -1,5 +1,5 @@
 export default {
-  Free: 'Free',
   Basic: 'Basic',
+  Standard: 'Standard',
   Premium: 'Premium',
 };

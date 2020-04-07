@@ -157,7 +157,7 @@ class Store {
     let subscription;
     console.log('UPDATE USER SUBSCRIPTION');
     try {
-      if (tier !== Tier.Free) {
+      if (tier !== Tier.Basic) {
         subscription = {
           subscriptionStart: moment().toISOString(),
           subscriptionEnd: moment().add(1, 'months').toISOString(),

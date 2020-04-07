@@ -566,7 +566,7 @@ export default {
         if (error) {
           this.confirmationElementErrorMessage = error.message;
           this.paymentResultUpdate(false, false, false, true, false);
-        } else if (setupIntent && setupIntent.status === 'succeeded') {
+        } else if (setupIntent) { // && setupIntent.status === 'succeeded'
           // Success! Payment is confirmed. Update the interface to display the confirmation screen.
           const paymentResult = await paymentStore.makePayment(userId, setupIntent.payment_method,
             this.sellingProduct.price, this.user.email, this.sellingProduct.id);
@@ -576,8 +576,13 @@ export default {
             this.paymentResultUpdate(true, false, false, false, true);
             this.setSellingProduct(null);
           } else {
-            this.confirmationElementErrorMessage = paymentResult.data.error;
-            this.paymentResultUpdate(false, false, false, false, false);
+            if (paymentResult.data && paymentResult.data.error) {
+              this.confirmationElementErrorMessage = paymentResult.data.error;
+            } else {
+              this.confirmationElementErrorMessage = 'Unsupported payment';
+            }
+
+            this.paymentResultUpdate(false, false, false, true, false);
           }
         } else if (setupIntent && setupIntent.status === 'processing') {
           this.confirmationElementNote = 'We’ll send your receipt as soon as your payment is confirmed.';
@@ -681,7 +686,6 @@ export default {
                     name: data.name,
                   },
                 },
-                save_payment_method: true,
               },
             );
             console.log(response);

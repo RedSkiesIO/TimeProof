@@ -65,6 +65,7 @@ module.exports = function (ctx) {
       env: ctx.dev
       ? {
         API: JSON.stringify('http://localhost:5000/api'),
+        // API: JSON.stringify('https://atlascitytimeproofapi.azurewebsites.net/api'),
         ETHERSCAN: JSON.stringify('https://kovan.etherscan.io/tx'),
         INFURA: JSON.stringify('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9')
       }
@@ -79,6 +80,10 @@ module.exports = function (ctx) {
       // analyze: true,
       // preloadChunks: false,
       // extractCSS: false,
+
+      // this is a configuration passed on
+      // to the underlying Webpack
+      devtool: 'source-map',
 
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
       extendWebpack(cfg) {

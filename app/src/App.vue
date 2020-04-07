@@ -33,6 +33,8 @@ export default {
   },
   async created() {
     const { data, status } = await axios.get(`${process.env.API}/priceplans`);
+    console.log('PRICE PLANSS');
+    console.log(data);
     const productsData = {};
     const colorList = ['orange', 'green', 'blue'];
     if (status === 200 && data) {
@@ -56,7 +58,7 @@ export default {
         const token = await this.$auth.getToken();
         this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
         if (!this.user) {
-          const membership = this.account.idToken.extension_membershipTier || Tier.Free;
+          const membership = this.account.idToken.extension_membershipTier || Tier.Basic;
           User.insert({
             data: {
               accountIdentifier: this.account.accountIdentifier,

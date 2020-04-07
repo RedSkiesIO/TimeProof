@@ -43,8 +43,11 @@
             <div class="text-h5 q-mt-sm q-mb-md">
               Product Detail
             </div>
-            <div class="text-caption text-grey q-mb-md">
+            <div class="text-h8 text-grey q-mb-md">
               {{ item.description }}
+            </div>
+            <div class="text-caption text-grey q-mb-md text-italic">
+              {{ item.confirmationDescription }}
             </div>
             <div>
               <strong class="plan-title">{{ item.noOfStamps }}</strong>

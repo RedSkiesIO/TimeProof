@@ -298,7 +298,7 @@ export default {
           data: {
             accountIdentifier: this.user.accountIdentifier,
             selectedCardNumber: `**** **** **** ${data.card.last4}`,
-            cardExpirationDate: `${data.card.expMonth} /  ${data.card.expYear}`,
+            cardExpirationDate: `${data.card.expMonth} / ${data.card.expYear}`,
           },
         });
       }
@@ -306,7 +306,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .payment-info.card{
     text-align: center;
 }

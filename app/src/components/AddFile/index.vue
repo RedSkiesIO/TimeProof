@@ -315,6 +315,7 @@ export default {
           hash: this.file.hash,
           publicKey: this.user.pubKey,
           signature: this.file.signature,
+          userId: this.user.userId,
         });
 
         if (tx.data || tx.status === '201') {

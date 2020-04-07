@@ -19,7 +19,7 @@ export default class User extends Model {
       givenName: this.attr(''),
       familyName: this.attr(''),
       email: this.attr(''),
-      tier: this.attr(Tier.Free),
+      tier: this.attr(Tier.Basic),
       timestamps: this.hasMany(Timestamp, 'accountIdentifier'),
       address: this.hasOne(Address, 'accountIdentifier'),
       tokenExpires: this.attr(''),
