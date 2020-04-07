@@ -16,6 +16,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
     {
         Mock<PaymentIntentService> paymentIntentServiceMock;
         Mock<CustomerService> customerServiceMock;
+        Mock<PaymentMethodService> paymentMethodServiceMock;
         Mock<SetupIntentService> setupIntentServiceMock;
 
         StripePaymentService stripePaymentService;
@@ -25,30 +26,38 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         {
             paymentIntentServiceMock = new Mock<PaymentIntentService>();
             customerServiceMock = new Mock<CustomerService>();
+            paymentMethodServiceMock = new Mock<PaymentMethodService>();
             setupIntentServiceMock = new Mock<SetupIntentService>();
 
-            stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object, setupIntentServiceMock.Object);
+            stripePaymentService = new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object, paymentMethodServiceMock.Object, setupIntentServiceMock.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Initilising_StripePaymentService_With_Null_PaymentIntentCreateOptions_Should_Throw_An_Exception()
         {
-            new StripePaymentService(null, customerServiceMock.Object, setupIntentServiceMock.Object);
+            new StripePaymentService(null, customerServiceMock.Object, paymentMethodServiceMock.Object, setupIntentServiceMock.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Initilising_StripePaymentService_With_Null_CustomerService_Should_Throw_An_Exception()
         {
-            new StripePaymentService(paymentIntentServiceMock.Object, null, setupIntentServiceMock.Object);
+            new StripePaymentService(paymentIntentServiceMock.Object, null, paymentMethodServiceMock.Object, setupIntentServiceMock.Object);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Initilising_StripePaymentService_With_Null_PaymentMethodService_Should_Throw_An_Exception()
+        {
+            new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object, null, setupIntentServiceMock.Object);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Initilising_StripePaymentService_With_Null_SetupIntentService_Should_Throw_An_Exception()
         {
-            new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object, null);
+            new StripePaymentService(paymentIntentServiceMock.Object, customerServiceMock.Object, paymentMethodServiceMock.Object, null);
         }
 
         [TestMethod]

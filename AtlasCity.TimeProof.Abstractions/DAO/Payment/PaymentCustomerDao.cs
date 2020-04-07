@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AtlasCity.TimeProof.Abstractions.DAO
+namespace AtlasCity.TimeProof.Abstractions.DAO.Payment
 {
     public class PaymentCustomerDao : DaoBase
     {

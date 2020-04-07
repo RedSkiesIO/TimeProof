@@ -1,9 +1,8 @@
 ﻿using System.Threading;
 using AtlasCity.TimeProof.Abstractions.DAO;
-using AtlasCity.TimeProof.Abstractions.Repository;
+using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -14,15 +13,15 @@ namespace AtlasCity.TimeProof.Api.Controllers
     public class TimeStampsController : Controller
     {
         private readonly ILogger _logger;
-        private readonly ITimestampRepository _timestampRepository;
+        private readonly ITimestampService _timestampService;
 
-        public TimeStampsController(ILogger logger, ITimestampRepository timestampRepository)
+        public TimeStampsController(ILogger logger, ITimestampService timestampService)
         {
             AtlasGuard.IsNotNull(logger);
-            AtlasGuard.IsNotNull(timestampRepository);
+            AtlasGuard.IsNotNull(timestampService);
 
             _logger = logger;
-            _timestampRepository = timestampRepository;
+            _timestampService = timestampService;
         }
 
 
@@ -35,7 +34,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (string.IsNullOrWhiteSpace(id))
                 return BadRequest();
 
-            return new SuccessActionResult(_timestampRepository.GetTimestampByUser(id, cancellationToken).GetAwaiter().GetResult());
+            return new SuccessActionResult(_timestampService.GetUesrTimestamps(id, cancellationToken).GetAwaiter().GetResult());
         }
 
         [Route("timestamp")]
@@ -45,8 +44,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (newTimestamp == null)
                 return BadRequest();
 
-            newTimestamp.UserId = "3ad6293f-811b-4238-b7f6-278f842ade61";
-            var newTimeStamp = _timestampRepository.CreateTimestamp(newTimestamp, cancellationToken).GetAwaiter().GetResult();
+            var newTimeStamp = _timestampService.GenerateTimestamp(newTimestamp.UserId, newTimestamp, cancellationToken).GetAwaiter().GetResult();
 
             return new CreatedActionResult(newTimeStamp);
         }

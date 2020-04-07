@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
-using Dawn;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
@@ -27,15 +26,16 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<IEnumerable<TimestampDao>> GetTimestampByUser(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNullOrWhiteSpace(userId);
+            AtlasGuard.IsNotNullOrWhiteSpace(userId);
 
             var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.UserId.ToLower() == userId.ToLower()).AsEnumerable();
             return response;
         }
 
-        public async Task<TimestampDao> CreateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
+        public async Task<TimestampDao> CreateTimestamp(string userId, TimestampDao timestamp, CancellationToken cancellationToken)
         {
-            Guard.Argument(timestamp, nameof(timestamp)).NotNull();
+            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            AtlasGuard.IsNotNull(timestamp);
 
             timestamp.Timestamp = DateTime.UtcNow;
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, timestamp, new RequestOptions(), false, cancellationToken);

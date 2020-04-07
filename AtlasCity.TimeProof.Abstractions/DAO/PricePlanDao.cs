@@ -15,5 +15,8 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
 
         [JsonProperty(PropertyName = "noOfStamps")]
         public long NoOfStamps { get; set; }
+
+        [JsonProperty(PropertyName = "confirDesc")]
+        public string ConfirmationDescription { get; set; }
     }
 }

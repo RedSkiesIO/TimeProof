@@ -33,7 +33,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<PricePlanDao> GetPricePlanById(string pricePlanId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNullOrWhiteSpace(pricePlanId);
+            AtlasGuard.IsNotNullOrWhiteSpace(pricePlanId);
 
             var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == pricePlanId.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
@@ -41,7 +41,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<PricePlanDao> GetPricePlanByTitle(string pricePlanTitle, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNullOrWhiteSpace(pricePlanTitle);
+            AtlasGuard.IsNotNullOrWhiteSpace(pricePlanTitle);
 
             var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).Where(s => s.Title.ToLower() == pricePlanTitle.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
@@ -50,7 +50,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         public async Task<PricePlanDao> AddPricePlans(PricePlanDao pricePlan, CancellationToken cancellationToken)
         {
             Guard.Argument(pricePlan, nameof(pricePlan)).NotNull();
-            AtlasGuard.IsNullOrWhiteSpace(pricePlan.Title);
+            AtlasGuard.IsNotNullOrWhiteSpace(pricePlan.Title);
 
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, pricePlan, new RequestOptions(), false, cancellationToken);
             return JsonConvert.DeserializeObject<PricePlanDao>(response.Resource.ToString());

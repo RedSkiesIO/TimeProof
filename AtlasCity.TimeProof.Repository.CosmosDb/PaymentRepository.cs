@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.DAO.Payment;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
@@ -26,7 +26,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         public async Task<PaymentResponseDao> CreatePaymentReceived(PaymentResponseDao paymentResponse, CancellationToken cancellationToken)
         {
             Guard.Argument(paymentResponse, nameof(paymentResponse)).NotNull();
-            AtlasGuard.IsNullOrWhiteSpace(paymentResponse.RequestId);
+            AtlasGuard.IsNotNullOrWhiteSpace(paymentResponse.RequestId);
 
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, paymentResponse, cancellationToken: cancellationToken);
 

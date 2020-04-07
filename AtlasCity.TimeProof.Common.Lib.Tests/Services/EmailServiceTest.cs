@@ -22,12 +22,13 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         [TestInitialize]
         public void Setup()
         {
-            //TODO: Sudhir Read values from config
-            smtpClient = new SmtpClient("smtp.office365.com", 587);
-            smtpClient.UseDefaultCredentials = false;
-            smtpClient.Credentials = new NetworkCredential("noreply@atlascity.io", "on6TSs4SNaVwXUqQQHJaU2dioYxBnS");
-            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            smtpClient.EnableSsl = true;
+            smtpClient = new SmtpClient(ConfigurationHelper.GetConfigValue("SMTPEmail:HostName"), ConfigurationHelper.GetConfigValueAsInt("SMTPEmail:Port"))
+            {
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(ConfigurationHelper.GetConfigValue("SMTPEmail:UserName"), ConfigurationHelper.GetConfigValue("SMTPEmail:Password")),
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                EnableSsl = true
+            };
 
             loggerMock = new Mock<ILogger>();
 

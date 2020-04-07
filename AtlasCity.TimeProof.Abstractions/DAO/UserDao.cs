@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace AtlasCity.TimeProof.Abstractions.DAO
 {
@@ -36,5 +37,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
                 return $"{FirstName} {LastName}".TrimEnd(" ".ToCharArray());
             }
         }
+
+        public DateTime MembershipStartDate { get; set; }
     }
 }

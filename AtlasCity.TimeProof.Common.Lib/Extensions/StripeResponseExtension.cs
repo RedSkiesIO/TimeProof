@@ -1,4 +1,4 @@
-﻿using AtlasCity.TimeProof.Abstractions.DAO;
+﻿using AtlasCity.TimeProof.Abstractions.DAO.Payment;
 using Stripe;
 
 namespace AtlasCity.TimeProof.Common.Lib.Extensions

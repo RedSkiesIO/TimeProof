@@ -1,4 +1,3 @@
-using System.Configuration;
 using System.Linq;
 using System.Threading;
 using AtlasCity.TimeProof.Abstractions;
@@ -26,32 +25,35 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
         [TestMethod]
         public void Adding_Retrieving_PricePlan_To_And_From_Database()
         {
-            var starterPricePlan= new PricePlanDao
+            var basicPricePlan= new PricePlanDao
             {
                 Title = Constants.FreePricePlanTitle,
-                Description = "Starter pack with free time stamps",
+                Description = "Basic pack with free time stamps",
                 Price = 0,
-                NoOfStamps = 5
+                NoOfStamps = 10,
+                ConfirmationDescription = "Up to 1 hour confirmation time"
             };
 
-            var basicPricePlan = new PricePlanDao
+            var standardPricePlan = new PricePlanDao
             {
-                Title = "basic",
-                Description = "Basic pack with few number of time stamps",
-                Price = 599,
-                NoOfStamps = 30
+                Title = "Standard",
+                Description = "Standard pack with few number of time stamps",
+                Price = 499,
+                NoOfStamps = 40,
+                ConfirmationDescription = "Less than minutes confirmation time"
             };
 
             var premiumPricePlan = new PricePlanDao
             {
                 Title = "Premium",
                 Description = "Premium packs",
-                Price = 2599,
-                NoOfStamps = 200
+                Price = 2499,
+                NoOfStamps = 250,
+                ConfirmationDescription = "Less than minutes confirmation time"
             };
 
-            AddPricePlanIfNotExists(starterPricePlan);
             AddPricePlanIfNotExists(basicPricePlan);
+            AddPricePlanIfNotExists(standardPricePlan);
             AddPricePlanIfNotExists(premiumPricePlan);
 
             var pricePlans = _pricePlanRepository.GetPricePlans(CancellationToken.None).GetAwaiter().GetResult();
@@ -61,23 +63,26 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
 
             Assert.IsTrue(pricePlans.All(s => !string.IsNullOrWhiteSpace(s.Id)));
 
-            var actualStarterPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(starterPricePlan.Title, System.StringComparison.InvariantCultureIgnoreCase));
-            Assert.IsNotNull(actualStarterPricePlan);
-            Assert.AreEqual(starterPricePlan.Description, actualStarterPricePlan.Description, true);
-            Assert.AreEqual(starterPricePlan.Price, actualStarterPricePlan.Price);
-            Assert.AreEqual(starterPricePlan.NoOfStamps, actualStarterPricePlan.NoOfStamps);
-
             var actualBasicPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(basicPricePlan.Title, System.StringComparison.InvariantCultureIgnoreCase));
             Assert.IsNotNull(actualBasicPricePlan);
             Assert.AreEqual(basicPricePlan.Description, actualBasicPricePlan.Description, true);
             Assert.AreEqual(basicPricePlan.Price, actualBasicPricePlan.Price);
             Assert.AreEqual(basicPricePlan.NoOfStamps, actualBasicPricePlan.NoOfStamps);
+            Assert.AreEqual(basicPricePlan.ConfirmationDescription, basicPricePlan.ConfirmationDescription);
+
+            var actualStandardPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(standardPricePlan.Title, System.StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsNotNull(actualStandardPricePlan);
+            Assert.AreEqual(standardPricePlan.Description, actualStandardPricePlan.Description, true);
+            Assert.AreEqual(standardPricePlan.Price, actualStandardPricePlan.Price);
+            Assert.AreEqual(standardPricePlan.NoOfStamps, actualStandardPricePlan.NoOfStamps);
+            Assert.AreEqual(standardPricePlan.ConfirmationDescription, standardPricePlan.ConfirmationDescription);
 
             var actualPremiumPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(premiumPricePlan.Title, System.StringComparison.InvariantCultureIgnoreCase));
             Assert.IsNotNull(actualPremiumPricePlan);
             Assert.AreEqual(premiumPricePlan.Description, actualPremiumPricePlan.Description, true);
             Assert.AreEqual(premiumPricePlan.Price, actualPremiumPricePlan.Price);
             Assert.AreEqual(premiumPricePlan.NoOfStamps, actualPremiumPricePlan.NoOfStamps);
+            Assert.AreEqual(premiumPricePlan.ConfirmationDescription, actualPremiumPricePlan.ConfirmationDescription);
         }
 
         private void AddPricePlanIfNotExists(PricePlanDao pricePlan)

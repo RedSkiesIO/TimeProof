@@ -67,8 +67,8 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (string.IsNullOrWhiteSpace(id))
                 return BadRequest();
 
-            var setupIntent = _userSubscriptionService.CreateSetupIntent(id, cancellationToken).GetAwaiter().GetResult();
-            return new SuccessActionResult(setupIntent);
+            var response = _userSubscriptionService.CreateSetupIntent(id, cancellationToken).GetAwaiter().GetResult();
+            return new SuccessActionResult(response);
         }
 
         [Route("user/payment")]
@@ -78,8 +78,19 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (payment == null)
                 return BadRequest();
 
-            var paymentResponse = _userSubscriptionService.ProcessPayment(payment, cancellationToken).GetAwaiter().GetResult();
-            return new SuccessActionResult(paymentResponse);
+            var response = _userSubscriptionService.ProcessPayment(payment, cancellationToken).GetAwaiter().GetResult();
+            return new SuccessActionResult(response);
+        }
+
+        [Route("user/paymentmethod/{id}")]
+        [HttpGet]
+        public IActionResult GetCustomerPaymentMethod([FromRoute] string id, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            var response = _userSubscriptionService.GetCustomerPaymentMethod(id, cancellationToken).GetAwaiter().GetResult();
+            return new SuccessActionResult(response);
         }
     }
 }

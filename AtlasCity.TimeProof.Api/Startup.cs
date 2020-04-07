@@ -6,6 +6,7 @@ using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.Extensions;
 using AtlasCity.TimeProof.Common.Lib;
+using AtlasCity.TimeProof.Common.Lib.Helpers;
 using AtlasCity.TimeProof.Common.Lib.Services;
 using AtlasCity.TimeProof.Repository.CosmosDb;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -99,7 +100,7 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
 
-            var timeProofLoginUri = Configuration.GetSection("TransationCosmosDb:EndpointUrl").Value;
+            var timeProofLoginUri = Configuration.GetSection("TimeProofLoginUri").Value;
             services.AddSingleton<IEmailTemplateHelper>(new EmailTemplateHelper(timeProofLoginUri));
 
 
@@ -107,13 +108,15 @@ namespace AtlasCity.TimeProof.Api
             var stripeClient = new StripeClient(paymentApiKey);
             services.AddSingleton(new PaymentIntentService(stripeClient));
             services.AddSingleton(new CustomerService(stripeClient));
+            services.AddSingleton(new PaymentMethodService(stripeClient));
             services.AddSingleton(new SetupIntentService(stripeClient));
 
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IUserSubscriptionService, UserSubscriptionService>();
+            services.AddSingleton<ITimestampService, TimestampService>();
 
-            
+
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins,

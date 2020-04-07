@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.DAO.Payment;
 
 namespace AtlasCity.TimeProof.Abstractions.Repository
 {

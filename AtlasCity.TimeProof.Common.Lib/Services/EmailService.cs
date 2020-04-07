@@ -26,10 +26,10 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         public async Task SendEmail(EmailDao emailDetails, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNull(emailDetails);
-            AtlasGuard.IsNullOrWhiteSpace(emailDetails.ToAddress);
-            AtlasGuard.IsNullOrWhiteSpace(emailDetails.FromAddress);
-            AtlasGuard.IsNullOrWhiteSpace(emailDetails.Subject);
-            AtlasGuard.IsNullOrWhiteSpace(emailDetails.HtmlBody);
+            AtlasGuard.IsNotNullOrWhiteSpace(emailDetails.ToAddress);
+            AtlasGuard.IsNotNullOrWhiteSpace(emailDetails.FromAddress);
+            AtlasGuard.IsNotNullOrWhiteSpace(emailDetails.Subject);
+            AtlasGuard.IsNotNullOrWhiteSpace(emailDetails.HtmlBody);
 
             var mailMessage = new MailMessage();
             mailMessage.To.Add(new MailAddress(emailDetails.ToAddress, emailDetails.ToName));

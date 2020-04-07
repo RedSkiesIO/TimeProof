@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.DAO.Payment;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
@@ -46,15 +47,22 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNullOrWhiteSpace(email);
+            AtlasGuard.IsNotNullOrWhiteSpace(email);
 
-            return await _userRepository.GetUserByEmail(email, cancellationToken);
+            var user =  await _userRepository.GetUserByEmail(email, cancellationToken);
+
+            if (user != null && !string.IsNullOrWhiteSpace(user.PaymentCustomerId))
+            {
+                var test = await _paymentService.GetCustomerPaymentMethod(user.PaymentCustomerId, cancellationToken);
+            }
+
+            return user;
         }
 
         public async Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNull(user);
-            AtlasGuard.IsNullOrWhiteSpace(user.Email);
+            AtlasGuard.IsNotNullOrWhiteSpace(user.Email);
 
             PaymentCustomerDao existingPaymentCustomer = null;
 
@@ -113,7 +121,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task DeleteUser(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNullOrWhiteSpace(userId);
+            AtlasGuard.IsNotNullOrWhiteSpace(userId);
 
             var user = await _userRepository.GetUserById(userId, cancellationToken);
             if (user == null)
