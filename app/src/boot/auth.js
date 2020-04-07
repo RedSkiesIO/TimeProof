@@ -95,7 +95,7 @@ const auth = {
   },
 
   forgotPassword() {
-    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_PasswordReset';
+    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_ForgotPassword';
     const passwordReset = new Msal.UserAgentApplication(msalConfig);
     passwordReset.handleRedirectCallback((error, response) => {
       console.log(error, response);
