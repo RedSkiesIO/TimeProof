@@ -96,7 +96,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             {
                 try
                 {
-                    paymentResponse = await _paymentService.ProcessPayment(payment, user.PaymentCustomerId, cancellationToken);
+                    paymentResponse = await _paymentService.ProcessPayment(payment, user.PaymentCustomerId, user.SetupIntentId, cancellationToken);
                     _logger.Information($"Collected payment of '{payment.Amount}' in minimum unit for user '{user.Id}'.");
 
                     await _paymentRepository.CreatePaymentReceived(paymentResponse, cancellationToken);

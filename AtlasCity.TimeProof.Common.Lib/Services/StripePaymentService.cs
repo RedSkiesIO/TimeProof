@@ -33,13 +33,14 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _setupIntentService = setupIntentService;
         }
 
-        public async Task<PaymentResponseDao> ProcessPayment(PaymentDao payment, string paymentCustomerId, CancellationToken cancellationToken)
+        public async Task<PaymentResponseDao> ProcessPayment(PaymentDao payment, string paymentCustomerId, string setupIntentId, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNull(payment);
             AtlasGuard.IsNotNullOrWhiteSpace(payment.UserId);
             AtlasGuard.IsNotNullOrWhiteSpace(payment.Email);
             AtlasGuard.IsNotNullOrWhiteSpace(payment.PaymentMethodId);
             AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+            AtlasGuard.IsNotNullOrWhiteSpace(setupIntentId);
 
             var options = new PaymentIntentCreateOptions
             {
@@ -59,6 +60,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 {
                     throw new PaymentServiceException($"Unable to take payment for user '{payment.UserId}', payment method '{payment.PaymentMethodId}' in stripe payment system. The status is '{response.StripeResponse.StatusCode}' and content '{response.StripeResponse.Content}'.");
                 }
+
+                await _setupIntentService.ConfirmAsync(setupIntentId, cancellationToken: cancellationToken);
 
                 return response.StripeResponse.ToStripeResponseDao();
             }

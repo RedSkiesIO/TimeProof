@@ -32,7 +32,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         [JsonProperty(PropertyName = "network")]
         public string Network { get; set; }
 
-        [JsonProperty(PropertyName = "user")]
+        [JsonProperty(PropertyName = "userId")]
         public string UserId { get; set; }
     }
 }

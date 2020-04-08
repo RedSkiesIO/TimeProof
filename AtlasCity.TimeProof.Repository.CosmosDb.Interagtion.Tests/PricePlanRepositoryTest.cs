@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading;
 using AtlasCity.TimeProof.Abstractions;
@@ -63,21 +64,21 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
 
             Assert.IsTrue(pricePlans.All(s => !string.IsNullOrWhiteSpace(s.Id)));
 
-            var actualBasicPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(basicPricePlan.Title, System.StringComparison.InvariantCultureIgnoreCase));
+            var actualBasicPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(basicPricePlan.Title, StringComparison.InvariantCultureIgnoreCase));
             Assert.IsNotNull(actualBasicPricePlan);
             Assert.AreEqual(basicPricePlan.Description, actualBasicPricePlan.Description, true);
             Assert.AreEqual(basicPricePlan.Price, actualBasicPricePlan.Price);
             Assert.AreEqual(basicPricePlan.NoOfStamps, actualBasicPricePlan.NoOfStamps);
             Assert.AreEqual(basicPricePlan.ConfirmationDescription, basicPricePlan.ConfirmationDescription);
 
-            var actualStandardPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(standardPricePlan.Title, System.StringComparison.InvariantCultureIgnoreCase));
+            var actualStandardPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(standardPricePlan.Title, StringComparison.InvariantCultureIgnoreCase));
             Assert.IsNotNull(actualStandardPricePlan);
             Assert.AreEqual(standardPricePlan.Description, actualStandardPricePlan.Description, true);
             Assert.AreEqual(standardPricePlan.Price, actualStandardPricePlan.Price);
             Assert.AreEqual(standardPricePlan.NoOfStamps, actualStandardPricePlan.NoOfStamps);
             Assert.AreEqual(standardPricePlan.ConfirmationDescription, standardPricePlan.ConfirmationDescription);
 
-            var actualPremiumPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(premiumPricePlan.Title, System.StringComparison.InvariantCultureIgnoreCase));
+            var actualPremiumPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(premiumPricePlan.Title, StringComparison.InvariantCultureIgnoreCase));
             Assert.IsNotNull(actualPremiumPricePlan);
             Assert.AreEqual(premiumPricePlan.Description, actualPremiumPricePlan.Description, true);
             Assert.AreEqual(premiumPricePlan.Price, actualPremiumPricePlan.Price);

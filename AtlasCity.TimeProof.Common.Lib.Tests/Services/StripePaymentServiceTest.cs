@@ -64,91 +64,91 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_ProcessPayment_With_Null_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(null, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(null, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_ProcessPayment_With_Null_UserId_In_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = null, Email = "test@example.com", PaymentMethodId = "testPaymentId" }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = null, Email = "test@example.com", PaymentMethodId = "testPaymentId" }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_Empty_UserId_In_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = string.Empty, Email = "test@example.com", PaymentMethodId = "testPaymentId" }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = string.Empty, Email = "test@example.com", PaymentMethodId = "testPaymentId" }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_WhiteSpace_UserId_In_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = " ", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = " ", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_ProcessPayment_With_Null_Email_In_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = null, PaymentMethodId = "testPaymentId" }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = null, PaymentMethodId = "testPaymentId" }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_Empty_Email_In_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = string.Empty, PaymentMethodId = "testPaymentId" }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = string.Empty, PaymentMethodId = "testPaymentId" }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_WhiteSpace_Email_In_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = " ", PaymentMethodId = "testPaymentId" }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = " ", PaymentMethodId = "testPaymentId" }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_ProcessPayment_With_Null_PaymentMethodId_In_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = null }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = null }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_Empty_PaymentMethodId_In_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = string.Empty }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = string.Empty }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_WhiteSpace_PaymentMethodId_In_PaymentDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = " " }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = " " }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_ProcessPayment_With_Null_PaymentCustomerId_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, null, CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, null, "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_Empty_PaymentCustomerId_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, string.Empty, CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, string.Empty, "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void Calling_ProcessPayment_With_WhiteSpace_PaymentCustomerId_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, " ", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, " ", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]
@@ -157,7 +157,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
             paymentIntentServiceMock.Setup(s => s.CreateAsync(It.IsAny<PaymentIntentCreateOptions>(), It.IsAny<RequestOptions>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.FromResult(new PaymentIntent { StripeResponse = new StripeResponse(HttpStatusCode.OK, null, null) }));
             
-            var response = stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            var response = stripePaymentService.ProcessPayment(new PaymentDao() { UserId = "TestId", Email = "test@example.com", PaymentMethodId = "testPaymentId" }, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
             
             Assert.IsNotNull(response);
         }
@@ -166,7 +166,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_CreatePaymentCustomer_With_Null_UserDao_Should_Throw_An_Exception()
         {
-            stripePaymentService.ProcessPayment(null, "testCustomerId", CancellationToken.None).GetAwaiter().GetResult();
+            stripePaymentService.ProcessPayment(null, "testCustomerId", "testSetupIntentId", CancellationToken.None).GetAwaiter().GetResult();
         }
 
         [TestMethod]

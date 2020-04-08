@@ -7,7 +7,7 @@ namespace AtlasCity.TimeProof.Abstractions.Services
 {
     public interface IPaymentService
     {
-        Task<PaymentResponseDao> ProcessPayment(PaymentDao payment, string paymentCustomerId, CancellationToken cancellationToken);
+        Task<PaymentResponseDao> ProcessPayment(PaymentDao payment, string paymentCustomerId, string setupIntentId, CancellationToken cancellationToken);
 
         Task<string> CreatePaymentCustomer(UserDao customer, CancellationToken cancellationToken);
 
