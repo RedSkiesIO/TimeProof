@@ -92,5 +92,17 @@ namespace AtlasCity.TimeProof.Api.Controllers
             var response = _userSubscriptionService.GetCustomerPaymentMethod(id, cancellationToken).GetAwaiter().GetResult();
             return new SuccessActionResult(response);
         }
+
+        [Route("user/paymentintent/planId/id")]
+        [HttpGet]
+        public IActionResult GetPaymentIntent([FromRoute] string planId, string id, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(planId) || string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+
+            var response = _userSubscriptionService.GetPaymentIntent(id, planId, cancellationToken).GetAwaiter().GetResult();
+            return new SuccessActionResult(response);
+        }
     }
 }

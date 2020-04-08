@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions;
@@ -39,6 +40,32 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _pricePlanRepository = pricePlanRepository;
             _paymentService = paymentService;
         }
+        public async Task<PaymentIntentDao> GetPaymentIntent(string userId, string pricePlanId, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            AtlasGuard.IsNotNullOrWhiteSpace(pricePlanId);
+
+            var user = await _userRepository.GetUserById(userId, cancellationToken);
+            if (user == null)
+                throw new UserException("Please create the user first.");
+
+            var pricePlan = await _pricePlanRepository.GetPricePlanById(pricePlanId, cancellationToken);
+            if (pricePlan == null)
+                throw new SubscriptionException($"Unable to find the price plan with '{pricePlanId}' identifier.");
+
+            var paymentIntent = await _paymentService.GetPaymentIntents(user.PaymentCustomerId, cancellationToken);
+
+            if (paymentIntent != null)
+            {
+               // TODO: Sudhir Check amount is matching
+            }
+            else
+            {
+                paymentIntent = await _paymentService.CreatePaymentIntent(user.PaymentCustomerId, pricePlan.Price, cancellationToken);
+            }
+
+            return paymentIntent;
+        }
 
         public async Task<SetupIntentDao> CreateSetupIntent(string userId, CancellationToken cancellationToken)
         {
@@ -50,19 +77,19 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             SetupIntentDao setupIntent = null;
 
-            if (!string.IsNullOrWhiteSpace(user.SetupIntentId))
-            {
-                setupIntent = await _paymentService.GetSetupIntent(user.SetupIntentId, cancellationToken);
-                if (setupIntent != null)
-                    return setupIntent;
+            //if (!string.IsNullOrWhiteSpace(user.SetupIntentId))
+            //{
+            //    setupIntent = await _paymentService.GetSetupIntent(user.SetupIntentId, cancellationToken);
+            //    if (setupIntent != null)
+            //        return setupIntent;
 
-                _logger.Warning($"Setup intent '{user.SetupIntentId}' is missing from the payment service.");
-            }
+            //    _logger.Warning($"Setup intent '{user.SetupIntentId}' is missing from the payment service.");
+            //}
 
             if (setupIntent == null)
             {
                 setupIntent = await _paymentService.CreateSetupIntent(user.PaymentCustomerId, cancellationToken);
-                user.SetupIntentId = setupIntent.Id;
+                //user.SetupIntentId = setupIntent.Id;
 
                 await _userRepository.UpdateUser(user, cancellationToken);
             }

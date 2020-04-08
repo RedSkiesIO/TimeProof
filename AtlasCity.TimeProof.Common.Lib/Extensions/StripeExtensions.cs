@@ -3,7 +3,7 @@ using Stripe;
 
 namespace AtlasCity.TimeProof.Common.Lib.Extensions
 {
-    public static class SetupIntentExtensions
+    public static class StripeExtensions
     {
         public static SetupIntentDao ToSetupIntentDao(this SetupIntent setupIntent)
         {
@@ -17,6 +17,24 @@ namespace AtlasCity.TimeProof.Common.Lib.Extensions
                 };
 
                 return setupIntentDao;
+            }
+
+            return null;
+        }
+
+        public static PaymentIntentDao ToPaymentIntentDao(this PaymentIntent paymentIntent)
+        {
+            if (paymentIntent != null)
+            {
+                var paymentIntentDao = new PaymentIntentDao
+                {
+                    Id = paymentIntent.Id,
+                    CustomerId = paymentIntent.CustomerId,
+                    ClientSecret = paymentIntent.ClientSecret
+
+                };
+
+                return paymentIntentDao;
             }
 
             return null;

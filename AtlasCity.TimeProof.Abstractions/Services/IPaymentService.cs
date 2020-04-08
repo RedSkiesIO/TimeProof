@@ -20,5 +20,9 @@ namespace AtlasCity.TimeProof.Abstractions.Services
         Task<SetupIntentDao> GetSetupIntent(string setupIntentId, CancellationToken cancellationToken);
 
         Task<SetupIntentDao> CreateSetupIntent(string paymentCustomerId, CancellationToken cancellationToken);
+
+        Task<PaymentIntentDao> GetPaymentIntents(string paymentCustomerId, CancellationToken cancellationToken);
+
+        Task<PaymentIntentDao> CreatePaymentIntent(string paymentCustomerId, long amount, CancellationToken cancellationToken);
     }
 }

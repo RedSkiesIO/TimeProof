@@ -150,6 +150,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         public async Task DeletePaymentCustomer(string paymentCustomerId, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+
             try
             {
                 var deletedCustomer = await _customerService.DeleteAsync(paymentCustomerId, cancellationToken: cancellationToken);
@@ -161,6 +162,39 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             catch (Exception ex)
             {
                 throw new PaymentServiceException(ex);
+            }
+        }
+
+        public async Task<PaymentIntentDao> GetPaymentIntents(string paymentCustomerId, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+
+            var paymentIntent = await _paymentIntentService.GetAsync(paymentCustomerId, cancellationToken: cancellationToken);
+
+            if (paymentIntent != null)
+                return paymentIntent.ToPaymentIntentDao();
+
+            return null;
+        }
+
+        public async Task<PaymentIntentDao> CreatePaymentIntent(string paymentCustomerId, long amount, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var options = new PaymentIntentCreateOptions
+                {
+                    Customer = paymentCustomerId,
+                    Amount = amount,
+                    Currency = "gbp"
+                };
+
+                var paymentIntent = await _paymentIntentService.CreateAsync(options: options, cancellationToken: cancellationToken);
+
+                return paymentIntent.ToPaymentIntentDao();
+            }
+            catch (Exception ex)
+            {
+                throw new PaymentServiceException($"Unable to create payment intent for customer '{paymentCustomerId}'", ex);
             }
         }
     }
