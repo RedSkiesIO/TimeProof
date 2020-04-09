@@ -58,7 +58,7 @@
 
           <q-card-actions class="row justify-between">
             <q-btn
-              :disable="currentMemberShip === item.title"
+              :disable="currentMemberShip === item.id"
               flat
               color="primary"
               @click="choosePlan(item)"
@@ -66,7 +66,7 @@
               Choose Plan
             </q-btn>
             <q-badge
-              v-if="currentMemberShip === item.title"
+              v-if="currentMemberShip === item.id"
               outline
               class="q-ml-md"
               color="orange"

@@ -2,10 +2,9 @@
   <q-card
     flat
     class="bg-grey-2"
-    style="width:65%"
   >
     <div class="row justify-center q-mx-sm q-mb-md">
-      <label class="text-h5 text-weight-bold">My Subscription</label>
+      <label class="text-h6 text-weight-bold">My Subscription</label>
     </div>
     <div
       class="row justify-start q-gutter-lg items-center
@@ -14,10 +13,10 @@
       <div class="col-md-3">
         <label>Plan</label>
       </div>
-      <div class="col-md-2">
-        {{ currentPlan.title }} Monthly
+      <div class="col-md-3">
+        {{ currentPlan.title }} / Per Month
       </div>
-      <div class="col-md-5 text-right">
+      <div class="col-md-4 text-right">
         <q-space />
       </div>
     </div>
@@ -43,7 +42,7 @@
         <label>Billing Method</label>
       </div>
       <div
-        class="col-md-5"
+        class="col-md-6"
       >
         <div
           v-show="saveMode"
@@ -54,12 +53,12 @@
           </label>
           <div
             id="card-element"
-            class="field col-md-7"
+            class="field col-md-9"
           />
         </div>
         <div v-show="!saveMode">
           <div class="row">
-            <label class="col-md-4">
+            <label class="col-md-5">
               <span>Card Number:</span>
             </label>
 
@@ -68,7 +67,7 @@
             </div>
           </div>
           <div class="row">
-            <label class="col-md-4">
+            <label class="col-md-5">
               <span>Expiration Date:</span>
             </label>
 
@@ -79,18 +78,10 @@
         </div>
       </div>
       <div
-        class="col-md-2"
+        class="col-md-1"
       >
         <q-btn
-          v-if="!user.selectedCardNumber && !saveMode"
-          flat
-          no-caps
-          color="blue"
-          label="Add"
-          @click="addCard"
-        />
-        <q-btn
-          v-else-if="user.selectedCardNumber && !saveMode"
+          v-if="user.selectedCardNumber && !saveMode"
           flat
           no-caps
           color="blue"
@@ -98,7 +89,7 @@
           @click="changeCard"
         />
         <q-btn
-          v-else
+          v-else-if="saveMode"
           flat
           no-caps
           :disable="cardSaveDisable"
@@ -148,7 +139,6 @@ import { mapGetters } from 'vuex';
 import moment from 'moment';
 import stripe from '../Payment/stripeModule';
 import config from '../Payment/config';
-import User from '../../store/User';
 
 export default {
   name: 'AccountSubscription',
@@ -183,7 +173,7 @@ export default {
     },
   },
   created() {
-    this.getPaymentMethod();
+    this.refreshCard();
   },
   mounted() {
     this.setUpStripe();
@@ -199,10 +189,10 @@ export default {
 
     async setupCard() {
       // Create a Card Element and pass some custom styles to it.
-      // this.card = this.elements.getElement('card');
-
-      this.card = this.elements.create('card', { style: this.style });
-
+      this.card = this.elements.getElement('card');
+      if (!this.card) {
+        this.card = this.elements.create('card', { style: this.style });
+      }
 
       // Mount the Card Element on the page.
       this.card.mount('#card-element');
@@ -224,46 +214,18 @@ export default {
     async saveCard() {
       try {
         this.loading = true;
-        // const { paymentMethod } = await stripe.createPaymentMethod({
-        //   type: 'card',
-        //   card: this.card,
-        //   billing_details: {
-        //     name: this.user.name,
-        //     email: this.user.email,
-        //   },
-        // });
-        // console.log('PATMENT METHOD CARD');
-        // console.log(paymentMethod);
 
-        let { setupIntent, error } = await stripe.confirmCardSetup(
-          this.user.clientSecret,
-          {
-            payment_method: {
-              card: this.card,
-              billing_details: {
-                name: this.user.name,
-              },
-            },
-          },
-        );
-        // let { setupIntent, error } = response;
-        console.log('SAVE CARD');
-        // console.log(setupIntent);
+        const { status, error } = await this.$userServer.saveCard(this.user, stripe, this.card);
 
-        if (error && error.setup_intent) {
-          setupIntent = error.setup_intent;
-          error = null;
-        }
-
-        console.log(setupIntent);
         this.cardMessageVisible = true;
         if (error) {
           this.cardMessageSuccessful = false;
           this.cardMessageContent = error.message;
-        } else if (setupIntent.status === 'succeeded') {
+        } else if (status === 'succeeded') {
           this.cardMessageSuccessful = true;
           this.cardMessageContent = 'Your card is successfully saved';
-        } else if (setupIntent.status === 'processing') {
+          this.refreshCard();
+        } else if (status === 'processing') {
           this.cardMessageSuccessful = true;
           this.cardMessageContent = 'Your card is successfully processing';
         } else {
@@ -271,37 +233,23 @@ export default {
           this.cardMessageContent = error.message;
         }
       } catch (err) {
+        console.log('SAVE CARD FRONT ERROR');
         console.log(err);
       }
 
       setTimeout(() => {
         this.cardMessageVisible = false;
-      }, 2000);
+      }, 3000);
 
       this.loading = false;
       this.saveMode = false;
-    },
-    addCard() {
-      this.saveMode = true;
-      this.setupCard();
     },
     changeCard() {
       this.saveMode = true;
       this.setupCard();
     },
-    async getPaymentMethod() {
-      const { data, status } = await this.$axios.get(`${process.env.API}/user/paymentmethod/${this.user.userId}`);
-      console.log('PAYMENT METHOD RESULT');
-      console.log(data);
-      if (status === 200 && data && data.card) {
-        User.update({
-          data: {
-            accountIdentifier: this.user.accountIdentifier,
-            selectedCardNumber: `**** **** **** ${data.card.last4}`,
-            cardExpirationDate: `${data.card.expMonth} / ${data.card.expYear}`,
-          },
-        });
-      }
+    async refreshCard() {
+      this.$userServer.refreshCard(this.user);
     },
   },
 };

@@ -17,6 +17,8 @@ module.exports = function (ctx) {
       'createPdf',
       'crypto',
       'web3',
+      'server/payment',
+      'server/user',
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -64,8 +66,8 @@ module.exports = function (ctx) {
       scopeHoisting: true,
       env: ctx.dev
       ? {
-        API: JSON.stringify('http://localhost:5000/api'),
-        // API: JSON.stringify('https://atlascitytimeproofapi.azurewebsites.net/api'),
+        // API: JSON.stringify('http://localhost:5000/api'),
+        API: JSON.stringify('https://atlascitytimeproofapi.azurewebsites.net/api'),
         ETHERSCAN: JSON.stringify('https://kovan.etherscan.io/tx'),
         INFURA: JSON.stringify('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9')
       }

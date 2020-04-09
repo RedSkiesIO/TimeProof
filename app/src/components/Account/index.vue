@@ -18,8 +18,8 @@
       />
     </div>
     <div
-      class="column justify-center q-gutter-y-md q-mr-sm"
-      style="height:100%; margin-top: -9px;"
+      class="column justify-center q-gutter-y-md q-mr-sm q-ml-md"
+      style="margin-top: -9px;"
     >
       <div class="row q-gutter-x-sm q-mb-xs">
         <div><q-icon name="fas fa-user" /></div>

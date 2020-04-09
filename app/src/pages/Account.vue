@@ -7,11 +7,11 @@
         Account details
       </div>
       <div class="row q-mt-sm q-gutter-x-md">
-        <AccountDetails />
-        <AccountKey />
+        <AccountDetails class="col-7" />
+        <AccountKey class="col-4" />
       </div>
       <div class="row q-mt-sm q-gutter-x-md">
-        <AccountSubscription />
+        <AccountSubscription class="col-7" />
       </div>
     </div>
   </q-page>

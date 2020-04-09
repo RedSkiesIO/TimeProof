@@ -21,3 +21,14 @@ const fileMap = expand({
 
 
 export const fileIcon = type => fileMap[type] || 'fas fa-file';
+
+// Format a price (assuming a two-decimal currency like EUR or USD for simplicity).
+export const formatPrice = (amount, currency) => {
+  const price = (amount / 100).toFixed(2);
+  const numberFormat = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency,
+    currencyDisplay: 'symbol',
+  });
+  return numberFormat.format(price);
+};

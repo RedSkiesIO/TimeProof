@@ -29,7 +29,7 @@
               :email="user.email"
             />
           </section>
-          <section>
+          <section v-show="!user.paymentIntentId">
             <h2>Payment Information</h2>
             <nav id="payment-methods">
               <ul>
@@ -269,10 +269,10 @@
 import { mapGetters, mapActions } from 'vuex';
 import Identicon from 'identicon.js';
 import PaymentBilling from '../PaymentBilling';
-import paymentStore from './paymentStore';
 import config from './config';
 import stripe from './stripeModule';
 import { paymentMethods, uiPaymentTypeList } from './paymentMethods';
+import { formatPrice } from '../../util';
 
 export default {
 
@@ -282,7 +282,6 @@ export default {
   data() {
     return {
       elements: null,
-      paymentStore,
       config,
       stripe,
       errorDialog: false,
@@ -328,7 +327,7 @@ export default {
       return this.$auth.user(true);
     },
     amount() {
-      return paymentStore.formatPrice(this.sellingProduct.price, config.currency);
+      return formatPrice(this.sellingProduct.price, config.currency);
     },
     productImage() {
       let imageData;
@@ -480,7 +479,7 @@ export default {
         if (error) {
           // Report to the browser that the payment failed.
           event.complete('fail');
-          this.handlePayment({ error });
+          this.completePayment({ error });
         } else {
           // Report to the browser that the confirmation was successful, prompting
           // it to close the browser payment method collection interface.
@@ -489,7 +488,7 @@ export default {
           const response = await stripe.confirmCardPayment(
             paymentIntent.client_secret,
           );
-          this.handlePayment(response);
+          this.completePayment(response);
         }
       });
 
@@ -501,9 +500,9 @@ export default {
       // Callback when the shipping option is changed.
       paymentRequest.on('shippingoptionchange', async (event) => {
         // Update the PaymentIntent to reflect the shipping cost.
-        const response = await paymentStore.updatePaymentIntentWithShippingCost(
+        const response = await this.$paymentServer.updatePaymentIntentWithShippingCost(
           paymentIntent.id,
-          paymentStore.getLineItems(),
+          this.$paymentServer.getLineItems(),
           event.shippingOption,
         );
         event.updateWith({
@@ -513,7 +512,7 @@ export default {
           },
           status: 'success',
         });
-        const amount = paymentStore.formatPrice(
+        const amount = formatPrice(
           response.paymentIntent.amount,
           config.currency,
         );
@@ -551,48 +550,30 @@ export default {
       }
     },
 
-    async handlePayment(paymentResponse, userId) {
+    async completePayment(paymentResponse) {
       // Handle new PaymentIntent result
       try {
-        let { setupIntent, error } = paymentResponse;
+        const { status, error } = paymentResponse;
         console.log('HANDLE PAYMENT');
         console.log(paymentResponse);
-
-        if (error && error.setup_intent) {
-          setupIntent = error.setup_intent;
-          error = null;
-        }
 
         if (error) {
           this.confirmationElementErrorMessage = error.message;
           this.paymentResultUpdate(false, false, false, true, false);
-        } else if (setupIntent) { // && setupIntent.status === 'succeeded'
-          // Success! Payment is confirmed. Update the interface to display the confirmation screen.
-          const paymentResult = await paymentStore.makePayment(userId, setupIntent.payment_method,
-            this.sellingProduct.price, this.user.email, this.sellingProduct.id);
-          if (paymentResult && paymentResult.status === 200) {
-            this.confirmationElementNote = 'We just sent your receipt to your email address,';
-            paymentStore.updateUserSubscription(this.sellingProduct.title);
-            this.paymentResultUpdate(true, false, false, false, true);
-            this.setSellingProduct(null);
-          } else {
-            if (paymentResult.data && paymentResult.data.error) {
-              this.confirmationElementErrorMessage = paymentResult.data.error;
-            } else {
-              this.confirmationElementErrorMessage = 'Unsupported payment';
-            }
-
-            this.paymentResultUpdate(false, false, false, true, false);
-          }
-        } else if (setupIntent && setupIntent.status === 'processing') {
+        } else if (status === 'succeeded') {
+          this.confirmationElementNote = 'We just sent your receipt to your email address,';
+          this.$paymentServer.updateUserSubscription(this.sellingProduct.id);
+          this.paymentResultUpdate(true, false, false, false, true);
+          this.setSellingProduct(null);
+        } else if (status === 'processing') {
           this.confirmationElementNote = 'We’ll send your receipt as soon as your payment is confirmed.';
           this.paymentResultUpdate(true, false, false, false, false);
         } else {
-          // Payment has failed.
-          this.paymentResultUpdate(false, false, false, false, false);
+          this.confirmationElementErrorMessage = 'Unsupported payment';
+          this.paymentResultUpdate(false, false, false, true, false);
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
         this.paymentResultUpdate(false, false, false, true, false);
       }
     },
@@ -644,7 +625,7 @@ export default {
       console.log('FORM SUBMIT');
       console.log(this.$refs.paymentBilling);
 
-      const data = {
+      const addressData = {
         name: this.$refs.paymentBilling.name,
         email: this.$refs.paymentBilling.email,
         line: this.$refs.paymentBilling.address,
@@ -654,9 +635,9 @@ export default {
         country: this.$refs.paymentBilling.country,
       };
       console.log('GGGGGGGGGGGGGGGG');
-      console.log(data);
+      console.log(addressData);
 
-      const addressFound = await paymentStore.updatePaymentAddress(this.user, data);
+      const addressFound = await this.$paymentServer.updatePaymentAddress(this.user, addressData);
 
       if (addressFound) {
         // const {
@@ -673,37 +654,13 @@ export default {
         //   },
         // };
 
-        if (this.user.userId && this.user.clientSecret) {
+        if (this.user.userId) {
           if (this.paymentType === 'card') {
-            console.log('BEFORE CONFIRM INTENT');
-            console.log(this.card);
-            const response = await stripe.confirmCardSetup(
-              this.user.clientSecret,
-              {
-                payment_method: {
-                  card: this.card,
-                  billing_details: {
-                    name: data.name,
-                  },
-                },
-              },
-            );
-            console.log(response);
-            console.log('AFTER CONFIRM INTENT');
-            // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
-            // const response = await stripe.confirmCardPayment(
-            //   verifyResult.data.clientSecret,
-            //   {
-            //     payment_method: {
-            //       card: vm.card,
-            //       billing_details: {
-            //         name,
-            //       },
-            //     },
-            //     shipping,
-            //   },
-            // );
-            this.handlePayment(response, this.user.userId);
+            const response = await this.$paymentServer
+              .subscribeToPackage(stripe, this.user,
+                addressData.name, this.card, this.sellingProduct.id);
+
+            this.completePayment(response);
           } else if (this.paymentType === 'sepa_debit') {
             // Confirm the PaymentIntent with the IBAN Element.
             const response = await stripe.confirmSepaDebitPayment(
@@ -712,13 +669,13 @@ export default {
                 payment_method: {
                   sepa_debit: this.iban,
                   billing_details: {
-                    name: data.name,
-                    email: data.email,
+                    name: addressData.name,
+                    email: addressData.email,
                   },
                 },
               },
             );
-            this.handlePayment(response);
+            this.completePayment(response);
           } else {
             // Prepare all the Stripe source common data.
             const sourceData = {
@@ -726,8 +683,8 @@ export default {
               amount: this.paymentIntent.amount,
               currency: this.paymentIntent.currency,
               owner: {
-                name: data.name,
-                email: data.email,
+                name: addressData.name,
+                email: addressData.email,
               },
               redirect: {
                 return_url: window.location.href,
@@ -753,7 +710,7 @@ export default {
               case 'sofort':
                 // SOFORT: The country is required before redirecting to the bank.
                 sourceData.sofort = {
-                  country: data.country,
+                  country: addressData.country,
                 };
                 break;
               case 'ach_credit_transfer':
@@ -770,7 +727,7 @@ export default {
             this.handleSourceActiviation(source);
           }
         } else {
-          this.handlePayment({ error: { message: 'User not found' } });
+          this.completePayment({ error: { message: 'User not found' } });
         }
       }
     },
@@ -793,7 +750,7 @@ export default {
             // });
             // Hide the previous text and update the call to action.
             this.wechatPaymentInfoNoticeDisplay = 'none';
-            const amount = paymentStore.formatPrice(
+            const amount = formatPrice(
               source.amount, // get payment total
               config.currency,
             );
@@ -816,7 +773,7 @@ export default {
           // Display the receiver address to send the funds to.
           this.mainClassSuccess = true;
           this.mainClassReceiver = true;
-          const amount = paymentStore.formatPrice(source.amount, config.currency);
+          const amount = formatPrice(source.amount, config.currency);
           switch (source.type) {
             case 'ach_credit_transfer': {
               // Display the ACH Bank Transfer information to the user.
@@ -909,7 +866,7 @@ export default {
       //     start,
       //   );
       // } else {
-      //   this.handlePayment(response);
+      //   this.completePayment(response);
       //   if (!endStates.includes(response.paymentIntent.status)) {
       //   // Status has not changed yet. Let's time out.
       //     console.warn(new Error('Polling timed out.'));

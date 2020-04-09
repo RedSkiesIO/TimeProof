@@ -7,11 +7,9 @@
 </template>
 
 <script>
-import axios from 'axios';
-import moment from 'moment';
 import { mapActions } from 'vuex';
+import moment from 'moment';
 import User from './store/User';
-import Tier from './util/tier';
 
 export default {
   name: 'App',
@@ -26,24 +24,12 @@ export default {
     account() {
       return this.$auth.account();
     },
-
     user() {
       return this.$auth.user(false, true, 'timestamps');
     },
   },
   async created() {
-    const { data, status } = await axios.get(`${process.env.API}/priceplans`);
-    console.log('PRICE PLANSS');
-    console.log(data);
-    const productsData = {};
-    const colorList = ['orange', 'green', 'blue'];
-    if (status === 200 && data) {
-      data.forEach((plan, index) => {
-        productsData[plan.title] = plan;
-        productsData[plan.title].color = colorList[index];
-      });
-      this.setProducts(productsData);
-    }
+    this.setProducts(await this.$paymentServer.listAllPriceplans());
   },
   mounted() {
     this.start();
@@ -56,43 +42,25 @@ export default {
     async start() {
       if (this.account) {
         const token = await this.$auth.getToken();
-        this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
-        if (!this.user) {
-          const membership = this.account.idToken.extension_membershipTier || Tier.Basic;
-          User.insert({
-            data: {
-              accountIdentifier: this.account.accountIdentifier,
-              givenName: this.account.idToken.given_name,
-              familyName: this.account.idToken.family_name,
-              email: this.account.idToken.emails[0],
-              tokenExpires: token.idToken.expiration,
-              tier: membership,
-            },
-          });
-        } else if (this.user) {
-          const membership = this.account.idToken.extension_membershipTier || this.user.tier;
-          User.update({
-            data: {
-              accountIdentifier: this.account.accountIdentifier,
-              givenName: this.account.idToken.given_name,
-              familyName: this.account.idToken.family_name,
-              email: this.account.idToken.emails[0],
-              tokenExpires: token.idToken.expiration,
-              tier: membership,
-            },
-          });
-        }
+
         try {
-          const verifyResult = await this.user.verifyUserDetails();
+          this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
+          const verifyResult = await this.$userServer.verifyUserDetails();
           console.log('WOWOWOWOOWOWOWw');
           console.log(verifyResult);
-          if (verifyResult && verifyResult.data) {
+          if (verifyResult) {
             User.update({
               data: {
                 accountIdentifier: this.account.accountIdentifier,
-                userId: verifyResult.data.userId,
-                clientSecret: verifyResult.data.clientSecret,
-                customerId: verifyResult.data.customerId,
+                givenName: this.account.idToken.given_name,
+                familyName: this.account.idToken.family_name,
+                email: this.account.idToken.emails[0],
+                tokenExpires: token.idToken.expiration,
+                userId: verifyResult.id,
+                tier: verifyResult.pricePlanId,
+                clientSecret: verifyResult.clientSecret,
+                customerId: verifyResult.customerId,
+                paymentIntentId: verifyResult.paymentIntentId,
               },
             });
           }
@@ -101,7 +69,7 @@ export default {
             this.$router.push('/new-key');
           }
 
-          await this.user.fetchTimestamps();
+          await this.$userServer.fetchTimestamps();
           let timer = 0;
 
           setInterval(async () => {
