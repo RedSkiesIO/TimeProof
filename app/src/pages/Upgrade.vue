@@ -9,11 +9,10 @@
       <div
         v-for="item in products"
         :key="item.id"
-        class="col-4"
+        class="col-4 price-plan-div"
       >
         <q-card
           class="q-mt-md"
-          flat
           bordered
         >
           <q-card-section horizontal>
@@ -60,7 +59,7 @@
             <q-btn
               :disable="currentMemberShip === item.id"
               flat
-              color="primary"
+              color="primary text-weight-bold"
               @click="choosePlan(item)"
             >
               Choose Plan
@@ -122,6 +121,10 @@ export default {
     margin: 0 16px;
     border-radius: 20px;
   }
+  .q-card:hover{
+    background: lightcyan;
+    box-shadow: 10px 10px 8px 8px gray;
+  }
   .plan-title{
     font-size: 20px;
   }
@@ -146,7 +149,5 @@ export default {
     padding: 40px 20px;
   }
 
-  .q-card__section {
-  }
 }
 </style>
