@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO.Payment;
+using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
-using Dawn;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
@@ -23,14 +22,13 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             _documentCollectionUri = UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId);
         }
 
-        public async Task<PaymentResponseDao> CreatePaymentReceived(PaymentResponseDao paymentResponse, CancellationToken cancellationToken)
+        public async Task<PaymentIntentDao> CreatePaymentReceived(PaymentIntentDao paymentIntent, CancellationToken cancellationToken)
         {
-            Guard.Argument(paymentResponse, nameof(paymentResponse)).NotNull();
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentResponse.RequestId);
+            AtlasGuard.IsNotNull(paymentIntent);
 
-            var response = await Client.CreateDocumentAsync(_documentCollectionUri, paymentResponse, cancellationToken: cancellationToken);
+            var response = await Client.CreateDocumentAsync(_documentCollectionUri, paymentIntent, cancellationToken: cancellationToken);
 
-            return JsonConvert.DeserializeObject<PaymentResponseDao>(response.Resource.ToString());
+            return JsonConvert.DeserializeObject<PaymentIntentDao>(response.Resource.ToString());
         }
     }
 }

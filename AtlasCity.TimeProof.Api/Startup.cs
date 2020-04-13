@@ -24,7 +24,7 @@ namespace AtlasCity.TimeProof.Api
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        readonly string MyAllowSpecificOrigins = "AllowAllHeaders";
 
         public Startup(IConfiguration configuration)
         {
@@ -47,6 +47,27 @@ namespace AtlasCity.TimeProof.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var origins = new string[] { "http://localhost:6420", "http://86.23.42.81:6420", "http://192.168.0.25:6420", "https://timeproof.netlify.com" };
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins(origins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
+
+            //services.AddCors(options =>
+            //{
+            //    options.AddDefaultPolicy(
+            //        builder =>
+            //        {
+            //            builder.WithOrigins("http://localhost:6240", "https://timeproof.netlify.com").AllowAnyHeader().AllowAnyMethod();
+            //        });
+            //});
+
             services.AddControllers();
 
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
@@ -54,13 +75,13 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddAuthentication(sharedOptions =>
-            {
-                sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
-            .AddCookie();
+            //services.AddAuthentication(sharedOptions =>
+            //{
+            //    sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //    sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            //})
+            //.AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
+            //.AddCookie();
 
             //services.AddAuthentication(sharedOptions =>
             //{
@@ -114,19 +135,7 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IUserSubscriptionService, UserSubscriptionService>();
-            services.AddSingleton<ITimestampService, TimestampService>();
-
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                builder =>
-                {
-                    builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-                });
-            });
+            services.AddSingleton<ITimestampService, TimestampService>();           
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger logger)
@@ -136,18 +145,15 @@ namespace AtlasCity.TimeProof.Api
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);
 
-            app.UseHttpsRedirection();
-
             app.UseSerilogRequestLogging();
-
-            app.UseRouting();
-
             //app.UseSession();
 
             //app.UseAuthentication();
-            app.UseAuthorization();
+            //app.UseAuthorization();
             ////app.UseForwardedHeaders(new ForwardedHeadersOptions
             //{
             //    RequireHeaderSymmetry = false,
@@ -158,7 +164,7 @@ namespace AtlasCity.TimeProof.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
+            });            
         }
     }
 }

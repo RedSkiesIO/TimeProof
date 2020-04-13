@@ -30,6 +30,9 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         [JsonProperty(PropertyName = "pricePlanId")]
         public string PricePlanId { get; set; }
 
+        [JsonProperty(PropertyName = "paymentIntentId")]
+        public string PaymentIntentId { get; set; }
+
         public string FullName
         {
             get

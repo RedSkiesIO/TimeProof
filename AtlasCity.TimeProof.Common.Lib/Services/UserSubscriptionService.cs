@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions;
-using AtlasCity.TimeProof.Abstractions.DAO;
-using AtlasCity.TimeProof.Abstractions.DAO.Payment;
 using AtlasCity.TimeProof.Abstractions.Repository;
+using AtlasCity.TimeProof.Abstractions.Responses;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
@@ -40,7 +37,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _pricePlanRepository = pricePlanRepository;
             _paymentService = paymentService;
         }
-        public async Task<PaymentIntentDao> GetPaymentIntent(string userId, string pricePlanId, CancellationToken cancellationToken)
+        public async Task<PaymentIntentResponse> GetPaymentIntent(string userId, string pricePlanId, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNullOrWhiteSpace(userId);
             AtlasGuard.IsNotNullOrWhiteSpace(pricePlanId);
@@ -53,97 +50,63 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             if (pricePlan == null)
                 throw new SubscriptionException($"Unable to find the price plan with '{pricePlanId}' identifier.");
 
-            var paymentIntent = await _paymentService.GetPaymentIntents(user.PaymentCustomerId, cancellationToken);
+            var paymentIntent = await _paymentService.GetPaymentIntentByCustomerId(user.PaymentCustomerId, cancellationToken);
 
-            if (paymentIntent != null)
-            {
-               // TODO: Sudhir Check amount is matching
-            }
-            else
-            {
+            if (paymentIntent != null && paymentIntent.Amount != pricePlan.Price)
+                throw new SubscriptionException($"Payment Intent already exists with mismatch amount. Expected '{pricePlan.Price}' and actual '{paymentIntent.Amount}'");
+
+            if (paymentIntent == null)
                 paymentIntent = await _paymentService.CreatePaymentIntent(user.PaymentCustomerId, pricePlan.Price, cancellationToken);
-            }
 
-            return paymentIntent;
+            return paymentIntent.ToResponse();
         }
 
-        public async Task<SetupIntentDao> CreateSetupIntent(string userId, CancellationToken cancellationToken)
+        public async Task ProcessPayment(string userId, string paymentIntentId, string pricePlanId, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            AtlasGuard.IsNotNullOrWhiteSpace(paymentIntentId);
+            AtlasGuard.IsNotNullOrWhiteSpace(pricePlanId);
 
             var user = await _userRepository.GetUserById(userId, cancellationToken);
-            if (user == null)
-                throw new UserException("Please create the user first.");
-
-            SetupIntentDao setupIntent = null;
-
-            //if (!string.IsNullOrWhiteSpace(user.SetupIntentId))
-            //{
-            //    setupIntent = await _paymentService.GetSetupIntent(user.SetupIntentId, cancellationToken);
-            //    if (setupIntent != null)
-            //        return setupIntent;
-
-            //    _logger.Warning($"Setup intent '{user.SetupIntentId}' is missing from the payment service.");
-            //}
-
-            if (setupIntent == null)
-            {
-                setupIntent = await _paymentService.CreateSetupIntent(user.PaymentCustomerId, cancellationToken);
-                //user.SetupIntentId = setupIntent.Id;
-
-                await _userRepository.UpdateUser(user, cancellationToken);
-            }
-
-            return setupIntent;
-        }
-
-        public async Task<PaymentResponseDao> ProcessPayment(PaymentDao payment, CancellationToken cancellationToken)
-        {
-            AtlasGuard.IsNotNull(payment);
-            AtlasGuard.IsNotNullOrWhiteSpace(payment.UserId);
-            AtlasGuard.IsNotNullOrWhiteSpace(payment.PricePlanId);
-
-            var user = await _userRepository.GetUserById(payment.UserId, cancellationToken);
             if (user == null)
                 throw new UserException("Please create the user first.");
 
             if (string.IsNullOrWhiteSpace(user.PaymentCustomerId))
                 throw new UserException("PaymentCustomerId is missing. Please create the user first.");
 
-            var pricePlan = await _pricePlanRepository.GetPricePlanById(payment.PricePlanId, cancellationToken);
+            var pricePlan = await _pricePlanRepository.GetPricePlanById(pricePlanId, cancellationToken);
             if (pricePlan == null)
-                throw new SubscriptionException($"Unable to find the price plan with '{payment.PricePlanId}' identifier.");
+                throw new SubscriptionException($"Unable to find the price plan with '{user.PricePlanId}' identifier.");
 
-            if (pricePlan.Price != payment.Amount)
-                throw new SubscriptionException($"Processing payment amount is not matching with price plan '{payment.PricePlanId}'. Expected '{pricePlan.Price}' and actual '{payment.Amount}'");
+            var paymentIntent = await _paymentService.GetPaymentIntent(paymentIntentId, cancellationToken);
 
-            PaymentResponseDao paymentResponse = null;
+            if (pricePlan.Price != paymentIntent.Amount)
+                _logger.Error($"Payment amount is not matching with price plan '{pricePlan.Id}'. Expected '{pricePlan.Price}' and actual '{paymentIntent.Amount}'");
 
-            if (!pricePlan.Title.Equals(Constants.FreePricePlanTitle))
-            {
-                try
-                {
-                    paymentResponse = await _paymentService.ProcessPayment(payment, user.PaymentCustomerId, user.SetupIntentId, cancellationToken);
-                    _logger.Information($"Collected payment of '{payment.Amount}' in minimum unit for user '{user.Id}'.");
+            _logger.Information($"Collected payment of '{paymentIntent.Amount}' in minimum unit for user '{user.Id}'.");
 
-                    await _paymentRepository.CreatePaymentReceived(paymentResponse, cancellationToken);
+            await _paymentRepository.CreatePaymentReceived(paymentIntent, cancellationToken);
 
-                }
-                catch (PaymentServiceException ex)
-                {
-                    _logger.Error(ex, $"Unable to collect payment for user '{user.Id}'.");
-                    throw ex;
-                }
-            }
-
-            user.PricePlanId = payment.PricePlanId;
+            user.PricePlanId = pricePlan.Id;
+            user.PaymentIntentId = paymentIntentId;
             user.MembershipStartDate = DateTime.UtcNow;
             await _userRepository.UpdateUser(user, cancellationToken);
-
-            return paymentResponse;
         }
 
-        public async Task<PaymentMethodDao> GetCustomerPaymentMethod(string userId, CancellationToken cancellationToken)
+        public async Task<SetupIntentResponse> CreateSetupIntent(string userId, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+
+            var user = await _userRepository.GetUserById(userId, cancellationToken);
+            if (user == null)
+                throw new UserException("Please create the user first.");
+
+            var setupIntent = await _paymentService.CreateSetupIntent(user.PaymentCustomerId, cancellationToken);
+
+            return setupIntent.ToResponse();
+        }
+
+        public async Task<PaymentMethodResponse> GetCustomerPaymentMethod(string userId, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNullOrWhiteSpace(userId);
 
@@ -154,8 +117,30 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             if (string.IsNullOrWhiteSpace(user.PaymentCustomerId))
                 throw new UserException("PaymentCustomerId is missing. Please create the user first.");
 
+            var payemtnMethod = await _paymentService.GetCustomerPaymentMethod(user.PaymentCustomerId, cancellationToken);
 
-            return await _paymentService.GetCustomerPaymentMethod(user.PaymentCustomerId, cancellationToken);
+            return payemtnMethod.ToResponse();
+        }
+
+        public async Task UpgradePricePlan(string userId, string pricePlanId, CancellationToken cancellationToken)
+        {
+            var user = await _userRepository.GetUserById(userId, cancellationToken);
+            if (user == null)
+                throw new UserException("User does not exists.");
+
+            if (user.PricePlanId.Equals(pricePlanId))
+            {
+                _logger.Warning($"Price plan already in target plan '{pricePlanId}'");
+                return;
+            }
+
+            var pricePlan = await _pricePlanRepository.GetPricePlanById(pricePlanId, cancellationToken);
+            if (pricePlan == null)
+                throw new SubscriptionException($"Unable to find the price plan with '{user.PricePlanId}' identifier.");
+
+            var paymentIntent = await _paymentService.CollectPayment(user.PaymentCustomerId, pricePlan.Price, cancellationToken);
+
+            await ProcessPayment(user.Id, paymentIntent.Id, pricePlan.Id, cancellationToken);
         }
     }
 }

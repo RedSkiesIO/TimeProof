@@ -1,5 +1,4 @@
-﻿using AtlasCity.TimeProof.Abstractions.DAO;
-using AtlasCity.TimeProof.Abstractions.DAO.Payment;
+﻿using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
 using Stripe;
 
 namespace AtlasCity.TimeProof.Common.Lib.Extensions
@@ -24,11 +23,11 @@ namespace AtlasCity.TimeProof.Common.Lib.Extensions
             return null;
         }
 
-        public static AddressDao ToAddressDao(this Address address)
+        public static PaymentAddress ToAddressDao(this Address address)
         {
             if (address != null)
             {
-                return new AddressDao()
+                return new PaymentAddress()
                 {
                     Line1 = address.Line1,
                     Line2 = address.Line2,
@@ -51,7 +50,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Extensions
                     Id = paymentMethod.Id,
                     PaymentCustomerId = paymentMethod.CustomerId,
 
-                    Card = paymentMethod.Card.ToCardDao()
+                    Card = paymentMethod.Card.ToPaymentCard()
                 };
 
                 return paymentMethodDao;
@@ -60,11 +59,11 @@ namespace AtlasCity.TimeProof.Common.Lib.Extensions
             return null;
         }
 
-        public static CardDao ToCardDao(this PaymentMethodCard paymentMethodCard)
+        public static PaymentCard ToPaymentCard(this PaymentMethodCard paymentMethodCard)
         {
             if (paymentMethodCard != null)
             {
-                var cardDao = new CardDao()
+                var cardDao = new PaymentCard()
                 {
 
                     Last4 = paymentMethodCard.Last4,

@@ -1,4 +1,4 @@
-﻿using AtlasCity.TimeProof.Abstractions.DAO.Payment;
+﻿using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
 using Stripe;
 
 namespace AtlasCity.TimeProof.Common.Lib.Extensions
@@ -7,37 +7,29 @@ namespace AtlasCity.TimeProof.Common.Lib.Extensions
     {
         public static SetupIntentDao ToSetupIntentDao(this SetupIntent setupIntent)
         {
-            if (setupIntent != null)
+            if (setupIntent == null)
+                return null;
+
+            return new SetupIntentDao
             {
-                var setupIntentDao = new SetupIntentDao
-                {
-                    Id = setupIntent.Id,
-                    CustomerId = setupIntent.CustomerId,
-                    ClientSecret = setupIntent.ClientSecret
-                };
-
-                return setupIntentDao;
-            }
-
-            return null;
+                Id = setupIntent.Id,
+                CustomerId = setupIntent.CustomerId,
+                ClientSecret = setupIntent.ClientSecret,
+            };
         }
 
         public static PaymentIntentDao ToPaymentIntentDao(this PaymentIntent paymentIntent)
         {
-            if (paymentIntent != null)
+            if (paymentIntent == null)
+                return null;
+
+            return new PaymentIntentDao
             {
-                var paymentIntentDao = new PaymentIntentDao
-                {
-                    Id = paymentIntent.Id,
-                    CustomerId = paymentIntent.CustomerId,
-                    ClientSecret = paymentIntent.ClientSecret
-
-                };
-
-                return paymentIntentDao;
-            }
-
-            return null;
+                Id = paymentIntent.Id,
+                ClientSecret = paymentIntent.ClientSecret,
+                Amount = paymentIntent.Amount.HasValue ? paymentIntent.Amount.Value : 0,
+                Created = paymentIntent.Created,
+            };
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace AtlasCity.TimeProof.Abstractions.DAO.Payment
+﻿namespace AtlasCity.TimeProof.Abstractions.PaymentServiceObjects
 {
-    public class CardDao
+    public class PaymentCard
     {
         public string Last4 { get; set; }
         

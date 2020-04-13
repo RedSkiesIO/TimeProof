@@ -1,9 +1,12 @@
 ﻿using Newtonsoft.Json;
 
-namespace AtlasCity.TimeProof.Abstractions.DAO.Payment
+namespace AtlasCity.TimeProof.Abstractions.Responses
 {
-    public class PaymentIntentDao : DaoBase
+    public class SetupIntentResponse
     {
+        [JsonProperty(PropertyName = "id")]
+        public string Id { get; set; }
+
         [JsonProperty(PropertyName = "customerId")]
         public string CustomerId { get; set; }
 

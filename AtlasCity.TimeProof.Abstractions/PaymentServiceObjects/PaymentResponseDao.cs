@@ -1,4 +1,4 @@
-﻿namespace AtlasCity.TimeProof.Abstractions.DAO.Payment
+﻿namespace AtlasCity.TimeProof.Abstractions.PaymentServiceObjects
 {
     public class PaymentResponseDao
     {

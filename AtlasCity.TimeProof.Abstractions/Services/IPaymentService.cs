@@ -1,14 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
-using AtlasCity.TimeProof.Abstractions.DAO.Payment;
+using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
 
 namespace AtlasCity.TimeProof.Abstractions.Services
 {
     public interface IPaymentService
     {
-        Task<PaymentResponseDao> ProcessPayment(PaymentDao payment, string paymentCustomerId, string setupIntentId, CancellationToken cancellationToken);
-
         Task<string> CreatePaymentCustomer(UserDao customer, CancellationToken cancellationToken);
 
         Task<PaymentCustomerDao> GetCustomerById(string paymentCustomerId, CancellationToken cancellationToken);
@@ -21,8 +19,12 @@ namespace AtlasCity.TimeProof.Abstractions.Services
 
         Task<SetupIntentDao> CreateSetupIntent(string paymentCustomerId, CancellationToken cancellationToken);
 
-        Task<PaymentIntentDao> GetPaymentIntents(string paymentCustomerId, CancellationToken cancellationToken);
+        Task<PaymentIntentDao> GetPaymentIntent(string paymentIntentId, CancellationToken cancellationToken);
+
+        Task<PaymentIntentDao> GetPaymentIntentByCustomerId(string paymentCustomerId, CancellationToken cancellationToken);
 
         Task<PaymentIntentDao> CreatePaymentIntent(string paymentCustomerId, long amount, CancellationToken cancellationToken);
+
+        Task<PaymentIntentDao> CollectPayment(string paymentCustomerId, long amount, CancellationToken cancellationToken);
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
-using AtlasCity.TimeProof.Abstractions.DAO.Payment;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
@@ -50,12 +48,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             AtlasGuard.IsNotNullOrWhiteSpace(email);
 
             var user =  await _userRepository.GetUserByEmail(email, cancellationToken);
-
-            if (user != null && !string.IsNullOrWhiteSpace(user.PaymentCustomerId))
-            {
-                var test = await _paymentService.GetCustomerPaymentMethod(user.PaymentCustomerId, cancellationToken);
-            }
-
             return user;
         }
 
@@ -64,39 +56,25 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             AtlasGuard.IsNotNull(user);
             AtlasGuard.IsNotNullOrWhiteSpace(user.Email);
 
-            PaymentCustomerDao existingPaymentCustomer = null;
+            var existingUser = await _userRepository.GetUserByEmail(user.Email, cancellationToken);
+            if (existingUser != null)
+                throw new UserException($"User with email '{user.Email}' already exists.");
 
             if (!string.IsNullOrWhiteSpace(user.PaymentCustomerId))
             {
-                try
-                {
-                    existingPaymentCustomer = await _paymentService.GetCustomerById(user.PaymentCustomerId, cancellationToken);
-                }
-                catch (PaymentServiceException ex)
-                {
-                    user.PaymentCustomerId = string.Empty;
-                    _logger.Warning(ex, ex.Message);
-                }
+                _logger.Warning($"When creating user with email '{user.Email}', payment user should not exists, but found '{user.PaymentCustomerId}'.");
+                user.PaymentCustomerId = string.Empty;
             }
 
-            // If customer exists in payment service and email does not match, then something is wrong
-            if (existingPaymentCustomer != null && !existingPaymentCustomer.Email.Equals(user.Email, StringComparison.InvariantCultureIgnoreCase))
+            try
             {
-                throw new UserException($"User with payment customer identifier '{user.PaymentCustomerId}' already exiting with mismatch email ids. Expected: '{user.Email}', Actual: '{existingPaymentCustomer.Email}'.");
+                _logger.Information($"Creating payment customer in payment service with email '{user.Email}'.");
+                user.PaymentCustomerId = await _paymentService.CreatePaymentCustomer(user, cancellationToken);
             }
-
-            if (string.IsNullOrWhiteSpace(user.PaymentCustomerId))
+            catch (PaymentServiceException ex)
             {
-                try
-                {
-                    _logger.Information($"Creating payment customer in payment service with email '{user.Email}'.");
-                    user.PaymentCustomerId = await _paymentService.CreatePaymentCustomer(user, cancellationToken);
-                }
-                catch (PaymentServiceException ex)
-                {
-                    _logger.Warning(ex, ex.Message);
-                    throw;
-                }
+                _logger.Warning(ex, ex.Message);
+                throw;
             }
 
             var freePricePlan = await _pricePlanRepository.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken);

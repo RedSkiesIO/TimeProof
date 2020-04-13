@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
-using AtlasCity.TimeProof.Abstractions.DAO.Payment;
+using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
@@ -17,58 +16,22 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
     {
         private readonly PaymentIntentService _paymentIntentService;
         private readonly CustomerService _customerService;
-        private readonly PaymentMethodService _paymentMethodServiceService;
+        private readonly PaymentMethodService _paymentMethodService;
         private readonly SetupIntentService _setupIntentService;
 
-        public StripePaymentService(PaymentIntentService paymentIntentService, CustomerService customerService, PaymentMethodService paymentMethodServiceService, SetupIntentService setupIntentService)
+        public PaymentMethodService PaymentMethodService => _paymentMethodService;
+
+        public StripePaymentService(PaymentIntentService paymentIntentService, CustomerService customerService, PaymentMethodService paymentMethodService, SetupIntentService setupIntentService)
         {
             AtlasGuard.IsNotNull(paymentIntentService);
             AtlasGuard.IsNotNull(customerService);
-            AtlasGuard.IsNotNull(paymentMethodServiceService);
+            AtlasGuard.IsNotNull(paymentMethodService);
             AtlasGuard.IsNotNull(setupIntentService);
 
             _paymentIntentService = paymentIntentService;
             _customerService = customerService;
-            _paymentMethodServiceService = paymentMethodServiceService;
+            _paymentMethodService = paymentMethodService;
             _setupIntentService = setupIntentService;
-        }
-
-        public async Task<PaymentResponseDao> ProcessPayment(PaymentDao payment, string paymentCustomerId, string setupIntentId, CancellationToken cancellationToken)
-        {
-            AtlasGuard.IsNotNull(payment);
-            AtlasGuard.IsNotNullOrWhiteSpace(payment.UserId);
-            AtlasGuard.IsNotNullOrWhiteSpace(payment.Email);
-            AtlasGuard.IsNotNullOrWhiteSpace(payment.PaymentMethodId);
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
-            AtlasGuard.IsNotNullOrWhiteSpace(setupIntentId);
-
-            var options = new PaymentIntentCreateOptions
-            {
-                Amount = payment.Amount,
-                Currency = "gbp",
-                Customer = paymentCustomerId,
-                PaymentMethod = payment.PaymentMethodId,
-                ReceiptEmail = payment.Email,
-                Confirm = true,
-                OffSession = true
-            };
-
-            try
-            {
-                var response = await _paymentIntentService.CreateAsync(options, cancellationToken: cancellationToken);
-                if (response.StripeResponse.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new PaymentServiceException($"Unable to take payment for user '{payment.UserId}', payment method '{payment.PaymentMethodId}' in stripe payment system. The status is '{response.StripeResponse.StatusCode}' and content '{response.StripeResponse.Content}'.");
-                }
-
-                await _setupIntentService.ConfirmAsync(setupIntentId, cancellationToken: cancellationToken);
-
-                return response.StripeResponse.ToStripeResponseDao();
-            }
-            catch (StripeException ex)
-            {
-                throw new PaymentServiceException($"Unable to take payment for user '{payment.UserId}', payment method '{payment.PaymentMethodId}' in stripe payment system.", ex);
-            }
         }
 
         public async Task<string> CreatePaymentCustomer(UserDao user, CancellationToken cancellationToken)
@@ -112,7 +75,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 Type = "card"
             };
 
-            var customerCards = await _paymentMethodServiceService.ListAsync(options: options, cancellationToken: cancellationToken);
+            var customerCards = await _paymentMethodService.ListAsync(options: options, cancellationToken: cancellationToken);
 
             return customerCards.FirstOrDefault().ToPaymentMethodDao();
         }
@@ -165,27 +128,45 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             }
         }
 
-        public async Task<PaymentIntentDao> GetPaymentIntents(string paymentCustomerId, CancellationToken cancellationToken)
+        public async Task<PaymentIntentDao> GetPaymentIntent(string paymentIntentId, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNotNullOrWhiteSpace(paymentIntentId);
+
+            var paymentIntent = await _paymentIntentService.GetAsync(paymentIntentId, cancellationToken: cancellationToken);
+
+            return paymentIntent.ToPaymentIntentDao();
+        }
+
+        public async Task<PaymentIntentDao> GetPaymentIntentByCustomerId(string paymentCustomerId, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
 
-            var paymentIntent = await _paymentIntentService.GetAsync(paymentCustomerId, cancellationToken: cancellationToken);
+            var options = new PaymentIntentListOptions
+            {
+                Customer = paymentCustomerId
+            };
+
+            var paymentIntent = await _paymentIntentService.ListAsync(options: options, cancellationToken: cancellationToken);
 
             if (paymentIntent != null)
-                return paymentIntent.ToPaymentIntentDao();
+                return paymentIntent.FirstOrDefault().ToPaymentIntentDao();
 
             return null;
         }
 
         public async Task<PaymentIntentDao> CreatePaymentIntent(string paymentCustomerId, long amount, CancellationToken cancellationToken)
         {
+            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+
             try
             {
                 var options = new PaymentIntentCreateOptions
                 {
                     Customer = paymentCustomerId,
                     Amount = amount,
-                    Currency = "gbp"
+                    Currency = "gbp",
+
+                    SetupFutureUsage = "on_session"
                 };
 
                 var paymentIntent = await _paymentIntentService.CreateAsync(options: options, cancellationToken: cancellationToken);
@@ -195,6 +176,49 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             catch (Exception ex)
             {
                 throw new PaymentServiceException($"Unable to create payment intent for customer '{paymentCustomerId}'", ex);
+            }
+        }
+
+        public async Task<PaymentIntentDao> CollectPayment(string paymentCustomerId, long amount, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+
+            try
+            {
+                var existingPaymentMethod = await GetCustomerPaymentMethod(paymentCustomerId, cancellationToken);
+
+                if (existingPaymentMethod == null)
+                    throw new PaymentServiceException($" Cannot collect the payment as payment method does not exists for customer '{paymentCustomerId}'.");
+
+                var options = new PaymentIntentCreateOptions
+                {
+                    Customer = paymentCustomerId,
+                    Amount = amount,
+                    Currency = "gbp",
+
+                    PaymentMethod = existingPaymentMethod.Id,
+                    Confirm = true,
+                    OffSession = true,
+                };
+
+                var paymentIntent = await _paymentIntentService.CreateAsync(options: options, cancellationToken: cancellationToken);
+
+                return paymentIntent.ToPaymentIntentDao();
+            }
+            catch (StripeException ex)
+            {
+                switch (ex.StripeError.ErrorType)
+                {
+                    case "card_error":
+                        // Error code will be authentication_required if authentication is needed
+                        throw new PaymentServiceException($"Unable to take payment customer '{paymentCustomerId}'. Error code: {ex.StripeError.Code}, PaymentIntentId '{ex.StripeError.PaymentIntent.Id}'", ex);
+                    default:
+                        throw ex;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new PaymentServiceException($"Unable to take payment for customer '{paymentCustomerId}'", ex);
             }
         }
     }
