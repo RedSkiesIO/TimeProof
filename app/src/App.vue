@@ -61,6 +61,7 @@ export default {
                 clientSecret: verifyResult.clientSecret,
                 customerId: verifyResult.customerId,
                 paymentIntentId: verifyResult.paymentIntentId,
+                subscriptionStart: verifyResult.membershipStartDate,
               },
             });
           }

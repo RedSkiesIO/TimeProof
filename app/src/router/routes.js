@@ -1,66 +1,17 @@
-
 const routes = [
   {
     path: '/',
     component: () => import('layouts/Main'),
     children: [
       { path: '', component: () => import('pages/Dashboard.vue') },
-    ],
-  },
-  {
-    path: '/verify',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('pages/Verify.vue') },
-    ],
-  },
-  {
-    path: '/stamp',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('pages/Stamp.vue') },
-    ],
-  },
-  {
-    path: '/dashboard',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('pages/Dashboard.vue') },
-    ],
-  },
-  {
-    path: '/account',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('pages/Account.vue') },
-    ],
-  },
-  {
-    path: '/new-key',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('pages/CreateKey') },
-    ],
-  },
-  {
-    path: '/upgrade',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('pages/Upgrade') },
-    ],
-  },
-  {
-    path: '/upgrade-success',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('pages/UpgradeSuccess') },
-    ],
-  },
-  {
-    path: '/payment',
-    component: () => import('layouts/Main'),
-    children: [
-      { path: '', component: () => import('components/Payment') },
+      { path: 'verify', component: () => import('pages/Verify.vue') },
+      { path: 'stamp', component: () => import('pages/Stamp.vue') },
+      { path: 'dashboard', component: () => import('pages/Dashboard.vue') },
+      { path: 'account', component: () => import('pages/Account.vue') },
+      { path: 'new-key', component: () => import('pages/CreateKey') },
+      { path: 'upgrade', component: () => import('pages/Upgrade') },
+      { path: 'upgrade-success', component: () => import('pages/UpgradeSuccess') },
+      { path: 'payment', component: () => import('components/Payment') },
     ],
   },
 ];

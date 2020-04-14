@@ -368,21 +368,24 @@ export default {
 
     async setupCard() {
       // Create a Card Element and pass some custom styles to it.
-      this.card = this.elements.create('card', { style: this.style });
+      if (this.user.paymentIntentId) { // upgrade the package
+        this.submitButtonDisable = false;
+      } else {
+        this.card = this.elements.create('card', { style: this.style });
 
-      // Mount the Card Element on the page.
-      this.card.mount('#card-element');
-      console.log(this.card);
-      // Monitor change events on the Card Element to display any errors.
-      this.card.on('change', ({ error, complete }) => {
-        if (error) {
-          this.cardErrorContent = error.message;
-          this.cardErrorVisible = true;
-        } else {
-          this.cardErrorVisible = false;
-          this.submitButtonDisable = !complete;
-        }
-      });
+        // Mount the Card Element on the page.
+        this.card.mount('#card-element');
+        // Monitor change events on the Card Element to display any errors.
+        this.card.on('change', ({ error, complete }) => {
+          if (error) {
+            this.cardErrorContent = error.message;
+            this.cardErrorVisible = true;
+          } else {
+            this.cardErrorVisible = false;
+            this.submitButtonDisable = !complete;
+          }
+        });
+      }
     },
 
     async setupIban() {
@@ -640,25 +643,26 @@ export default {
       const addressFound = await this.$paymentServer.updatePaymentAddress(this.user, addressData);
 
       if (addressFound) {
-        // const {
-        //   name, email, line, city, state, postalCode, country,
-        // } = data;
-        // const shipping = {
-        //   name,
-        //   address: {
-        //     line1: line,
-        //     city,
-        //     postal_code: postalCode,
-        //     state,
-        //     country,
-        //   },
-        // };
+        const {
+          name, email, line, city, state, postalCode, country,
+        } = addressData;
+        const billingDetails = {
+          name,
+          email,
+          address: {
+            line1: line,
+            city,
+            postal_code: postalCode,
+            state,
+            country,
+          },
+        };
 
         if (this.user.userId) {
           if (this.paymentType === 'card') {
             const response = await this.$paymentServer
               .subscribeToPackage(stripe, this.user,
-                addressData.name, this.card, this.sellingProduct.id);
+                billingDetails, this.card, this.sellingProduct.id);
 
             this.completePayment(response);
           } else if (this.paymentType === 'sepa_debit') {

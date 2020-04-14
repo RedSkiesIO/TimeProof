@@ -56,12 +56,13 @@
           <q-list>
             <q-item
               v-for="item in menuList"
-              :key="item.label"
+              :key="item"
               v-ripple
               clickable
-              :class="item.redirect? 'fixed-bottom' : ''"
+              :class="item.redirect ? 'fixed-bottom' : ''"
               :to="item.route"
-              :disable="currentPath === '/new-key'"
+              :disable="currentPath === '/new-key' && !item.redirect"
+              :active-class="!item.redirect ? 'my-menu-link' : ''"
               @click="redirectToExternalUrl(item.redirect)"
             >
               <q-item-section avatar>
@@ -234,7 +235,8 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+
 .user-dialog .fixed-top {
   top: 50px;
   right: 0;
@@ -279,6 +281,11 @@ export default {
 
 .q-item__section {
   font-size: 15px;
+}
+.my-menu-link{
+  color: white;
+  font-weight: bold;
+  background: transparentize($color: white, $amount: 0.6);
 }
 
 </style>

@@ -155,13 +155,13 @@ class PaymentServer {
     }
   }
 
-  async subscribeToPackage(stripe, user, userName, card, pricePlanId) {
+  async subscribeToPackage(stripe, user, billingDetails, card, pricePlanId) {
     const response = {};
 
     try {
       console.log('BEFORE USER SUBSCRIPTION');
       console.log({
-        user, userName, card, pricePlanId,
+        user, billingDetails, card, pricePlanId,
       });
       if (!user.paymentIntentId) {
         const {
@@ -176,9 +176,7 @@ class PaymentServer {
             {
               payment_method: {
                 card,
-                billing_details: {
-                  name: userName,
-                },
+                billing_details: billingDetails,
               },
             });
 
