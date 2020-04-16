@@ -37,5 +37,8 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
 
         [JsonProperty(PropertyName = "userId")]
         public string UserId { get; set; }
+
+        [JsonProperty(PropertyName = "txId")]
+        public string TxId { get; set; }
     }
 }

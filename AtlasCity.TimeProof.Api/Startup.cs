@@ -122,9 +122,10 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
 
+            services.AddSingleton<ISignatureHelper>(new SignatureHelper());
+
             var timeProofLoginUri = Configuration.GetSection("TimeProofLoginUri").Value;
             services.AddSingleton<IEmailTemplateHelper>(new EmailTemplateHelper(timeProofLoginUri));
-
 
             var paymentApiKey = Configuration.GetSection("PaymentApiKey").Value;
             var stripeClient = new StripeClient(paymentApiKey);
