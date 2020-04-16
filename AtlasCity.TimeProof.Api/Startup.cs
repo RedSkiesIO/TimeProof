@@ -122,7 +122,7 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
 
-            services.AddSingleton<ISignatureHelper>(new SignatureHelper());
+            services.AddSingleton<ISignatureHelper, SignatureHelper>();
 
             var timeProofLoginUri = Configuration.GetSection("TimeProofLoginUri").Value;
             services.AddSingleton<IEmailTemplateHelper>(new EmailTemplateHelper(timeProofLoginUri));
