@@ -27,6 +27,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<IEnumerable<PricePlanDao>> GetPricePlans(CancellationToken cancellationToken)
         {
+            // TODO: Sudhir Only return active price plan
             var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).AsEnumerable();
             return response;
         }

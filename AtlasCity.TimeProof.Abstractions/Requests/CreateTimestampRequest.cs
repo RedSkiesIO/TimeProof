@@ -1,10 +1,13 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace AtlasCity.TimeProof.Abstractions.DAO
+namespace AtlasCity.TimeProof.Abstractions.Requests
 {
-    public class TimestampDao : DaoBase
+    public class CreateTimestampRequest
     {
+        [JsonProperty(PropertyName = "id")]
+        public string Id { get; set; }
+
         [JsonProperty(PropertyName = "txId")]
         public string TransactionId { get; set; }
 

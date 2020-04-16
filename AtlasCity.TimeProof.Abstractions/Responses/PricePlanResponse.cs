@@ -1,9 +1,12 @@
 ﻿using Newtonsoft.Json;
 
-namespace AtlasCity.TimeProof.Abstractions.DAO
+namespace AtlasCity.TimeProof.Abstractions.Responses
 {
-    public class PricePlanDao : DaoBase
+    public class PricePlanResponse
     {
+        [JsonProperty(PropertyName = "id")]
+        public string Id { get; set; }
+
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
 

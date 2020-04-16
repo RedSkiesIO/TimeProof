@@ -74,6 +74,7 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton(Log.Logger);
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<ISystemDateTime, SystemDateTime>();
 
             //services.AddAuthentication(sharedOptions =>
             //{

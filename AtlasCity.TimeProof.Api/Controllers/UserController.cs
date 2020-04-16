@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
@@ -35,18 +35,18 @@ namespace AtlasCity.TimeProof.Api.Controllers
                 return BadRequest();
 
             var user = _userService.GetUserByEmail(email, cancellationToken).GetAwaiter().GetResult();
-            return new SuccessActionResult(user);
+            return new SuccessActionResult(user.ToResponse());
         }
 
         [Route("user")]
         [HttpPost]
-        public IActionResult CreateUser([FromBody] UserDao user, CancellationToken cancellationToken)
+        public IActionResult CreateUser([FromBody] CreateUserRequest user, CancellationToken cancellationToken)
         {
             if (user == null)
                 return BadRequest();
 
-            var newUser = _userService.CreateUser(user, cancellationToken).GetAwaiter().GetResult();
-            return new CreatedActionResult(newUser);
+            var newUser = _userService.CreateUser(user.ToDao(), cancellationToken).GetAwaiter().GetResult();
+            return new CreatedActionResult(newUser.ToResponse());
         }
 
         [Route("user/paymentintent/{planId}/{id}")]

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using AtlasCity.TimeProof.Abstractions.Repository;
+using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Api.ActionResults;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,8 @@ namespace AtlasCity.TimeProof.Api.Controllers
         [HttpGet]
         public IActionResult Get(CancellationToken cancellationToken)
         {
-            return new SuccessActionResult(_pricePlanRepository.GetPricePlans(cancellationToken).GetAwaiter().GetResult());
+            var pricePlans = _pricePlanRepository.GetPricePlans(cancellationToken).GetAwaiter().GetResult();
+            return new SuccessActionResult(pricePlans.ToResponse());
         }
     }
 }

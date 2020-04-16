@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
@@ -34,19 +34,20 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (string.IsNullOrWhiteSpace(id))
                 return BadRequest();
 
-            return new SuccessActionResult(_timestampService.GetUesrTimestamps(id, cancellationToken).GetAwaiter().GetResult());
+            var timestamps = _timestampService.GetUesrTimestamps(id, cancellationToken).GetAwaiter().GetResult();
+            return new SuccessActionResult(timestamps.ToResponse());
         }
 
         [Route("timestamp")]
         [HttpPost]
-        public IActionResult AddTimeStamp([FromBody] TimestampDao newTimestamp, CancellationToken cancellationToken)
+        public IActionResult AddTimeStamp([FromBody] CreateTimestampRequest newTimestamp, CancellationToken cancellationToken)
         {
             if (newTimestamp == null)
                 return BadRequest();
 
-            var newTimeStamp = _timestampService.GenerateTimestamp(newTimestamp.UserId, newTimestamp, cancellationToken).GetAwaiter().GetResult();
+            var newTimeStamp = _timestampService.GenerateTimestamp(newTimestamp.UserId, newTimestamp.ToDao(), cancellationToken).GetAwaiter().GetResult();
 
-            return new CreatedActionResult(newTimeStamp);
+            return new CreatedActionResult(newTimeStamp.ToResponse());
         }
     }
 }

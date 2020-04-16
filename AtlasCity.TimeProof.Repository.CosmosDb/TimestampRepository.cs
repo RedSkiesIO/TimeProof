@@ -32,6 +32,15 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             return response;
         }
 
+        public async Task<int> GetTimestampCountByUser(string userId, DateTime fromDateTime, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            AtlasGuard.IsNotNull(fromDateTime);
+
+            var responseCount = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.UserId.ToLower() == userId.ToLower() && s.Timestamp >= fromDateTime).Count();
+            return responseCount;
+        }
+
         public async Task<TimestampDao> CreateTimestamp(string userId, TimestampDao timestamp, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNullOrWhiteSpace(userId);

@@ -47,7 +47,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         {
             AtlasGuard.IsNotNullOrWhiteSpace(email);
 
-            var user =  await _userRepository.GetUserByEmail(email, cancellationToken);
+            var user = await _userRepository.GetUserByEmail(email, cancellationToken);
             return user;
         }
 
@@ -78,7 +78,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             }
 
             var freePricePlan = await _pricePlanRepository.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken);
-            user.PricePlanId = freePricePlan.Id;
+            user.CurrentPricePlanId = freePricePlan.Id;
+            user.RemainingTimeStamps = freePricePlan.NoOfStamps;
 
             var newUser = await _userRepository.CreateUser(user, cancellationToken);
             _logger.Information($"Successfully created user with email '{user.Email}'");

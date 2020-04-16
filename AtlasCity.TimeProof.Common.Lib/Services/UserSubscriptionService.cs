@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Responses;
 using AtlasCity.TimeProof.Abstractions.Services;
@@ -17,25 +19,29 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private readonly IPaymentRepository _paymentRepository;
         private readonly IPricePlanRepository _pricePlanRepository;
         private readonly IPaymentService _paymentService;
+        private readonly ISystemDateTime _systemDateTime;
 
         public UserSubscriptionService(
             ILogger logger,
             IUserRepository userRepository,
             IPaymentRepository paymentRepository,
             IPricePlanRepository pricePlanRepository,
-            IPaymentService paymentService)
+            IPaymentService paymentService,
+            ISystemDateTime systemDateTime)
         {
             AtlasGuard.IsNotNull(logger);
             AtlasGuard.IsNotNull(userRepository);
             AtlasGuard.IsNotNull(paymentRepository);
             AtlasGuard.IsNotNull(pricePlanRepository);
             AtlasGuard.IsNotNull(paymentService);
+            AtlasGuard.IsNotNull(systemDateTime);
 
             _logger = logger;
             _userRepository = userRepository;
             _paymentRepository = paymentRepository;
             _pricePlanRepository = pricePlanRepository;
             _paymentService = paymentService;
+            _systemDateTime = systemDateTime;
         }
         public async Task<PaymentIntentResponse> GetPaymentIntent(string userId, string pricePlanId, CancellationToken cancellationToken)
         {
@@ -76,7 +82,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             var pricePlan = await _pricePlanRepository.GetPricePlanById(pricePlanId, cancellationToken);
             if (pricePlan == null)
-                throw new SubscriptionException($"Unable to find the price plan with '{user.PricePlanId}' identifier.");
+                throw new SubscriptionException($"Unable to find the price plan with '{user.CurrentPricePlanId}' identifier.");
 
             var paymentIntent = await _paymentService.GetPaymentIntent(paymentIntentId, cancellationToken);
 
@@ -85,11 +91,25 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             _logger.Information($"Collected payment of '{paymentIntent.Amount}' in minimum unit for user '{user.Id}'.");
 
-            await _paymentRepository.CreatePaymentReceived(paymentIntent, cancellationToken);
+            var paymentDao = new ProcessedPaymentDao
+            {
+                UserId = user.Id,
+                PaymentServiceId = paymentIntent.Id,
+                Amount = paymentIntent.Amount,
+                PricePlanId = pricePlan.Id,
+                NoOfStamps = pricePlan.NoOfStamps,
+                Created = paymentIntent.Created,
+            };
 
-            user.PricePlanId = pricePlan.Id;
+            await _paymentRepository.CreatePaymentReceived(paymentDao, cancellationToken);
+
+            user.CurrentPricePlanId = pricePlan.Id;
+            user.RemainingTimeStamps = pricePlan.NoOfStamps;
             user.PaymentIntentId = paymentIntentId;
-            user.MembershipStartDate = DateTime.UtcNow;
+
+            if (user.MembershipStartDate != DateTime.MinValue)
+                user.MembershipStartDate = _systemDateTime.GetUtcDateTime();
+
             await _userRepository.UpdateUser(user, cancellationToken);
         }
 
@@ -128,7 +148,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             if (user == null)
                 throw new UserException("User does not exists.");
 
-            if (user.PricePlanId.Equals(pricePlanId))
+            if (user.CurrentPricePlanId.Equals(pricePlanId))
             {
                 _logger.Warning($"Price plan already in target plan '{pricePlanId}'");
                 return;
@@ -136,7 +156,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             var pricePlan = await _pricePlanRepository.GetPricePlanById(pricePlanId, cancellationToken);
             if (pricePlan == null)
-                throw new SubscriptionException($"Unable to find the price plan with '{user.PricePlanId}' identifier.");
+                throw new SubscriptionException($"Unable to find the price plan with '{user.CurrentPricePlanId}' identifier.");
 
             var paymentIntent = await _paymentService.CollectPayment(user.PaymentCustomerId, pricePlan.Price, cancellationToken);
 

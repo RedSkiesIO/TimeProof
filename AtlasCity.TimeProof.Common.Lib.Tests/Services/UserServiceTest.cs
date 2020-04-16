@@ -169,7 +169,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
             userService.CreateUser(new UserDao { Email = "test@example.com", FirstName = "Test First Name", LastName = "Test Last Name", PaymentCustomerId = paymentCustomerId, SetupIntentId = "TestSetupIntentId", Address = new AddressDao() }, cancellationToken).GetAwaiter().GetResult();
 
             loggerMock.Verify(s => s.Warning(exception, exception.Message), Times.Once);
-            userRepositoryMock.Verify(s => s.CreateUser(It.Is<UserDao>(t => t.PricePlanId.Equals("freePricePlanTestId")), cancellationToken), Times.Once);
+            userRepositoryMock.Verify(s => s.CreateUser(It.Is<UserDao>(t => t.CurrentPricePlanId.Equals("freePricePlanTestId")), cancellationToken), Times.Once);
         }
 
         [TestMethod]
@@ -185,7 +185,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
             userService.CreateUser(user, cancellationToken).GetAwaiter().GetResult();
 
 
-            userRepositoryMock.Verify(s => s.CreateUser(It.Is<UserDao>(t => t.Email.Equals(user.Email) && t.FirstName.Equals(user.FirstName) && t.LastName.Equals(user.LastName) && t.PricePlanId.Equals("freePricePlanTestId")), cancellationToken), Times.Once);
+            userRepositoryMock.Verify(s => s.CreateUser(It.Is<UserDao>(t => t.Email.Equals(user.Email) && t.FirstName.Equals(user.FirstName) && t.LastName.Equals(user.LastName) && t.CurrentPricePlanId.Equals("freePricePlanTestId")), cancellationToken), Times.Once);
             loggerMock.Verify(s => s.Information(It.Is<string>(t => t.Contains(user.Email))), Times.Once);
             emailServiceMock.Verify(s => s.SendEmail(It.Is<EmailDao>(t => t.ToAddress.Equals(user.Email) && t.ToName.Equals(user.FullName) && t.FromAddress.Equals(Constants.AutomatedEmailFromAddress) && t.Subject.Equals(Constants.WelcomeEmailSubject) && t.HtmlBody.Equals("Test Email Body")), cancellationToken), Times.Once);
         }

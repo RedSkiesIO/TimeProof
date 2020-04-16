@@ -1,10 +1,13 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace AtlasCity.TimeProof.Abstractions.DAO
+namespace AtlasCity.TimeProof.Abstractions.Requests
 {
-    public class UserDao : DaoBase
+    public class CreateUserRequest
     {
+        [JsonProperty(PropertyName = "id")]
+        public string Id { get; set; }
+
         [JsonProperty(PropertyName = "email")]
         public string Email { get; set; }
 
@@ -21,13 +24,10 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         public string SetupIntentId { get; set; }
 
         [JsonProperty(PropertyName = "address")]
-        public AddressDao Address { get; set; }
-
-        [JsonProperty(PropertyName = "remainingTimeStamps")]
-        public int RemainingTimeStamps { get; set; }
+        public AddressRequest Address { get; set; }
 
         [JsonProperty(PropertyName = "pricePlanId")]
-        public string CurrentPricePlanId { get; set; }
+        public string PricePlanId { get; set; }
 
         [JsonProperty(PropertyName = "paymentIntentId")]
         public string PaymentIntentId { get; set; }

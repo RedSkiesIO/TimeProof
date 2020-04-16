@@ -23,8 +23,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         {
             AtlasGuard.IsNotNullOrWhiteSpace(userId);
 
-
-            //TODO: Paging
+            //TODO: Sudhir Paging
             return await _timestampRepository.GetTimestampByUser(userId, cancellationToken);
         }
 
@@ -36,6 +35,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             // TODO: Sudhir Check if user have stamp remaining
 
             return await _timestampRepository.CreateTimestamp(userId, timestamp, cancellationToken);
+
+            // TODO: Sudhir Decrease the remaining timestamp
         }
     }
 }
