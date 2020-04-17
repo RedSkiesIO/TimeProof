@@ -50,5 +50,17 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
             return new CreatedActionResult(newTimeStamp.ToResponse());
         }
+
+        [Route("timestamp")]
+        [HttpPut]
+        public IActionResult UpdateTimeStamp([FromBody] CreateTimestampRequest updatedTimestamp, CancellationToken cancellationToken)
+        {
+            if (updatedTimestamp == null)
+                return BadRequest();
+
+            var updatedTimeStamp = _timestampService.UpdateTimestamp(updatedTimestamp.ToDao(), cancellationToken).GetAwaiter().GetResult();
+
+            return new SuccessActionResult(updatedTimeStamp.ToResponse());
+        }
     }
 }

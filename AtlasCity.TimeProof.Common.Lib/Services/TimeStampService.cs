@@ -88,6 +88,26 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             return newTimestamp;
         }
 
+        public async Task<TimestampDao> UpdateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNotNullOrWhiteSpace(timestamp.UserId);
+            AtlasGuard.IsNotNull(timestamp);
+
+            var user = await _userRepository.GetUserById(timestamp.UserId, cancellationToken);
+            if (user == null)
+            {
+                var message = $"Unable to find the user with user identifier '{timestamp.UserId}'.";
+                _logger.Error(message);
+                throw new UserException(message);
+            }
+
+            var updatedTimestamp = await _timestampRepository.UpdateTimestamp(timestamp, cancellationToken);
+
+            _logger.Information($"Successfully updated timestamp for user '{user.Id}' with transaction '{updatedTimestamp.TransactionId}'");
+
+            return updatedTimestamp;
+        }
+
         private async Task<TimestampDao> SendTransaction(TimestampDao timestamp)
         {
             ManagedAccount account = new ManagedAccount(Constants.ACCOUNT_ADDRESS, "");

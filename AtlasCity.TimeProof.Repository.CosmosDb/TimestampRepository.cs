@@ -51,5 +51,15 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             var newTimestamp = JsonConvert.DeserializeObject<TimestampDao>(response.Resource.ToString());
             return newTimestamp;
         }
+
+        public async Task<TimestampDao> UpdateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNotNull(timestamp);
+
+            var response = await Client.ReplaceDocumentAsync(_documentCollectionUri, timestamp, new RequestOptions(), cancellationToken);
+
+            var updatedTimestamp = JsonConvert.DeserializeObject<TimestampDao>(response.Resource.ToString());
+            return updatedTimestamp;
+        }
     }
 }
