@@ -99,6 +99,12 @@ namespace AtlasCity.TimeProof.Api
             //    options.Cookie.IsEssential = true;
             //});
 
+            var accountAddress = Configuration.GetSection("NetheriumAccount:FromAddress").Value;
+            var nodeEndpoint = Configuration.GetSection("NetheriumAccount:NodeEndpoint").Value;
+            var account = new ManagedAccount(accountAddress, string.Empty);
+            var web3 = new Web3(account, nodeEndpoint);
+            services.AddSingleton<IWeb3>(web3);
+
             var endpointUrl = Configuration.GetSection("TransationCosmosDb:EndpointUrl").Value;
             var authorizationKey = Configuration.GetSection("TransationCosmosDb:AuthorizationKey").Value;
             services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
@@ -130,12 +136,6 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IUserSubscriptionService, UserSubscriptionService>();
             services.AddSingleton<ITimestampService, TimestampService>();
-
-            var accountAddress = Configuration.GetSection("NetheriumAccount:FromAddress").Value;
-            var nodeEndpoint = Configuration.GetSection("NetheriumAccount:NodeEndpoint").Value;
-            var account = new ManagedAccount(accountAddress, string.Empty);
-            var web3 = new Web3(account, nodeEndpoint);
-            services.AddSingleton(web3);            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger logger)
