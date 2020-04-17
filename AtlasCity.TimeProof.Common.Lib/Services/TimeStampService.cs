@@ -66,14 +66,15 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             {
                 var message = $"Not sufficient stamps left for the user '{user.Id}' with price plan '{user.CurrentPricePlanId}'.";
                 _logger.Error(message);
-                throw new UserException(message);
+                throw new TimestampException(message);
             }
 
             bool proofVerified = _signatureHelper.VerifyStamp(timestamp);
             if (!proofVerified)
             {
-                // TODO: return meaningful response
-                return null;//"Could not verify signature";
+                var message = $"Unable to verify the signature '{timestamp.Signature}'.";
+                _logger.Warning(message);
+                throw new TimestampException(message);
             }
 
             await SendTransaction(timestamp);
