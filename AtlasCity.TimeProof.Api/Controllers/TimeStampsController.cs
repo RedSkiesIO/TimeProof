@@ -25,11 +25,10 @@ namespace AtlasCity.TimeProof.Api.Controllers
             _timestampService = timestampService;
         }
 
-
         //TODO: Sudhir Paging
         [Route("gettimestamps/{id}")]
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public IActionResult Get([FromRoute] string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -51,16 +50,16 @@ namespace AtlasCity.TimeProof.Api.Controllers
             return new CreatedActionResult(newTimeStamp.ToResponse());
         }
 
-        [Route("timestamp")]
-        [HttpPut]
-        public IActionResult UpdateTimeStamp([FromBody] CreateTimestampRequest updatedTimestamp, CancellationToken cancellationToken)
+        [Route("timestamp/{tsId}")]
+        [HttpGet]
+        public IActionResult GetTimeStamp([FromRoute] string tsid, CancellationToken cancellationToken)
         {
-            if (updatedTimestamp == null)
+            if (string.IsNullOrWhiteSpace(tsid))
                 return BadRequest();
 
-            var updatedTimeStamp = _timestampService.UpdateTimestamp(updatedTimestamp.ToDao(), cancellationToken).GetAwaiter().GetResult();
+            var timestamp = _timestampService.GetTimestampDetails(tsid, cancellationToken).GetAwaiter().GetResult();
 
-            return new SuccessActionResult(updatedTimeStamp.ToResponse());
+            return new SuccessActionResult(timestamp.ToResponse());
         }
     }
 }

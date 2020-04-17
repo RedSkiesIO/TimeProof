@@ -49,18 +49,11 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
 
             return new TimestampDao
             {
-                Id = timestampRequest.Id,
-                TransactionId = timestampRequest.TransactionId,
-                FileName = timestampRequest.FileName,
                 PublicKey = timestampRequest.PublicKey,
-                Hash = timestampRequest.Hash,
-                Timestamp = timestampRequest.Timestamp,
-                BlockNumber = timestampRequest.BlockNumber,
+                FileName = timestampRequest.FileName,
                 FileHash = timestampRequest.FileHash,
                 Signature = timestampRequest.Signature,
-                Nonce = timestampRequest.Nonce,
-                Network = timestampRequest.Network,
-                UserId = timestampRequest.UserId,
+                UserId = timestampRequest.UserId
             };
         }
 
@@ -113,7 +106,6 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
                 TransactionId = timestamp.TransactionId,
                 FileName = timestamp.FileName,
                 PublicKey = timestamp.PublicKey,
-                Hash = timestamp.Hash,
                 Timestamp = timestamp.Timestamp,
                 BlockNumber = timestamp.BlockNumber,
                 FileHash = timestamp.FileHash,
@@ -121,6 +113,7 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
                 Nonce = timestamp.Nonce,
                 Network = timestamp.Network,
                 UserId = timestamp.UserId,
+                Status = timestamp.Status,
             };
         }
 

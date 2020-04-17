@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts.Managed;
 using Serilog;
 using Stripe;
 
@@ -44,7 +46,6 @@ namespace AtlasCity.TimeProof.Api
 
         public IConfiguration Configuration { get; }
 
-
         public void ConfigureServices(IServiceCollection services)
         {
             var origins = new string[] { "http://localhost:6420", "http://86.23.42.81:6420", "http://192.168.0.25:6420", "https://timeproof.netlify.com" };
@@ -58,15 +59,6 @@ namespace AtlasCity.TimeProof.Api
                     .AllowAnyMethod();
                 });
             });
-
-            //services.AddCors(options =>
-            //{
-            //    options.AddDefaultPolicy(
-            //        builder =>
-            //        {
-            //            builder.WithOrigins("http://localhost:6240", "https://timeproof.netlify.com").AllowAnyHeader().AllowAnyMethod();
-            //        });
-            //});
 
             services.AddControllers();
 
@@ -137,7 +129,13 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IUserSubscriptionService, UserSubscriptionService>();
-            services.AddSingleton<ITimestampService, TimestampService>();           
+            services.AddSingleton<ITimestampService, TimestampService>();
+
+            var accountAddress = Configuration.GetSection("NetheriumAccount:FromAddress").Value;
+            var nodeEndpoint = Configuration.GetSection("NetheriumAccount:NodeEndpoint").Value;
+            var account = new ManagedAccount(accountAddress, string.Empty);
+            var web3 = new Web3(account, nodeEndpoint);
+            services.AddSingleton(web3);            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger logger)

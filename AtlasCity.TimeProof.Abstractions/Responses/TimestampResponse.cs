@@ -1,4 +1,5 @@
 ﻿using System;
+using AtlasCity.TimeProof.Abstractions.Enums;
 using Newtonsoft.Json;
 
 namespace AtlasCity.TimeProof.Abstractions.Responses
@@ -16,9 +17,6 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
 
         [JsonProperty(PropertyName = "publicKey")]
         public string PublicKey { get; set; }
-
-        [JsonProperty(PropertyName = "txHash")]
-        public string Hash { get; set; }
 
         [JsonProperty(PropertyName = "timestamp")]
         public DateTime Timestamp { get; set; }
@@ -40,5 +38,8 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
 
         [JsonProperty(PropertyName = "userId")]
         public string UserId { get; set; }
+
+        [JsonProperty(PropertyName = "status")]
+        public TimestampState Status { get; set; }
     }
 }

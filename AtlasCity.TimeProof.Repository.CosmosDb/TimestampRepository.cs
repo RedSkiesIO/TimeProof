@@ -52,11 +52,19 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             return newTimestamp;
         }
 
+        public async Task<TimestampDao> GetTimestampById(string timestampId, CancellationToken cancellationToken)
+        {
+            AtlasGuard.IsNotNullOrWhiteSpace(timestampId);
+
+            var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == timestampId.ToLower()).AsEnumerable().FirstOrDefault();
+            return response;
+        }
+
         public async Task<TimestampDao> UpdateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
         {
             AtlasGuard.IsNotNull(timestamp);
 
-            var response = await Client.ReplaceDocumentAsync(_documentCollectionUri, timestamp, new RequestOptions(), cancellationToken);
+            var response = await Client.UpsertDocumentAsync(_documentCollectionUri, timestamp, cancellationToken: cancellationToken);
 
             var updatedTimestamp = JsonConvert.DeserializeObject<TimestampDao>(response.Resource.ToString());
             return updatedTimestamp;
