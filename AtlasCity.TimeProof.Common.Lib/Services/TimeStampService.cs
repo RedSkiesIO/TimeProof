@@ -56,7 +56,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             var resultStamp = await sendTransaction(timestamp);
 
-            if (resultStamp.TxId != null)
+            if (resultStamp.TransactionId != null)
             {
                 return await _timestampRepository.CreateTimestamp(userId, timestamp, cancellationToken);
             }
@@ -112,7 +112,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             }     
 
             timestamp.BlockNumber = -1;
-            timestamp.TxId = txId;
+            timestamp.TransactionId = txId;
             timestamp.Nonce = (long) currentNonce.Value;
             timestamp.Network = Nethereum.Signer.Chain.Kovan.ToString();
 
