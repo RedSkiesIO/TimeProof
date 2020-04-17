@@ -13,21 +13,31 @@ using Nethereum.Web3.Accounts.Managed;
 using Nethereum.Util;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Newtonsoft.Json;
+using Serilog;
+using AtlasCity.TimeProof.Common.Lib.Exceptions;
 
 namespace AtlasCity.TimeProof.Common.Lib.Services
 {
     public class TimestampService : ITimestampService
     {
+        private readonly ILogger _logger;
         private readonly ITimestampRepository _timestampRepository;
-
+        private readonly IUserRepository _userRepository;
         private readonly ISignatureHelper _signatureHelper;
 
-        public TimestampService(ITimestampRepository timeStampRepository, ISignatureHelper signatureHelper)
+        public TimestampService(
+           ILogger logger,
+           ITimestampRepository timestampRepository,
+           IUserRepository userRepository, ISignatureHelper signatureHelper)
         {
-            AtlasGuard.IsNotNull(timeStampRepository);
+            AtlasGuard.IsNotNull(logger);
+            AtlasGuard.IsNotNull(timestampRepository);
+            AtlasGuard.IsNotNull(userRepository);
             AtlasGuard.IsNotNull(signatureHelper);
 
-            _timestampRepository = timeStampRepository;
+            _logger = logger;
+            _timestampRepository = timestampRepository;
+            _userRepository = userRepository;
             _signatureHelper = signatureHelper;
         }
 
@@ -39,35 +49,47 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             return await _timestampRepository.GetTimestampByUser(userId, cancellationToken);
         }
 
-        public async Task<TimestampDao> GenerateTimestamp(string userId, TimestampDao timestamp, CancellationToken cancellationToken)
-        { 
+        public async Task<TimestampDao> GenerateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
+        {
             AtlasGuard.IsNotNullOrWhiteSpace(timestamp.UserId);
             AtlasGuard.IsNotNull(timestamp);
 
-            // TODO: Sudhir Check if user have stamp remaining
+            var user = await _userRepository.GetUserById(timestamp.UserId, cancellationToken);
+            if (user == null)
+            {
+                var message = $"Unable to find the user with user identifier '{timestamp.UserId}'.";
+                _logger.Error(message);
+                throw new UserException(message);
+            }
 
-             bool proofVerified = _signatureHelper.VerifyStamp(timestamp);
+            if (user.RemainingTimeStamps < 1)
+            {
+                var message = $"Not sufficient stamps left for the user '{user.Id}' with price plan '{user.CurrentPricePlanId}'.";
+                _logger.Error(message);
+                throw new TimestampException(message);
+            }
 
+            bool proofVerified = _signatureHelper.VerifyStamp(timestamp);
             if (!proofVerified)
             {
-                // TODO: return meaningful response
-                return null;//"Could not verify signature";
+                var message = $"Unable to verify the signature '{timestamp.Signature}'.";
+                _logger.Warning(message);
+                throw new TimestampException(message);
             }
 
-            var resultStamp = await sendTransaction(timestamp);
+            await SendTransaction(timestamp);
+            var newTimestamp = await _timestampRepository.CreateTimestamp(timestamp, cancellationToken);
 
-            if (resultStamp.TransactionId != null)
-            {
-                return await _timestampRepository.CreateTimestamp(userId, timestamp, cancellationToken);
-            }
+            user.RemainingTimeStamps--;
+            await _userRepository.UpdateUser(user, cancellationToken);
 
-            return null;// TODO: return meaningful response
-            // TODO: Sudhir Decrease the remaining timestamp
+            _logger.Information($"Successfully created timestamp for user '{user.Id}' with transaction '{newTimestamp.TransactionId}'");
+
+            return newTimestamp;
         }
 
-         private async Task<TimestampDao> sendTransaction(TimestampDao timestamp)
+        private async Task<TimestampDao> SendTransaction(TimestampDao timestamp)
         {
-
             ManagedAccount account = new ManagedAccount(Constants.ACCOUNT_ADDRESS, "");
 
             var web3 = new Web3(account, Constants.NODE_ENDPOINT);
@@ -75,28 +97,28 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             var user = "";//(jwtDecode(req.headers.authorization)).sub;
 
             string proofStr = JsonConvert.SerializeObject(
-                new {
+                new
+                {
                     file = timestamp.FileName,
                     hash = timestamp.Hash,
                     publicKey = timestamp.PublicKey,
                     signature = timestamp.Signature
                 });
-       
+
             var txData = HexStringUTF8ConvertorExtensions.ToHexUTF8(proofStr);
 
-            var currentNonce = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(account.Address,
-                            Nethereum.RPC.Eth.DTOs.BlockParameter.CreatePending());
-           
+            var currentNonce = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(account.Address, Nethereum.RPC.Eth.DTOs.BlockParameter.CreatePending());
+
             var res = (
                 privateKey: Constants.SECRET_KEY,
                 chainId: Nethereum.Signer.Chain.Kovan,
-                to:Constants.TO_ADDRESS,
+                to: Constants.TO_ADDRESS,
                 amount: Web3.Convert.ToWei(0, UnitConversion.EthUnit.Gwei),
                 nonce: currentNonce,
                 gasPrice: Web3.Convert.ToWei(Constants.GAS_PRICE, UnitConversion.EthUnit.Gwei),
                 gasLimit: new BigInteger(100000),
                 data: txData
-            ); 
+            );
 
             var encoded = Web3.OfflineTransactionSigner.SignTransaction(res.privateKey,
                 res.chainId, res.to, res.amount, res.nonce, res.gasPrice, res.gasLimit, res.data);
@@ -109,14 +131,12 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             {
                 Thread.Sleep(1000);
                 receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txId);
-            }     
+            }
 
             timestamp.BlockNumber = -1;
             timestamp.TransactionId = txId;
-            timestamp.Nonce = (long) currentNonce.Value;
+            timestamp.Nonce = (long)currentNonce.Value;
             timestamp.Network = Nethereum.Signer.Chain.Kovan.ToString();
-
-            // Assert.Equal(txId, receipt.TransactionHash);
 
             return timestamp;
         }

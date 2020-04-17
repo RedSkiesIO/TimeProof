@@ -12,6 +12,6 @@ namespace AtlasCity.TimeProof.Abstractions.Repository
 
         public Task<int> GetTimestampCountByUser(string userId, DateTime fromDateTime, CancellationToken cancellationToken);
 
-        public Task<TimestampDao> CreateTimestamp(string userId, TimestampDao timestamp, CancellationToken cancellationToken);
+        public Task<TimestampDao> CreateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken);
     }
 }

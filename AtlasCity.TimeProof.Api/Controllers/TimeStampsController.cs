@@ -3,6 +3,7 @@ using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -28,7 +29,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
         //TODO: Sudhir Paging
         [Route("gettimestamps/{id}")]
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public IActionResult Get([FromRoute] string id, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -45,7 +46,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (newTimestamp == null)
                 return BadRequest();
 
-            var newTimeStamp = _timestampService.GenerateTimestamp(newTimestamp.UserId, newTimestamp.ToDao(), cancellationToken).GetAwaiter().GetResult();
+            var newTimeStamp = _timestampService.GenerateTimestamp(newTimestamp.ToDao(), cancellationToken).GetAwaiter().GetResult();
 
             return new CreatedActionResult(newTimeStamp.ToResponse());
         }
