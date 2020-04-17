@@ -41,9 +41,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             return responseCount;
         }
 
-        public async Task<TimestampDao> CreateTimestamp(string userId, TimestampDao timestamp, CancellationToken cancellationToken)
+        public async Task<TimestampDao> CreateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
             AtlasGuard.IsNotNull(timestamp);
 
             timestamp.Timestamp = DateTime.UtcNow;
