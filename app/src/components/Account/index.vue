@@ -1,25 +1,27 @@
 <template>
   <q-card
     flat
-    class="row bg-grey-2"
+    class="row bg-grey-2 flex flex-center"
   >
-    <div class="column justify-center q-mx-sm">
+    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
       <q-btn
         flat
+        class="col-xs-6"
         color="blue"
         label="Edit Profile"
         @click="editProfile"
       />
       <q-btn
         flat
+        class="col-xs-6"
         color="blue"
         label="change password"
         @click="forgotPassword"
       />
     </div>
+
     <div
-      class="column justify-center q-gutter-y-md q-mr-sm q-ml-md"
-      style="margin-top: -9px;"
+      class="col-xs-12 col-sm-12 col-md-8 col-lg-8 q-gutter-y-md q-mt-xs"
     >
       <div class="row q-gutter-x-sm q-mb-xs">
         <div><q-icon name="fas fa-user" /></div>
@@ -35,7 +37,7 @@
       >
         <div><q-icon name="fas fa-key" /></div>
         <div
-          class="row overflow"
+          class="row wrapword"
           @click="copy(user.pubKey)"
         >
           {{ user.pubKey.toLowerCase() }}
@@ -92,9 +94,18 @@ export default {
   },
 };
 </script>
-<style lang="scss">
-
+<style lang="scss" scoped>
 .signing-key {
   width: 100%;
+}
+.wrapword {
+    white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    white-space: pre-wrap;       /* css-3 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    white-space: -webkit-pre-wrap; /* Newer versions of Chrome/Safari*/
+    word-break: break-all;
+    white-space: normal;
 }
 </style>

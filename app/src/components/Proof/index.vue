@@ -15,7 +15,7 @@
         class="text-h6 q-my-sm"
       >{{ title }}</span>
       <a
-        v-if="proof.blockNumber !== -1"
+        v-if="proof.status !== 0"
         class="text-blue q-mt-sm"
         :href="etherscanTx"
         target="_blank"
@@ -40,7 +40,7 @@
             {{ $t('date') }}:
           </div>
           <div
-            v-if="proof.blockNumber === -1"
+            v-if="proof.status === 0"
             class="col-auto"
           >
             <q-chip
@@ -52,7 +52,7 @@
             </q-chip>
           </div>
           <div
-            v-if="ready && proof.blockNumber !== -1"
+            v-if="ready && proof.status !== 0"
             class="col-auto"
           >
             {{ getDate }}
@@ -167,7 +167,7 @@
     </div>
     <div class="q-px-lg flex flex-center column text-center q-pt-lg">
       <q-btn
-        v-if="proof.blockNumber !== -1 && ready"
+        v-if="proof.status !== 0 && ready"
         outline
         color="secondary"
         label="Download Certificate"
@@ -215,8 +215,7 @@ export default {
     },
 
     proof() {
-      console.log(this.proofId);
-      return this.proofId ? Timestamp.find(this.proofId) : null;
+      return this.proofId ? Timestamp.query().where('txId', this.proofId).first() : null;
     },
 
     getDate() {
@@ -234,7 +233,7 @@ export default {
         };
       }
 
-      if (this.proof.blockNumber === -1) {
+      if (this.proof.status === 0) { // Pending
         return {
           name: 'fas fa-clock',
           class: 'text-grey',
@@ -248,7 +247,7 @@ export default {
     },
 
     title() {
-      if (this.proof.blockNumber === -1) {
+      if (this.proof.status === 0) {
         return 'Your timestamp is on it\'s way';
       }
 
@@ -283,7 +282,7 @@ export default {
 
     getCertificate() {
       const name = `${this.proof.date}.pdf`;
-      this.$pdf(name, this.proof.certificate);
+      this.$pdf.create(name, this.proof.certificate);
     },
   },
 };

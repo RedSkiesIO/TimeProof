@@ -12,42 +12,50 @@
       flat
       class="timestamp-list q-pa-md"
     >
-      <div v-if="user.orderedTimestamps.length > 0">
+      <div
+        v-if="user.orderedTimestamps.length > 0"
+      >
         <!-- <div class="row text-weight-bold justify-end q-mr-sm">
           {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
         </div> -->
-        <div class="text-uppercase text-weight-bold text-secondary row">
+        <q-scroll-area
+          style="height: 15rem;"
+          :thumb-style="thumbStyle"
+          :bar-style="barStyle"
+        >
           <div
-            class="col-4"
+            class="text-uppercase text-weight-bold text-secondary row no-wrap"
           >
-            <q-icon
-              class="col-auto text-grey-6 q-ml-sm q-mr-md"
-              name="fas fa-file"
-              style="font-size: 1.2em"
-            />
-            {{ $t('file') }}
+            <div
+              class="col-md-4 col-sm-6 col-xs-8"
+            >
+              <q-icon
+                class="col-auto text-grey-6 q-ml-sm q-mr-md"
+                name="fas fa-file"
+                style="font-size: 1.2em"
+              />
+              {{ $t('file') }}
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6">
+              {{ $t('proofId') }}
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6">
+              {{ $t('date') }}
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6">
+              {{ $t('time') }}
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6">
+              {{ $t('certificate') }}
+            </div>
           </div>
-          <div class="col-2">
-            {{ $t('proofId') }}
-          </div>
-          <div class="col-2">
-            {{ $t('date') }}
-          </div>
-          <div class="col-2">
-            {{ $t('time') }}
-          </div>
-          <div class="col-2">
-            {{ $t('certificate') }}
-          </div>
-        </div>
-        <q-scroll-area style="height: 15rem;">
           <div
             v-for="stamp in user.orderedTimestamps"
             :key="stamp.txId"
-            class="row stamp-item2"
+            class="row no-wrap stamp-item2"
           >
             <div
-              class="col-4 q-px-sm overflow"
+              class="col-md-4 col-sm-6 col-xs-8 q-px-sm overflow"
             >
               <q-icon
                 class="col-auto text-grey-6 q-pr-sm"
@@ -57,7 +65,7 @@
               {{ stamp.name }}
             </div>
             <div
-              class="col-2 row overflow"
+              class="col-md-2 col-sm-4 col-xs-6 row overflow"
             >
               <div>
                 <q-btn
@@ -76,24 +84,24 @@
               </div>
             </div>
             <div
-              class="col-2 text-left"
+              class="col-md-2 col-sm-4 col-xs-6 text-left"
             >
-              <span v-if="stamp.blockNumber !== -1">
+              <span v-if="stamp.status !== 0">
                 {{ stamp.timestampDate.split(' ')[0] }}
 
               </span>
             </div>
             <div
-              class="col-2 text-left"
+              class="col-md-2 col-sm-4 col-xs-6 text-left"
             >
-              <span v-if="stamp.blockNumber !== -1">
+              <span v-if="stamp.status !== 0">
                 {{ stamp.timestampDate.split(' ')[1] }}
                 {{ stamp.timestampDate.split(' ')[2] }}
               </span>
             </div>
             <div
-              v-if="stamp.blockNumber === -1"
-              class="col-2 q-pr-sm text-left"
+              v-if="stamp.status === 0"
+              class="col-md-2 col-sm-4 col-xs-6 q-pr-sm text-left"
             >
               <q-chip
                 square
@@ -105,7 +113,7 @@
             </div>
             <div
               v-else
-              class="col-2 q-pr-sm text-blue cursor-pointer text-left"
+              class="col-md-2 col-sm-4 col-xs-6 q-pr-sm text-blue cursor-pointer text-left"
               @click="timestampDialog(stamp)"
             >
               {{ $t('downloadCertificate') }}
@@ -141,16 +149,30 @@
           <q-icon
             v-close-popup
             name="close"
+            style="cursor:pointer"
             size="md"
           />
         </div>
 
-        <Proof
-          v-if="confirmed"
-          :file="file"
-          :proof-id="txId"
-          :scope="{dialog: true}"
-        />
+        <template v-if="!pdfSrc">
+          <Proof
+            v-if="confirmed"
+            :file="file"
+            :proof-id="txId"
+            :scope="{dialog: true}"
+          />
+        </template>
+        <template v-else>
+          <div class="container q-pa-sm">
+            <q-pdfviewer
+              v-model="confirmed"
+              :src="pdfSrc"
+              type="html5"
+              content-class="fit container"
+              inner-content-class="fit container"
+            />
+          </div>
+        </template>
       </q-card>
     </q-dialog>
   </div>
@@ -173,6 +195,21 @@ export default {
       file: {},
       txId: null,
       fileIcon,
+      pdfSrc: null,
+      thumbStyle: {
+        right: '4px',
+        borderRadius: '5px',
+        backgroundColor: '#027be3',
+        width: '5px',
+        opacity: 0.75,
+      },
+      barStyle: {
+        right: '2px',
+        borderRadius: '9px',
+        backgroundColor: '#027be3',
+        width: '9px',
+        opacity: 0.2,
+      },
     };
   },
 
@@ -193,6 +230,10 @@ export default {
 
     timestampDialog({ txId }) {
       this.txId = txId;
+      this.pdfSrc = this.$pdf.getPdfFile(txId);
+      console.log('KOKOKKOKOKO');
+      console.log(txId);
+      console.log(this.pdfSrc);
       this.confirmed = true;
     },
 
@@ -209,12 +250,12 @@ export default {
 
     getCertificate(stamp) {
       const name = `${stamp.date}.pdf`;
-      this.$pdf(name, stamp.certificate);
+      this.$pdf.create(name, stamp.certificate);
     },
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .link {
   text-decoration: none;
   color: inherit;
@@ -239,4 +280,14 @@ export default {
   overflow: hidden;
   white-space: nowrap;
 }
+
+.container {
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 50%;
+  min-height: 50%;
+  width: 100%;
+  height: 50vw;
+}
+
 </style>

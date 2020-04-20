@@ -35,7 +35,7 @@ export default class User extends Model {
   }
 
   get pendingTimestamps() {
-    return this.timestamps.filter(({ blockNumber }) => blockNumber === -1);
+    return this.timestamps.filter(({ status }) => status === 0);
   }
 
   get name() {

@@ -9,7 +9,7 @@
       <div
         v-for="item in products"
         :key="item.id"
-        class="col-4 price-plan-div"
+        class="col-xs-12 col-md-4 price-plan-div q-mb-md"
       >
         <q-card
           class="q-mt-md"

@@ -19,19 +19,19 @@ module.exports = async function timestamp(context, req, timestamps) {
   const updates = req.body;
 
   if(updates && updates.length > 0 ) {
-  updates.forEach((update) => {
-    context.log('called');
-    const timestamp = context.bindings.timestamps.find(stamp => {
-      return stamp.id === update.txId;
+    updates.forEach((update) => {
+      context.log('called');
+      const timestamp = context.bindings.timestamps.find(stamp => {
+        return stamp.id === update.txId;
+      });
+      context.log(timestamp);
+      if(timestamp) {
+        context.bindings.timestampDatabase = timestamp;
+        context.log(context.bindings.timestampDatabase);
+        context.bindings.timestampDatabase.blockNumber = Number(update.blockNumber);
+        context.bindings.timestampDatabase.timestamp = Number(update.date);
+      }
     });
-    context.log(timestamp);
-    if(timestamp) {
-    context.bindings.timestampDatabase = timestamp;
-    context.log(context.bindings.timestampDatabase);
-    context.bindings.timestampDatabase.blockNumber = Number(update.blockNumber);
-    context.bindings.timestampDatabase.timestamp = Number(update.date);
-    }
-  });
   }
  
   return {

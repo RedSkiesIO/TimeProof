@@ -12,7 +12,9 @@ class UserServer {
     const { data, status } = await axios.get(`${process.env.API}/getTimestamps/${accountIdentifier}`);
     if (status === 200 && data) {
       const stamps = data.map(file => ({
-        txId: file.id,
+        id: file.id,
+        txId: file.transactionId,
+        status: file.status,
         hash: file.fileHash,
         signature: file.signature,
         pubKey: file.publicKey.toLowerCase(),
@@ -31,59 +33,63 @@ class UserServer {
 
   async verifyUserDetails() {
     const user = auth.user(false, true, 'address');
+    const account = auth.account();
 
-    return axios.get(`${process.env.API}/user?email=${encodeURIComponent(user.email)}`)
-      .then(async (result) => {
-        if (!result || !result.data) {
-          console.log('DATATATTATATTATATA');
+    if (account) {
+      return axios.get(`${process.env.API}/user?email=${encodeURIComponent(account.idToken.emails[0])}`)
+        .then(async (result) => {
+          if (!result || !result.data) {
+            console.log('DATATATTATATTATATA');
 
-          let address;
-          if (user.address) {
-            address = {
-              line1: user.address.line1,
-              line2: user.address.line2,
-              city: user.address.city,
-              state: user.address.state,
-              postcode: user.address.postcode,
-              country: user.address.country,
-            };
+            let address;
+            let data;
+            if (user) {
+              if (user.address) {
+                address = {
+                  line1: user.address.line1,
+                  line2: user.address.line2,
+                  city: user.address.city,
+                  state: user.address.state,
+                  postcode: user.address.postcode,
+                  country: user.address.country,
+                };
+              }
+
+              data = {
+                email: user.email,
+                firstName: user.givenName,
+                lastName: user.familyName,
+                address,
+              };
+            } else {
+              data = {
+                email: account.idToken.emails[0],
+                firstName: account.idToken.given_name,
+                lastName: account.idToken.family_name,
+              };
+            }
+            console.log(data);
+            const newUserResult = await axios.post(`${process.env.API}/user`, data);
+            console.log('New User created on Timeproof API');
+            console.log(newUserResult);
+            return newUserResult;
+          }
+          console.log('User is already exist in timeproof api');
+          console.log(result.data);
+          return result;
+        })
+        .then(async (userResult) => {
+          if (userResult && userResult.data) {
+            return userResult.data;
           }
 
-          const data = {
-            email: user.email,
-            firstName: user.givenName,
-            lastName: user.familyName,
-            address,
-          };
-          console.log(data);
-          const newUserResult = await axios.post(`${process.env.API}/user`, data);
-          console.log('New User created on Timeproof API');
-          console.log(newUserResult);
-          return newUserResult;
-        }
-        console.log('User is already exist in timeproof api');
-        console.log(result.data);
-        return result;
-      })
-      .then(async (userResult) => {
-        if (userResult && userResult.data) {
-          // const intentResult = await
-          // axios.get(`${process.env.API}/user/setupintent/${userResult.data.id}`);
-          // console.log('USER INTENT RESULT');
-          // console.log(intentResult);
-          // if (intentResult && intentResult.status === 200 && intentResult.data) {
-          //   intentResult.data.userId = userResult.data.id;
-          //   return intentResult;
-          // }
-          return userResult.data;
-        }
-        return {
-          error: 'client secret key not found',
-        };
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+          throw new Error('user data not found');
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    return Promise.resolve();
   }
 
   async getSetupIntent(userId) {

@@ -6,6 +6,13 @@
       class="bg-primary text-white"
     >
       <q-toolbar>
+        <q-btn
+          flat
+          round
+          dense
+          icon="menu"
+          @click="drawer = !drawer"
+        />
         <div
           class="logo text-center text-weight-bold q-pt-sm"
           @click="$router.push('/')"
@@ -46,17 +53,21 @@
       v-model="drawer"
       side="left"
       show-if-above
+      :mini="miniState"
+      mini-to-overlay
       :width="200"
       :breakpoint="500"
       :height="900"
       content-class="bg-primary text-white"
+      @mouseover="miniState = false"
+      @mouseout="miniState = true"
     >
       <q-scroll-area class="fit">
         <div class="q-mt-lg columm justify-between text-left">
           <q-list>
             <q-item
               v-for="item in menuList"
-              :key="item"
+              :key="item.label"
               v-ripple
               clickable
               :class="item.redirect ? 'fixed-bottom' : ''"
@@ -183,7 +194,8 @@ export default {
       position: 'top',
       left: true,
       menuList,
-      drawer: true,
+      drawer: false,
+      miniState: true,
     };
   },
 

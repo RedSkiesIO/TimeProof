@@ -58,21 +58,21 @@
         </div>
         <div v-show="!saveMode">
           <div class="row">
-            <label class="col-md-5">
+            <label class="col-md-4">
               <span>Card Number:</span>
             </label>
 
             <div class="field col-md-6">
-              {{ user.selectedCardNumber }}
+              {{ user.selectedCardNumber ? user.selectedCardNumber : '---- ---- ---- ----' }}
             </div>
           </div>
           <div class="row">
-            <label class="col-md-5">
+            <label class="col-md-4">
               <span>Expiration Date:</span>
             </label>
 
             <div class="field col-md-6">
-              {{ user.cardExpirationDate }}
+              {{ user.cardExpirationDate ? user.cardExpirationDate : '-- / ----' }}
             </div>
           </div>
         </div>

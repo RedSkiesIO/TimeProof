@@ -5,14 +5,16 @@ import User from '../User';
 export default class Timestamp extends Model {
   static entity = 'timestamps';
 
-  static primaryKey = 'txId';
+  static primaryKey = 'id';
 
   static fields() {
     return {
+      id: this.attr(''),
       txId: this.attr(''),
       hash: this.attr(''),
       signature: this.attr(''),
       pubkey: this.attr(''),
+      status: this.attr(''),
       accountIdentifier: this.attr(''),
       name: this.attr(''),
       date: this.attr(''),

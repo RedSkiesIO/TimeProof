@@ -8,8 +8,8 @@
         class="justify-center q-gutter-md"
         style="height: 100%;"
       >
-        <div class="col-auto row justify-between q-px-sm">
-          <div class="col-3 column flex-center q-mr-md q-ml-md">
+        <div class="col-auto row justify-between">
+          <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
             <!-- <q-knob
               v-model="usedPercentage"
               readonly
@@ -37,7 +37,7 @@
             inset
           />
 
-          <div class="col-3 column flex-center q-mr-md q-ml-md">
+          <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
             <!-- <div class="column">
               <div>{{ $t('subscription') }}:</div>
               <div class="text-green">
@@ -68,7 +68,7 @@
             vertical
             inset
           />
-          <div class="col-3 column flex-center q-mr-md q-ml-md">
+          <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
             <div class="text-blue row text-h4 text-weight-bold q-mb-md">
               {{ totalUsage }}
             </div>
@@ -142,7 +142,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .usage-summary {
     border: 2px solid rgba(0, 0, 0, 0.12);
     max-width: 400px;

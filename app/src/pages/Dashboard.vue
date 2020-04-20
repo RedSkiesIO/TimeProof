@@ -3,7 +3,7 @@
     <div
       v-if="isLoggedIn"
       class="q-my-lg"
-      style="width:75vw"
+      style="width:82vw;"
     >
       <div
         class="q-gutter-x-lg q-mb-md"
@@ -31,7 +31,7 @@
           <Usage />
         </div>
       </div>
-      <div style="width:100%">
+      <div>
         <Timestamps />
       </div>
     </div>
@@ -106,7 +106,7 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .verify .q-card {
   padding: 0;
 }
@@ -118,4 +118,5 @@ export default {
 .dash-top-box {
   height: 220px;
 }
+
 </style>

@@ -241,8 +241,10 @@ export default {
     async insertTimestamp(file) {
       Timestamp.insert({
         data: {
+          id: file.id,
           txId: file.txId,
           hash: file.hash,
+          status: file.status,
           signature: file.signature,
           accountIdentifier: this.user.accountIdentifier,
           name: file.name,
@@ -312,25 +314,27 @@ export default {
         }
         const tx = await this.$axios.post(`${process.env.API}/timestamp`, {
           fileName: this.file.name,
-          hash: this.file.hash,
+          fileHash: this.file.hash,
           publicKey: this.user.pubKey,
           signature: this.file.signature,
           userId: this.user.userId,
         });
-
-        if (tx.data || tx.status === '201') {
-          this.file.txId = tx.data.id;
+        console.log('TIMESTAMPPPPPPP');
+        console.log(tx);
+        if (tx.data || tx.status === 201) {
+          this.file.id = tx.data.id;
+          this.file.txId = tx.data.transactionId;
           this.file.timestamp = tx.data.timestamp;
           this.file.blockNumber = tx.data.blockNumber;
-          const timestamps = this.user.timestampsUsed + 1;
+          this.file.status = tx.data.status;
           User.update({
             data: {
               accountIdentifier: this.account.accountIdentifier,
-              timestampsUsed: timestamps,
+              timestampsUsed: this.user.timestampsUsed + 1,
             },
           });
           await this.insertTimestamp(this.file);
-          this.txId = tx.data.id;
+          this.txId = tx.data.transactionId;
           this.visible = false;
           this.confirmed = true;
         }
