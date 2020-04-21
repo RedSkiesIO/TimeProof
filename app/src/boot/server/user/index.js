@@ -6,10 +6,10 @@ import auth from '../../auth';
 import User from '../../../store/User';
 
 class UserServer {
-  async fetchTimestamps(accountIdentifier) {
+  async fetchTimestamps(accountIdentifier, userId) {
     const re = /(?:\.([^.]+))?$/;
 
-    const { data, status } = await axios.get(`${process.env.API}/getTimestamps/${accountIdentifier}`);
+    const { data, status } = await axios.get(`${process.env.API}/gettimestamps/${userId}`);
     if (status === 200 && data) {
       const stamps = data.map(file => ({
         id: file.id,

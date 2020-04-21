@@ -13,7 +13,7 @@ const msalConfig = {
     clientId: 'caead9d0-3263-42b9-b25e-2ca36d0ff535', // This is your client ID
     authority: 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn', // This is your tenant info
     validateAuthority: false,
-    redirectURI: 'http://localhost:6420/',
+    redirectURI: process.env.DEV ? 'http://localhost:6420/' : 'https://timeproof.netlify.app/',
   },
   cache: {
     cacheLocation: 'localStorage',
