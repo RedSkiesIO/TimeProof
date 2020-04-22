@@ -2,7 +2,7 @@
 using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -18,8 +18,8 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
         public TimeStampsController(ILogger logger, ITimestampService timestampService)
         {
-            AtlasGuard.IsNotNull(logger);
-            AtlasGuard.IsNotNull(timestampService);
+            Guard.Argument(logger, nameof(logger)).NotNull();
+            Guard.Argument(timestampService, nameof(timestampService)).NotNull();
 
             _logger = logger;
             _timestampService = timestampService;

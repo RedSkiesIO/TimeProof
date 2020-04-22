@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
@@ -26,7 +26,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<IEnumerable<TimestampDao>> GetTimestampByUser(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.UserId.ToLower() == userId.ToLower()).AsEnumerable();
             return response;
@@ -34,8 +34,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<int> GetTimestampCountByUser(string userId, DateTime fromDateTime, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
-            AtlasGuard.IsNotNull(fromDateTime);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var responseCount = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.UserId.ToLower() == userId.ToLower() && s.Timestamp >= fromDateTime).Count();
             return responseCount;
@@ -43,7 +42,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<TimestampDao> CreateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNull(timestamp);
+            Guard.Argument(timestamp, nameof(timestamp)).NotNull();
 
             timestamp.Timestamp = DateTime.UtcNow;
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, timestamp, new RequestOptions(), false, cancellationToken);
@@ -54,7 +53,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<TimestampDao> GetTimestampById(string timestampId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(timestampId);
+            Guard.Argument(timestampId, nameof(timestampId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == timestampId.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
@@ -62,7 +61,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<TimestampDao> UpdateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNull(timestamp);
+            Guard.Argument(timestamp, nameof(timestamp)).NotNull();
 
             var response = await Client.UpsertDocumentAsync(_documentCollectionUri, timestamp, cancellationToken: cancellationToken);
 

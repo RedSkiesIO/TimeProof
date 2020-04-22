@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -28,7 +27,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<UserDao> GetUserById(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == userId.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
@@ -36,7 +35,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(email);
+            Guard.Argument(email, nameof(email)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri).Where(s => s.Email.ToLower() == email.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
@@ -44,8 +43,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNull(user);
-            AtlasGuard.IsNotNullOrWhiteSpace(user.Email);
+            Guard.Argument(user, nameof(user)).NotNull();
+            Guard.Argument(user.Email, nameof(user.Email)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, user, new RequestOptions(), false, cancellationToken);
 
@@ -54,7 +53,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task DeleteUser(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
             try
             {
@@ -68,7 +67,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<UserDao> UpdateUser(UserDao user, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNull(user);
+            Guard.Argument(user, nameof(user)).NotNull();
 
             var response = await Client.UpsertDocumentAsync(_documentCollectionUri, user, cancellationToken: cancellationToken);
             return JsonConvert.DeserializeObject<UserDao>(response.Resource.ToString());

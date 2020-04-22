@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.Helpers;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 
 namespace AtlasCity.TimeProof.Common.Lib.Helpers
 {
@@ -20,16 +20,16 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
 
         public EmailTemplateHelper(string loginUri)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(loginUri);
+            Guard.Argument(loginUri, nameof(loginUri)).NotNull().NotEmpty().NotWhiteSpace();
 
             _loginUri = loginUri;
         }
 
         public async Task<string> GetWelcomeEmailBody(string userFullName, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userFullName);
-            var fileText = LoadFileText(WelcomeEmailFileName);
+            Guard.Argument(userFullName, nameof(userFullName)).NotNull().NotEmpty().NotWhiteSpace();
 
+            var fileText = LoadFileText(WelcomeEmailFileName);
             fileText = fileText.Replace(FullNamePlaceHolder, userFullName);
             fileText = fileText.Replace(LoginLinkPlaceHolder, _loginUri);
 
@@ -38,7 +38,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
 
         private string LoadFileText(string fileName)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(fileName);
+            Guard.Argument(fileName, nameof(fileName)).NotNull().NotEmpty().NotWhiteSpace();
 
             var filePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), EmailTemplateFolder, fileName);
             if (!File.Exists(filePath))

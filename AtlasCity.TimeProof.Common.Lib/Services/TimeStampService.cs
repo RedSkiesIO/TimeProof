@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Enums;
 using AtlasCity.TimeProof.Abstractions.Helpers;
+using AtlasCity.TimeProof.Abstractions.Messages;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Util;
@@ -24,6 +26,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private readonly ITimestampRepository _timestampRepository;
         private readonly IUserRepository _userRepository;
         private readonly ISignatureHelper _signatureHelper;
+        private readonly ITimestampQueueService _timestampQueueService;
         private readonly IWeb3 _netheriumWeb3;
 
         public TimestampService(
@@ -31,24 +34,27 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
            ITimestampRepository timestampRepository,
            IUserRepository userRepository, 
            ISignatureHelper signatureHelper,
+           ITimestampQueueService timestampQueueService,
            IWeb3 netheriumWeb3)
         {
-            AtlasGuard.IsNotNull(logger);
-            AtlasGuard.IsNotNull(timestampRepository);
-            AtlasGuard.IsNotNull(userRepository);
-            AtlasGuard.IsNotNull(signatureHelper);
-            AtlasGuard.IsNotNull(netheriumWeb3);
+            Guard.Argument(logger, nameof(logger)).NotNull();
+            Guard.Argument(timestampRepository, nameof(timestampRepository)).NotNull();
+            Guard.Argument(userRepository, nameof(userRepository)).NotNull();
+            Guard.Argument(signatureHelper, nameof(signatureHelper)).NotNull();
+            Guard.Argument(timestampQueueService, nameof(timestampQueueService)).NotNull();
+            Guard.Argument(netheriumWeb3, nameof(netheriumWeb3)).NotNull();
 
             _logger = logger;
             _timestampRepository = timestampRepository;
             _userRepository = userRepository;
             _signatureHelper = signatureHelper;
+            _timestampQueueService = timestampQueueService;
             _netheriumWeb3 = netheriumWeb3;
         }
 
         public async Task<IEnumerable<TimestampDao>> GetUesrTimestamps(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
             //TODO: Sudhir Paging
             return await _timestampRepository.GetTimestampByUser(userId, cancellationToken);
@@ -56,8 +62,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<TimestampDao> GenerateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(timestamp.UserId);
-            AtlasGuard.IsNotNull(timestamp);
+            Guard.Argument(timestamp, nameof(timestamp)).NotNull();
+            Guard.Argument(timestamp.UserId, nameof(timestamp.UserId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var user = await _userRepository.GetUserById(timestamp.UserId, cancellationToken);
             if (user == null)
@@ -77,12 +83,15 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             try
             {
                 await SendTransaction(timestamp);
+                
                 var newTimestamp = await _timestampRepository.CreateTimestamp(timestamp, cancellationToken);
+                
+                await _timestampQueueService.AddTimestampMessage(new TimestampQueueMessage { TimestampId = newTimestamp.Id, TransactionId = newTimestamp.TransactionId, Created = DateTime.UtcNow }, cancellationToken);
 
                 user.RemainingTimeStamps--;
                 await _userRepository.UpdateUser(user, cancellationToken);
 
-                _logger.Information($"Successfully created timestamp for user '{user.Id}' with transaction '{newTimestamp.TransactionId}'");
+                _logger.Information($"Successfully created time stamp for user '{user.Id}' with transaction '{newTimestamp.TransactionId}'");
 
                 return newTimestamp;
             }
@@ -95,35 +104,10 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<TimestampDao> GetTimestampDetails(string timestampId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(timestampId);
+            Guard.Argument(timestampId, nameof(timestampId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var timestamp = await _timestampRepository.GetTimestampById(timestampId, cancellationToken);
             return timestamp;
-        }
-
-        public async Task CheckTransactionMining(string timestampId, string transactionId, CancellationToken cancellationToken)
-        {
-            // TODO: Call this while dequeuing the message
-            AtlasGuard.IsNotNullOrWhiteSpace(timestampId);
-
-            var receipt = await _netheriumWeb3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionId);
-            if (receipt != null && receipt.BlockNumber.Value >= 0)
-            {
-                var timestamp = await _timestampRepository.GetTimestampById(timestampId, cancellationToken);
-
-                if (timestamp.Status != TimestampState.Pending)
-                {
-                    _logger.Warning($"It is not ideal work-flow. Investigate with time stamp identifier '{timestamp.Id}' and transaction identifier '{timestamp.TransactionId}'");
-                }
-                else
-                {
-                    timestamp.BlockNumber = (long)receipt.BlockNumber.Value;
-
-                    timestamp.Status = TimestampState.Succeded;
-                    _logger.Information($"Transaction successful for an user '{timestamp.UserId}' with transaction identifier '{timestamp.TransactionId}'.");
-                    await _timestampRepository.UpdateTimestamp(timestamp, cancellationToken);
-                }
-            }
         }
 
         private async Task<TimestampDao> SendTransaction(TimestampDao timestamp)
@@ -186,8 +170,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 var message = $"Transaction failed for an user '{timestamp.UserId}' with file name '{timestamp.FileName}'.";
                 _logger.Error(message);
             }
-
-            //TODO: Sudhir Queue for further processing
 
             return timestamp;
         }

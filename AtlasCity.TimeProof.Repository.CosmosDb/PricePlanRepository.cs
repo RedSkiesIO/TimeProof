@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
@@ -34,7 +33,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<PricePlanDao> GetPricePlanById(string pricePlanId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(pricePlanId);
+            Guard.Argument(pricePlanId, nameof(pricePlanId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == pricePlanId.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
@@ -42,7 +41,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<PricePlanDao> GetPricePlanByTitle(string pricePlanTitle, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(pricePlanTitle);
+            Guard.Argument(pricePlanTitle, nameof(pricePlanTitle)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).Where(s => s.Title.ToLower() == pricePlanTitle.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
@@ -51,7 +50,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         public async Task<PricePlanDao> AddPricePlans(PricePlanDao pricePlan, CancellationToken cancellationToken)
         {
             Guard.Argument(pricePlan, nameof(pricePlan)).NotNull();
-            AtlasGuard.IsNotNullOrWhiteSpace(pricePlan.Title);
+            Guard.Argument(pricePlan.Title, nameof(pricePlan.Title)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, pricePlan, new RequestOptions(), false, cancellationToken);
             return JsonConvert.DeserializeObject<PricePlanDao>(response.Resource.ToString());

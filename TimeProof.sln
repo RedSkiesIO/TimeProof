@@ -18,9 +18,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Common.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Common.Lib.Tests", "AtlasCity.TimeProof.Common.Lib.Tests\AtlasCity.TimeProof.Common.Lib.Tests.csproj", "{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasCity.TimeProof.Api.Unit.Tests", "AtlasCity.TimeProof.Api.Unit.Tests\AtlasCity.TimeProof.Api.Unit.Tests.csproj", "{5AF9053C-5C52-4B18-997D-B6A544D789F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Api.Unit.Tests", "AtlasCity.TimeProof.Api.Unit.Tests\AtlasCity.TimeProof.Api.Unit.Tests.csproj", "{5AF9053C-5C52-4B18-997D-B6A544D789F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests", "AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests\AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests.csproj", "{1183D947-F82A-45F6-829D-40B03D493A8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests", "AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests\AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests.csproj", "{1183D947-F82A-45F6-829D-40B03D493A8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasCity.TimeProof.AzureFunction", "AtlasCity.TimeProof.AzureFunction\AtlasCity.TimeProof.AzureFunction.csproj", "{8B24A208-4EF0-462C-85FA-6388C2B1D88A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +88,14 @@ Global
 		{1183D947-F82A-45F6-829D-40B03D493A8F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1183D947-F82A-45F6-829D-40B03D493A8F}.Release|x64.ActiveCfg = Release|Any CPU
 		{1183D947-F82A-45F6-829D-40B03D493A8F}.Release|x64.Build.0 = Release|Any CPU
+		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Debug|x64.Build.0 = Debug|Any CPU
+		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Release|x64.ActiveCfg = Release|Any CPU
+		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

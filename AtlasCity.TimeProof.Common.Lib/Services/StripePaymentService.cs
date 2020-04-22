@@ -8,6 +8,7 @@ using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Stripe;
 
 namespace AtlasCity.TimeProof.Common.Lib.Services
@@ -23,11 +24,11 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public StripePaymentService(PaymentIntentService paymentIntentService, CustomerService customerService, PaymentMethodService paymentMethodService, SetupIntentService setupIntentService)
         {
-            AtlasGuard.IsNotNull(paymentIntentService);
-            AtlasGuard.IsNotNull(customerService);
-            AtlasGuard.IsNotNull(paymentMethodService);
-            AtlasGuard.IsNotNull(setupIntentService);
-
+            Guard.Argument(paymentIntentService, nameof(paymentIntentService)).NotNull();
+            Guard.Argument(customerService, nameof(customerService)).NotNull();
+            Guard.Argument(paymentMethodService, nameof(paymentMethodService)).NotNull();
+            Guard.Argument(setupIntentService, nameof(setupIntentService)).NotNull();
+            
             _paymentIntentService = paymentIntentService;
             _customerService = customerService;
             _paymentMethodService = paymentMethodService;
@@ -36,8 +37,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<string> CreatePaymentCustomer(UserDao user, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNull(user);
-            AtlasGuard.IsNotNullOrWhiteSpace(user.Email);
+            Guard.Argument(user, nameof(user)).NotNull();
+            Guard.Argument(user.Email, nameof(user.Email)).NotNull().NotEmpty().NotWhiteSpace();
 
             var options = new CustomerCreateOptions
             {
@@ -54,7 +55,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<PaymentCustomerDao> GetCustomerById(string paymentCustomerId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+            Guard.Argument(paymentCustomerId, nameof(paymentCustomerId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var customer = await _customerService.GetAsync(paymentCustomerId, cancellationToken: cancellationToken);
 
@@ -67,7 +68,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<PaymentMethodDao> GetCustomerPaymentMethod(string paymentCustomerId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+            Guard.Argument(paymentCustomerId, nameof(paymentCustomerId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var options = new PaymentMethodListOptions
             {
@@ -82,7 +83,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<SetupIntentDao> GetSetupIntent(string setupIntentId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(setupIntentId);
+            Guard.Argument(setupIntentId, nameof(setupIntentId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var setupIntent = await _setupIntentService.GetAsync(setupIntentId, cancellationToken: cancellationToken);
 
@@ -94,7 +95,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<SetupIntentDao> CreateSetupIntent(string paymentCustomerId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+            Guard.Argument(paymentCustomerId, nameof(paymentCustomerId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var options = new SetupIntentCreateOptions
             {
@@ -112,7 +113,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task DeletePaymentCustomer(string paymentCustomerId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+            Guard.Argument(paymentCustomerId, nameof(paymentCustomerId)).NotNull().NotEmpty().NotWhiteSpace();
 
             try
             {
@@ -130,7 +131,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<PaymentIntentDao> GetPaymentIntent(string paymentIntentId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentIntentId);
+            Guard.Argument(paymentIntentId, nameof(paymentIntentId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var paymentIntent = await _paymentIntentService.GetAsync(paymentIntentId, cancellationToken: cancellationToken);
 
@@ -139,7 +140,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<PaymentIntentDao> GetPaymentIntentByCustomerId(string paymentCustomerId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+            Guard.Argument(paymentCustomerId, nameof(paymentCustomerId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var options = new PaymentIntentListOptions
             {
@@ -156,7 +157,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<PaymentIntentDao> CreatePaymentIntent(string paymentCustomerId, long amount, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+            Guard.Argument(paymentCustomerId, nameof(paymentCustomerId)).NotNull().NotEmpty().NotWhiteSpace();
 
             try
             {
@@ -181,7 +182,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<PaymentIntentDao> CollectPayment(string paymentCustomerId, long amount, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentCustomerId);
+            Guard.Argument(paymentCustomerId, nameof(paymentCustomerId)).NotNull().NotEmpty().NotWhiteSpace();
 
             try
             {
