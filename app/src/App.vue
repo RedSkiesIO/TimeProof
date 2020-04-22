@@ -71,7 +71,9 @@ export default {
               this.$router.push('/new-key');
             }
 
-            await this.$userServer.fetchTimestamps();
+            await this.$userServer.fetchTimestamps(this.account.accountIdentifier,
+              this.user.userId);
+
             let timer = 0;
 
             setInterval(async () => {
@@ -83,7 +85,7 @@ export default {
 
               if (process.env.DEV) {
                 timer += 5;
-                if (timer === 600) {
+                if (timer === 2000) {
                   User.update({
                     data: {
                       accountIdentifier: this.user.accountIdentifier,
