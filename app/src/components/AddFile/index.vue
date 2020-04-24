@@ -105,7 +105,7 @@
               :placeholder="$t('proofId')"
               :rules="[
                 val => !!val || '* Required',
-                val => val.length === 36 || $t('invalidProofId'),
+                val => val.length === 66 || $t('invalidProofId'),
               ]"
               lazy-rules
             />

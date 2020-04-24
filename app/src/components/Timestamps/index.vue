@@ -90,7 +90,7 @@
                 {{ stamp.timestampDate.split(' ')[0] }}
               </span>
               <span v-else>
-                -- : --
+                __ / __ / ____
               </span>
             </div>
             <div
@@ -101,7 +101,7 @@
                 {{ stamp.timestampDate.split(' ')[2] }}
               </span>
               <span v-else>
-                ---- ---- --
+                __ : __ : __ __
               </span>
             </div>
             <div
