@@ -20,7 +20,7 @@ class UserServer {
         pubKey: file.publicKey.toLowerCase(),
         accountIdentifier,
         name: file.fileName,
-        date: Number(file.timestamp),
+        date: file.timestamp,
         type: re.exec(file.fileName)[1],
         blockNumber: Number(file.blockNumber),
       }));
