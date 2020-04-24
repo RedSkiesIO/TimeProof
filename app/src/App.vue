@@ -109,6 +109,8 @@ export default {
         } catch (e) {
           console.log(e);
         }
+      } else {
+        this.$auth.signIn();
       }
 
       this.ready = true;

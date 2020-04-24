@@ -1,6 +1,9 @@
 /* eslint-disable */
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
+// const HtmlWebpackPlugin = require('@quasar/app/node_modules/html-webpack-plugin')
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const fs = require('fs');
 
 module.exports = function (ctx) {
   return {
@@ -67,8 +70,8 @@ module.exports = function (ctx) {
       scopeHoisting: true,
       env: ctx.dev
       ? {
-        API: JSON.stringify('http://localhost:5000/api'),
-        // API: JSON.stringify('https://atlascitytimeproofapi.azurewebsites.net/api'),
+        //API: JSON.stringify('http://localhost:5000/api'),
+        API: JSON.stringify('https://atlascitytimeproofapi.azurewebsites.net/api'),
         ETHERSCAN: JSON.stringify('https://kovan.etherscan.io/tx'),
         INFURA: JSON.stringify('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9')
       }
@@ -90,15 +93,70 @@ module.exports = function (ctx) {
 
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
       extendWebpack(cfg) {
-        cfg.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/,
-          options: {
-            formatter: require('eslint').CLIEngine.getFormatter('stylish'),
-          },
+        // const ruleIndex = cfg.module.rules.findIndex(rule => rule.test.toString() === '/\.css$/')
+
+        // cfg.module.rules[ruleIndex].oneOf.unshift({
+        //     test: /login\.css$/,
+        //     use: [
+        //       {
+        //         loader: MiniCssExtractPlugin.loader,
+        //         options: {
+        //           publicPath: './src/statics/css',
+        //         },
+        //       },
+        //       'css-loader',
+        //     ],
+        //   },   
+        // )
+
+        const appHost = ctx.dev ? 'https://timeproof.netlify.app' : 'https://timeproof.netlify.app';
+        const fileArr = ['./src/statics/login.html', './src/statics/signup.html'];
+
+        fileArr.forEach(file => {
+          fs.readFile(file, 'utf8', function (err, data) {
+            if (err) {
+              return console.log(err);
+            }
+            var result = data.replace(/{host}/g, appHost);
+          
+            fs.writeFile(file, result, 'utf8', function (err) {
+               if (err) return console.log(err);
+            });
+          });
         });
+
+        cfg.module.rules.push(
+          {
+            enforce: 'pre',
+            test: /\.(js|vue)$/,
+            loader: 'eslint-loader',
+            exclude: /node_modules/,
+            options: {
+              formatter: require('eslint').CLIEngine.getFormatter('stylish'),
+            },
+          },
+        );
+
+        // Output an html file for the page
+        // cfg.plugins.push(
+        //   new HtmlWebpackPlugin({
+        //     template: './src/loginSignup/login.html',
+        //     filename: `static/login.html`,
+        //     chunks: ['login']
+        //   }),
+        //   new HtmlWebpackPlugin({
+        //     template: './src/loginSignup/signup.html',
+        //     filename: `static/signup.html`,
+        //     chunks: ['signup']
+        //   }),
+          // new MiniCssExtractPlugin({
+          //   // Options similar to the same options in webpackOptions.output
+          //   // both options are optional
+          //   filename: 'static/css/[name].css',
+          //   chunkFilename: 'static/css/[name].css',
+          // }),
+        // )
+          
       },
     },
 

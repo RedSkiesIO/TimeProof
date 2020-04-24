@@ -120,8 +120,13 @@ const auth = {
 function authCallback(error, response) {
   if (error) {
     console.log(error);
-    if (error.message && error.message.indexOf('AADB2C90118') > -1) {
-      auth.forgotPassword();
+    if (error.message) {
+      if (error.message.indexOf('AADB2C90118') > -1) { // forgot password clicked
+        auth.forgotPassword();
+      } else if (error.message.indexOf('AADB2C90091') > -1) { // Cancel buttton clicked
+        msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn';
+        auth.signIn();
+      }
     }
   } else if (response.account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
     msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn';

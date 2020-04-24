@@ -9,7 +9,9 @@ Vue.prototype.$timestampServer = {
 
     timestamps.forEach(async (timestamp) => {
       const { data, status } = await axios.get(`${process.env.API}/timestamp/${timestamp.id}`);
-
+      console.log('UPDATEDDDDDDD');
+      console.log(data);
+      console.log(status);
       if (status === 200 && data) {
         const updatedTimeStamp = {
           id: data.id,
@@ -19,7 +21,7 @@ Vue.prototype.$timestampServer = {
           signature: data.signature,
           pubKey: data.publicKey.toLowerCase(),
           name: data.fileName,
-          date: Number(data.timestamp),
+          date: data.timestamp,
           type: re.exec(data.fileName)[1],
           blockNumber: Number(data.blockNumber),
         };
