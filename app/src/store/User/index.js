@@ -23,8 +23,8 @@ export default class User extends Model {
       tokenExpires: this.attr(''),
       upgrade: this.attr(false),
       firstTimeDialog: this.attr(true),
-      subscriptionStart: this.attr(moment().toISOString()),
-      subscriptionEnd: this.attr(moment().add(1, 'months').toISOString()),
+      subscriptionStart: this.attr(''), // moment().toISOString()
+      subscriptionEnd: this.attr(''), // moment().add(1, 'months').toISOString()
       selectedCardNumber: this.attr(''),
       cardExpirationDate: this.attr(''),
       userId: this.attr(''),

@@ -64,6 +64,7 @@ export default {
                 customerId: verifyResult.paymentCustomerId,
                 paymentIntentId: verifyResult.paymentIntentId,
                 subscriptionStart: verifyResult.membershipStartDate,
+                subscriptionEnd: moment(verifyResult.membershipStartDate).add(1, 'months').toISOString(),
               },
             });
 

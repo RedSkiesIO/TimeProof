@@ -88,7 +88,9 @@
             >
               <span v-if="stamp.status !== 0">
                 {{ stamp.timestampDate.split(' ')[0] }}
-
+              </span>
+              <span v-else>
+                -- : --
               </span>
             </div>
             <div
@@ -97,6 +99,9 @@
               <span v-if="stamp.status !== 0">
                 {{ stamp.timestampDate.split(' ')[1] }}
                 {{ stamp.timestampDate.split(' ')[2] }}
+              </span>
+              <span v-else>
+                ---- ---- --
               </span>
             </div>
             <div
@@ -109,6 +114,18 @@
                 text-color="white"
               >
                 pending
+              </q-chip>
+            </div>
+            <div
+              v-else-if="stamp.status === 2"
+              class="col-md-2 col-sm-4 col-xs-6 q-pr-sm text-left"
+            >
+              <q-chip
+                square
+                color="red"
+                text-color="white"
+              >
+                failed
               </q-chip>
             </div>
             <div
