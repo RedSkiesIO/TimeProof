@@ -2,7 +2,7 @@
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Api.ActionResults;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -17,8 +17,8 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
         public PricePlanController(ILogger logger, IPricePlanRepository pricePlanRepository)
         {
-            AtlasGuard.IsNotNull(logger);
-            AtlasGuard.IsNotNull(pricePlanRepository);
+            Guard.Argument(logger, nameof(logger)).NotNull();
+            Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
 
             _logger = logger;
             _pricePlanRepository = pricePlanRepository;

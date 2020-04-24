@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
 
@@ -25,7 +25,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async Task<ProcessedPaymentDao> CreatePaymentReceived(ProcessedPaymentDao payment, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNull(payment);
+            Guard.Argument(payment, nameof(payment)).NotNull();
 
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, payment, cancellationToken: cancellationToken);
 
@@ -34,7 +34,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
         public async  Task<ProcessedPaymentDao> GetLastPayment(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = Client.CreateDocumentQuery<ProcessedPaymentDao>(_documentCollectionUri).Where(s => s.UserId.ToLower() == userId.ToLower()).OrderByDescending(s => s.Created).AsEnumerable().FirstOrDefault();
             return response;

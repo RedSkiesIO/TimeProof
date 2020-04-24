@@ -6,7 +6,7 @@ using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Serilog;
 
 namespace AtlasCity.TimeProof.Common.Lib.Services
@@ -28,12 +28,12 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             IEmailService emailService,
             IEmailTemplateHelper emailTemplateHelper)
         {
-            AtlasGuard.IsNotNull(logger);
-            AtlasGuard.IsNotNull(userRepository);
-            AtlasGuard.IsNotNull(pricePlanRepository);
-            AtlasGuard.IsNotNull(paymentService);
-            AtlasGuard.IsNotNull(emailService);
-            AtlasGuard.IsNotNull(emailTemplateHelper);
+            Guard.Argument(logger, nameof(logger)).NotNull();
+            Guard.Argument(userRepository, nameof(userRepository)).NotNull();
+            Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
+            Guard.Argument(paymentService, nameof(paymentService)).NotNull();
+            Guard.Argument(emailService, nameof(emailService)).NotNull();
+            Guard.Argument(emailTemplateHelper, nameof(emailTemplateHelper)).NotNull();
 
             _logger = logger;
             _userRepository = userRepository;
@@ -45,16 +45,15 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(email);
-
+            Guard.Argument(email, nameof(email)).NotNull().NotEmpty().NotWhiteSpace();
             var user = await _userRepository.GetUserByEmail(email, cancellationToken);
             return user;
         }
 
         public async Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNull(user);
-            AtlasGuard.IsNotNullOrWhiteSpace(user.Email);
+            Guard.Argument(user, nameof(user)).NotNull();
+            Guard.Argument(user.Email, nameof(user.Email)).NotNull().NotEmpty().NotWhiteSpace();
 
             var existingUser = await _userRepository.GetUserByEmail(user.Email, cancellationToken);
             if (existingUser != null)
@@ -100,7 +99,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task DeleteUser(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var user = await _userRepository.GetUserById(userId, cancellationToken);
             if (user == null)

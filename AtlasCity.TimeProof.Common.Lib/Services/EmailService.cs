@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Services;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Serilog;
 
 namespace AtlasCity.TimeProof.Common.Lib.Services
@@ -16,8 +16,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public EmailService(SmtpClient smtpClient, ILogger logger)
         {
-            AtlasGuard.IsNotNull(smtpClient);
-            AtlasGuard.IsNotNull(logger);
+            Guard.Argument(smtpClient, nameof(smtpClient)).NotNull();
+            Guard.Argument(logger, nameof(logger)).NotNull();
 
             _smtpClient = smtpClient;
             _logger = logger;
@@ -25,11 +25,11 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task SendEmail(EmailDao emailDetails, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNull(emailDetails);
-            AtlasGuard.IsNotNullOrWhiteSpace(emailDetails.ToAddress);
-            AtlasGuard.IsNotNullOrWhiteSpace(emailDetails.FromAddress);
-            AtlasGuard.IsNotNullOrWhiteSpace(emailDetails.Subject);
-            AtlasGuard.IsNotNullOrWhiteSpace(emailDetails.HtmlBody);
+            Guard.Argument(emailDetails, nameof(emailDetails)).NotNull();
+            Guard.Argument(emailDetails.ToAddress, nameof(emailDetails.ToAddress)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(emailDetails.FromAddress, nameof(emailDetails.FromAddress)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(emailDetails.Subject, nameof(emailDetails.Subject)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(emailDetails.HtmlBody, nameof(emailDetails.HtmlBody)).NotNull().NotEmpty().NotWhiteSpace();
 
             var mailMessage = new MailMessage();
             mailMessage.To.Add(new MailAddress(emailDetails.ToAddress, emailDetails.ToName));

@@ -2,7 +2,7 @@
 using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -18,9 +18,9 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
         public UserController(ILogger logger, IUserService userService, IUserSubscriptionService userSubscriptionService)
         {
-            AtlasGuard.IsNotNull(logger);
-            AtlasGuard.IsNotNull(userService);
-            AtlasGuard.IsNotNull(userSubscriptionService);
+            Guard.Argument(logger, nameof(logger)).NotNull();
+            Guard.Argument(userService, nameof(userService)).NotNull();
+            Guard.Argument(userSubscriptionService, nameof(userSubscriptionService)).NotNull();
 
             _logger = logger;
             _userService = userService;

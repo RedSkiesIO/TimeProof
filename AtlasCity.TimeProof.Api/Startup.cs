@@ -48,7 +48,7 @@ namespace AtlasCity.TimeProof.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var origins = new string[] { "http://localhost:6420", "http://86.23.42.81:6420", "http://192.168.0.25:6420", "https://timeproof.netlify.com" };
+            var origins = new string[] { "http://localhost:6420", "http://86.23.42.81:6420", "http://192.168.0.25:6420", "https://timeproof.netlify.com", "https://timeproof.netlify.app" };
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins,
@@ -104,6 +104,9 @@ namespace AtlasCity.TimeProof.Api
             var account = new ManagedAccount(accountAddress, string.Empty);
             var web3 = new Web3(account, nodeEndpoint);
             services.AddSingleton<IWeb3>(web3);
+
+            var storageAccountConnectionString = Configuration.GetSection("StorageAccountConnectionString").Value;
+            services.AddSingleton<ITimestampQueueService>(new TimestampQueueService(storageAccountConnectionString, Log.Logger));
 
             var endpointUrl = Configuration.GetSection("TransationCosmosDb:EndpointUrl").Value;
             var authorizationKey = Configuration.GetSection("TransationCosmosDb:AuthorizationKey").Value;

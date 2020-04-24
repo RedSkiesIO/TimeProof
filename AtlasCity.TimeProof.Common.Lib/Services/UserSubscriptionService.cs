@@ -7,7 +7,7 @@ using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Responses;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
+using Dawn;
 using Serilog;
 
 namespace AtlasCity.TimeProof.Common.Lib.Services
@@ -29,12 +29,12 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             IPaymentService paymentService,
             ISystemDateTime systemDateTime)
         {
-            AtlasGuard.IsNotNull(logger);
-            AtlasGuard.IsNotNull(userRepository);
-            AtlasGuard.IsNotNull(paymentRepository);
-            AtlasGuard.IsNotNull(pricePlanRepository);
-            AtlasGuard.IsNotNull(paymentService);
-            AtlasGuard.IsNotNull(systemDateTime);
+            Guard.Argument(logger, nameof(logger)).NotNull();
+            Guard.Argument(userRepository, nameof(userRepository)).NotNull();
+            Guard.Argument(paymentRepository, nameof(paymentRepository)).NotNull();
+            Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
+            Guard.Argument(paymentService, nameof(paymentService)).NotNull();
+            Guard.Argument(systemDateTime, nameof(systemDateTime)).NotNull();
 
             _logger = logger;
             _userRepository = userRepository;
@@ -45,8 +45,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         }
         public async Task<PaymentIntentResponse> GetPaymentIntent(string userId, string pricePlanId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
-            AtlasGuard.IsNotNullOrWhiteSpace(pricePlanId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(pricePlanId, nameof(pricePlanId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var user = await _userRepository.GetUserById(userId, cancellationToken);
             if (user == null)
@@ -69,9 +69,9 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task ProcessPayment(string userId, string paymentIntentId, string pricePlanId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
-            AtlasGuard.IsNotNullOrWhiteSpace(paymentIntentId);
-            AtlasGuard.IsNotNullOrWhiteSpace(pricePlanId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(paymentIntentId, nameof(paymentIntentId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(pricePlanId, nameof(pricePlanId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var user = await _userRepository.GetUserById(userId, cancellationToken);
             if (user == null)
@@ -115,7 +115,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<SetupIntentResponse> CreateSetupIntent(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var user = await _userRepository.GetUserById(userId, cancellationToken);
             if (user == null)
@@ -128,7 +128,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task<PaymentMethodResponse> GetCustomerPaymentMethod(string userId, CancellationToken cancellationToken)
         {
-            AtlasGuard.IsNotNullOrWhiteSpace(userId);
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var user = await _userRepository.GetUserById(userId, cancellationToken);
             if (user == null)
@@ -144,6 +144,9 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         public async Task UpgradePricePlan(string userId, string pricePlanId, CancellationToken cancellationToken)
         {
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(pricePlanId, nameof(pricePlanId)).NotNull().NotEmpty().NotWhiteSpace();
+
             var user = await _userRepository.GetUserById(userId, cancellationToken);
             if (user == null)
                 throw new UserException("User does not exists.");
