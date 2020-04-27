@@ -1234,3 +1234,8 @@ div#email_info {
 .container .panel.panel-default .terms a{
   cursor: pointer;
 }
+
+#verifying_blurb{
+  color: gray;
+  font-size: 1rem;
+}
