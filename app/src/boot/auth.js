@@ -1,19 +1,20 @@
 import Vue from 'vue';
 import * as Msal from 'msal';
 import User from '../store/User';
+import authConfig from '../../auth.config';
 
 const appConfig = {
-  b2cScopes: ['https://timeproof.onmicrosoft.com/api/read'],
+  b2cScopes: [authConfig.B2C_SCOPES],
   webApi: '',
 };
 
 // configuration to initialize msal
 const msalConfig = {
   auth: {
-    clientId: 'caead9d0-3263-42b9-b25e-2ca36d0ff535', // This is your client ID
-    authority: 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn', // This is your tenant info
+    clientId: authConfig.CLIENT_ID,
+    authority: authConfig.AUTHORITY_SIGNUP_SIGNIN,
     validateAuthority: false,
-    redirectURI: process.env.DEV ? 'http://localhost:6420/' : 'https://timeproof.netlify.app/',
+    redirectURI: authConfig.REDIRECT_URI,
   },
   cache: {
     cacheLocation: 'localStorage',
@@ -40,7 +41,7 @@ const auth = {
 
   account() {
     const account = myMSALObj.getAccount();
-    if (!account || account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
+    if (!account || account.idToken.tfp !== authConfig.B2C_1_SIGNUP_SIGNIN) {
       return null;
     }
     return account;
@@ -95,7 +96,7 @@ const auth = {
   },
 
   forgotPassword() {
-    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_ForgotPassword';
+    msalConfig.auth.authority = authConfig.AUTHORITY_FORGOT_PASSWORD;
     const passwordReset = new Msal.UserAgentApplication(msalConfig);
     passwordReset.handleRedirectCallback((error, response) => {
       console.log(error, response);
@@ -104,11 +105,11 @@ const auth = {
       }
     });
     passwordReset.loginRedirect();
-    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn';
+    msalConfig.auth.authority = authConfig.AUTHORITY_SIGNUP_SIGNIN;
   },
 
   editProfile() {
-    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_EditProfile';
+    msalConfig.auth.authority = authConfig.AUTHORITY_EDIT_PROFILE;
     const editProfile = new Msal.UserAgentApplication(msalConfig);
     editProfile.handleRedirectCallback((error, response) => {
       console.log(error, response);
@@ -121,15 +122,15 @@ function authCallback(error, response) {
   if (error) {
     console.log(error);
     if (error.message) {
-      if (error.message.indexOf('AADB2C90118') > -1) { // forgot password clicked
+      if (error.message.indexOf(authConfig.FORGOT_PASSWORD_ERROR_CODE) > -1) {
         auth.forgotPassword();
-      } else if (error.message.indexOf('AADB2C90091') > -1) { // Cancel buttton clicked
-        msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn';
+      } else if (error.message.indexOf(authConfig.CANCEL_BUTTON_ERROR_CODE) > -1) {
+        msalConfig.auth.authority = authConfig.AUTHORITY_SIGNUP_SIGNIN;
         auth.signIn();
       }
     }
-  } else if (response.account.idToken.tfp !== 'B2C_1_SignUpSignIn') {
-    msalConfig.auth.authority = 'https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_SignUpSignIn';
+  } else if (response.account.idToken.tfp !== authConfig.B2C_1_SIGNUP_SIGNIN) {
+    msalConfig.auth.authority = authConfig.AUTHORITY_SIGNUP_SIGNIN;
     auth.signIn();
   }
 
