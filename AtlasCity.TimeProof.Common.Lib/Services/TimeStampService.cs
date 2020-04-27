@@ -13,6 +13,7 @@ using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using Dawn;
 using Nethereum.Hex.HexConvertors.Extensions;
 using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Signer;
 using Nethereum.Util;
 using Nethereum.Web3;
 using Newtonsoft.Json;
@@ -25,29 +26,29 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private readonly ILogger _logger;
         private readonly ITimestampRepository _timestampRepository;
         private readonly IUserRepository _userRepository;
-        private readonly ISignatureHelper _signatureHelper;
+        private readonly IEthHelper _ethHelper;
         private readonly ITimestampQueueService _timestampQueueService;
         private readonly IWeb3 _netheriumWeb3;
 
         public TimestampService(
            ILogger logger,
            ITimestampRepository timestampRepository,
-           IUserRepository userRepository, 
-           ISignatureHelper signatureHelper,
+           IUserRepository userRepository,
+           IEthHelper ethHelper,
            ITimestampQueueService timestampQueueService,
            IWeb3 netheriumWeb3)
         {
             Guard.Argument(logger, nameof(logger)).NotNull();
             Guard.Argument(timestampRepository, nameof(timestampRepository)).NotNull();
             Guard.Argument(userRepository, nameof(userRepository)).NotNull();
-            Guard.Argument(signatureHelper, nameof(signatureHelper)).NotNull();
+            Guard.Argument(ethHelper, nameof(ethHelper)).NotNull();
             Guard.Argument(timestampQueueService, nameof(timestampQueueService)).NotNull();
             Guard.Argument(netheriumWeb3, nameof(netheriumWeb3)).NotNull();
 
             _logger = logger;
             _timestampRepository = timestampRepository;
             _userRepository = userRepository;
-            _signatureHelper = signatureHelper;
+            _ethHelper = ethHelper;
             _timestampQueueService = timestampQueueService;
             _netheriumWeb3 = netheriumWeb3;
         }
@@ -112,7 +113,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
         private async Task<TimestampDao> SendTransaction(TimestampDao timestamp)
         {
-            bool proofVerified = _signatureHelper.VerifyStamp(timestamp);
+            bool proofVerified = _ethHelper.VerifyStamp(timestamp);
             if (!proofVerified)
             {
                 var message = $"Unable to verify the signature '{timestamp.Signature}'.";
@@ -133,18 +134,20 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             
             var currentNonce = await _netheriumWeb3.Eth.Transactions.GetTransactionCount.SendRequestAsync(_netheriumWeb3.TransactionManager.Account.Address, BlockParameter.CreatePending());
 
-            // TODO: Sudhir DI
-            const int GAS_PRICE = 3;
-            const string SECRET_KEY = "35641a29e6da0ae19bc594c6611bb5660ce2a038f9c2c9918334e68101f314f6";
-            const string TO_ADDRESS = "0x1bb31D596c34bd81e1F0BE1edF3840a7b43dd9CD";
+            var ethSettings = _ethHelper.GetEthSettings();
+            if (!Enum.TryParse(ethSettings.Network, true, out Chain networkChain))
+            {
+                networkChain = Chain.MainNet;
+                _logger.Warning($"Unable to parse '{ethSettings.Network}' to type '{typeof(Chain)}', so setting default to '{networkChain}'.");
+            }
 
             var encoded = Web3.OfflineTransactionSigner.SignTransaction(
-                    SECRET_KEY,
+                    ethSettings.SecretKey,
                     Nethereum.Signer.Chain.Kovan,
-                    TO_ADDRESS,
+                    ethSettings.ToAddress,
                     Web3.Convert.ToWei(0, UnitConversion.EthUnit.Gwei),
                     currentNonce,
-                    Web3.Convert.ToWei(GAS_PRICE, UnitConversion.EthUnit.Gwei),
+                    Web3.Convert.ToWei(ethSettings.GasPrice, UnitConversion.EthUnit.Gwei),
                     new BigInteger(100000),
                     txData);
 
@@ -160,7 +163,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             var txId = await _netheriumWeb3.Eth.Transactions.SendRawTransaction.SendRequestAsync("0x" + encoded);
             timestamp.Nonce = (long)currentNonce.Value;
             timestamp.TransactionId = txId;
-            timestamp.Network = Nethereum.Signer.Chain.Kovan.ToString(); // TODO: It need to come from the configuration as in production it can differ
+            timestamp.Network = networkChain.ToString();
             timestamp.BlockNumber = -1;
 
             // TODO: Veysel Ask if we are charged here

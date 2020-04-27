@@ -25,13 +25,12 @@ namespace AtlasCity.TimeProof.AzureFunction
 
             Log.Logger = new LoggerConfiguration()
                 .Enrich.WithProperty("Application", "TimeProof.Functions")
-                .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.File("function_log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7, buffered: true)
+                .WriteTo.File("function_log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
                 .CreateLogger();
 
+            builder.Services.AddLogging(s => s.AddSerilog(Log.Logger));
             builder.Services.AddSingleton(Log.Logger);
-            builder.Services.AddLogging(s => s.AddSerilog(Log.Logger));            
 
             var accountAddress = configuration.GetSection("NetheriumAccountFromAddress").Value;
             var nodeEndpoint = configuration.GetSection("NetheriumAccountNodeEndpoint").Value;

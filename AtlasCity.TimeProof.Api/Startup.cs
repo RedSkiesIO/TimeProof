@@ -1,11 +1,13 @@
 using System;
 using System.Net;
 using System.Net.Mail;
+using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.Extensions;
 using AtlasCity.TimeProof.Common.Lib;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
 using AtlasCity.TimeProof.Common.Lib.Helpers;
 using AtlasCity.TimeProof.Common.Lib.Services;
 using AtlasCity.TimeProof.Repository.CosmosDb;
@@ -17,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Nethereum.Signer;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts.Managed;
 using Serilog;
@@ -123,7 +126,12 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
 
-            services.AddSingleton<ISignatureHelper, SignatureHelper>();
+            var gasPrice = Configuration.GetSection("NetheriumAccount:GasPrice").Value.AsInt();
+            var toAddress = Configuration.GetSection("NetheriumAccount:ToAddress").Value;
+            var secretKey = Configuration.GetSection("NetheriumAccount:SecretKey").Value;
+            var networkName = Configuration.GetSection("NetheriumAccount:Network").Value;
+            var ethSetting = new EthSettings { GasPrice = gasPrice, ToAddress = toAddress, SecretKey = secretKey, Network = networkName };
+            services.AddSingleton<IEthHelper>(new EthHelper(ethSetting));
 
             var timeProofLoginUri = Configuration.GetSection("TimeProofLoginUri").Value;
             services.AddSingleton<IEmailTemplateHelper>(new EmailTemplateHelper(timeProofLoginUri));

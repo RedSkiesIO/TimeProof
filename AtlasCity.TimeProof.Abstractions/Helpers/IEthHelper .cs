@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
 
 namespace AtlasCity.TimeProof.Abstractions.Helpers
 {
-    public interface ISignatureHelper
+    public interface IEthHelper
     {
         bool VerifyStamp(TimestampDao timestamp);
+
+        EthSettings GetEthSettings();
     }
 }
