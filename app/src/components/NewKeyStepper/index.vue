@@ -47,6 +47,7 @@
             />
             <q-btn
               color="secondary"
+              data-test-key="newKeyContinue"
               :disable="step === 2 && disableButton"
               :label="step === 3 ? 'Go to Dashboard' : 'Continue'"
               @click="clickAction"

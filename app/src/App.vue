@@ -8,7 +8,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-import moment from 'moment';
 import User from './store/User';
 
 export default {
@@ -45,6 +44,7 @@ export default {
 
         try {
           this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
+
           const verifyResult = await
           this.$userServer.verifyUserDetails();
 
@@ -61,49 +61,26 @@ export default {
                 userId: verifyResult.id,
                 tier: verifyResult.pricePlanId,
                 clientSecret: verifyResult.clientSecret,
-                customerId: verifyResult.paymentCustomerId,
                 paymentIntentId: verifyResult.paymentIntentId,
-                subscriptionStart: verifyResult.membershipStartDate,
-                subscriptionEnd: moment(verifyResult.membershipStartDate).add(1, 'months').toISOString(),
+                membershipRenewDate: verifyResult.membershipRenewDate,
+                remainingTimeStamps: verifyResult.remainingTimeStamps,
               },
             });
+
+            console.log('USERERRR');
+            console.log(this.user);
 
             if (!this.user.secretKey) {
               this.$router.push('/new-key');
             }
 
-            await this.$userServer.fetchTimestamps(this.account.accountIdentifier,
-              this.user.userId);
-
-            let timer = 0;
+            await this.$userServer.fetchTimestamps(this.account.accountIdentifier);
 
             setInterval(async () => {
               const pending = this.user.pendingTimestamps;
               if (pending && pending.length > 0) {
                 // await this.$web3.updateTimestamps(this.user, pending);
                 this.$timestampServer.updateTimestamps(pending);
-              }
-
-              if (process.env.DEV) {
-                timer += 5;
-                if (timer === 2000) {
-                  User.update({
-                    data: {
-                      accountIdentifier: this.user.accountIdentifier,
-                      subscriptionStart: moment().toISOString(),
-                      subscriptionEnd: moment().add(1, 'months').toISOString(),
-                    },
-                  });
-                  timer = 0;
-                }
-              } else if (moment().isAfter(moment(this.user.subscriptionEnd))) {
-                User.update({
-                  data: {
-                    accountIdentifier: this.user.accountIdentifier,
-                    subscriptionStart: moment().toISOString(),
-                    subscriptionEnd: moment().add(1, 'months').toISOString(),
-                  },
-                });
               }
             }, 5000);
           }

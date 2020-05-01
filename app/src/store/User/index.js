@@ -1,6 +1,5 @@
 /* eslint-disable import/no-cycle */
 import { Model } from '@vuex-orm/core';
-import moment from 'moment';
 import Timestamp from '../Timestamp';
 import Address from '../Address';
 
@@ -23,13 +22,12 @@ export default class User extends Model {
       tokenExpires: this.attr(''),
       upgrade: this.attr(false),
       firstTimeDialog: this.attr(true),
-      subscriptionStart: this.attr(''), // moment().toISOString()
-      subscriptionEnd: this.attr(''), // moment().add(1, 'months').toISOString()
+      membershipRenewDate: this.attr(''),
+      remainingTimeStamps: this.attr(''),
       selectedCardNumber: this.attr(''),
       cardExpirationDate: this.attr(''),
       userId: this.attr(''),
       clientSecret: this.attr(''),
-      customerId: this.attr(''),
       paymentIntentId: this.attr(''),
     };
   }
@@ -44,13 +42,6 @@ export default class User extends Model {
 
   get totalTimestamps() {
     return this.timestamps.length;
-  }
-
-  get monthlyAllowanceUsage() {
-    const timestamps = this.timestamps.filter(stamp => moment(new Date(stamp.date))
-      .isBetween(moment(this.subscriptionStart),
-        moment(this.subscriptionEnd), null, '[]'));
-    return timestamps.length;
   }
 
   get orderedTimestamps() {

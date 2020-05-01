@@ -1,15 +1,14 @@
 /* eslint-disable class-methods-use-this */
-import axios from 'axios';
 import Vue from 'vue';
 import Timestamp from '../../../store/Timestamp';
-import auth from '../../auth';
 import User from '../../../store/User';
+import Server from '../index';
 
-class UserServer {
-  async fetchTimestamps(accountIdentifier, userId) {
+class UserServer extends Server {
+  async fetchTimestamps(accountIdentifier) {
     const re = /(?:\.([^.]+))?$/;
 
-    const { data, status } = await axios.get(`${process.env.API}/gettimestamps/${userId}`);
+    const { data, status } = await this.axiosGet(`${process.env.API}/gettimestamps`);
     if (status === 200 && data) {
       const stamps = data.map(file => ({
         id: file.id,
@@ -32,74 +31,66 @@ class UserServer {
   }
 
   async verifyUserDetails() {
-    const user = auth.user(false, true, 'address');
-    const account = auth.account();
+    // TO DO change user address
+    const user = this.getUser();
+    const account = this.getAccount();
 
     if (account) {
-      return axios.get(`${process.env.API}/user?email=${encodeURIComponent(account.idToken.emails[0])}`)
-        .then(async (result) => {
-          if (!result || !result.data) {
-            console.log('DATATATTATATTATATA');
+      let result = await this.axiosGet(`${process.env.API}/user`);
 
-            let address;
-            let data;
-            if (user) {
-              if (user.address) {
-                address = {
-                  line1: user.address.line1,
-                  line2: user.address.line2,
-                  city: user.address.city,
-                  state: user.address.state,
-                  postcode: user.address.postcode,
-                  country: user.address.country,
-                };
-              }
+      if (!result || !result.data) {
+        console.log('DATATATTATATTATATA');
 
-              data = {
-                email: user.email,
-                firstName: user.givenName,
-                lastName: user.familyName,
-                address,
-              };
-            } else {
-              data = {
-                email: account.idToken.emails[0],
-                firstName: account.idToken.given_name,
-                lastName: account.idToken.family_name,
-              };
-            }
-            console.log(data);
-            const newUserResult = await axios.post(`${process.env.API}/user`, data);
-            console.log('New User created on Timeproof API');
-            console.log(newUserResult);
-            return newUserResult;
-          }
-          console.log('User is already exist in timeproof api');
-          console.log(result.data);
-          return result;
-        })
-        .then(async (userResult) => {
-          if (userResult && userResult.data) {
-            return userResult.data;
+        let address;
+        let data;
+        if (user) {
+          if (user.address) {
+            address = {
+              line1: user.address.line1,
+              line2: user.address.line2,
+              city: user.address.city,
+              state: user.address.state,
+              postcode: user.address.postcode,
+              country: user.address.country,
+            };
           }
 
-          throw new Error('user data not found');
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+          data = {
+            email: user.email,
+            firstName: user.givenName,
+            lastName: user.familyName,
+            address,
+          };
+        } else {
+          data = {
+            email: account.idToken.emails[0],
+            firstName: account.idToken.given_name,
+            lastName: account.idToken.family_name,
+          };
+        }
+        console.log(data);
+        result = await this.axiosPost(`${process.env.API}/user`, data);
+        console.log('New User created on Timeproof API');
+        console.log(result);
+      } else {
+        console.log('User is already exist in timeproof api');
+        console.log(result.data);
+      }
+
+      if (!result || !result.data) {
+        throw new Error('user data not found');
+      }
+
+      return result.data;
     }
     return Promise.resolve();
   }
 
-  async getSetupIntent(userId) {
+  async getSetupIntent() {
     let setupIntentResult;
     console.log('BEFORE GET SETUP INTENT');
-    console.log({
-      userId,
-    });
     try {
-      setupIntentResult = await axios.get(`${process.env.API}/user/setupintent/${userId}`);
+      setupIntentResult = await this.axiosGet(`${process.env.API}/user/setupintent`);
       console.log('AFTER GET SETUP INTENT');
       console.log(setupIntentResult);
     } catch (err) {
@@ -112,7 +103,7 @@ class UserServer {
 
   async refreshCard(user) {
     try {
-      const { data, status } = await axios.get(`${process.env.API}/user/paymentmethod/${user.userId}`);
+      const { data, status } = await this.axiosGet(`${process.env.API}/user/paymentmethod`);
       console.log('PAYMENT METHOD RESULT');
       console.log(data);
       if (status === 200 && data && data.card) {
@@ -130,12 +121,12 @@ class UserServer {
     }
   }
 
-  async saveCard(user, stripe, card) {
+  async saveCard(name, stripe, card) {
     const response = {};
     console.log('BEFORE SAVE THE CARD');
 
     try {
-      const { data: setupIntentData, status, error } = await this.getSetupIntent(user.userId);
+      const { data: setupIntentData, status, error } = await this.getSetupIntent();
 
       if (setupIntentData && status === 200 && !error) {
         const { setupIntent: confirmSetupIntent, error: confirmError } = await
@@ -144,7 +135,7 @@ class UserServer {
             payment_method: {
               card,
               billing_details: {
-                name: user.name,
+                name,
               },
             },
           });

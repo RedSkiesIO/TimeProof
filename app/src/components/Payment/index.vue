@@ -31,11 +31,14 @@
           </section>
           <section v-show="!user.paymentIntentId">
             <h2>Payment Information</h2>
-            <nav id="payment-methods">
+            <nav
+              id="payment-methods"
+            >
               <ul>
                 <li
-                  v-for="(item, index) in uiPaymentTypeList"
-                  :key="index"
+                  v-for="item in uiPaymentTypeList"
+                  :key="item.id"
+                  :class="{visible: item.visible}"
                 >
                   <input
                     :id="item.id"
@@ -129,6 +132,7 @@
           </section>
           <button
             class="payment-button"
+            data-test-key="paymentButton"
             type="submit"
             :disabled="submitButtonDisable"
           >
@@ -234,14 +238,14 @@
           <img
             class="image"
             :src="productImage"
-            :alt="sellingProduct.title"
+            :alt="getSellingProduct.title"
           >
           <div class="label">
             <p class="product">
-              {{ sellingProduct.title }}
+              {{ getSellingProduct.title }}
             </p>
             <p class="sku">
-              {{ Object.values([sellingProduct.title,'Package']).join(' ') }}
+              {{ Object.values([getSellingProduct.title,'Package']).join(' ') }}
             </p>
           </div>
           <p class="count">
@@ -321,18 +325,18 @@ export default {
 
   computed: {
     ...mapGetters({
-      sellingProduct: 'settings/getSellingProduct',
+      getSellingProduct: 'settings/getSellingProduct',
     }),
     user() {
       return this.$auth.user(true);
     },
     amount() {
-      return formatPrice(this.sellingProduct.price, config.currency);
+      return formatPrice(this.getSellingProduct.price, config.currency);
     },
     productImage() {
       let imageData;
-      if (this.sellingProduct) {
-        imageData = new Identicon(this.sellingProduct.id, 420).toString();
+      if (this.getSellingProduct) {
+        imageData = new Identicon(this.getSellingProduct.id, 420).toString();
       } else {
         imageData = new Identicon(Math.random().toString(15), 420).toString();
       }
@@ -341,7 +345,7 @@ export default {
 
   },
   created() {
-    if (!this.sellingProduct) {
+    if (!this.getSellingProduct) {
       this.$router.push('/upgrade');
     }
   },
@@ -353,11 +357,10 @@ export default {
     ...mapActions('settings', [
       'setSellingProduct',
     ]),
+
     async setUpStripe() {
-      if (window.Stripe === undefined) {
-        console.log('Stripe V3 library not loaded!');
-      } else {
-        this.elements = this.stripe.elements();
+      if (stripe) {
+        this.elements = stripe.elements();
         this.setupCard();
         this.setupIban();
         this.setupIdealBank();
@@ -525,20 +528,20 @@ export default {
       // Create the Payment Request Button.
       const paymentRequestButton = this.elements.create('paymentRequestButton', {
         paymentRequest,
-        //  style: {
-        //     paymentRequestButton: {
-        //       type: 'default',
-        //       // One of 'default', 'book', 'buy', or 'donate'
-        //       // Defaults to 'default'
+        style: {
+          paymentRequestButton: {
+            type: 'default',
+            // One of 'default', 'book', 'buy', or 'donate'
+            // Defaults to 'default'
 
-        //       theme: 'dark',
-        //       // One of 'dark', 'light', or 'light-outline'
-        //       // Defaults to 'dark'
+            theme: 'dark',
+            // One of 'dark', 'light', or 'light-outline'
+            // Defaults to 'dark'
 
-        //       height: '64px',
-        //       // Defaults to '40px'. The width is always '100%'.
-        //     },
-        //   },
+            height: '64px',
+            // Defaults to '40px'. The width is always '100%'.
+          },
+        },
       });
 
       // Check if the Payment Request is available (or Apple Pay on the Web).
@@ -565,7 +568,7 @@ export default {
           this.paymentResultUpdate(false, false, false, true, false);
         } else if (status === 'succeeded') {
           this.confirmationElementNote = 'We just sent your receipt to your email address,';
-          this.$paymentServer.updateUserSubscription(this.sellingProduct.id);
+          this.$paymentServer.updateUserSubscription();
           this.paymentResultUpdate(true, false, false, false, true);
           this.setSellingProduct(null);
         } else if (status === 'processing') {
@@ -591,33 +594,35 @@ export default {
 
     showRelevantPaymentMethods(country) {
       const form = document.getElementById('payment-form');
-      const paymentInputs = form.querySelectorAll('input[name=payment]');
-      for (let i = 0; i < paymentInputs.length; i += 1) {
-        const input = paymentInputs[i];
-        input.parentElement.classList.toggle(
-          'visible',
-          input.value === 'card'
+      if (form) {
+        const paymentInputs = form.querySelectorAll('input[name=payment]');
+        for (let i = 0; i < paymentInputs.length; i += 1) {
+          const input = paymentInputs[i];
+          input.parentElement.classList.toggle(
+            'visible',
+            input.value === 'card'
               || (config.paymentMethods.includes(input.value)
                 && paymentMethods[input.value].countries.includes(country)
                 && paymentMethods[input.value].currencies.includes(config.currency)),
+          );
+        }
+
+        // Hide the tabs if card is the only available option.
+        const paymentMethodsTabs = document.getElementById('payment-methods');
+        paymentMethodsTabs.classList.toggle(
+          'visible',
+          paymentMethodsTabs.querySelectorAll('li.visible').length > 1,
         );
+
+        // Check the first payment option again.
+        paymentInputs[0].checked = 'checked';
+        this.cardPaymentVisible = true;
+        this.idealPaymentVisible = false;
+        this.sepaDebitPaymentVisible = false;
+        this.wechatPaymentVisible = false;
+        this.redirectPaymentVisible = false;
+        this.updateButtonLabel(paymentInputs[0].value);
       }
-
-      // Hide the tabs if card is the only available option.
-      const paymentMethodsTabs = document.getElementById('payment-methods');
-      paymentMethodsTabs.classList.toggle(
-        'visible',
-        paymentMethodsTabs.querySelectorAll('li.visible').length > 1,
-      );
-
-      // Check the first payment option again.
-      paymentInputs[0].checked = 'checked';
-      this.cardPaymentVisible = true;
-      this.idealPaymentVisible = false;
-      this.sepaDebitPaymentVisible = false;
-      this.wechatPaymentVisible = false;
-      this.redirectPaymentVisible = false;
-      this.updateButtonLabel(paymentInputs[0].value);
     },
 
     async formSubmit() {
@@ -662,7 +667,7 @@ export default {
           if (this.paymentType === 'card') {
             const response = await this.$paymentServer
               .subscribeToPackage(stripe, this.user,
-                billingDetails, this.card, this.sellingProduct.id);
+                billingDetails, this.card, this.getSellingProduct.id);
 
             this.completePayment(response);
           } else if (this.paymentType === 'sepa_debit') {
@@ -835,49 +840,6 @@ export default {
       }
     },
 
-    /**
-     * Monitor the status of a source after a redirect flow.
-     *
-     * This means there is a `source` parameter in the URL, and an active PaymentIntent.
-     * When this happens, we'll monitor the status of the PaymentIntent and present real-time
-     * information to the user.
-     */
-    async pollPaymentIntentStatus(
-      paymentIntent,
-      timeout = 30000,
-      interval = 500,
-      start = null,
-    ) {
-      start = start || Date.now();
-      console.log(timeout);
-      console.log(interval);
-      console.log(start);
-      // const endStates = ['succeeded', 'processing', 'canceled'];
-      // Retrieve the PaymentIntent status from our server.
-      // const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
-      // const response = await rawResponse.json();
-      // if (
-      //   !endStates.includes(response.paymentIntent.status)
-      //   && Date.now() < start + timeout
-      // ) {
-      // // Not done yet. Let's wait and check again.
-      //   setTimeout(
-      //     this.pollPaymentIntentStatus,
-      //     interval,
-      //     paymentIntent,
-      //     timeout,
-      //     interval,
-      //     start,
-      //   );
-      // } else {
-      //   this.completePayment(response);
-      //   if (!endStates.includes(response.paymentIntent.status)) {
-      //   // Status has not changed yet. Let's time out.
-      //     console.warn(new Error('Polling timed out.'));
-      //   }
-      // }
-    },
-
     async setupRest() {
       const url = new URL(window.location.href);
       if (url.searchParams.get('source') && url.searchParams.get('client_secret')) {
@@ -899,14 +861,6 @@ export default {
       } else {
         // Update the interface to display the checkout form.
         this.mainClassCheckout = true;
-
-        // Create the PaymentIntent with the cart details.
-        // const response = await paymentStore.createPaymentIntent(
-        //   config.currency,
-        //   ['line', 'items'], // line items
-        // );
-        // eslint-disable-next-line prefer-destructuring
-        // this.paymentIntent = response.paymentIntent;
       }
       this.mainClassLoading = false;
     },

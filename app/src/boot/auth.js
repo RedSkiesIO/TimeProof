@@ -1,20 +1,22 @@
 import Vue from 'vue';
 import * as Msal from 'msal';
 import User from '../store/User';
-import authConfig from '../../auth.config';
+
+console.log('AUTHHHHH');
+console.log(process.env);
 
 const appConfig = {
-  b2cScopes: [authConfig.B2C_SCOPES],
+  b2cScopes: [process.env.B2C_SCOPES],
   webApi: '',
 };
 
 // configuration to initialize msal
 const msalConfig = {
   auth: {
-    clientId: authConfig.CLIENT_ID,
-    authority: authConfig.AUTHORITY_SIGNUP_SIGNIN,
+    clientId: process.env.CLIENT_ID,
+    authority: process.env.AUTHORITY_SIGNUP_SIGNIN,
     validateAuthority: false,
-    redirectURI: authConfig.REDIRECT_URI,
+    redirectURI: process.env.REDIRECT_URI,
   },
   cache: {
     cacheLocation: 'localStorage',
@@ -35,13 +37,13 @@ const tokenRequest = {
 const myMSALObj = new Msal.UserAgentApplication(msalConfig);
 
 const auth = {
-  signIn() {
-    return myMSALObj.loginRedirect(loginRequest);
+  async signIn() {
+    myMSALObj.loginRedirect(loginRequest);
   },
 
   account() {
     const account = myMSALObj.getAccount();
-    if (!account || account.idToken.tfp !== authConfig.B2C_1_SIGNUP_SIGNIN) {
+    if (!account || account.idToken.tfp !== process.env.B2C_1_SIGNUP_SIGNIN) {
       return null;
     }
     return account;
@@ -96,7 +98,7 @@ const auth = {
   },
 
   forgotPassword() {
-    msalConfig.auth.authority = authConfig.AUTHORITY_FORGOT_PASSWORD;
+    msalConfig.auth.authority = process.env.AUTHORITY_FORGOT_PASSWORD;
     const passwordReset = new Msal.UserAgentApplication(msalConfig);
     passwordReset.handleRedirectCallback((error, response) => {
       console.log(error, response);
@@ -105,11 +107,11 @@ const auth = {
       }
     });
     passwordReset.loginRedirect();
-    msalConfig.auth.authority = authConfig.AUTHORITY_SIGNUP_SIGNIN;
+    msalConfig.auth.authority = process.env.AUTHORITY_SIGNUP_SIGNIN;
   },
 
   editProfile() {
-    msalConfig.auth.authority = authConfig.AUTHORITY_EDIT_PROFILE;
+    msalConfig.auth.authority = process.env.AUTHORITY_EDIT_PROFILE;
     const editProfile = new Msal.UserAgentApplication(msalConfig);
     editProfile.handleRedirectCallback((error, response) => {
       console.log(error, response);
@@ -122,15 +124,15 @@ function authCallback(error, response) {
   if (error) {
     console.log(error);
     if (error.message) {
-      if (error.message.indexOf(authConfig.FORGOT_PASSWORD_ERROR_CODE) > -1) {
+      if (error.message.indexOf(process.env.FORGOT_PASSWORD_ERROR_CODE) > -1) {
         auth.forgotPassword();
-      } else if (error.message.indexOf(authConfig.CANCEL_BUTTON_ERROR_CODE) > -1) {
-        msalConfig.auth.authority = authConfig.AUTHORITY_SIGNUP_SIGNIN;
+      } else if (error.message.indexOf(process.env.CANCEL_BUTTON_ERROR_CODE) > -1) {
+        msalConfig.auth.authority = process.env.AUTHORITY_SIGNUP_SIGNIN;
         auth.signIn();
       }
     }
-  } else if (response.account.idToken.tfp !== authConfig.B2C_1_SIGNUP_SIGNIN) {
-    msalConfig.auth.authority = authConfig.AUTHORITY_SIGNUP_SIGNIN;
+  } else if (response.account.idToken.tfp !== process.env.B2C_1_SIGNUP_SIGNIN) {
+    msalConfig.auth.authority = process.env.AUTHORITY_SIGNUP_SIGNIN;
     auth.signIn();
   }
 

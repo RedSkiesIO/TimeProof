@@ -140,7 +140,7 @@
     </div>
     <div
       v-if="!scope.dialog"
-      class="q-mt-sm text-blue text-center q-pb-md"
+      class="q-mt-sm text-blue text-center q-pb-md cursor-pointer"
       @click="scope.reset()"
     >
       {{ $t('anotherFile') }}

@@ -1,14 +1,14 @@
-import axios from 'axios';
 import Vue from 'vue';
 import Timestamp from '../../../store/Timestamp';
+import Server from '../index';
 
-Vue.prototype.$timestampServer = {
+class TimestampServer extends Server {
   // eslint-disable-next-line no-unused-vars
   async updateTimestamps(timestamps) {
     const re = /(?:\.([^.]+))?$/;
 
     timestamps.forEach(async (timestamp) => {
-      const { data, status } = await axios.get(`${process.env.API}/timestamp/${timestamp.id}`);
+      const { data, status } = await this.axiosGet(`${process.env.API}/timestamp/${timestamp.id}`);
       console.log('UPDATEDDDDDDD');
       console.log(data);
       console.log(status);
@@ -31,5 +31,11 @@ Vue.prototype.$timestampServer = {
         });
       }
     });
-  },
-};
+  }
+}
+
+const timestampServer = new TimestampServer();
+
+Vue.prototype.$timestampServer = timestampServer;
+
+export default timestampServer;

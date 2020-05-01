@@ -1,31 +1,14 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable class-methods-use-this */
-import moment from 'moment';
-import axios from 'axios';
 import Vue from 'vue';
 import User from '../../../store/User';
 import Address from '../../../store/Address';
-import auth from '../../auth';
+import userServer from '../user';
+import Server from '../index';
 
-class PaymentServer {
-  constructor() {
-    this.lineItems = [];
-    this.products = {};
-    this.productsFetchPromise = null;
-  }
-
-  // Retrieve the configuration from the API.
-  async getConfig() {
-    try {
-      return null;
-    // eslint-disable-next-line no-unreachable
-    } catch (err) {
-      return { error: err.message };
-    }
-  }
-
+class PaymentServer extends Server {
   async listAllPriceplans() {
-    const { data, status } = await axios.get(`${process.env.API}/priceplans`);
+    const { data, status } = await this.axiosGet(`${process.env.API}/priceplans`);
     console.log('PRICE PLANSS');
     console.log(data);
     const productsData = {};
@@ -83,14 +66,14 @@ class PaymentServer {
     return addressFound;
   }
 
-  async getPaymentIntent(pricePlanId, userId) {
+  async getPaymentIntent(pricePlanId) {
     let paymentIntentResult;
     console.log('BEFORE GET PAYMENT INTENT');
     console.log({
-      pricePlanId, userId,
+      pricePlanId,
     });
     try {
-      paymentIntentResult = await axios.get(`${process.env.API}/user/paymentintent/${pricePlanId}/${userId}`);
+      paymentIntentResult = await this.axiosGet(`${process.env.API}/user/paymentintent/${pricePlanId}`);
       console.log('AFTER GET PAYMENT INTENT');
       console.log(paymentIntentResult);
     } catch (err) {
@@ -101,56 +84,63 @@ class PaymentServer {
     return paymentIntentResult;
   }
 
-  async upgradePackage(pricePlanId, userId) {
+  async upgradePackage(pricePlanId) {
     let upgradeResult;
     console.log('BEFORE PAYMENT UPGRADE');
     console.log({
-      pricePlanId, userId,
+      pricePlanId,
     });
     try {
-      upgradeResult = await axios.put(`${process.env.API}/user/upgrade/${pricePlanId}/${userId}`);
+      upgradeResult = await this.axiosPut(`${process.env.API}/user/upgrade/${pricePlanId}`);
       console.log('AFTER PAYMENT UPGRADE');
       console.log(upgradeResult);
     } catch (err) {
-      console.log('AFTER PAYMENT UPGRADE ERROR:');
+      console.log('AFTER PAYMENT UPGRADE ERROR');
       console.error(err);
     }
 
     return upgradeResult;
   }
 
-  async makePayment(paymentIntentId, pricePlanId, userId) {
+  async makePayment(paymentIntentId, pricePlanId) {
     let paymentResult;
     console.log('BEFORE MAKE PAYMENT');
     console.log({
-      paymentIntentId, userId,
+      paymentIntentId,
     });
     try {
       paymentResult = await
-      axios.put(`${process.env.API}/user/payment/${paymentIntentId}/${pricePlanId}/${userId}`);
+      this.axiosPut(`${process.env.API}/user/payment/${paymentIntentId}/${pricePlanId}`);
       console.log('AFTER MAKE PAYMENT RESULT');
       console.log(paymentResult);
     } catch (err) {
-      console.log('AFTER MAKE PAYMENT RESULT ERROR:');
+      console.log('AFTER MAKE PAYMENT RESULT ERROR');
       console.error(err);
     }
 
     return paymentResult;
   }
 
-  async updateUserSubscription(tier) {
+  async updateUserSubscription() {
     console.log('UPDATE USER SUBSCRIPTION');
     try {
-      User.update({
-        data: {
-          accountIdentifier: auth.account().accountIdentifier,
-          tier,
-          subscriptionStart: moment().toISOString(),
-          subscriptionEnd: moment().add(1, 'months').toISOString(),
-        },
-      });
+      const verifyResult = await userServer.verifyUserDetails();
+      console.log('XXXXXXXX');
+      console.log(verifyResult.pricePlanId);
+      if (verifyResult) {
+        User.update({
+          data: {
+            accountIdentifier: this.getAccount().accountIdentifier,
+            tier: verifyResult.pricePlanId,
+            clientSecret: verifyResult.clientSecret,
+            paymentIntentId: verifyResult.paymentIntentId,
+            membershipRenewDate: verifyResult.membershipRenewDate,
+            remainingTimeStamps: verifyResult.remainingTimeStamps,
+          },
+        });
+      }
     } catch (err) {
-      console.log('HATA updateUserSubscription');
+      console.log('AFTER UPDATE USER SUBSCRIPTION ERROR');
       console.log(err);
     }
   }
@@ -168,7 +158,7 @@ class PaymentServer {
           data: paymentIntentData, status,
           error: paymentIntentError,
         } = await
-        this.getPaymentIntent(pricePlanId, user.userId);
+        this.getPaymentIntent(pricePlanId);
 
         if (status === 200 && paymentIntentData && !paymentIntentError) {
           const { paymentIntent, error: confirmPaymentIntentError } = await
@@ -181,7 +171,7 @@ class PaymentServer {
             });
 
           if (paymentIntent && paymentIntent.status === 'succeeded' && !confirmPaymentIntentError) {
-            await this.makePayment(paymentIntent.id, pricePlanId, user.userId);
+            await this.makePayment(paymentIntent.id, pricePlanId);
             User.update({
               data: {
                 accountIdentifier: user.accountIdentifier,
@@ -197,7 +187,7 @@ class PaymentServer {
         }
       } else { // upgrade
         const { status, error } = await
-        this.upgradePackage(pricePlanId, user.userId);
+        this.upgradePackage(pricePlanId);
         if (status === 200 && !error) {
           response.status = 'succeeded';
         } else {

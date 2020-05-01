@@ -32,7 +32,7 @@
 
             <span class="text-body1 text-grey-7">
               {{ $t('or') }} <span
-                class="text-blue"
+                class="text-blue cursor-pointer"
                 @click="scope.pickFiles()"
               >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
           </div>
@@ -121,7 +121,8 @@
           </div>
 
           <span
-            class="q-mt-sm text-blue q-pb-md"
+            v-show="!userHasReachedToLimit"
+            class="q-mt-sm text-blue q-pb-md cursor-pointer"
             @click="scope.reset()"
           >{{ $t('differentFile') }}</span>
         </div>
@@ -218,11 +219,12 @@ export default {
     account() {
       return this.$auth.account();
     },
-
     user() {
       return this.$auth.user();
     },
-
+    userHasReachedToLimit() {
+      return this.user.remainingTimeStamps <= 0;
+    },
     key() {
       return this.$store.state.settings.authenticatedAccount;
     },
@@ -317,9 +319,8 @@ export default {
           fileHash: this.file.hash,
           publicKey: this.user.pubKey,
           signature: this.file.signature,
-          userId: this.user.userId,
         });
-        console.log('TIMESTAMPPPPPPP');
+        console.log('NEW TIMESTAMP');
         console.log(tx);
         if (tx.data || tx.status === 201) {
           this.file.id = tx.data.id;
@@ -330,7 +331,7 @@ export default {
           User.update({
             data: {
               accountIdentifier: this.account.accountIdentifier,
-              timestampsUsed: this.user.timestampsUsed + 1,
+              remainingTimeStamps: this.user.remainingTimeStamps - 1,
             },
           });
           await this.insertTimestamp(this.file);

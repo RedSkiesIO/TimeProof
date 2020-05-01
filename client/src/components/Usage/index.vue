@@ -65,12 +65,12 @@ export default {
       return this.products[this.user.tier].noOfStamps;
     },
     timestampsUsed() {
-      const used = this.user.monthlyAllowanceUsage;
+      const used = this.allowedTimestamps - this.user.remainingTimeStamps;
 
       return `${used}/${this.allowedTimestamps}`;
     },
     usedPercentage() {
-      return (this.user.monthlyAllowanceUsage / this.allowedTimestamps) * 100;
+      return ((this.allowedTimestamps - this.user.remainingTimeStamps) / this.allowedTimestamps) * 100;
     },
 
   },

@@ -20,6 +20,7 @@
         type="password"
         filled
         autofocus
+        data-test-key="encryptKeyPassword"
         :label="$t('enterPassword')"
         style="width: 25vw"
         :rules="

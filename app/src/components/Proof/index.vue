@@ -159,8 +159,8 @@
       </div>
     </div>
     <div
-      v-if="!scope.dialog"
-      class="q-mt-sm text-blue text-center q-pb-md"
+      v-if="!scope.dialog && !userHasReachedToLimit"
+      class="q-mt-sm text-blue text-center q-pb-md cursor-pointer"
       @click="scope.reset()"
     >
       {{ $t('anotherFile') }}
@@ -214,6 +214,10 @@ export default {
       return this.$auth.user();
     },
 
+    userHasReachedToLimit() {
+      return this.user.remainingTimeStamps <= 0;
+    },
+
     proof() {
       return this.proofId ? Timestamp.query().where('txId', this.proofId).first() : null;
     },
@@ -254,6 +258,11 @@ export default {
       return this.$t('proofConfirmed');
     },
 
+  },
+
+  beforeUpdate() {
+    console.log('BEFORE UPDATE');
+    console.log(this.user.remainingTimeStamps);
   },
 
   mounted() {

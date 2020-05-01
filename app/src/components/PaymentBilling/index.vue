@@ -6,6 +6,7 @@
         <span>Name</span>
         <input
           v-model="name"
+          data-test-key="paymentBillingName"
           name="name"
           class="field"
           placeholder="Jenny Rosen"
@@ -17,6 +18,7 @@
         <input
           name="email"
           type="email"
+          data-test-key="paymentBillingEmail"
           class="field"
           placeholder="jenny@example.com"
           :value="email"
@@ -28,6 +30,7 @@
         <span>Address</span>
         <input
           v-model="address"
+          data-test-key="paymentBillingAddress"
           name="address"
           class="field"
           placeholder="185 Berry Street Suite 550"
@@ -38,6 +41,7 @@
         <input
           v-model="city"
           name="city"
+          data-test-key="paymentBillingCity"
           class="field"
           placeholder="San Francisco"
         >
@@ -46,6 +50,7 @@
         <span>State</span>
         <input
           v-model="state"
+          data-test-key="paymentBillingState"
           name="state"
           class="field"
           placeholder="CA"
@@ -55,6 +60,7 @@
         <span>{{ zipSpanText }}</span>
         <input
           v-model="postalCode"
+          data-test-key="paymentBillingPostCode"
           name="postal_code"
           class="field"
           placeholder="94107"
@@ -69,6 +75,7 @@
           <select
             v-model="country"
             name="country"
+            data-test-key="paymentBillingCountry"
             @change.prevent="countryChange"
           >
             <option value="AU">Australia</option>

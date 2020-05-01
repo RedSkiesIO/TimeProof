@@ -28,7 +28,7 @@
         <label>Next Billng Date</label>
       </div>
       <div class="col-md-2">
-        {{ moment(user.subscriptionEnd).format('DD-MM-YYYY') }}
+        {{ moment(user.membershipRenewDate).format('DD-MM-YYYY') }}
       </div>
       <div class="col-md-5 text-right">
         <q-space />
@@ -215,7 +215,8 @@ export default {
       try {
         this.loading = true;
 
-        const { status, error } = await this.$userServer.saveCard(this.user, stripe, this.card);
+        const { status, error } = await
+        this.$userServer.saveCard(this.user.name, stripe, this.card);
 
         this.cardMessageVisible = true;
         if (error) {

@@ -59,6 +59,7 @@
             <q-btn
               :disable="currentMemberShip === item.id"
               flat
+              data-test-key="choosePlanButton"
               color="primary text-weight-bold"
               @click="choosePlan(item)"
             >

@@ -31,6 +31,7 @@
         <q-btn
           v-close-popup
           outline
+          data-test-key="cancelCreateFirstTimeStamp"
           :label="$t('cancel')"
           color="primary"
           flat
@@ -39,6 +40,7 @@
         <q-btn
           outline
           flat
+          data-test-key="continueCreateFirstTimeStamp"
           :label="$t('sign')"
           color="secondary"
           @click="buttonAction"

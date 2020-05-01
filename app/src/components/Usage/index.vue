@@ -90,6 +90,7 @@
             outline
             no-caps
             :color="upgradeButtonColor"
+            data-test-key="upgradeButton"
             :label="upgradeButtonLabel"
             @click.prevent="upgradeUser"
           />
@@ -115,22 +116,19 @@ export default {
       return this.products[this.user.tier].noOfStamps;
     },
     timestampsUsed() {
-      return this.user.monthlyAllowanceUsage;
+      return this.allowedTimestamps - this.user.remainingTimeStamps;
     },
     totalUsage() {
       return this.user.totalTimestamps;
     },
-    usedPercentage() {
-      return (this.user.monthlyAllowanceUsage / this.allowedTimestamps) * 100;
-    },
     usedClass() {
-      return this.usedPercentage >= 100 ? 'text-red' : 'text-green';
+      return this.user.remainingTimeStamps <= 0 ? 'text-red' : 'text-green';
     },
     upgradeButtonColor() {
-      return this.usedPercentage >= 100 ? 'red' : 'secondary';
+      return this.user.remainingTimeStamps <= 0 ? 'red' : 'secondary';
     },
     upgradeButtonLabel() {
-      return this.usedPercentage >= 100 ? this.$t('upgradeToCreateMoreProofs') : this.$t('needAnUpgrade');
+      return this.user.remainingTimeStamps <= 0 ? this.$t('upgradeToCreateMoreProofs') : this.$t('needAnUpgrade');
     },
   },
 

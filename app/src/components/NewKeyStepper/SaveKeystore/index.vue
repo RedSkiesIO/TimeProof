@@ -18,6 +18,7 @@
         outline
         label="download keystore file"
         style="width: 250px"
+        data-test-key="saveKeyDownloadKeystore"
         @click="buttonAction"
       />
     </div>

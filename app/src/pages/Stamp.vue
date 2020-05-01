@@ -68,7 +68,6 @@
 
 <script>
 import moment from 'moment';
-import { mapGetters } from 'vuex';
 import AddFile from '../components/AddFile';
 import Key from '../components/KeyTopBar';
 
@@ -78,11 +77,12 @@ export default {
     AddFile,
     Key,
   },
-
+  data() {
+    return {
+      userHasReachedToLimit: false,
+    };
+  },
   computed: {
-    ...mapGetters({
-      products: 'settings/getProducts',
-    }),
     key() {
       return this.$store.state.settings.authenticatedAccount;
     },
@@ -90,11 +90,12 @@ export default {
       return this.$auth.user(false, true, 'timestamps');
     },
     subscriptionEnd() {
-      return moment(this.user.subscriptionEnd).format('DD/MM/YYYY');
+      return moment(this.user.membershipRenewDate).format('DD/MM/YYYY');
     },
-    userHasReachedToLimit() {
-      return this.user.monthlyAllowanceUsage >= this.products[this.user.tier].noOfStamps;
-    },
+  },
+  mounted() {
+    console.log('STAMP MOUNTED');
+    this.userHasReachedToLimit = this.user.remainingTimeStamps <= 0;
   },
 };
 </script>

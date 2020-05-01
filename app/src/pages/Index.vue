@@ -139,7 +139,7 @@ export default {
       return this.$auth.user(false, true, 'timestamps');
     },
     allowed() {
-      return this.user.monthlyAllowanceUsage <= this.products[this.user.tier].noOfStamps;
+      return this.user.remainingTimeStamps > 0;
     },
   },
 };

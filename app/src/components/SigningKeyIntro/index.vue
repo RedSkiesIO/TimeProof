@@ -27,6 +27,7 @@
         color="secondary"
         label="Create your signing key"
         style="width: 250px"
+        data-test-key="createYourSigningKey"
         @click="buttonAction"
       />
     </div>
