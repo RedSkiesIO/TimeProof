@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Net.Mail;
 using AtlasCity.TimeProof.Abstractions;
@@ -6,20 +5,16 @@ using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.Extensions;
-using AtlasCity.TimeProof.Common.Lib;
-using AtlasCity.TimeProof.Common.Lib.Extensions;
 using AtlasCity.TimeProof.Common.Lib.Helpers;
 using AtlasCity.TimeProof.Common.Lib.Services;
 using AtlasCity.TimeProof.Repository.CosmosDb;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Nethereum.Signer;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts.Managed;
 using Serilog;
@@ -51,7 +46,7 @@ namespace AtlasCity.TimeProof.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var origins = new string[] { "http://localhost:6420", "http://86.23.42.81:6420", "http://192.168.0.25:6420", "https://timeproof.netlify.com", "https://timeproof.netlify.app" };
+            var origins = Configuration.GetValueAsArray("AllowedOrigins", ",");
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins,
@@ -71,72 +66,60 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ISystemDateTime, SystemDateTime>();
 
-            //services.AddAuthentication(sharedOptions =>
-            //{
-            //    sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            //})
-            //.AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
-            //.AddCookie();
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-            //services.AddAuthentication(sharedOptions =>
-            //{
-            //    sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(jwtOptions =>
+            {
+                jwtOptions.Authority = Configuration.GetValue("Authentication:Authority");
+                jwtOptions.Events = new JwtBearerEvents { };
+                jwtOptions.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidAudiences = Configuration.GetValueAsList("Authentication:Audiences", ","),
+                    ValidIssuers = Configuration.GetValueAsList("Authentication:Issuers", ","),
+                };
+            });
 
-            //}).AddOpenIdConnect(options => {
-            //    //options.Authority = "https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/b2c_1_signupsignin/oauth2/v2.0/authorize";
-            //    options.Authority = "https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/b2c_1_signupsignin/v2.0/.well-known/openid-configuration";
-            //    options.ClientId = "caead9d0-3263-42b9-b25e-2ca36d0ff535";
-            //    options.ClientSecret = "KHTC4N=xG2NN59Ak:RzmzwSvs]EEi[EF";
-            //    options.UseTokenLifetime = true;
-            //});
-
-            //services.AddAuthorization();
-
-            //services.AddDistributedMemoryCache();
-            //services.AddSession(options =>
-            //{
-            //    options.IdleTimeout = TimeSpan.FromHours(1);
-            //    options.Cookie.HttpOnly = true;
-            //    options.Cookie.IsEssential = true;
-            //});
-
-            var accountAddress = Configuration.GetSection("NetheriumAccount:FromAddress").Value;
-            var nodeEndpoint = Configuration.GetSection("NetheriumAccount:NodeEndpoint").Value;
+            var accountAddress = Configuration.GetValue("NetheriumAccount:FromAddress");
+            var nodeEndpoint = Configuration.GetValue("NetheriumAccount:NodeEndpoint");
             var account = new ManagedAccount(accountAddress, string.Empty);
             var web3 = new Web3(account, nodeEndpoint);
             services.AddSingleton<IWeb3>(web3);
 
-            var storageAccountConnectionString = Configuration.GetSection("StorageAccountConnectionString").Value;
+            var storageAccountConnectionString = Configuration.GetValue("StorageAccountConnectionString");
             services.AddSingleton<ITimestampQueueService>(new TimestampQueueService(storageAccountConnectionString, Log.Logger));
 
-            var endpointUrl = Configuration.GetSection("TransationCosmosDb:EndpointUrl").Value;
-            var authorizationKey = Configuration.GetSection("TransationCosmosDb:AuthorizationKey").Value;
+            var endpointUrl = Configuration.GetValue("TransationCosmosDb:EndpointUrl");
+            var authorizationKey = Configuration.GetValue("TransationCosmosDb:AuthorizationKey");
             services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPaymentRepository>(new PaymentRepository(endpointUrl, authorizationKey));
 
-            var client = new SmtpClient(Configuration.GetSection("SMTPEmail:HostName").Value, int.Parse(Configuration.GetSection("SMTPEmail:Port").Value));
-            client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential(Configuration.GetSection("SMTPEmail:UserName").Value, Configuration.GetSection("SMTPEmail:Password").Value);
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = true;
+            var client = new SmtpClient(Configuration.GetValue("SMTPEmail:HostName"), int.Parse(Configuration.GetValue("SMTPEmail:Port")))
+            {
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(Configuration.GetValue("SMTPEmail:UserName"), Configuration.GetValue("SMTPEmail:Password")),
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                EnableSsl = true
+            };
 
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
 
-            var gasPrice = Configuration.GetSection("NetheriumAccount:GasPrice").Value.AsInt();
-            var toAddress = Configuration.GetSection("NetheriumAccount:ToAddress").Value;
-            var secretKey = Configuration.GetSection("NetheriumAccount:SecretKey").Value;
-            var networkName = Configuration.GetSection("NetheriumAccount:Network").Value;
+            var gasPrice = Configuration.GetValueAsInt("NetheriumAccount:GasPrice");
+            var toAddress = Configuration.GetValue("NetheriumAccount:ToAddress");
+            var secretKey = Configuration.GetValue("NetheriumAccount:SecretKey");
+            var networkName = Configuration.GetValue("NetheriumAccount:Network");
             var ethSetting = new EthSettings { GasPrice = gasPrice, ToAddress = toAddress, SecretKey = secretKey, Network = networkName };
             services.AddSingleton<IEthHelper>(new EthHelper(ethSetting));
 
-            var timeProofLoginUri = Configuration.GetSection("TimeProofLoginUri").Value;
+            var timeProofLoginUri = Configuration.GetValue("TimeProofLoginUri");
             services.AddSingleton<IEmailTemplateHelper>(new EmailTemplateHelper(timeProofLoginUri));
 
-            var paymentApiKey = Configuration.GetSection("PaymentApiKey").Value;
+            var paymentApiKey = Configuration.GetValue("PaymentApiKey");
             var stripeClient = new StripeClient(paymentApiKey);
             services.AddSingleton(new PaymentIntentService(stripeClient));
             services.AddSingleton(new CustomerService(stripeClient));
@@ -161,21 +144,15 @@ namespace AtlasCity.TimeProof.Api
             app.UseCors(MyAllowSpecificOrigins);
 
             app.UseSerilogRequestLogging();
-            //app.UseSession();
-
-            //app.UseAuthentication();
-            //app.UseAuthorization();
-            ////app.UseForwardedHeaders(new ForwardedHeadersOptions
-            //{
-            //    RequireHeaderSymmetry = false,
-            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            //});
-
             app.ConfigureExceptionHandler(logger);
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });            
-        }
+            });
+        }     
     }
 }

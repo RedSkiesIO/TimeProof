@@ -44,6 +44,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         public async Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken)
         {
             Guard.Argument(user, nameof(user)).NotNull();
+            Guard.Argument(user.Id, nameof(user.Id)).NotNull().NotEmpty().NotWhiteSpace();
             Guard.Argument(user.Email, nameof(user.Email)).NotNull().NotEmpty().NotWhiteSpace();
 
             var response = await Client.CreateDocumentAsync(_documentCollectionUri, user, new RequestOptions(), false, cancellationToken);

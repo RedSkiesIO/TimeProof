@@ -84,9 +84,9 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             try
             {
                 await SendTransaction(timestamp);
-                
+
                 var newTimestamp = await _timestampRepository.CreateTimestamp(timestamp, cancellationToken);
-                
+
                 await _timestampQueueService.AddTimestampMessage(new TimestampQueueMessage { TimestampId = newTimestamp.Id, TransactionId = newTimestamp.TransactionId, Created = DateTime.UtcNow }, cancellationToken);
 
                 user.RemainingTimeStamps--;
@@ -103,11 +103,19 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             }
         }
 
-        public async Task<TimestampDao> GetTimestampDetails(string timestampId, CancellationToken cancellationToken)
+        public async Task<TimestampDao> GetTimestampDetails(string timestampId, string requestedUserId, CancellationToken cancellationToken)
         {
             Guard.Argument(timestampId, nameof(timestampId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(requestedUserId, nameof(requestedUserId)).NotNull().NotEmpty().NotWhiteSpace();
 
             var timestamp = await _timestampRepository.GetTimestampById(timestampId, cancellationToken);
+            if (timestamp != null && !timestamp.UserId.Equals(requestedUserId, StringComparison.InvariantCultureIgnoreCase))
+            {
+                var message = $"Invalid time stamp detail request. Detail requested by '{requestedUserId}' which belong to '{timestamp.UserId}' for identifier '{timestamp.Id}'";
+                _logger.Warning(message);
+                throw new TimestampException(message);
+            }
+
             return timestamp;
         }
 
@@ -131,7 +139,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 });
 
             var txData = HexStringUTF8ConvertorExtensions.ToHexUTF8(proofStr);
-            
+
             var currentNonce = await _netheriumWeb3.Eth.Transactions.GetTransactionCount.SendRequestAsync(_netheriumWeb3.TransactionManager.Account.Address, BlockParameter.CreatePending());
 
             var ethSettings = _ethHelper.GetEthSettings();

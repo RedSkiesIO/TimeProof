@@ -15,8 +15,5 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
 
         [JsonProperty(PropertyName = "signature")]
         public string Signature { get; set; }
-
-        [JsonProperty(PropertyName = "userId")]
-        public string UserId { get; set; }
     }
 }

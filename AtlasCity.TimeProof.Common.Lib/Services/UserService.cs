@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
@@ -43,10 +44,18 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _emailTemplateHelper = emailTemplateHelper;
         }
 
+        [Obsolete]
         public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
         {
             Guard.Argument(email, nameof(email)).NotNull().NotEmpty().NotWhiteSpace();
             var user = await _userRepository.GetUserByEmail(email, cancellationToken);
+            return user;
+        }
+
+        public async Task<UserDao> GetUserById(string userId, CancellationToken cancellationToken)
+        {
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
+            var user = await _userRepository.GetUserById(userId, cancellationToken);
             return user;
         }
 
@@ -55,9 +64,9 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             Guard.Argument(user, nameof(user)).NotNull();
             Guard.Argument(user.Email, nameof(user.Email)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var existingUser = await _userRepository.GetUserByEmail(user.Email, cancellationToken);
+            var existingUser = await _userRepository.GetUserById(user.Id, cancellationToken);
             if (existingUser != null)
-                throw new UserException($"User with email '{user.Email}' already exists.");
+                throw new UserException($"User with identifier '{user.Id}' already exists with an email '{user.Email}'.");
 
             if (!string.IsNullOrWhiteSpace(user.PaymentCustomerId))
             {
@@ -79,6 +88,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             var freePricePlan = await _pricePlanRepository.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken);
             user.CurrentPricePlanId = freePricePlan.Id;
             user.RemainingTimeStamps = freePricePlan.NoOfStamps;
+            user.MembershipStartDate = DateTime.UtcNow;
 
             var newUser = await _userRepository.CreateUser(user, cancellationToken);
             _logger.Information($"Successfully created user with email '{user.Email}'");

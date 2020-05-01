@@ -2,7 +2,9 @@
 using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
+using AtlasCity.TimeProof.Api.Extensions;
 using Dawn;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -10,6 +12,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
 {
     [ApiController]
     [Route("api")]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly ILogger _logger;
@@ -29,12 +32,9 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
         [Route("user")]
         [HttpGet]
-        public IActionResult Get([FromQuery] string email, CancellationToken cancellationToken)
+        public IActionResult Get(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(email))
-                return BadRequest();
-
-            var user = _userService.GetUserByEmail(email, cancellationToken).GetAwaiter().GetResult();
+            var user = _userService.GetUserById(User.GetUserId(), cancellationToken).GetAwaiter().GetResult();
             return new SuccessActionResult(user.ToResponse());
         }
 
@@ -45,18 +45,20 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (user == null)
                 return BadRequest();
 
-            var newUser = _userService.CreateUser(user.ToDao(), cancellationToken).GetAwaiter().GetResult();
+            var userDao = user.ToDao();
+            userDao.Id = User.GetUserId();
+            var newUser = _userService.CreateUser(userDao, cancellationToken).GetAwaiter().GetResult();
             return new CreatedActionResult(newUser.ToResponse());
         }
 
-        [Route("user/paymentintent/{planId}/{id}")]
+        [Route("user/paymentintent/{planId}")]
         [HttpGet]
-        public IActionResult GetPaymentIntent([FromRoute] string planId, string id, CancellationToken cancellationToken)
+        public IActionResult GetPaymentIntent([FromRoute] string planId, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(planId) || string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(planId))
                 return BadRequest();
 
-            var response = _userSubscriptionService.GetPaymentIntent(id, planId, cancellationToken).GetAwaiter().GetResult();
+            var response = _userSubscriptionService.GetPaymentIntent(User.GetUserId(), planId, cancellationToken).GetAwaiter().GetResult();
             return new SuccessActionResult(response);
         }
 
@@ -65,76 +67,44 @@ namespace AtlasCity.TimeProof.Api.Controllers
         /// </summary>
         /// <param name="piid">Payment Intent Id</param>
         /// <param name="priceplanid">Price Plan Id</param>
-        /// <param name="id">User Id</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [Route("user/payment/{piid}/{ppid}/{id}")]
+        [Route("user/payment/{piid}/{ppid}")]
         [HttpPut]
-        public IActionResult PaymentSuccess([FromRoute] string piid, string ppid, string id, CancellationToken cancellationToken)
+        public IActionResult PaymentSuccess([FromRoute] string piid, string ppid, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(piid) || string.IsNullOrWhiteSpace(ppid) || string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(piid) || string.IsNullOrWhiteSpace(ppid))
                 return BadRequest();
 
-            _userSubscriptionService.ProcessPayment(id, piid, ppid, cancellationToken).GetAwaiter().GetResult();
+            _userSubscriptionService.ProcessPayment(User.GetUserId(), piid, ppid, cancellationToken).GetAwaiter().GetResult();
             return new OkResult();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id">UserId</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        [Route("user/paymentmethod/{id}")]
+        [Route("user/paymentmethod")]
         [HttpGet]
-        public IActionResult GetCustomerPaymentMethod([FromRoute] string id, CancellationToken cancellationToken)
+        public IActionResult GetCustomerPaymentMethod(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(id))
-                return BadRequest();
-
-            var response = _userSubscriptionService.GetCustomerPaymentMethod(id, cancellationToken).GetAwaiter().GetResult();
+            var response = _userSubscriptionService.GetCustomerPaymentMethod(User.GetUserId(), cancellationToken).GetAwaiter().GetResult();
             return new SuccessActionResult(response);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ppid">New Price Plan Id</param>
-        /// <param name="id">UserId</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        [Route("user/upgrade/{ppid}/{id}")]
+        [Route("user/upgrade/{ppid}")]
         [HttpPut]
-        public IActionResult UpgradePricePlan([FromRoute] string ppid, [FromRoute] string id, CancellationToken cancellationToken)
+        public IActionResult UpgradePricePlan([FromRoute] string ppid, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(ppid))
                 return BadRequest();
 
-            _userSubscriptionService.UpgradePricePlan(id, ppid, cancellationToken).GetAwaiter().GetResult();
+            _userSubscriptionService.UpgradePricePlan(User.GetUserId(), ppid, cancellationToken).GetAwaiter().GetResult();
             return new OkResult();
         }
 
-        [Route("user/setupintent/{id}")]
+        [Route("user/setupintent")]
         [HttpGet]
-        public IActionResult GetSetupIntent([FromRoute] string id, CancellationToken cancellationToken)
+        public IActionResult GetSetupIntent(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(id))
-                return BadRequest();
-
-            var response = _userSubscriptionService.CreateSetupIntent(id, cancellationToken).GetAwaiter().GetResult();
+            var response = _userSubscriptionService.CreateSetupIntent(User.GetUserId(), cancellationToken).GetAwaiter().GetResult();
             return new SuccessActionResult(response);
-        }
-
-
-        [Route("user/{id}")]
-        [HttpDelete]
-        public IActionResult DeleteUser([FromRoute] string id, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrWhiteSpace(id))
-                return BadRequest();
-
-            _userService.DeleteUser(id, cancellationToken).GetAwaiter().GetResult();
-            return new NoContentActionResult();
         }
     }
 }

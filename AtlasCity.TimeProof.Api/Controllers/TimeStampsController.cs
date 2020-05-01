@@ -2,6 +2,8 @@
 using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
+using AtlasCity.TimeProof.Api.Extensions;
+using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using Dawn;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +13,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
 {
     [ApiController]
     [Route("api")]
+    [Authorize]
     public class TimeStampsController : Controller
     {
         private readonly ILogger _logger;
@@ -26,15 +29,11 @@ namespace AtlasCity.TimeProof.Api.Controllers
         }
 
         //TODO: Sudhir Paging
-        [Route("gettimestamps/{id}")]
+        [Route("gettimestamps")]
         [HttpGet]
-        //[Authorize]
-        public IActionResult Get([FromRoute] string id, CancellationToken cancellationToken)
+        public IActionResult Get(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(id))
-                return BadRequest();
-
-            var timestamps = _timestampService.GetUesrTimestamps(id, cancellationToken).GetAwaiter().GetResult();
+            var timestamps = _timestampService.GetUesrTimestamps(User.GetUserId(), cancellationToken).GetAwaiter().GetResult();
             return new SuccessActionResult(timestamps.ToResponse());
         }
 
@@ -45,9 +44,18 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (newTimestamp == null)
                 return BadRequest();
 
-            var newTimeStamp = _timestampService.GenerateTimestamp(newTimestamp.ToDao(), cancellationToken).GetAwaiter().GetResult();
+            var timestampDao = newTimestamp.ToDao();
+            timestampDao.UserId = User.GetUserId();
 
-            return new CreatedActionResult(newTimeStamp.ToResponse());
+            try
+            {
+                var newTimeStamp = _timestampService.GenerateTimestamp(timestampDao, cancellationToken).GetAwaiter().GetResult();
+                return new CreatedActionResult(newTimeStamp.ToResponse());
+            }
+            catch (TimestampException)
+            {
+                return new ConflictResult();
+            }
         }
 
         [Route("timestamp/{tsId}")]
@@ -57,9 +65,15 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (string.IsNullOrWhiteSpace(tsid))
                 return BadRequest();
 
-            var timestamp = _timestampService.GetTimestampDetails(tsid, cancellationToken).GetAwaiter().GetResult();
-
-            return new SuccessActionResult(timestamp.ToResponse());
+            try
+            {
+                var timestamp = _timestampService.GetTimestampDetails(tsid, User.GetUserId(), cancellationToken).GetAwaiter().GetResult();
+                return new SuccessActionResult(timestamp.ToResponse());
+            }
+            catch (TimestampException)
+            {
+                return new ConflictResult();
+            }
         }
     }
 }

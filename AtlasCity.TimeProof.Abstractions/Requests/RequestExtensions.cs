@@ -14,15 +14,10 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
 
             return new UserDao
             {
-                Id = userRequest.Id,
                 Email = userRequest.Email,
                 FirstName = userRequest.FirstName,
                 LastName = userRequest.LastName,
-                PaymentCustomerId = userRequest.PaymentCustomerId,
-                SetupIntentId = userRequest.SetupIntentId,
                 Address = userRequest.Address.ToDao(),
-                CurrentPricePlanId = userRequest.PricePlanId,
-                PaymentIntentId = userRequest.PaymentIntentId
             };
         }
 
@@ -53,13 +48,11 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
                 FileName = timestampRequest.FileName,
                 FileHash = timestampRequest.FileHash,
                 Signature = timestampRequest.Signature,
-                UserId = timestampRequest.UserId
             };
         }
 
         public static UserResponse ToResponse(this UserDao user)
         {
-
             if (user == null)
                 return null;
 

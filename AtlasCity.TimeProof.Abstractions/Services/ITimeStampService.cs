@@ -11,6 +11,6 @@ namespace AtlasCity.TimeProof.Abstractions.Services
 
         public Task<TimestampDao> GenerateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken);
         
-        public Task<TimestampDao> GetTimestampDetails(string timestampId, CancellationToken cancellationToken);
+        public Task<TimestampDao> GetTimestampDetails(string timestampId, string requestedUserId, CancellationToken cancellationToken);
     }
 }
