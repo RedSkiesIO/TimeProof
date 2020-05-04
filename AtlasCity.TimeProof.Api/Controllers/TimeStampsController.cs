@@ -56,6 +56,10 @@ namespace AtlasCity.TimeProof.Api.Controllers
             {
                 return new ConflictResult();
             }
+            catch (RpcClientException ex)
+            {
+                return new RequestTimeoutActionResult(ex.Message);
+            }
         }
 
         [Route("timestamp/{tsId}")]

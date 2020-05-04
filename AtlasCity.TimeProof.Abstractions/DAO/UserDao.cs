@@ -41,5 +41,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         }
 
         public DateTime MembershipStartDate { get; set; }
+
+        public DateTime MembershipRenewDate { get; set; }
     }
 }

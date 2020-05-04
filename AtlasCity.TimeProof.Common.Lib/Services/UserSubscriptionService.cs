@@ -107,8 +107,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             user.RemainingTimeStamps = pricePlan.NoOfStamps;
             user.PaymentIntentId = paymentIntentId;
 
-            if (user.MembershipStartDate != DateTime.MinValue)
-                user.MembershipStartDate = _systemDateTime.GetUtcDateTime();
+            user.MembershipRenewDate = _systemDateTime.GetUtcDateTime().AddMonths(1);
 
             await _userRepository.UpdateUser(user, cancellationToken);
         }
@@ -157,6 +156,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 return;
             }
 
+            // TODO: Sudhir One cannot upgrade to basic plan.
             var pricePlan = await _pricePlanRepository.GetPricePlanById(pricePlanId, cancellationToken);
             if (pricePlan == null)
                 throw new SubscriptionException($"Unable to find the price plan with '{user.CurrentPricePlanId}' identifier.");
