@@ -186,6 +186,12 @@
           <p class="error-message">
             {{ confirmationElementErrorMessage }}
           </p>
+          <button
+            style="width: 15vh"
+            @click="tryAgain"
+          >
+            Try again
+          </button>
         </div>
       </div>
     </main>
@@ -357,6 +363,16 @@ export default {
     ...mapActions('settings', [
       'setSellingProduct',
     ]),
+
+    tryAgain() {
+      this.mainClassLoading = false;
+      this.mainClassSuccess = false;
+      this.mainClassProcessing = false;
+      this.mainClassReceiver = false;
+      this.mainClassError = false;
+      this.mainClassCheckout = true;
+      this.updateButtonLabel(this.paymentType);
+    },
 
     async setUpStripe() {
       if (stripe) {

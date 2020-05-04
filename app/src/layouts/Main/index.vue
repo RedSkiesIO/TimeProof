@@ -18,7 +18,7 @@
           @click="$router.push('/')"
         >
           <img
-            src="~assets/logo.svg"
+            src="~assets/logo.png"
             style="width: 175px"
           >
         </div>
@@ -40,6 +40,7 @@
           >
             <q-tab
               name="logout"
+              data-test-key="logout"
               :label="$t('logout')"
               @click="logOut"
             />

@@ -100,7 +100,14 @@ module.exports = function (ctx) {
         //   },   
         // )
 
-        const appHost = ctx.dev ? 'https://timeproof.netlify.app' : 'https://timeproof.netlify.app';
+        let appHost = 'https://timescribe.netlify.app';
+        if(ctx.dev){
+          appHost = 'http://localhost:6420';
+        }else if(process.env.test){
+          appHost = 'https://timeproof.netlify.app';
+        }else if(process.env.prod){
+          appHost = 'https://timescribe.netlify.app';
+        }
         const fileArr = ['./src/statics/login.html', './src/statics/signup.html'];
 
         fileArr.forEach(file => {
