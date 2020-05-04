@@ -159,9 +159,9 @@
       </div>
     </div>
     <div
-      v-if="!scope.dialog && !userHasReachedToLimit"
+      v-if="!scope.dialog"
       class="q-mt-sm text-blue text-center q-pb-md cursor-pointer"
-      @click="scope.reset()"
+      @click="selectAnotherFile(scope)"
     >
       {{ $t('anotherFile') }}
     </div>
@@ -214,10 +214,6 @@ export default {
       return this.$auth.user();
     },
 
-    userHasReachedToLimit() {
-      return this.user.remainingTimeStamps <= 0;
-    },
-
     proof() {
       return this.proofId ? Timestamp.query().where('txId', this.proofId).first() : null;
     },
@@ -260,11 +256,6 @@ export default {
 
   },
 
-  beforeUpdate() {
-    console.log('BEFORE UPDATE');
-    console.log(this.user.remainingTimeStamps);
-  },
-
   mounted() {
     if (this.scope.dialog) {
       this.proof.timestamp = this.proof.date;
@@ -285,8 +276,11 @@ export default {
       });
     },
 
-    reset() {
-      this.scope.reset();
+    selectAnotherFile(scope) {
+      if (this.user.remainingTimeStamps <= 0) {
+        this.$emit('userHasReachedToLimit');
+      }
+      scope.reset();
     },
 
     getCertificate() {

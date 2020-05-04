@@ -16,7 +16,7 @@
           Stamp File
         </div>
       </div> -->
-      <div v-if="!userHasReachedToLimit">
+      <div v-if="!needUpgrade">
         <div class="column q-mb-md justify-center text-center text-secondary">
           <div class="col text-h4 text-weight-bold justify-center">
             Create a timestamp
@@ -38,6 +38,7 @@
         >
           <AddFile
             :mode="'sign'"
+            @userHasReachedToLimit="needUpgrade = true"
           />
         </div>
       </div>
@@ -77,11 +78,13 @@ export default {
     AddFile,
     Key,
   },
+
   data() {
     return {
-      userHasReachedToLimit: false,
+      needUpgrade: false,
     };
   },
+
   computed: {
     key() {
       return this.$store.state.settings.authenticatedAccount;
@@ -93,10 +96,11 @@ export default {
       return moment(this.user.membershipRenewDate).format('DD/MM/YYYY');
     },
   },
+
   mounted() {
-    console.log('STAMP MOUNTED');
-    this.userHasReachedToLimit = this.user.remainingTimeStamps <= 0;
+    this.needUpgrade = this.user.remainingTimeStamps <= 0;
   },
+
 };
 </script>
 <style lang="scss">

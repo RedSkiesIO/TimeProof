@@ -17,11 +17,7 @@ export default class Server {
 
   async updateAxiosToken() {
     const token = await this.auth.getToken();
-    if (token && !token.fromCache) {
-      console.log('TOKENXXX');
-      console.log(token);
-      this.axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
-    }
+    this.axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
   }
 
   async axiosGet(url) {

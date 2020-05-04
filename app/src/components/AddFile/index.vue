@@ -121,7 +121,6 @@
           </div>
 
           <span
-            v-show="!userHasReachedToLimit"
             class="q-mt-sm text-blue q-pb-md cursor-pointer"
             @click="scope.reset()"
           >{{ $t('differentFile') }}</span>
@@ -131,6 +130,7 @@
           :proof-id="txId"
           :scope="scope"
           class="add-border"
+          @userHasReachedToLimit="$emit('userHasReachedToLimit')"
         />
         <div class="row justify-center q-pa-md">
           <q-btn
@@ -221,9 +221,6 @@ export default {
     },
     user() {
       return this.$auth.user();
-    },
-    userHasReachedToLimit() {
-      return this.user.remainingTimeStamps <= 0;
     },
     key() {
       return this.$store.state.settings.authenticatedAccount;

@@ -129,6 +129,10 @@ function authCallback(error, response) {
       } else if (error.message.indexOf(process.env.CANCEL_BUTTON_ERROR_CODE) > -1) {
         msalConfig.auth.authority = process.env.AUTHORITY_SIGNUP_SIGNIN;
         auth.signIn();
+      } else if (error.message.indexOf('AADB2C90077') > -1) {
+        myMSALObj.logout();
+        msalConfig.auth.authority = process.env.AUTHORITY_SIGNUP_SIGNIN;
+        auth.signIn();
       }
     }
   } else if (response.account.idToken.tfp !== process.env.B2C_1_SIGNUP_SIGNIN) {
