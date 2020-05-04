@@ -17,12 +17,6 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
         [JsonProperty(PropertyName = "lastName")]
         public string LastName { get; set; }
 
-        [JsonProperty(PropertyName = "customerId")]
-        public string PaymentCustomerId { get; set; }
-
-        [JsonProperty(PropertyName = "setupIntentId")]
-        public string SetupIntentId { get; set; }
-
         [JsonProperty(PropertyName = "address")]
         public AddressResponse Address { get; set; }
 
@@ -35,7 +29,7 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
         [JsonProperty(PropertyName = "paymentIntentId")]
         public string PaymentIntentId { get; set; }
 
-        [JsonProperty(PropertyName = "membershipStartDate")]
-        public DateTime MembershipStartDate { get; set; }
+        [JsonProperty(PropertyName = "membershipRenewDate")]
+        public DateTime MembershipRenewDate { get; set; }
     }
 }

@@ -62,13 +62,11 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                PaymentCustomerId = user.PaymentCustomerId,
-                SetupIntentId = user.SetupIntentId,
                 Address = user.Address.ToResponse(),
                 RemainingTimeStamps = user.RemainingTimeStamps,
                 PricePlanId = user.CurrentPricePlanId,
                 PaymentIntentId = user.PaymentIntentId,
-                MembershipStartDate = user.MembershipStartDate
+                MembershipRenewDate = user.MembershipRenewDate
             };
         }
 

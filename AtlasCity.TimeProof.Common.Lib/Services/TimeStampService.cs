@@ -12,6 +12,7 @@ using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using Dawn;
 using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.JsonRpc.Client;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Signer;
 using Nethereum.Util;
@@ -100,6 +101,11 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             {
                 _logger.Error(ex.Message);
                 throw ex;
+            }
+            catch(RpcClientUnknownException ex)
+            {
+                _logger.Error(ex.Message);
+                throw new RpcClientException(ex.Message);
             }
         }
 

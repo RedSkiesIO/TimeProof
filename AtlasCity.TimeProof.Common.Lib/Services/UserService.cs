@@ -89,6 +89,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             user.CurrentPricePlanId = freePricePlan.Id;
             user.RemainingTimeStamps = freePricePlan.NoOfStamps;
             user.MembershipStartDate = DateTime.UtcNow;
+            user.MembershipRenewDate = DateTime.UtcNow.AddMonths(1);
 
             var newUser = await _userRepository.CreateUser(user, cancellationToken);
             _logger.Information($"Successfully created user with email '{user.Email}'");
