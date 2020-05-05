@@ -27,7 +27,9 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         public async Task<IEnumerable<PricePlanDao>> GetPricePlans(CancellationToken cancellationToken)
         {
             // TODO: Sudhir Only return active price plan
-            var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).AsEnumerable();
+
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri, option).AsEnumerable();
             return response;
         }
 
@@ -35,7 +37,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             Guard.Argument(pricePlanId, nameof(pricePlanId)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == pricePlanId.ToLower()).AsEnumerable().FirstOrDefault();
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri, option).Where(s => s.Id.ToLower() == pricePlanId.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
         }
 
@@ -43,7 +46,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             Guard.Argument(pricePlanTitle, nameof(pricePlanTitle)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri).Where(s => s.Title.ToLower() == pricePlanTitle.ToLower()).AsEnumerable().FirstOrDefault();
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<PricePlanDao>(_documentCollectionUri, option).Where(s => s.Title.ToLower() == pricePlanTitle.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
         }
 

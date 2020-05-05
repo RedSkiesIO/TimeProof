@@ -29,7 +29,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == userId.ToLower()).AsEnumerable().FirstOrDefault();
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri, option).Where(s => s.Id.ToLower() == userId.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
         }
 
@@ -37,7 +38,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             Guard.Argument(email, nameof(email)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri).Where(s => s.Email.ToLower() == email.ToLower()).AsEnumerable().FirstOrDefault();
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri, option).Where(s => s.Email.ToLower() == email.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
         }
 
