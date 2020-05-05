@@ -146,21 +146,21 @@ class UserServer extends Server {
         if (confirmSetupIntent && confirmSetupIntent.status === 'succeeded' && !confirmError) {
           response.status = confirmSetupIntent.status;
         } else if (confirmError) {
-          response.eror = confirmError;
+          response.error = confirmError;
         } else {
-          response.eror.message = 'Unexpected error';
+          response.error.message = 'Unexpected error';
         }
       } else if (error) {
-        response.eror = error;
+        response.error = error;
       } else {
-        response.eror.message = 'Unexpected error';
+        response.error.message = 'Unexpected error';
       }
       console.log('AFTER SAVE THE CARD');
       console.log(response);
     } catch (err) {
       console.log('AFTER SAVE THE CARD ERROR');
       console.log(err);
-      response.eror.message = 'Unexpected error';
+      response.error.message = 'Unexpected error';
     }
 
     return response;

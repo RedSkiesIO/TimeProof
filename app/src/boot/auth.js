@@ -77,6 +77,10 @@ const auth = {
   getToken() {
     return myMSALObj.acquireTokenSilent(tokenRequest).catch((error) => {
       console.log('aquire token popup', error);
+      // if (error.message.indexOf('AADB2C90077') > -1) {
+      //   console.log('PPPPPPPPPPPP');
+      //   auth.logout();
+      // }
       // fallback to interaction when silent call fails
       return myMSALObj.acquireTokenPopup(tokenRequest).then((tokenResponse) => {
         console.log('popup: ', tokenResponse);

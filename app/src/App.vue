@@ -43,8 +43,6 @@ export default {
         const token = await this.$auth.getToken();
 
         try {
-          this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
-
           const verifyResult = await
           this.$userServer.verifyUserDetails();
 
