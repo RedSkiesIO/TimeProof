@@ -25,8 +25,8 @@ module.exports = function (isDev, isTest, isProd) {
   } else if (isTest) {
     envVar = {
       API: JSON.stringify('https://atlascitytimeproofapi.azurewebsites.net/api'),
-      ETHERSCAN: JSON.stringify('https://etherscan.io/tx'),
-      INFURA: JSON.stringify('https://mainnet.infura.io/v3/679bbc6759454bf58a924bfaf55576b9'),
+      ETHERSCAN: JSON.stringify('https://kovan.etherscan.io/tx'),
+      INFURA: JSON.stringify('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9'),
       TEST: JSON.stringify(true),
       B2C_SCOPES: JSON.stringify('https://timeproof.onmicrosoft.com/api/read'),
       CLIENT_ID: JSON.stringify('caead9d0-3263-42b9-b25e-2ca36d0ff535'),
