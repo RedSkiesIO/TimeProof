@@ -347,8 +347,6 @@ export default {
       this.file.verify = true;
       const txId = this.proofId.replace(/\s+/g, '');
       try {
-        console.log('TRANSACATION');
-        console.log(txId);
         const tx = await this.$web3.verifyTimestamp(txId, this.file.hash.toLowerCase());
         if (tx && tx.verified) {
           this.file.txId = txId;

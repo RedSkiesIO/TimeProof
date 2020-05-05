@@ -19,8 +19,6 @@ Vue.prototype.$web3 = {
   async verifyTimestamp(id, hash) {
     try {
       const tx = await web3.eth.getTransaction(id);
-      console.log('TX ENDDD');
-      console.log(tx);
       const info = JSON.parse(Web3.utils.hexToUtf8(tx.input));
       if (info.hash === hash) {
         const date = await this.getTimestamp(tx.blockNumber);
