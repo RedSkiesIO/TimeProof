@@ -8,7 +8,7 @@ class TimestampServer extends Server {
     const re = /(?:\.([^.]+))?$/;
 
     timestamps.forEach(async (timestamp) => {
-      const { data, status } = await this.axiosGet(`${process.env.API}/timestamp/${timestamp.id}`);
+      const { data, status } = await this.axios.get(`${process.env.API}/timestamp/${timestamp.id}`);
       console.log('UPDATEDDDDDDD');
       console.log(data);
       console.log(status);

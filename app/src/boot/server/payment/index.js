@@ -8,7 +8,7 @@ import Server from '../index';
 
 class PaymentServer extends Server {
   async listAllPriceplans() {
-    const { data, status } = await this.axiosGet(`${process.env.API}/priceplans`);
+    const { data, status } = await this.axios.get(`${process.env.API}/priceplans`);
     console.log('PRICE PLANSS');
     console.log(data);
     const productsData = {};
@@ -73,7 +73,7 @@ class PaymentServer extends Server {
       pricePlanId,
     });
     try {
-      paymentIntentResult = await this.axiosGet(`${process.env.API}/user/paymentintent/${pricePlanId}`);
+      paymentIntentResult = await this.axios.get(`${process.env.API}/user/paymentintent/${pricePlanId}`);
       console.log('AFTER GET PAYMENT INTENT');
       console.log(paymentIntentResult);
     } catch (err) {
@@ -91,7 +91,7 @@ class PaymentServer extends Server {
       pricePlanId,
     });
     try {
-      upgradeResult = await this.axiosPut(`${process.env.API}/user/upgrade/${pricePlanId}`);
+      upgradeResult = await this.axios.put(`${process.env.API}/user/upgrade/${pricePlanId}`);
       console.log('AFTER PAYMENT UPGRADE');
       console.log(upgradeResult);
     } catch (err) {
@@ -110,7 +110,7 @@ class PaymentServer extends Server {
     });
     try {
       paymentResult = await
-      this.axiosPut(`${process.env.API}/user/payment/${paymentIntentId}/${pricePlanId}`);
+      this.axios.put(`${process.env.API}/user/payment/${paymentIntentId}/${pricePlanId}`);
       console.log('AFTER MAKE PAYMENT RESULT');
       console.log(paymentResult);
     } catch (err) {

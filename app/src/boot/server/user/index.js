@@ -8,7 +8,7 @@ class UserServer extends Server {
   async fetchTimestamps(accountIdentifier) {
     const re = /(?:\.([^.]+))?$/;
 
-    const { data, status } = await this.axiosGet(`${process.env.API}/gettimestamps`);
+    const { data, status } = await this.axios.get(`${process.env.API}/gettimestamps`);
     if (status === 200 && data) {
       const stamps = data.map(file => ({
         id: file.id,
@@ -36,7 +36,7 @@ class UserServer extends Server {
     const account = this.getAccount();
 
     if (account) {
-      let result = await this.axiosGet(`${process.env.API}/user`);
+      let result = await this.axios.get(`${process.env.API}/user`);
 
       if (!result || !result.data) {
         console.log('DATATATTATATTATATA');
@@ -69,7 +69,7 @@ class UserServer extends Server {
           };
         }
         console.log(data);
-        result = await this.axiosPost(`${process.env.API}/user`, data);
+        result = await this.axios.post(`${process.env.API}/user`, data);
         console.log('New User created on Timeproof API');
         console.log(result);
       } else {
@@ -90,7 +90,7 @@ class UserServer extends Server {
     let setupIntentResult;
     console.log('BEFORE GET SETUP INTENT');
     try {
-      setupIntentResult = await this.axiosGet(`${process.env.API}/user/setupintent`);
+      setupIntentResult = await this.axios.get(`${process.env.API}/user/setupintent`);
       console.log('AFTER GET SETUP INTENT');
       console.log(setupIntentResult);
     } catch (err) {
@@ -103,7 +103,7 @@ class UserServer extends Server {
 
   async refreshCard(user) {
     try {
-      const { data, status } = await this.axiosGet(`${process.env.API}/user/paymentmethod`);
+      const { data, status } = await this.axios.get(`${process.env.API}/user/paymentmethod`);
       console.log('PAYMENT METHOD RESULT');
       console.log(data);
       if (status === 200 && data && data.card) {

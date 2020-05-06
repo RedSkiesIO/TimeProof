@@ -130,7 +130,7 @@ beforeAll(async () => {
 });
 
 userList.forEach((user, index) => {
-  if (index <= 6 && index > 0) {
+  if (index <= 4 && index >= 0) {
     test(`Payment e2e test email:${user.email}, carNumber:${user.cardNumber}`, async () => {
       const page = await browser.newPage();
       const app = 'http://localhost:6420';
@@ -138,6 +138,7 @@ userList.forEach((user, index) => {
 
       await changeText(page, 'input#logonIdentifier', user.email, false, 10000, 30);
       await changeText(page, 'input#password', user.password, false, 10000, 30);
+      await page.waitFor(1000);
       await page.click('button#next');
 
       // TO DO when user hasn't a key make this control
@@ -165,28 +166,30 @@ userList.forEach((user, index) => {
 
       // Billing details
       await selectOption(page, 'paymentBillingCountry', 'GB', true, 10000);// payment feilds: country
-      await changeText(page, 'paymentBillingName', 'Veysel TOSUN', true, 10000, 20);// payment feilds: name
-      await changeText(page, 'paymentBillingAddress', '75 Linden Avenue Wembley', true, 10000, 20);// payment feilds: address
-      await changeText(page, 'paymentBillingCity', 'London', true, 10000, 20);// payment feilds: city
-      await changeText(page, 'paymentBillingState', 'London', true, 10000, 20);// payment feilds: state
-      await changeText(page, 'paymentBillingPostCode', 'HA9 8BB', true, 10000, 20);// payment feilds: post code
+      await changeText(page, 'paymentBillingName', 'Veysel TOSUN', true, 10000, 30);// payment feilds: name
+      await changeText(page, 'paymentBillingAddress', '75 Linden Avenue Wembley', true, 10000, 30);// payment feilds: address
+      await changeText(page, 'paymentBillingCity', 'London', true, 10000, 30);// payment feilds: city
+      await changeText(page, 'paymentBillingState', 'London', true, 10000, 30);// payment feilds: state
+      await changeText(page, 'paymentBillingPostCode', 'HA9 8BB', true, 10000, 30);// payment feilds: post code
 
       // card details
       const frame = await getFrame(page, '__privateStripeFrame5', 10000);
 
-      await changeTextInFrame(frame, 'input[name="cardnumber"]', user.cardNumber, 10000, 30);// payment feilds: cardnumber
-      await changeTextInFrame(frame, 'input[name="exp-date"]', '1223', 10000, 30);// payment feilds: exp-date
+      await changeTextInFrame(frame, 'input[name="cardnumber"]', user.cardNumber, 10000, 50);// payment feilds: cardnumber
+      await changeTextInFrame(frame, 'input[name="exp-date"]', '1223', 10000, 50);// payment feilds: exp-date
       await changeTextInFrame(frame, 'input[name="cvc"]', '233', 10000, 50);// payment feilds: cvc
-      await changeTextInFrame(frame, 'input[name="postal"]', '56789', 10000, 30);// payment feilds: postal
+      await changeTextInFrame(frame, 'input[name="postal"]', '56789', 10000, 50);// payment feilds: postal
 
       await clickButton(page, 'paymentButton', 10000, false);// make payment
 
       const successPayment = await page.waitForSelector('.payment-page #confirmation .status.success',
         { visible: true, timeout: 10000 });
 
+      await page.waitFor(500);
+
       expect(successPayment).not.toBeNull(); // payment is finished
 
-      await page.waitFor(4000);
+      await page.waitFor(2000);
 
       await clickButton(page, 'logout', 10000, false); // logout
     });

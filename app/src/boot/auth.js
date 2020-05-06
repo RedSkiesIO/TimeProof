@@ -17,6 +17,7 @@ const msalConfig = {
     authority: process.env.AUTHORITY_SIGNUP_SIGNIN,
     validateAuthority: false,
     redirectURI: process.env.REDIRECT_URI,
+    navigateToLoginRequestUrl: false,
   },
   cache: {
     cacheLocation: 'localStorage',
@@ -76,7 +77,7 @@ const auth = {
   // acquire a token silently
   getToken() {
     return myMSALObj.acquireTokenSilent(tokenRequest).catch((error) => {
-      console.log('aquire token popup', error);
+      console.log('Failed token acquisition with silent', error);
       // if (error.message.indexOf('AADB2C90077') > -1) {
       //   console.log('PPPPPPPPPPPP');
       //   auth.logout();
@@ -86,7 +87,9 @@ const auth = {
         console.log('popup: ', tokenResponse);
         return tokenResponse;
       }).catch((error2) => {
-        console.log('Failed token acquisition', error2);
+        console.log('Failed token acquisition with popup', error2);
+        this.getTokenRedirect();
+        return Promise.resolve('');
       });
     });
   },
