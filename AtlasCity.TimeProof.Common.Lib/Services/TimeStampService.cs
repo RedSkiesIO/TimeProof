@@ -107,6 +107,11 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 _logger.Error(ex.Message);
                 throw new RpcClientException(ex.Message);
             }
+            catch (RpcClientTimeoutException ex)
+            {
+                _logger.Error(ex.Message);
+                throw new RpcClientException(ex.Message);
+            }
         }
 
         public async Task<TimestampDao> GetTimestampDetails(string timestampId, string requestedUserId, CancellationToken cancellationToken)

@@ -28,7 +28,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.UserId.ToLower() == userId.ToLower()).AsEnumerable();
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri, option).Where(s => s.UserId.ToLower() == userId.ToLower()).AsEnumerable();
             return response;
         }
 
@@ -36,7 +37,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var responseCount = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.UserId.ToLower() == userId.ToLower() && s.Timestamp >= fromDateTime).Count();
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var responseCount = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri, option).Where(s => s.UserId.ToLower() == userId.ToLower() && s.Timestamp >= fromDateTime).Count();
             return responseCount;
         }
 
@@ -55,7 +57,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             Guard.Argument(timestampId, nameof(timestampId)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri).Where(s => s.Id.ToLower() == timestampId.ToLower()).AsEnumerable().FirstOrDefault();
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri, option).Where(s => s.Id.ToLower() == timestampId.ToLower()).AsEnumerable().FirstOrDefault();
             return response;
         }
 

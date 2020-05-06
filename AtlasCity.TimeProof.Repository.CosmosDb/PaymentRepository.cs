@@ -36,7 +36,8 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var response = Client.CreateDocumentQuery<ProcessedPaymentDao>(_documentCollectionUri).Where(s => s.UserId.ToLower() == userId.ToLower()).OrderByDescending(s => s.Created).AsEnumerable().FirstOrDefault();
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<ProcessedPaymentDao>(_documentCollectionUri, option).Where(s => s.UserId.ToLower() == userId.ToLower()).OrderByDescending(s => s.Created).AsEnumerable().FirstOrDefault();
             return response;
         }
     }
