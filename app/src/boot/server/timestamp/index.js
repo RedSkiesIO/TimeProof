@@ -32,7 +32,17 @@ class TimestampServer extends Server {
       }
     });
   }
+
+  async createTimestamps(file, publicKey) {
+    return this.axios.post(`${process.env.API}/timestamp`, {
+      fileName: file.name,
+      fileHash: file.hash,
+      publicKey,
+      signature: file.signature,
+    });
+  }
 }
+
 
 const timestampServer = new TimestampServer();
 

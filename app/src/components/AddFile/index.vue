@@ -301,22 +301,7 @@ export default {
     async sendProof() {
       this.visible = true;
       try {
-        if (Date.now() > this.user.tokenExpires) {
-          const token = await this.$auth.getToken();
-          this.$axios.defaults.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
-          User.update({
-            data: {
-              accountIdentifier: this.account.accountIdentifier,
-              tokenExpires: token.idToken.expiration,
-            },
-          });
-        }
-        const tx = await this.$axios.post(`${process.env.API}/timestamp`, {
-          fileName: this.file.name,
-          fileHash: this.file.hash,
-          publicKey: this.user.pubKey,
-          signature: this.file.signature,
-        });
+        const tx = await this.$timestampServer.createTimestamps(this.file, this.user.pubKey);
         console.log('NEW TIMESTAMP');
         console.log(tx);
         if (tx.data || tx.status === 201) {

@@ -78,11 +78,6 @@ const auth = {
   getToken() {
     return myMSALObj.acquireTokenSilent(tokenRequest).catch((error) => {
       console.log('Failed token acquisition with silent', error);
-      // if (error.message.indexOf('AADB2C90077') > -1) {
-      //   console.log('PPPPPPPPPPPP');
-      //   auth.logout();
-      // }
-      // fallback to interaction when silent call fails
       return myMSALObj.acquireTokenPopup(tokenRequest).then((tokenResponse) => {
         console.log('popup: ', tokenResponse);
         return tokenResponse;
@@ -95,9 +90,7 @@ const auth = {
   },
 
   getTokenRedirect() {
-    return myMSALObj.acquireTokenRedirect(tokenRequest).catch((error) => {
-      console.log(error);
-    });
+    return myMSALObj.acquireTokenRedirect(tokenRequest);
   },
 
   logout() {
