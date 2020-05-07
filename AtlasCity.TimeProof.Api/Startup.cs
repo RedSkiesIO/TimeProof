@@ -109,11 +109,10 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
 
-            var gasPrice = Configuration.GetValueAsInt("NetheriumAccount:GasPrice");
             var toAddress = Configuration.GetValue("NetheriumAccount:ToAddress");
             var secretKey = Configuration.GetValue("NetheriumAccount:SecretKey");
             var networkName = Configuration.GetValue("NetheriumAccount:Network");
-            var ethSetting = new EthSettings { GasPrice = gasPrice, ToAddress = toAddress, SecretKey = secretKey, Network = networkName };
+            var ethSetting = new EthSettings { ToAddress = toAddress, SecretKey = secretKey, Network = networkName };
             services.AddSingleton<IEthHelper>(new EthHelper(ethSetting));
 
             var timeProofLoginUri = Configuration.GetValue("TimeProofLoginUri");

@@ -52,9 +52,9 @@ namespace AtlasCity.TimeProof.Api.Controllers
                 var newTimeStamp = _timestampService.GenerateTimestamp(timestampDao, cancellationToken).GetAwaiter().GetResult();
                 return new CreatedActionResult(newTimeStamp.ToResponse());
             }
-            catch (TimestampException)
+            catch (TimestampException ex)
             {
-                return new ConflictResult();
+                return new ConflictActionResult(ex.Message);
             }
             catch (RpcClientException ex)
             {

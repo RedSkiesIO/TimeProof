@@ -26,7 +26,7 @@ namespace AtlasCity.TimeProof.AzureFunction
             Log.Logger = new LoggerConfiguration()
                 .Enrich.WithProperty("Application", "TimeProof.Functions")
                 .WriteTo.Console()
-                .WriteTo.File("function_log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30)
+                .WriteTo.File("function_log.txt", rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30, buffered: false)
                 .CreateLogger();
 
             builder.Services.AddLogging(s => s.AddSerilog(Log.Logger));
