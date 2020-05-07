@@ -30,7 +30,7 @@ const loginRequest = {
   scopes: appConfig.b2cScopes,
 };
 const tokenRequest = {
-  scopes: appConfig.b2cScopes,
+  scopes: [process.env.CLIENT_ID],
 };
 
 
