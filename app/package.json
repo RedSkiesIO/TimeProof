@@ -1,8 +1,8 @@
 {
-  "name": "timeproof",
+  "name": "timescribe",
   "version": "0.0.1",
   "description": "Time stamping app",
-  "productName": "Time Proof",
+  "productName": "Timescribe",
   "cordovaId": "org.upgradedgiggle.atlascity.app",
   "capacitorId": "",
   "author": "stephenhorsfall <stephen.horsfall@atlascity.io>",

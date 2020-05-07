@@ -304,7 +304,19 @@ export default {
         const tx = await this.$timestampServer.createTimestamps(this.file, this.user.pubKey);
         console.log('NEW TIMESTAMP');
         console.log(tx);
-        if (tx.data || tx.status === 201) {
+        if (tx.status === 409) {
+          const verifyResult = await
+          this.$userServer.verifyUserDetails();
+
+          if (verifyResult) {
+            User.insertOrUpdate({
+              data: {
+                accountIdentifier: this.account.accountIdentifier,
+                remainingTimeStamps: verifyResult.remainingTimeStamps,
+              },
+            });
+          }
+        } else if (tx.data || tx.status === 201) {
           this.file.id = tx.data.id;
           this.file.txId = tx.data.transactionId;
           this.file.timestamp = tx.data.timestamp;

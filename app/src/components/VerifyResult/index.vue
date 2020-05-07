@@ -19,6 +19,15 @@
       >
         {{ proof.error }}
       </div>
+      <div v-else>
+        <a
+          class="text-blue q-mt-sm"
+          :href="etherscanTx"
+          target="_blank"
+        >
+          View Transaction
+        </a>
+      </div>
     </div>
 
     <div class="column q-px-md">

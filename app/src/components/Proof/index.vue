@@ -284,7 +284,7 @@ export default {
     },
 
     getCertificate() {
-      const name = `${this.proof.date}.pdf`;
+      const name = `Timescribe Certificate ${this.proof.date}.pdf`;
       this.$pdf.create(name, this.proof.certificate);
     },
   },
