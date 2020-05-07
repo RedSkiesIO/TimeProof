@@ -32,6 +32,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
                 Description = "Basic pack with free time stamps",
                 Price = 0,
                 NoOfStamps = 10,
+                GasPrice = 3,
                 ConfirmationDescription = "Up to 1 hour confirmation time"
             };
 
@@ -41,6 +42,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
                 Description = "Standard pack with few number of time stamps",
                 Price = 499,
                 NoOfStamps = 40,
+                GasPrice = 3,
                 ConfirmationDescription = "Less than minutes confirmation time"
             };
 
@@ -50,6 +52,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
                 Description = "Premium packs",
                 Price = 2499,
                 NoOfStamps = 250,
+                GasPrice = 3,
                 ConfirmationDescription = "Less than minutes confirmation time"
             };
 

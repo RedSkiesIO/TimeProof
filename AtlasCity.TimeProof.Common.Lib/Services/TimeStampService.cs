@@ -27,6 +27,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private readonly ILogger _logger;
         private readonly ITimestampRepository _timestampRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IPricePlanRepository _pricePlanRepository;
         private readonly IEthHelper _ethHelper;
         private readonly ITimestampQueueService _timestampQueueService;
         private readonly IWeb3 _netheriumWeb3;
@@ -35,6 +36,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
            ILogger logger,
            ITimestampRepository timestampRepository,
            IUserRepository userRepository,
+            IPricePlanRepository pricePlanRepository,
            IEthHelper ethHelper,
            ITimestampQueueService timestampQueueService,
            IWeb3 netheriumWeb3)
@@ -42,6 +44,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             Guard.Argument(logger, nameof(logger)).NotNull();
             Guard.Argument(timestampRepository, nameof(timestampRepository)).NotNull();
             Guard.Argument(userRepository, nameof(userRepository)).NotNull();
+            Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
             Guard.Argument(ethHelper, nameof(ethHelper)).NotNull();
             Guard.Argument(timestampQueueService, nameof(timestampQueueService)).NotNull();
             Guard.Argument(netheriumWeb3, nameof(netheriumWeb3)).NotNull();
@@ -49,6 +52,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _logger = logger;
             _timestampRepository = timestampRepository;
             _userRepository = userRepository;
+            _pricePlanRepository = pricePlanRepository;
             _ethHelper = ethHelper;
             _timestampQueueService = timestampQueueService;
             _netheriumWeb3 = netheriumWeb3;
@@ -82,9 +86,17 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 throw new TimestampException(message);
             }
 
+            var pricePlan = await _pricePlanRepository.GetPricePlanById(user.CurrentPricePlanId, cancellationToken);
+            if (pricePlan == null)
+            {
+                var message = $"Unable to find the current price plan with user identifier '{user.CurrentPricePlanId}' for an user '{user.Id}'.";
+                _logger.Error(message);
+                throw new UserException(message);
+            }
+
             try
             {
-                await SendTransaction(timestamp);
+                await SendTransaction(timestamp, pricePlan.GasPrice);
 
                 var newTimestamp = await _timestampRepository.CreateTimestamp(timestamp, cancellationToken);
 
@@ -130,7 +142,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             return timestamp;
         }
 
-        private async Task<TimestampDao> SendTransaction(TimestampDao timestamp)
+        private async Task<TimestampDao> SendTransaction(TimestampDao timestamp, int gasPrice)
         {
             bool proofVerified = _ethHelper.VerifyStamp(timestamp);
             if (!proofVerified)
@@ -166,7 +178,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                     ethSettings.ToAddress,
                     Web3.Convert.ToWei(0, UnitConversion.EthUnit.Gwei),
                     currentNonce,
-                    Web3.Convert.ToWei(ethSettings.GasPrice, UnitConversion.EthUnit.Gwei),
+                    Web3.Convert.ToWei(gasPrice, UnitConversion.EthUnit.Gwei),
                     new BigInteger(100000),
                     txData);
 
