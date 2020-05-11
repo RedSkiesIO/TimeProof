@@ -52,7 +52,7 @@
     margin: 30px;
     font-size: 13px;
     font-weight: 500;
-    color: #666ee8;
+    color: #4cbbc2;
     letter-spacing: 0.3px;
     text-transform: uppercase;
     text-decoration: none;
@@ -98,7 +98,7 @@
 
   h2 {
     margin: 15px 0;
-    color: #32325d;
+    color: #4cbbc2;
     text-transform: uppercase;
     letter-spacing: 0.3px;
     font-size: 13px;
@@ -202,7 +202,7 @@
 
   span#generate {
     cursor: pointer;
-    color: #525f7f;
+    color: #4cbbc2;
     text-decoration: underline;
   }
   span#generate:hover {
@@ -214,7 +214,7 @@
     padding: 0 15px;
     background: transparent;
     font-weight: 400;
-    color: #31325f;
+    color: #525f7f;
     outline: none;
     cursor: text;
   }
@@ -262,7 +262,7 @@
   }
 
   select:focus {
-    color: #666ee8;
+    color: #4cbbc2;
   }
 
   ::-webkit-input-placeholder {
@@ -278,7 +278,7 @@
 
   input:-webkit-autofill,
   select:-webkit-autofill {
-    -webkit-text-fill-color: #666ee8;
+    -webkit-text-fill-color: #525f7f;
     transition: background-color 100000000s;
     -webkit-animation: 1ms void-animation-out 1s;
   }
@@ -297,7 +297,7 @@
 
   button {
     display: block;
-    background: #666ee8;
+    background: #4cbbc2;
     color: #fff;
     box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
     border-radius: 4px;
@@ -311,7 +311,7 @@
   }
 
   button:focus {
-    background: #555abf;
+    background: #046b72;
   }
 
   button:hover {
@@ -321,7 +321,7 @@
   }
 
   button:active {
-    background: #43458b;
+    background: #046b72;
   }
 
   #country {
@@ -886,19 +886,19 @@
     width: 100%;
     bottom: -2px;
     left: 0;
-    border-bottom: 2px solid #6772e5;
+    border-bottom: 2px solid #4cbbc2;
     opacity: 0;
     transform: scaleX(0);
     transition: all 0.25s ease-in-out;
   }
 
   #payment-methods label:hover {
-    color: #6772e5;
+    color: #4cbbc2;
     cursor: pointer;
   }
 
   #payment-methods input:checked + label {
-    color: #6772e5;
+    color: #4cbbc2;
   }
 
   #payment-methods label:hover::before,
@@ -1024,7 +1024,7 @@
   }
 
   #summary .line-item .product {
-    color: #424770;
+    color: #4cbbc2;
   }
 
   #summary .line-item .sku {
@@ -1046,7 +1046,7 @@
   }
 
   #summary .line-item .price {
-    color: #8ba4fe;
+    color: #4cbbc2;
     font-weight: bold;
   }
 
@@ -1071,7 +1071,7 @@
 
   #summary .line-item.total .label,
   #summary .line-item.total .price {
-    color: #424770;
+    color: #4cbbc2;
     font-size: 24px;
     font-weight: 400;
     line-height: inherit;
@@ -1086,7 +1086,7 @@
 
   #demo p.label {
     margin: 0 0 10px;
-    color: #666ee8;
+    color: #4cbbc2;
   }
 
   #demo .note {
@@ -1151,7 +1151,7 @@
   #confirmation h1 {
     font-size: 42px;
     font-weight: 300;
-    color: #6863d8;
+    color: #4cbbc2;
     letter-spacing: 0.3px;
     margin-bottom: 30px;
   }

@@ -304,7 +304,7 @@ export default {
         const tx = await this.$timestampServer.createTimestamps(this.file, this.user.pubKey);
         console.log('NEW TIMESTAMP');
         console.log(tx);
-        if (tx.status === 409) {
+        if (tx.status === 409) { // Not sufficient stamps left for the user
           const verifyResult = await
           this.$userServer.verifyUserDetails();
 

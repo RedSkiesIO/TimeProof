@@ -30,19 +30,17 @@
       <div class="row justify-center q-mb-sm">
         <q-btn
           v-close-popup
-          outline
+          flat
           data-test-key="cancelCreateFirstTimeStamp"
           :label="$t('cancel')"
-          color="primary"
-          flat
+          color="blue"
           @click="buttonClose"
         />
         <q-btn
-          outline
           flat
           data-test-key="continueCreateFirstTimeStamp"
           :label="$t('sign')"
-          color="secondary"
+          color="blue"
           @click="buttonAction"
         />
       </div>

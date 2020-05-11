@@ -10,13 +10,13 @@
       class="row justify-start q-gutter-lg items-center
             q-mb-md q-mt-md q-ml-sm rounded-borders"
     >
-      <div class="col-md-3">
+      <div class="col-md-2 col-sm-2 col-xs-2">
         <label>Plan</label>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-3 col-sm-3 col-xs-3">
         {{ currentPlan.title }} / Per Month
       </div>
-      <div class="col-md-4 text-right">
+      <div class="col-md-4 col-sm-4 col-xs-4 text-right">
         <q-space />
       </div>
     </div>
@@ -24,13 +24,13 @@
       class="row justify-start q-gutter-lg items-center
             q-mb-md q-mt-md q-ml-sm rounded-borders"
     >
-      <div class="col-md-3">
+      <div class="col-md-2 col-sm-2 col-xs-2">
         <label>Next Billng Date</label>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-2 col-sm-2 col-xs-2">
         {{ moment(user.membershipRenewDate).format('DD-MM-YYYY') }}
       </div>
-      <div class="col-md-5 text-right">
+      <div class="col-md-5 col-sm-5 col-xs-5 text-right">
         <q-space />
       </div>
     </div>
@@ -38,72 +38,88 @@
       class="row justify-start q-gutter-lg items-center
             q-mb-md q-mt-md q-ml-sm rounded-borders"
     >
-      <div class="col-md-3">
+      <div class="col-md-2 col-sm-2 col-xs-2">
         <label>Billing Method</label>
       </div>
       <div
-        class="col-md-6"
+        :class="saveMode ? 'col-md-6 col-sm-8 col-xs-8' : 'col-md-7 col-sm-8 col-xs-8'"
       >
         <div
           v-show="saveMode"
           class="row"
         >
-          <label class="col-md-1">
+          <label class="col-md-1 col-sm-1 col-xs-1">
             <span>Card:</span>
           </label>
           <div
             id="card-element"
-            class="field col-md-9"
+            class="field col-md-9 col-sm-9 col-xs-9"
           />
         </div>
         <div v-show="!saveMode">
           <div class="row">
-            <label class="col-md-4">
+            <label class="col-md-4 col-sm-4 col-xs-4">
               <span>Card Number:</span>
             </label>
 
-            <div class="field col-md-6">
+            <div class="field col-md-6 col-sm-6 col-xs-6">
               {{ user.selectedCardNumber ? user.selectedCardNumber : '---- ---- ---- ----' }}
             </div>
           </div>
           <div class="row">
-            <label class="col-md-4">
+            <label class="col-md-4 col-sm-4 col-xs-4">
               <span>Expiration Date:</span>
             </label>
 
-            <div class="field col-md-6">
+            <div class="field col-md-6 col-sm-6 col-xs-6">
               {{ user.cardExpirationDate ? user.cardExpirationDate : '-- / ----' }}
             </div>
           </div>
         </div>
       </div>
       <div
-        class="col-md-1"
+        v-if="user.selectedCardNumber && !saveMode"
+        class="col-md-1 col-sm-1 col-xs-1"
       >
         <q-btn
-          v-if="user.selectedCardNumber && !saveMode"
           flat
           no-caps
           color="blue"
           label="Change"
           @click="changeCard"
         />
-        <q-btn
-          v-else-if="saveMode"
-          flat
-          no-caps
-          :disable="cardSaveDisable"
-          color="blue"
-          :label="loading ? '' : 'Save'"
-          @click="saveCard"
-        >
-          <q-spinner
-            v-show="loading"
-            color="primary"
-            size="1.5em"
-            :thickness="2"
+      </div>
+      <div
+        v-else-if="saveMode"
+        class="col-md-2 col-sm-3 col-xs-3"
+      >
+        <div class="row">
+          <q-btn
+            flat
+            class="col-md-6 col-sm-6 col-xs-6"
+            no-caps
+            :disable="cardSaveDisable"
+            color="blue"
+            :label="loading ? '' : 'Save'"
+            @click="saveCard"
+          >
+            <q-spinner
+              v-show="loading"
+              color="primary"
+              size="1.5em"
+              :thickness="2"
+            />
+          </q-btn>
+          <q-btn
+            flat
+            class="col-md-6 col-sm-6 col-xs-6"
+            no-caps
+            :disable="loading"
+            color="blue"
+            label="Cancel"
+            @click="saveMode = false"
           />
-        </q-btn>
+        </div>
       </div>
     </div>
     <div
@@ -240,7 +256,7 @@ export default {
 
       setTimeout(() => {
         this.cardMessageVisible = false;
-      }, 3000);
+      }, 10000);
 
       this.loading = false;
       this.saveMode = false;
