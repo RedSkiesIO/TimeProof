@@ -18,6 +18,7 @@ module.exports = function (ctx) {
       'blake2b',
       'keypair',
       'base32',
+      'idle',
       'auth',
       'createPdf',
       'crypto',
@@ -71,7 +72,7 @@ module.exports = function (ctx) {
     build: {
       scopeHoisting: true,
       env: appConfig(ctx.dev, process.env.test, process.env.prod),
-      // vueRouterMode: 'history',
+      vueRouterMode: 'history',
       // showProgress: false,
       // gzip: true,
       // analyze: true,

@@ -27,6 +27,15 @@ export default {
       return this.$auth.user(false, true, 'timestamps');
     },
   },
+  watch: {
+    isAppIdle(val) {
+      console.log('idle ', val);
+      if (val) {
+        this.$auth.logout();
+      }
+    },
+  },
+
   async created() {
     this.setProducts(await this.$paymentServer.listAllPriceplans());
   },
@@ -92,5 +101,6 @@ export default {
       this.ready = true;
     },
   },
+
 };
 </script>

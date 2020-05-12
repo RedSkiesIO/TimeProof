@@ -12,6 +12,7 @@ const routes = [
       { path: 'upgrade', component: () => import('pages/Upgrade') },
       { path: 'upgrade-success', component: () => import('pages/UpgradeSuccess') },
       { path: 'payment', component: () => import('components/Payment') },
+      { path: '*', redirect: '/' },
     ],
   },
 ];

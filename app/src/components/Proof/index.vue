@@ -1,5 +1,7 @@
 <template>
-  <div class="proof">
+  <div
+    class="proof"
+  >
     <div
       v-if="ready"
       id="proof"
@@ -9,6 +11,8 @@
         :name="icon.name"
         :class="icon.class"
         style="font-size: 100px"
+        :style="scope.dialog ?
+          'background:radial-gradient(circle at center, white 50%, #4cbbc2 60%)' : ''"
       />
 
       <span
@@ -16,7 +20,8 @@
       >{{ title }}</span>
       <a
         v-if="proof.status !== 0"
-        class="text-blue q-mt-sm"
+        class="q-mt-sm"
+        :class="scope.dialog ? 'text-dark-blue q-mb-lg' : 'text-blue'"
         :href="etherscanTx"
         target="_blank"
       >
@@ -26,61 +31,107 @@
 
     <div class="column q-px-md">
       <div class="row proof-item justify-between">
-        <div class="col-auto">
-          {{ $t('file') }}:
-        </div>
-        <div class="col-auto">
-          {{ proof.name }}
-        </div>
+        <template v-if="scope.dialog">
+          <div class="col">
+            <q-input
+              v-model="proof.name"
+              filled
+              :bg-color="bgColor"
+              readonly
+              stack-label
+              :label="$t('file')"
+              autogrow
+            />
+          </div>
+        </template>
+        <template v-else>
+          <div class="col-auto">
+            {{ $t('file') }}:
+          </div>
+          <div class="col-auto">
+            {{ proof.name }}
+          </div>
+        </template>
       </div>
 
       <div>
         <div class="row proof-item justify-between">
-          <div class="col-auto">
-            {{ $t('date') }}:
-          </div>
-          <div
-            v-if="proof.status === 0"
-            class="col-auto"
-          >
-            <q-chip
-              square
-              color="orange"
-              text-color="white"
+          <template v-if="scope.dialog">
+            <div class="col">
+              <q-input
+                v-model="getDate"
+                filled
+                :bg-color="bgColor"
+                readonly
+                stack-label
+                :label="$t('date')"
+                autogrow
+              />
+            </div>
+          </template>
+          <template v-else>
+            <div class="col-auto">
+              {{ $t('date') }}:
+            </div>
+            <div
+              v-if="proof.status === 0"
+              class="col-auto"
             >
-              pending
-            </q-chip>
-          </div>
-          <div
-            v-if="ready && proof.status !== 0"
-            class="col-auto"
-          >
-            {{ getDate }}
-          </div>
+              <q-chip
+                square
+                color="orange"
+                text-color="white"
+              >
+                pending
+              </q-chip>
+            </div>
+            <div
+              v-if="ready && proof.status !== 0"
+              class="col-auto"
+            >
+              {{ getDate }}
+            </div>
+          </template>
         </div>
 
         <div class="row proof-item justify-between">
-          <div class="col-auto">
-            {{ $t('signedBy') }}:
-          </div>
-          <div
-            v-if="!proof.verify"
-            class="col-auto q-pl-sm"
-          >
-            {{ user.name }} ({{ user.email }})
-          </div>
-          <div
-            v-else
-            class="col-auto q-pl-sm"
-          >
-            {{ proof.pubKey.toLowerCase() }}
-          </div>
+          <template v-if="scope.dialog">
+            <div class="col">
+              <q-input
+                v-model="signedBy"
+                filled
+                :bg-color="bgColor"
+                readonly
+                stack-label
+                :label="$t('signedBy')"
+                autogrow
+              />
+            </div>
+          </template>
+          <template v-else>
+            <div class="col-auto">
+              {{ $t('signedBy') }}:
+            </div>
+            <div
+              v-if="!proof.verify"
+              class="col-auto q-pl-sm"
+            >
+              {{ user.name }} ({{ user.email }})
+            </div>
+            <div
+              v-else
+              class="col-auto q-pl-sm"
+            >
+              {{ proof.pubKey.toLowerCase() }}
+            </div>
+          </template>
         </div>
         <div class="row proof-item justify-between">
           <div class="col">
             <q-input
               v-model="proof.txId"
               filled
+              :bg-color="bgColor"
               readonly
               stack-label
               :label="$t('id')"
@@ -102,12 +153,20 @@
             </q-input>
           </div>
         </div>
+        <q-badge
+          v-if="scope.dialog"
+          class="q-ml-md"
+          style="fontSize: 1rem"
+        >
+          * you need to enter this in the verify tab
+        </q-badge>
 
         <div class="row proof-item justify-between">
           <div class="col">
             <q-input
               v-model="proof.hash"
               filled
+              :bg-color="bgColor"
               readonly
               stack-label
               :label="$t('hash')"
@@ -135,6 +194,7 @@
             <q-input
               v-model="proof.signature"
               filled
+              :bg-color="bgColor"
               readonly
               stack-label
               :label="$t('signature')"
@@ -166,13 +226,24 @@
       {{ $t('anotherFile') }}
     </div>
     <div class="q-px-lg flex flex-center column text-center q-pt-lg">
-      <q-btn
-        v-if="proof.status !== 0 && ready"
-        outline
-        color="secondary"
-        label="Download Certificate"
-        @click="getCertificate"
-      />
+      <template v-if="scope.dialog">
+        <q-btn
+          v-if="proof.status !== 0 && ready"
+          text-color="secondary"
+          color="white"
+          label="Download Certificate"
+          @click="getCertificate"
+        />
+      </template>
+      <template v-else>
+        <q-btn
+          v-if="proof.status !== 0 && ready"
+          outline
+          color="secondary"
+          label="Download Certificate"
+          @click="getCertificate"
+        />
+      </template>
     </div>
   </div>
 </template>
@@ -198,6 +269,7 @@ export default {
     return {
       copyLabel: this.$t('copy'),
       ready: false,
+      bgColor: this.scope.dialog ? 'white' : '',
     };
   },
 
@@ -216,6 +288,10 @@ export default {
 
     proof() {
       return this.proofId ? Timestamp.query().where('txId', this.proofId).first() : null;
+    },
+
+    signedBy() {
+      return !this.proof.verify ? `${this.user.name}(${this.user.email})` : this.proof.pubKey.toLowerCase();
     },
 
     getDate() {

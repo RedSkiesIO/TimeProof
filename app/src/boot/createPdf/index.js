@@ -6,9 +6,7 @@ import {
 import pixelWidth from 'string-pixel-width';
 
 class PdfUtil {
-  pdfMap = {};
-
-  downloadURL = (data, fileName, proofId) => {
+  downloadURL = (data, fileName) => {
     const a = document.createElement('a');
     a.href = data;
     a.download = fileName;
@@ -16,24 +14,16 @@ class PdfUtil {
     a.style = 'display: none';
     a.click();
     a.remove();
-    console.log('PDFDFDFDFDF');
-    console.log(data);
-    this.pdfMap[proofId.one + proofId.two] = data;
-    console.log(proofId);
-    console.log(this.pdfMap);
-    console.log('PDFF BITTI');
   };
 
-  saveDataToFile = (data, fileName, mimeType, proofId) => {
+  saveDataToFile = (data, fileName, mimeType) => {
     const blob = new Blob([data], { type: mimeType });
     const url = window.URL.createObjectURL(blob);
-    this.downloadURL(url, fileName, proofId);
-    // setTimeout(() => {
-    //   window.URL.revokeObjectURL(url);
-    // }, 1000);
+    this.downloadURL(url, fileName);
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+    }, 1000);
   };
-
-  getPdfFile = proofId => this.pdfMap[proofId]
 
   create = async (name, proof) => {
     console.log(proof);
@@ -140,7 +130,7 @@ class PdfUtil {
     });
 
     const output = await doc.save(); // Save the doc already replacement
-    this.saveDataToFile(output, name, 'application/pdf', proof.proofId);
+    this.saveDataToFile(output, name, 'application/pdf');
   }
 }
 

@@ -9,7 +9,7 @@
           data-test-key="paymentBillingName"
           name="name"
           class="field"
-          placeholder="Jenny Rosen"
+          placeholder="Name Surname"
           required
         >
       </label>
@@ -20,7 +20,7 @@
           type="email"
           data-test-key="paymentBillingEmail"
           class="field"
-          placeholder="jenny@example.com"
+          placeholder="contact@atlascity.io"
           :value="email"
           disabled="true"
           required
@@ -33,7 +33,7 @@
           data-test-key="paymentBillingAddress"
           name="address"
           class="field"
-          placeholder="185 Berry Street Suite 550"
+          placeholder="5 Merchant Square"
         >
       </label>
       <label>
@@ -43,7 +43,7 @@
           name="city"
           data-test-key="paymentBillingCity"
           class="field"
-          placeholder="San Francisco"
+          placeholder="London"
         >
       </label>
       <label class="state">
@@ -53,7 +53,7 @@
           data-test-key="paymentBillingState"
           name="state"
           class="field"
-          placeholder="CA"
+          placeholder="London"
         >
       </label>
       <label class="zip">
@@ -63,7 +63,7 @@
           data-test-key="paymentBillingPostCode"
           name="postal_code"
           class="field"
-          placeholder="94107"
+          placeholder="W2 1AY"
         >
       </label>
       <label class="select">

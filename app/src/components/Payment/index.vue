@@ -134,7 +134,7 @@
             class="payment-button"
             data-test-key="paymentButton"
             type="submit"
-            :disabled="submitButtonDisable"
+            :disabled="submitButtonDisable || hasPaymentBillingEmptyProperty"
           >
             {{ submitButtonText }}
           </button>
@@ -214,9 +214,9 @@
             </p>
             <table class="note">
               <tr>
-                <td>Default US card:</td>
+                <td>Default UK card:</td>
                 <td class="card-number">
-                  4242<span />4242<span />4242<span />4242
+                  4000<span />0082<span />6000<span />0000
                 </td>
               </tr>
               <tr>
@@ -347,6 +347,15 @@ export default {
         imageData = new Identicon(Math.random().toString(15), 420).toString();
       }
       return `data:image/png;base64,${imageData}`;
+    },
+    hasPaymentBillingEmptyProperty() {
+      return !this.$refs.paymentBilling.name
+      || !this.$refs.paymentBilling.email
+      || !this.$refs.paymentBilling.address
+      || !this.$refs.paymentBilling.city
+      || !this.$refs.paymentBilling.state
+      || !this.$refs.paymentBilling.postalCode
+      || !this.$refs.paymentBilling.country;
     },
 
   },

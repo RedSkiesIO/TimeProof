@@ -3,10 +3,10 @@ console.log('TEST');
 console.log(process.env.test);
 console.log('PROD');
 console.log(process.env.prod);
-console.log('CYPRESS');
-console.log(process.env.cypress_mode);
 
 module.exports = function (isDev, isTest, isProd) {
+  console.log('ABOVVVVV');
+  console.log(isDev, isTest, isProd);
   let envVar = {};
 
   if (isDev) {

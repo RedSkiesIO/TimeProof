@@ -161,7 +161,7 @@
     <q-dialog
       v-model="confirmed"
     >
-      <q-card style="width:70%;max-width:1200px">
+      <q-card style="width:70%;max-width:1200px;backgroundColor:#4cbbc2;color:#fff">
         <div class="row justify-end">
           <q-icon
             v-close-popup
@@ -171,25 +171,12 @@
           />
         </div>
 
-        <template v-if="!pdfSrc">
-          <Proof
-            v-if="confirmed"
-            :file="file"
-            :proof-id="txId"
-            :scope="{dialog: true}"
-          />
-        </template>
-        <template v-else>
-          <div class="container q-pa-sm">
-            <q-pdfviewer
-              v-model="confirmed"
-              :src="pdfSrc"
-              type="html5"
-              content-class="fit container"
-              inner-content-class="fit container"
-            />
-          </div>
-        </template>
+        <Proof
+          v-if="confirmed"
+          :file="file"
+          :proof-id="txId"
+          :scope="{dialog: true}"
+        />
       </q-card>
     </q-dialog>
   </div>
@@ -212,7 +199,6 @@ export default {
       file: {},
       txId: null,
       fileIcon,
-      pdfSrc: null,
       thumbStyle: {
         right: '4px',
         borderRadius: '5px',
@@ -247,10 +233,6 @@ export default {
 
     timestampDialog({ txId }) {
       this.txId = txId;
-      this.pdfSrc = this.$pdf.getPdfFile(txId);
-      console.log('KOKOKKOKOKO');
-      console.log(txId);
-      console.log(this.pdfSrc);
       this.confirmed = true;
     },
 
@@ -306,5 +288,6 @@ export default {
   width: 100%;
   height: 50vw;
 }
+
 
 </style>
