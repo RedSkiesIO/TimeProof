@@ -76,17 +76,30 @@
         </q-card>
       </div>
     </div>
+    <q-dialog
+      v-model="downgradeConfirmationDialog"
+    >
+      <DowngradeConfirmation
+        @closeDialog="downgradeConfirmationDialog = false"
+        @confirmDialog="confirmDowngrade"
+      />
+    </q-dialog>
   </q-page>
 </template>
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import DowngradeConfirmation from '../components/DowngradeConfirmation';
 
 export default {
+  components: {
+    DowngradeConfirmation,
+  },
 
   data() {
     return {
       token: null,
       loading: false,
+      downgradeConfirmationDialog: false,
     };
   },
   computed: {
@@ -110,6 +123,13 @@ export default {
     },
     choosePlan(item) {
       this.setSellingProduct(item);
+      if (item.price === 0) {
+        this.downgradeConfirmationDialog = true;
+      } else {
+        this.$router.push('/payment');
+      }
+    },
+    confirmDowngrade() {
       this.$router.push('/payment');
     },
   },

@@ -1,280 +1,292 @@
 <template>
-  <div class="payment-page">
-    <main
-      id="main"
-      :class="{
-        loading: mainClassLoading,
-        success: mainClassSuccess,
-        processing: mainClassProcessing,
-        receiver: mainClassReceiver,
-        error: mainClassError,
-        checkout: mainClassCheckout}"
+  <div>
+    <div
+      v-show="!downgradeLoading"
+      class="payment-page"
     >
-      <div id="checkout">
-        <div
-          v-show="paymentRequestVisible"
-          id="payment-request"
-          :class="{visible: paymentRequestVisible}"
-        >
-          <div id="payment-request-button" />
-        </div>
-        <form
-          id="payment-form"
-          @submit.prevent="formSubmit"
-        >
-          <section>
-            <PaymentBilling
-              ref="paymentBilling"
-              :show-relevant-payment-methods="showRelevantPaymentMethods"
-              :email="user.email"
-            />
-          </section>
-          <section v-show="!user.paymentIntentId">
-            <h2>Payment Information</h2>
-            <nav
-              id="payment-methods"
-            >
-              <ul>
-                <li
-                  v-for="item in uiPaymentTypeList"
-                  :key="item.id"
-                  :class="{visible: item.visible}"
-                >
-                  <input
-                    :id="item.id"
-                    type="radio"
-                    name="payment"
-                    :value="item.value"
-                    checked
-                    @change.prevent="paymentTypeChange"
-                  >
-                  <label :for="item.id">{{ item.label }}</label>
-                </li>
-              </ul>
-            </nav>
-            <div
-              class="payment-info card"
-              :class="{visible: cardPaymentVisible}"
-            >
-              <fieldset>
-                <label>
-                  <span>Card</span>
-                  <div
-                    id="card-element"
-                    class="field"
-                  />
-                </label>
-              </fieldset>
-            </div>
-            <div
-              class="payment-info sepa_debit"
-              :class="{visible: sepaDebitPaymentVisible}"
-            >
-              <fieldset>
-                <label>
-                  <span>IBAN</span>
-                  <div
-                    id="iban-element"
-                    class="field"
-                  />
-                </label>
-              </fieldset>
-              <p class="notice">
-                By providing your IBAN and confirming this payment,
-                you’re authorizing Payments Demo, our payment
-                provider, to send instructions to your bank to debit your account.
-                You’re entitled to a refund under the terms
-                and conditions of your agreement with your bank.
-              </p>
-            </div>
-            <div
-              class="payment-info ideal"
-              :class="{visible: idealPaymentVisible}"
-            >
-              <fieldset>
-                <label>
-                  <span>iDEAL Bank</span>
-                  <div
-                    id="ideal-bank-element"
-                    class="field"
-                  />
-                </label>
-              </fieldset>
-            </div>
-            <div
-              class="payment-info redirect"
-              :class="{visible: redirectPaymentVisible}"
-            >
-              <p class="notice">
-                You’ll be redirected to the banking site to complete your payment.
-              </p>
-            </div>
-            <div
-              class="payment-info receiver"
-              :class="{visible: receiverPaymentVisible}"
-            >
-              <p class="notice">
-                Payment information will be provided after you place the order.
-              </p>
-            </div>
-            <div
-              class="payment-info wechat"
-              :class="{visible: wechatPaymentVisible}"
-            >
-              <div id="wechat-qrcode" />
-              <p
-                class="notice"
-                :style="{display: wechatPaymentInfoNoticeDisplay}"
+      <main
+        id="main"
+        :class="{
+          loading: mainClassLoading,
+          success: mainClassSuccess,
+          processing: mainClassProcessing,
+          receiver: mainClassReceiver,
+          error: mainClassError,
+          checkout: mainClassCheckout}"
+      >
+        <div id="checkout">
+          <div
+            v-show="paymentRequestVisible"
+            id="payment-request"
+            :class="{visible: paymentRequestVisible}"
+          >
+            <div id="payment-request-button" />
+          </div>
+          <form
+            id="payment-form"
+            @submit.prevent="formSubmit"
+          >
+            <section>
+              <PaymentBilling
+                ref="paymentBilling"
+                :show-relevant-payment-methods="showRelevantPaymentMethods"
+                :email="user.email"
+              />
+            </section>
+            <section v-show="!user.paymentIntentId">
+              <h2>Payment Information</h2>
+              <nav
+                id="payment-methods"
               >
-                Click the button below to generate a QR code for WeChat.
+                <ul>
+                  <li
+                    v-for="item in uiPaymentTypeList"
+                    :key="item.id"
+                    :class="{visible: item.visible}"
+                  >
+                    <input
+                      :id="item.id"
+                      type="radio"
+                      name="payment"
+                      :value="item.value"
+                      checked
+                      @change.prevent="paymentTypeChange"
+                    >
+                    <label :for="item.id">{{ item.label }}</label>
+                  </li>
+                </ul>
+              </nav>
+              <div
+                class="payment-info card"
+                :class="{visible: cardPaymentVisible}"
+              >
+                <fieldset>
+                  <label>
+                    <span>Card</span>
+                    <div
+                      id="card-element"
+                      class="field"
+                    />
+                  </label>
+                </fieldset>
+              </div>
+              <div
+                class="payment-info sepa_debit"
+                :class="{visible: sepaDebitPaymentVisible}"
+              >
+                <fieldset>
+                  <label>
+                    <span>IBAN</span>
+                    <div
+                      id="iban-element"
+                      class="field"
+                    />
+                  </label>
+                </fieldset>
+                <p class="notice">
+                  By providing your IBAN and confirming this payment,
+                  you’re authorizing Payments Demo, our payment
+                  provider, to send instructions to your bank to debit your account.
+                  You’re entitled to a refund under the terms
+                  and conditions of your agreement with your bank.
+                </p>
+              </div>
+              <div
+                class="payment-info ideal"
+                :class="{visible: idealPaymentVisible}"
+              >
+                <fieldset>
+                  <label>
+                    <span>iDEAL Bank</span>
+                    <div
+                      id="ideal-bank-element"
+                      class="field"
+                    />
+                  </label>
+                </fieldset>
+              </div>
+              <div
+                class="payment-info redirect"
+                :class="{visible: redirectPaymentVisible}"
+              >
+                <p class="notice">
+                  You’ll be redirected to the banking site to complete your payment.
+                </p>
+              </div>
+              <div
+                class="payment-info receiver"
+                :class="{visible: receiverPaymentVisible}"
+              >
+                <p class="notice">
+                  Payment information will be provided after you place the order.
+                </p>
+              </div>
+              <div
+                class="payment-info wechat"
+                :class="{visible: wechatPaymentVisible}"
+              >
+                <div id="wechat-qrcode" />
+                <p
+                  class="notice"
+                  :style="{display: wechatPaymentInfoNoticeDisplay}"
+                >
+                  Click the button below to generate a QR code for WeChat.
+                </p>
+              </div>
+            </section>
+            <button
+              class="payment-button"
+              data-test-key="paymentButton"
+              type="submit"
+              :disabled="submitButtonDisable || hasPaymentBillingEmptyProperty"
+            >
+              {{ submitButtonText }}
+            </button>
+          </form>
+          <div
+            id="card-errors"
+            class="element-errors"
+            :class="{ visible: cardErrorVisible}"
+          >
+            {{ cardErrorContent }}
+          </div>
+          <div
+            id="iban-errors"
+            class="element-errors"
+            :class="{ visible: ibanErrorVisible}"
+          >
+            {{ ibanErrorContent }}
+          </div>
+        </div>
+        <div id="confirmation">
+          <div class="status processing">
+            <h1>Completing your order…</h1>
+            <p>
+              We’re just waiting for the confirmation
+              from your bank… This might take a moment but feel free to close this page.
+            </p>
+            <p>We’ll send your receipt via email shortly.</p>
+          </div>
+          <div class="status success">
+            <h1>Thanks for your order!</h1>
+            <p>Woot! You successfully made a payment.</p>
+            <p class="note">
+              {{ confirmationElementNote }}
+            </p>
+          </div>
+          <div class="status receiver">
+            <h1>Thanks! One last step!</h1>
+            <p>Please make a payment using the details below to complete your order.</p>
+            <div class="info">
+              {{ receiverInfo }}
+            </div>
+          </div>
+          <div class="status error">
+            <h1>Oops, payment failed.</h1>
+            <p>
+              It looks like your order could not
+              be paid at this time. Please try again or select a different payment option.
+            </p>
+            <p class="error-message">
+              {{ confirmationElementErrorMessage }}
+            </p>
+            <button
+              style="width: 15vh"
+              @click="tryAgain"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      </main>
+      <aside
+        v-once
+        id="summary"
+      >
+        <div class="header">
+          <h1>Order Summary</h1>
+        </div>
+        <div id="order-items" />
+        <div id="order-total">
+          <div class="line-item demo">
+            <div id="demo">
+              <p class="label">
+                Demo in test mode
+              </p>
+              <p class="note">
+                You can copy and paste the following test cards to trigger different scenarios:
+              </p>
+              <table class="note">
+                <tr>
+                  <td>Default UK card:</td>
+                  <td class="card-number">
+                    4000<span />0082<span />6000<span />0000
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="https://stripe.com/guides/strong-customer-authentication"
+                      target="_blank"
+                    >Authentication</a> required:
+                  </td>
+                  <td class="card-number">
+                    4000<span />0027<span />6000<span />3184
+                  </td>
+                </tr>
+              </table>
+              <p class="note">
+                See the <a
+                  href="https://stripe.com/docs/testing#cards"
+                  target="_blank"
+                >docs</a> for a full list of test cards.
+                Non-card payments will redirect to test pages.
               </p>
             </div>
-          </section>
-          <button
-            class="payment-button"
-            data-test-key="paymentButton"
-            type="submit"
-            :disabled="submitButtonDisable || hasPaymentBillingEmptyProperty"
-          >
-            {{ submitButtonText }}
-          </button>
-        </form>
-        <div
-          id="card-errors"
-          class="element-errors"
-          :class="{ visible: cardErrorVisible}"
-        >
-          {{ cardErrorContent }}
-        </div>
-        <div
-          id="iban-errors"
-          class="element-errors"
-          :class="{ visible: ibanErrorVisible}"
-        >
-          {{ ibanErrorContent }}
-        </div>
-      </div>
-      <div id="confirmation">
-        <div class="status processing">
-          <h1>Completing your order…</h1>
-          <p>
-            We’re just waiting for the confirmation
-            from your bank… This might take a moment but feel free to close this page.
-          </p>
-          <p>We’ll send your receipt via email shortly.</p>
-        </div>
-        <div class="status success">
-          <h1>Thanks for your order!</h1>
-          <p>Woot! You successfully made a payment.</p>
-          <p class="note">
-            {{ confirmationElementNote }}
-          </p>
-        </div>
-        <div class="status receiver">
-          <h1>Thanks! One last step!</h1>
-          <p>Please make a payment using the details below to complete your order.</p>
-          <div class="info">
-            {{ receiverInfo }}
           </div>
-        </div>
-        <div class="status error">
-          <h1>Oops, payment failed.</h1>
-          <p>
-            It looks like your order could not
-            be paid at this time. Please try again or select a different payment option.
-          </p>
-          <p class="error-message">
-            {{ confirmationElementErrorMessage }}
-          </p>
-          <button
-            style="width: 15vh"
-            @click="tryAgain"
-          >
-            Try again
-          </button>
-        </div>
-      </div>
-    </main>
-    <aside
-      v-once
-      id="summary"
-    >
-      <div class="header">
-        <h1>Order Summary</h1>
-      </div>
-      <div id="order-items" />
-      <div id="order-total">
-        <div class="line-item demo">
-          <div id="demo">
+          <div class="line-item">
+            <img
+              class="image"
+              :src="productImage"
+              :alt="getSellingProduct.title"
+            >
+            <div class="label">
+              <p class="product">
+                {{ getSellingProduct.title }}
+              </p>
+              <p class="sku">
+                {{ Object.values([getSellingProduct.title,'Package']).join(' ') }}
+              </p>
+            </div>
+            <p class="count">
+              1
+            </p>
+            <p class="price">
+              {{ amount }}
+            </p>
+          </div>
+          <div class="line-item total">
             <p class="label">
-              Demo in test mode
+              Total
             </p>
-            <p class="note">
-              You can copy and paste the following test cards to trigger different scenarios:
-            </p>
-            <table class="note">
-              <tr>
-                <td>Default UK card:</td>
-                <td class="card-number">
-                  4000<span />0082<span />6000<span />0000
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <a
-                    href="https://stripe.com/guides/strong-customer-authentication"
-                    target="_blank"
-                  >Authentication</a> required:
-                </td>
-                <td class="card-number">
-                  4000<span />0027<span />6000<span />3184
-                </td>
-              </tr>
-            </table>
-            <p class="note">
-              See the <a
-                href="https://stripe.com/docs/testing#cards"
-                target="_blank"
-              >docs</a> for a full list of test cards.
-              Non-card payments will redirect to test pages.
+            <p
+              class="price"
+            >
+              {{ amount }}
             </p>
           </div>
         </div>
-        <div class="line-item">
-          <img
-            class="image"
-            :src="productImage"
-            :alt="getSellingProduct.title"
-          >
-          <div class="label">
-            <p class="product">
-              {{ getSellingProduct.title }}
-            </p>
-            <p class="sku">
-              {{ Object.values([getSellingProduct.title,'Package']).join(' ') }}
-            </p>
-          </div>
-          <p class="count">
-            1
-          </p>
-          <p class="price">
-            {{ amount }}
-          </p>
-        </div>
-        <div class="line-item total">
-          <p class="label">
-            Total
-          </p>
-          <p
-            class="price"
-          >
-            {{ amount }}
-          </p>
-        </div>
-      </div>
-    </aside>
+      </aside>
+    </div>
+    <q-inner-loading :showing="downgradeLoading">
+      <q-spinner-grid
+        size="50px"
+        color="primary"
+      />
+    </q-inner-loading>
   </div>
 </template>
+
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import Identicon from 'identicon.js';
@@ -326,6 +338,7 @@ export default {
       receiverInfo: null,
       uiPaymentTypeList,
       style: config.paymentButtonStyle,
+      downgradeLoading: false,
     };
   },
 
@@ -333,6 +346,9 @@ export default {
     ...mapGetters({
       getSellingProduct: 'settings/getSellingProduct',
     }),
+    isFreePlan() {
+      return this.getSellingProduct.price === 0;
+    },
     user() {
       return this.$auth.user(true);
     },
@@ -365,7 +381,11 @@ export default {
     }
   },
   mounted() {
-    this.setUpStripe();
+    if (this.isFreePlan) {
+      this.downgradeToFreePlan();
+    } else {
+      this.setUpStripe();
+    }
   },
 
   methods: {
@@ -374,13 +394,27 @@ export default {
     ]),
 
     tryAgain() {
-      this.mainClassLoading = false;
-      this.mainClassSuccess = false;
-      this.mainClassProcessing = false;
-      this.mainClassReceiver = false;
-      this.mainClassError = false;
-      this.mainClassCheckout = true;
-      this.updateButtonLabel(this.paymentType);
+      if (this.isFreePlan) {
+        this.$router.push('/upgrade');
+      } else {
+        this.mainClassLoading = false;
+        this.mainClassSuccess = false;
+        this.mainClassProcessing = false;
+        this.mainClassReceiver = false;
+        this.mainClassError = false;
+        this.mainClassCheckout = true;
+        this.updateButtonLabel(this.paymentType);
+      }
+    },
+
+    async downgradeToFreePlan() {
+      this.downgradeLoading = true;
+      const response = await this.$paymentServer
+        .subscribeToPackage(null, this.user,
+          null, null, this.getSellingProduct.id);
+
+      this.completePayment(response);
+      this.downgradeLoading = false;
     },
 
     async setUpStripe() {
