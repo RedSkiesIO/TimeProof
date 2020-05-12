@@ -1,9 +1,6 @@
 <template>
   <div>
-    <div
-      v-show="!downgradeLoading"
-      class="payment-page"
-    >
+    <div class="payment-page">
       <main
         id="main"
         :class="{
@@ -161,18 +158,34 @@
         <div id="confirmation">
           <div class="status processing">
             <h1>Completing your order…</h1>
-            <p>
-              We’re just waiting for the confirmation
-              from your bank… This might take a moment but feel free to close this page.
-            </p>
-            <p>We’ll send your receipt via email shortly.</p>
+            <template v-if="!isFreePlan">
+              <p>
+                We’re just waiting for the confirmation
+                from your bank… This might take a moment but feel free to close this page.
+              </p>
+              <p>We’ll send your receipt via email shortly.</p>
+            </template>
+            <template v-else>
+              <p>
+                Processing… This might take a moment but feel free to close this page.
+              </p>
+            </template>
           </div>
           <div class="status success">
             <h1>Thanks for your order!</h1>
-            <p>Woot! You successfully made a payment.</p>
-            <p class="note">
-              {{ confirmationElementNote }}
-            </p>
+            <template v-if="!isFreePlan">
+              <p>
+                Woot! You successfully made a payment.
+              </p>
+              <p class="note">
+                {{ confirmationElementNote }}
+              </p>
+            </template>
+            <template v-else>
+              <p>
+                Woot! You successfully changed your plan
+              </p>
+            </template>
           </div>
           <div class="status receiver">
             <h1>Thanks! One last step!</h1>
@@ -182,15 +195,21 @@
             </div>
           </div>
           <div class="status error">
-            <h1>Oops, payment failed.</h1>
-            <p v-if="!isFreePlan">
-              It looks like your upgrading could not
-              be paid at this time. Please try again or select a different payment option.
-            </p>
-            <p v-else>
-              It looks like your downgrading could not
-              be complated at this time. Please try again.
-            </p>
+            <template v-if="!isFreePlan">
+              <h1>Oops, payment failed.</h1>
+              <p>
+                It looks like your upgrading could not
+                be paid at this time. Please try again or select a different payment option.
+              </p>
+            </template>
+            <template v-else>
+              <h1>Oops, downgrade failed.</h1>
+              <p>
+                It looks like your downgrading could not
+                be completed at this time. Please try again.
+              </p>
+            </template>
+
             <p class="error-message">
               {{ confirmationElementErrorMessage }}
             </p>
@@ -282,12 +301,6 @@
         </div>
       </aside>
     </div>
-    <q-inner-loading :showing="downgradeLoading">
-      <q-spinner-grid
-        size="50px"
-        color="primary"
-      />
-    </q-inner-loading>
   </div>
 </template>
 
@@ -342,7 +355,6 @@ export default {
       receiverInfo: null,
       uiPaymentTypeList,
       style: config.paymentButtonStyle,
-      downgradeLoading: false,
     };
   },
 
@@ -937,13 +949,12 @@ export default {
     },
 
     async downgradeToFreePlan() {
-      this.downgradeLoading = true;
+      this.paymentResultUpdate(false, true, false, false, false, false);
       const response = await this.$paymentServer
         .subscribeToPackage(null, this.user,
           null, null, this.getSellingProduct.id);
 
       this.completePayment(response);
-      this.downgradeLoading = false;
     },
 
   },

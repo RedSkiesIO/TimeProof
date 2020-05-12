@@ -115,7 +115,7 @@ export default {
   createFirstTimeStamp: 'Create Your First Timescribe',
   createFirstTimeStampContent: 'To get started click the button below',
   downgradePlanTitle: 'Downgrade Confirmation',
-  downgradePlanContent: 'Do you confirm downgrading to free plan ?',
+  downgradePlanContent: 'Are you sure you want to downgrade to free plan ?',
   cancel: 'Cancel',
   confirm: 'Confirm',
   certificate: 'Certificate',

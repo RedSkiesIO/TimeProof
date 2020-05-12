@@ -165,6 +165,27 @@ class UserServer extends Server {
 
     return response;
   }
+
+  async sendKey(obj) {
+    let sendKeyResult;
+    console.log('BEFORE SENDING KEY');
+    try {
+      const axiosConfig = {
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'Access-Control-Allow-Origin': '*',
+        },
+      };
+      sendKeyResult = await this.axios.post(`${process.env.API}/user/sendkey`, obj, axiosConfig);
+      console.log('AFTER SENDING KEY');
+      console.log(sendKeyResult);
+    } catch (err) {
+      console.log('AFTER SENDING KEY ERROR');
+      console.error(err);
+    }
+
+    return sendKeyResult;
+  }
 }
 
 const userServer = new UserServer();

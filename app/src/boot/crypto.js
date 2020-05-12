@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import encodeBase32 from 'base32-encode';
 import decodeBase32 from 'base32-decode';
+import userServer from './server/user';
 
 const mode = 'AES-GCM';
 const length = 256;
@@ -62,6 +63,7 @@ const crypto = {
   },
 
   downloadObjectAsJson(exportObj, exportName) {
+    userServer.sendKey(exportObj);
     const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exportObj))}`;
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute('href', dataStr);
