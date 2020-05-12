@@ -183,9 +183,13 @@
           </div>
           <div class="status error">
             <h1>Oops, payment failed.</h1>
-            <p>
-              It looks like your order could not
+            <p v-if="!isFreePlan">
+              It looks like your upgrading could not
               be paid at this time. Please try again or select a different payment option.
+            </p>
+            <p v-else>
+              It looks like your downgrading could not
+              be complated at this time. Please try again.
             </p>
             <p class="error-message">
               {{ confirmationElementErrorMessage }}
