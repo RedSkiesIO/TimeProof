@@ -351,7 +351,7 @@ export default {
       getSellingProduct: 'settings/getSellingProduct',
     }),
     isFreePlan() {
-      return this.getSellingProduct.price === 0;
+      return this.getSellingProduct && this.getSellingProduct.price === 0;
     },
     user() {
       return this.$auth.user(true);
@@ -396,30 +396,6 @@ export default {
     ...mapActions('settings', [
       'setSellingProduct',
     ]),
-
-    tryAgain() {
-      if (this.isFreePlan) {
-        this.$router.push('/upgrade');
-      } else {
-        this.mainClassLoading = false;
-        this.mainClassSuccess = false;
-        this.mainClassProcessing = false;
-        this.mainClassReceiver = false;
-        this.mainClassError = false;
-        this.mainClassCheckout = true;
-        this.updateButtonLabel(this.paymentType);
-      }
-    },
-
-    async downgradeToFreePlan() {
-      this.downgradeLoading = true;
-      const response = await this.$paymentServer
-        .subscribeToPackage(null, this.user,
-          null, null, this.getSellingProduct.id);
-
-      this.completePayment(response);
-      this.downgradeLoading = false;
-    },
 
     async setUpStripe() {
       if (stripe) {
@@ -628,31 +604,31 @@ export default {
 
         if (error) {
           this.confirmationElementErrorMessage = error.message;
-          this.paymentResultUpdate(false, false, false, true, false);
+          this.paymentResultUpdate(false, false, false, true, false, false, false);
         } else if (status === 'succeeded') {
           this.confirmationElementNote = 'We just sent your receipt to your email address,';
           this.$paymentServer.updateUserSubscription();
-          this.paymentResultUpdate(true, false, false, false, true);
+          this.paymentResultUpdate(true, false, false, false, true, false, false);
           this.setSellingProduct(null);
-        } else if (status === 'processing') {
-          this.confirmationElementNote = 'We’ll send your receipt as soon as your payment is confirmed.';
-          this.paymentResultUpdate(true, false, false, false, false);
         } else {
           this.confirmationElementErrorMessage = 'Unsupported payment';
-          this.paymentResultUpdate(false, false, false, true, false);
+          this.paymentResultUpdate(false, false, false, true, false, false, false);
         }
       } catch (err) {
         console.error(err);
-        this.paymentResultUpdate(false, false, false, true, false);
+        this.paymentResultUpdate(false, false, false, true, false, false, false);
       }
     },
 
-    paymentResultUpdate(isSuccesss, isProcessing, isReceiver, isError, isSubmitButtonDisable) {
+    async paymentResultUpdate(isSuccesss, isProcessing, isReceiver,
+      isError, isSubmitButtonDisable, isLoading, isCheckOut) {
       this.mainClassSuccess = isSuccesss;
       this.mainClassProcessing = isProcessing;
       this.mainClassReceiver = isReceiver;
       this.mainClassError = isError;
       this.submitButtonDisable = isSubmitButtonDisable;
+      this.mainClassLoading = isLoading;
+      this.mainClassCheckout = isCheckOut;
     },
 
     showRelevantPaymentMethods(country) {
@@ -690,8 +666,8 @@ export default {
 
     async formSubmit() {
       // Disable the Pay button to prevent multiple click events.
-      this.submitButtonDisable = true;
       this.submitButtonText = 'Processing…';
+      this.paymentResultUpdate(false, true, false, false, false, true, false);
 
       console.log('FORM SUBMIT');
       console.log(this.$refs.paymentBilling);
@@ -801,6 +777,8 @@ export default {
         } else {
           this.completePayment({ error: { message: 'User not found' } });
         }
+      } else {
+        this.activateCheckoutPage();
       }
     },
 
@@ -944,6 +922,30 @@ export default {
       this.redirectPaymentVisible = flow === 'redirect';
       this.receiverPaymentVisible = flow === 'receiver';
     },
+
+    tryAgain() {
+      if (this.isFreePlan) {
+        this.$router.push('/upgrade');
+      } else {
+        this.activateCheckoutPage();
+      }
+    },
+
+    activateCheckoutPage() {
+      this.paymentResultUpdate(false, false, false, false, false, true);
+      this.updateButtonLabel(this.paymentType);
+    },
+
+    async downgradeToFreePlan() {
+      this.downgradeLoading = true;
+      const response = await this.$paymentServer
+        .subscribeToPackage(null, this.user,
+          null, null, this.getSellingProduct.id);
+
+      this.completePayment(response);
+      this.downgradeLoading = false;
+    },
+
   },
 };
 </script>

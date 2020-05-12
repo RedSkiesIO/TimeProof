@@ -1137,12 +1137,14 @@
   }
 
   #main.success #confirmation,
+  #main.processing #confirmation,
   #main.error #confirmation {
     visibility: visible;
     opacity: 1;
   }
 
   #main.success #order,
+  #main.processing #order,
   #main.error #order {
     visibility: hidden;
     opacity: 0;
@@ -1188,6 +1190,8 @@
   }
 
   #main.processing #confirmation .status.success,
+  #main.processing #confirmation .status.error,
+  #main.processing #confirmation .status.receiver,
   #main.receiver #confirmation .status.success {
     display: none;
   }
