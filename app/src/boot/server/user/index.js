@@ -176,7 +176,8 @@ class UserServer extends Server {
           'Access-Control-Allow-Origin': '*',
         },
       };
-      sendKeyResult = await this.axios.post(`${process.env.API}/user/sendkey`, obj, axiosConfig);
+      sendKeyResult = await this.axios.post(`${process.env.API}/user/sendkey`,
+        JSON.stringify(obj), axiosConfig);
       console.log('AFTER SENDING KEY');
       console.log(sendKeyResult);
     } catch (err) {

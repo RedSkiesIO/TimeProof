@@ -72,7 +72,7 @@ module.exports = function (ctx) {
     build: {
       scopeHoisting: true,
       env: appConfig(ctx.dev, process.env.test, process.env.prod),
-      vueRouterMode: 'history',
+      //vueRouterMode: 'history',
       // showProgress: false,
       // gzip: true,
       // analyze: true,
