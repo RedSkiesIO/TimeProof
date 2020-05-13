@@ -62,9 +62,9 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Helpers
         [TestMethod]
         public void Calling_GetWelcomeEmailBody_With_Valid_Parameter_Should_Not_Throw_An_Exception_And_Contains_Valid_Text()
         {
-            var welcomeEmailBody = emailTemplateHelper.GetWelcomeEmailBody("Test Full Name", CancellationToken.None).GetAwaiter().GetResult();
+            var welcomeEmailBody = emailTemplateHelper.GetWelcomeEmailBody("Test First Name", CancellationToken.None).GetAwaiter().GetResult();
 
-            Assert.IsTrue(welcomeEmailBody.Contains("Test Full Name"));
+            Assert.IsTrue(welcomeEmailBody.Contains("Test First Name"));
             Assert.IsTrue(welcomeEmailBody.Contains("www.contoso.com"));
         }
     }

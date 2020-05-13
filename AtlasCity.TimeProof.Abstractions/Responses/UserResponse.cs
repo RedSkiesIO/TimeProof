@@ -31,5 +31,8 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
 
         [JsonProperty(PropertyName = "membershipRenewDate")]
         public DateTime MembershipRenewDate { get; set; }
+
+        [JsonProperty(PropertyName = "renewPricePlanId")]
+        public string RenewPricePlanId { get; set; }
     }
 }

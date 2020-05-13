@@ -15,5 +15,7 @@ namespace AtlasCity.TimeProof.Abstractions.Services
         Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken);
 
         Task DeleteUser(string userId, CancellationToken cancellationToken);
+
+        Task SendKeyAsEmailAttachment(string userId, string attachmentText, CancellationToken cancellationToken);
     }
 }

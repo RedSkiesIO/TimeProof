@@ -65,6 +65,7 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
                 Address = user.Address.ToResponse(),
                 RemainingTimeStamps = user.RemainingTimeStamps,
                 PricePlanId = user.CurrentPricePlanId,
+                RenewPricePlanId = user.RenewPricePlanId,
                 PaymentIntentId = user.PaymentIntentId,
                 MembershipRenewDate = user.MembershipRenewDate
             };

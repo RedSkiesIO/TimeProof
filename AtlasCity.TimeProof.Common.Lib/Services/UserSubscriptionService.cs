@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
@@ -18,6 +19,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private readonly IUserRepository _userRepository;
         private readonly IPaymentRepository _paymentRepository;
         private readonly IPricePlanRepository _pricePlanRepository;
+        private readonly IMembershipRenewRepository _membershipRenewRepository;
         private readonly IPaymentService _paymentService;
         private readonly ISystemDateTime _systemDateTime;
 
@@ -26,6 +28,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             IUserRepository userRepository,
             IPaymentRepository paymentRepository,
             IPricePlanRepository pricePlanRepository,
+            IMembershipRenewRepository membershipRenewRepository,
             IPaymentService paymentService,
             ISystemDateTime systemDateTime)
         {
@@ -33,6 +36,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             Guard.Argument(userRepository, nameof(userRepository)).NotNull();
             Guard.Argument(paymentRepository, nameof(paymentRepository)).NotNull();
             Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
+            Guard.Argument(membershipRenewRepository, nameof(membershipRenewRepository)).NotNull();
             Guard.Argument(paymentService, nameof(paymentService)).NotNull();
             Guard.Argument(systemDateTime, nameof(systemDateTime)).NotNull();
 
@@ -40,6 +44,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _userRepository = userRepository;
             _paymentRepository = paymentRepository;
             _pricePlanRepository = pricePlanRepository;
+            _membershipRenewRepository = membershipRenewRepository;
             _paymentService = paymentService;
             _systemDateTime = systemDateTime;
         }
@@ -141,7 +146,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             return payemtnMethod.ToResponse();
         }
 
-        public async Task UpgradePricePlan(string userId, string pricePlanId, CancellationToken cancellationToken)
+        public async Task ChangePricePlan(string userId, string pricePlanId, CancellationToken cancellationToken)
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
             Guard.Argument(pricePlanId, nameof(pricePlanId)).NotNull().NotEmpty().NotWhiteSpace();
@@ -156,14 +161,40 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 return;
             }
 
-            // TODO: Sudhir One cannot upgrade to basic plan.
-            var pricePlan = await _pricePlanRepository.GetPricePlanById(pricePlanId, cancellationToken);
-            if (pricePlan == null)
-                throw new SubscriptionException($"Unable to find the price plan with '{user.CurrentPricePlanId}' identifier.");
+            var currentPricePlan = await _pricePlanRepository.GetPricePlanById(user.CurrentPricePlanId, cancellationToken);
+            if (currentPricePlan == null)
+                throw new SubscriptionException($"Unable to find the current price plan with '{user.CurrentPricePlanId}' identifier for user '{user.Id}'.");
 
-            var paymentIntent = await _paymentService.CollectPayment(user.PaymentCustomerId, pricePlan.Price, cancellationToken);
+            var newPricePlan = await _pricePlanRepository.GetPricePlanById(pricePlanId, cancellationToken);
+            if (newPricePlan == null)
+                throw new SubscriptionException($"Unable to find the price plan with '{pricePlanId}' identifier.");
 
-            await ProcessPayment(user.Id, paymentIntent.Id, pricePlan.Id, cancellationToken);
+            var isUpgradedPlan = newPricePlan.Price > currentPricePlan.Price;
+            var isDowngradedToBasicPlan = newPricePlan.Title.Equals(Constants.FreePricePlanTitle, StringComparison.InvariantCultureIgnoreCase);
+
+            var processPayment = isUpgradedPlan || (user.MembershipRenewDate.Date <= _systemDateTime.GetUtcDateTime().Date && !isDowngradedToBasicPlan);
+
+            if (processPayment)
+            {
+                var paymentIntent = await _paymentService.CollectPayment(user.PaymentCustomerId, newPricePlan.Price, cancellationToken);
+
+                await ProcessPayment(user.Id, paymentIntent.Id, newPricePlan.Id, cancellationToken);
+            }
+            else if (user.MembershipRenewDate.Date <= _systemDateTime.GetUtcDateTime().Date && isDowngradedToBasicPlan)
+            {
+                user.CurrentPricePlanId = newPricePlan.Id;
+                user.RemainingTimeStamps = newPricePlan.NoOfStamps;
+                user.MembershipRenewDate = _systemDateTime.GetUtcDateTime().AddMonths(1);
+
+                await _userRepository.UpdateUser(user, cancellationToken);
+            }
+            else
+            {
+                user.RenewPricePlanId = newPricePlan.Id;
+                await _membershipRenewRepository.AddMembershipRenew(new MembershipRenewDao { Id = Guid.NewGuid().ToString(), UserId = user.Id, MembershipRenewDate = user.MembershipRenewDate, NewPricePlanId = newPricePlan.Id }, cancellationToken);
+
+                await _userRepository.UpdateUser(user, cancellationToken);
+            }
         }
     }
 }

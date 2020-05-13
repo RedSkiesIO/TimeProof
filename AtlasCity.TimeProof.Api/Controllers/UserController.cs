@@ -95,7 +95,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (string.IsNullOrWhiteSpace(ppid))
                 return BadRequest();
 
-            _userSubscriptionService.UpgradePricePlan(User.GetUserId(), ppid, cancellationToken).GetAwaiter().GetResult();
+            _userSubscriptionService.ChangePricePlan(User.GetUserId(), ppid, cancellationToken).GetAwaiter().GetResult();
             return new OkResult();
         }
 
@@ -105,6 +105,17 @@ namespace AtlasCity.TimeProof.Api.Controllers
         {
             var response = _userSubscriptionService.CreateSetupIntent(User.GetUserId(), cancellationToken).GetAwaiter().GetResult();
             return new SuccessActionResult(response);
+        }
+
+        [Route("user/sendkey")]
+        [HttpPost]
+        public IActionResult SendKey([FromBody] object keyStore, CancellationToken cancellationToken)
+        {
+            if (keyStore == null)
+                return BadRequest();
+
+            _userService.SendKeyAsEmailAttachment(User.GetUserId(), keyStore.ToString(), cancellationToken).GetAwaiter().GetResult();
+            return new OkResult();
         }
     }
 }

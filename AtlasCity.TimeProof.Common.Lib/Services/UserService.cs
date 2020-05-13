@@ -14,6 +14,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 {
     public class UserService : IUserService
     {
+        private const string Key_File_Name = "timescribe-keystore.txt";
         private readonly ILogger _logger;
         private readonly IUserRepository _userRepository;
         private readonly IPricePlanRepository _pricePlanRepository;
@@ -70,7 +71,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             if (!string.IsNullOrWhiteSpace(user.PaymentCustomerId))
             {
-                _logger.Warning($"When creating user with email '{user.Email}', payment user should not exists, but found '{user.PaymentCustomerId}'.");
+                _logger.Warning($"When creating user with '{user.Id}', payment user should not exists, but found '{user.PaymentCustomerId}'.");
                 user.PaymentCustomerId = string.Empty;
             }
 
@@ -94,17 +95,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             var newUser = await _userRepository.CreateUser(user, cancellationToken);
             _logger.Information($"Successfully created user with email '{user.Email}'");
 
-            var emailBody = await _emailTemplateHelper.GetWelcomeEmailBody(user.FullName, cancellationToken);
-            var emailMessage = new EmailDao
-            {
-                ToAddress = user.Email,
-                ToName = user.FullName,
-                FromAddress = Constants.AutomatedEmailFromAddress,
-                Subject = Constants.WelcomeEmailSubject,
-                HtmlBody = emailBody
-            };
-
-            await _emailService.SendEmail(emailMessage, cancellationToken);
             return newUser;
         }
 
@@ -137,6 +127,34 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             {
                 _logger.Error(ex, $"Unable to delete user '{user.Id}'.");
             }
+        }
+
+        public async Task SendKeyAsEmailAttachment(string userId, string attachmentText, CancellationToken cancellationToken)
+        {
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(attachmentText, nameof(attachmentText)).NotNull().NotEmpty().NotWhiteSpace();
+
+            var user = await _userRepository.GetUserById(userId, cancellationToken);
+            if (user == null)
+                throw new UserException($"User does not exists '{userId}'. Cannot send the welcome email with key as attachment");
+
+            var emailBody = await _emailTemplateHelper.GetWelcomeEmailBody(user.FirstName, cancellationToken);
+            var emailMessage = new EmailDao
+            {
+                ToAddress = user.Email,
+                ToName = user.FullName,
+                FromAddress = Constants.AutomatedEmailFromAddress,
+                Subject = Constants.WelcomeEmailSubject,
+                HtmlBody = emailBody,
+            };
+
+            var filePath = await _emailTemplateHelper.CreateFileFromText(attachmentText, Key_File_Name, cancellationToken);
+            _logger.Information($"Created key file '{filePath}' for user '{userId}'");
+
+            await _emailService.SendEmail(emailMessage, filePath, cancellationToken);
+
+            _emailTemplateHelper.DeleteFileDirectory(filePath);
+            _logger.Information($"Deleted key file '{filePath}'");
         }
     }
 }

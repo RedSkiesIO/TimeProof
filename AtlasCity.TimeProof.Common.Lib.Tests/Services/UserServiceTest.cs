@@ -86,37 +86,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Calling_GetUserByEmail_With_Null_Email_Should_Throw_An_Exception()
-        {
-            userService.GetUserByEmail(null, CancellationToken.None).GetAwaiter().GetResult();
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Calling_GetUserByEmail_With_Empty_Email_Should_Throw_An_Exception()
-        {
-            userService.GetUserByEmail(string.Empty, cancellationToken).GetAwaiter().GetResult();
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Calling_GetUserByEmail_With_WhiteSpace_Email_Should_Throw_An_Exception()
-        {
-            userService.GetUserByEmail(" ", cancellationToken).GetAwaiter().GetResult();
-        }
-
-        [TestMethod]
-        public void Calling_GetUserByEmail_With_Valid_Email_Should_Not_Throw_An_Exception()
-        {
-            var email = "test@example.com";
-
-            userService.GetUserByEmail(email, cancellationToken).GetAwaiter().GetResult();
-
-            userRepositoryMock.Verify(s => s.GetUserByEmail(email, cancellationToken), Times.Once);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void Calling_CreateUser_With_Null_User_Should_Throw_An_Exception()
         {
             userService.CreateUser(null, cancellationToken).GetAwaiter().GetResult();
@@ -148,25 +117,40 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
 
         public void Calling_CreateUser_With_Mismatch_User_And_PaymentService_Email_Should_Throw_An_Exception()
         {
+            var userId = Guid.NewGuid().ToString();
             var paymentCustomerId = "testPaymentCustomerId";
             var exception = new PaymentServiceException("Unable to find the customer");
+
+            userRepositoryMock.Setup(s => s.GetUserById(userId, cancellationToken)).Returns(Task.FromResult(new UserDao ()));
 
             paymentServiceMock.Setup(s => s.GetCustomerById(paymentCustomerId, cancellationToken)).Returns(Task.FromResult(new PaymentCustomerDao { Id = paymentCustomerId, Email = "mismatch@example.com" }));
             pricePlanRepositoryMock.Setup(s => s.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken)).Returns(Task.FromResult(new PricePlanDao { Id = "freePricePlanTestId", Title = Constants.FreePricePlanTitle, Price = 0 }));
 
-            userService.CreateUser(new UserDao { Email = "test@example.com", FirstName = "Test First Name", LastName = "Test Last Name", PaymentCustomerId = paymentCustomerId, SetupIntentId = "TestSetupIntentId", Address = new AddressDao() }, cancellationToken).GetAwaiter().GetResult();
+            userService.CreateUser(new UserDao { Id = userId, Email = "test@example.com", FirstName = "Test First Name", LastName = "Test Last Name", PaymentCustomerId = paymentCustomerId, SetupIntentId = "TestSetupIntentId", Address = new AddressDao() }, cancellationToken).GetAwaiter().GetResult();
         }
 
         [TestMethod]
+        [ExpectedException(typeof(PaymentServiceException))]
         public void Calling_CreateUser_With_Existing_PaymentCustomerId_And_PaymentService_Throws_Exception_Should_Be_Catched_And_Logged()
         {
             var paymentCustomerId = "testPaymentCustomerId";
             var exception = new PaymentServiceException("Unable to find the customer");
+            var user = new UserDao
+            {
+                Id = Guid.NewGuid().ToString(),
+                Email = "test@example.com",
+                FirstName = "Test First Name",
+                LastName = "Test Last Name",
+                PaymentCustomerId = paymentCustomerId,
+                SetupIntentId = "TestSetupIntentId",
+                Address = new AddressDao()
+            };
 
-            paymentServiceMock.Setup(s => s.GetCustomerById(paymentCustomerId, cancellationToken)).Throws(exception);
+            userRepositoryMock.Setup(s => s.GetUserById(user.Id, cancellationToken)).Returns(Task.FromResult((UserDao)null));
+            paymentServiceMock.Setup(s => s.CreatePaymentCustomer(It.IsAny<UserDao>(), cancellationToken)).Throws(exception);
             pricePlanRepositoryMock.Setup(s => s.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken)).Returns(Task.FromResult(new PricePlanDao { Id = "freePricePlanTestId", Title = Constants.FreePricePlanTitle, Price = 0 }));
 
-            userService.CreateUser(new UserDao { Email = "test@example.com", FirstName = "Test First Name", LastName = "Test Last Name", PaymentCustomerId = paymentCustomerId, SetupIntentId = "TestSetupIntentId", Address = new AddressDao() }, cancellationToken).GetAwaiter().GetResult();
+            userService.CreateUser(user, cancellationToken).GetAwaiter().GetResult();
 
             loggerMock.Verify(s => s.Warning(exception, exception.Message), Times.Once);
             userRepositoryMock.Verify(s => s.CreateUser(It.Is<UserDao>(t => t.CurrentPricePlanId.Equals("freePricePlanTestId")), cancellationToken), Times.Once);
@@ -176,8 +160,9 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         public void Calling_CreateUser_Happy_Path()
         {
             var paymentCustomerId = "testPaymentCustomerId";
-            var user = new UserDao { Email = "test@example.com", FirstName = "Test First Name", LastName = "Test Last Name", PaymentCustomerId = paymentCustomerId, SetupIntentId = "TestSetupIntentId", Address = new AddressDao() };
+            var user = new UserDao { Id = Guid.NewGuid().ToString(), Email = "test@example.com", FirstName = "Test First Name", LastName = "Test Last Name", PaymentCustomerId = paymentCustomerId, SetupIntentId = "TestSetupIntentId", Address = new AddressDao() };
 
+            userRepositoryMock.Setup(s => s.GetUserById(user.Id, cancellationToken)).Returns(Task.FromResult((UserDao)null));
             paymentServiceMock.Setup(s => s.GetCustomerById(paymentCustomerId, cancellationToken)).Returns(Task.FromResult(new PaymentCustomerDao { Id = paymentCustomerId, Email = "test@example.com" }));
             pricePlanRepositoryMock.Setup(s => s.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken)).Returns(Task.FromResult(new PricePlanDao { Id = "freePricePlanTestId", Title = Constants.FreePricePlanTitle, Price = 0 }));
             emailTemplateHelperMock.Setup(s => s.GetWelcomeEmailBody(user.FullName, cancellationToken)).Returns(Task.FromResult("Test Email Body"));
@@ -186,8 +171,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
 
 
             userRepositoryMock.Verify(s => s.CreateUser(It.Is<UserDao>(t => t.Email.Equals(user.Email) && t.FirstName.Equals(user.FirstName) && t.LastName.Equals(user.LastName) && t.CurrentPricePlanId.Equals("freePricePlanTestId")), cancellationToken), Times.Once);
-            loggerMock.Verify(s => s.Information(It.Is<string>(t => t.Contains(user.Email))), Times.Once);
-            emailServiceMock.Verify(s => s.SendEmail(It.Is<EmailDao>(t => t.ToAddress.Equals(user.Email) && t.ToName.Equals(user.FullName) && t.FromAddress.Equals(Constants.AutomatedEmailFromAddress) && t.Subject.Equals(Constants.WelcomeEmailSubject) && t.HtmlBody.Equals("Test Email Body")), cancellationToken), Times.Once);
+            loggerMock.Verify(s => s.Information(It.Is<string>(t => t.Contains(user.Email))), Times.AtLeastOnce);
         }
 
         [TestMethod]

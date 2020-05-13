@@ -29,4 +29,8 @@
     <ProjectReference Include="..\AtlasCity.TimeProof.Abstractions\AtlasCity.TimeProof.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repor\" />
+  </ItemGroup>
+
 </Project>
