@@ -15,5 +15,7 @@ namespace AtlasCity.TimeProof.Abstractions.Services
         Task<PaymentMethodResponse> GetCustomerPaymentMethod(string userId, CancellationToken cancellationToken);
 
         Task ChangePricePlan(string userId, string pricePlanId, CancellationToken cancellationToken);
+
+        Task CancelPendingPricePlan(string userId, string pendingPricePlanId, CancellationToken cancellationToken);
     }
 }

@@ -33,27 +33,27 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
                 Price = 0,
                 NoOfStamps = 10,
                 GasPrice = 3,
-                ConfirmationDescription = "Up to 1 hour confirmation time"
+                PaymentFrquencyDescription = "Per month"
             };
 
             var standardPricePlan = new PricePlanDao
             {
                 Title = "Standard",
-                Description = "Standard pack with few number of time stamps",
+                Description = "Faster confirmation",
                 Price = 499,
                 NoOfStamps = 40,
                 GasPrice = 3,
-                ConfirmationDescription = "Less than minutes confirmation time"
+                PaymentFrquencyDescription = "Per month, billed monthly"
             };
 
             var premiumPricePlan = new PricePlanDao
             {
                 Title = "Premium",
-                Description = "Premium packs",
+                Description = "Faster confirmation",
                 Price = 2499,
                 NoOfStamps = 250,
                 GasPrice = 3,
-                ConfirmationDescription = "Less than minutes confirmation time"
+                PaymentFrquencyDescription = "Per month, billed monthly"
             };
 
             AddPricePlanIfNotExists(basicPricePlan);
@@ -72,21 +72,21 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
             Assert.AreEqual(basicPricePlan.Description, actualBasicPricePlan.Description, true);
             Assert.AreEqual(basicPricePlan.Price, actualBasicPricePlan.Price);
             Assert.AreEqual(basicPricePlan.NoOfStamps, actualBasicPricePlan.NoOfStamps);
-            Assert.AreEqual(basicPricePlan.ConfirmationDescription, basicPricePlan.ConfirmationDescription);
+            Assert.AreEqual(basicPricePlan.PaymentFrquencyDescription, basicPricePlan.PaymentFrquencyDescription);
 
             var actualStandardPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(standardPricePlan.Title, StringComparison.InvariantCultureIgnoreCase));
             Assert.IsNotNull(actualStandardPricePlan);
             Assert.AreEqual(standardPricePlan.Description, actualStandardPricePlan.Description, true);
             Assert.AreEqual(standardPricePlan.Price, actualStandardPricePlan.Price);
             Assert.AreEqual(standardPricePlan.NoOfStamps, actualStandardPricePlan.NoOfStamps);
-            Assert.AreEqual(standardPricePlan.ConfirmationDescription, standardPricePlan.ConfirmationDescription);
+            Assert.AreEqual(standardPricePlan.PaymentFrquencyDescription, standardPricePlan.PaymentFrquencyDescription);
 
             var actualPremiumPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(premiumPricePlan.Title, StringComparison.InvariantCultureIgnoreCase));
             Assert.IsNotNull(actualPremiumPricePlan);
             Assert.AreEqual(premiumPricePlan.Description, actualPremiumPricePlan.Description, true);
             Assert.AreEqual(premiumPricePlan.Price, actualPremiumPricePlan.Price);
             Assert.AreEqual(premiumPricePlan.NoOfStamps, actualPremiumPricePlan.NoOfStamps);
-            Assert.AreEqual(premiumPricePlan.ConfirmationDescription, actualPremiumPricePlan.ConfirmationDescription);
+            Assert.AreEqual(premiumPricePlan.PaymentFrquencyDescription, actualPremiumPricePlan.PaymentFrquencyDescription);
         }
 
         private void AddPricePlanIfNotExists(PricePlanDao pricePlan)

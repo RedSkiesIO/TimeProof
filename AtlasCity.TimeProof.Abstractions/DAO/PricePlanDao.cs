@@ -19,7 +19,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         [JsonProperty(PropertyName = "gasPrice")]
         public int GasPrice { get; set; }
 
-        [JsonProperty(PropertyName = "confirmDesc")]
-        public string ConfirmationDescription { get; set; }
+        [JsonProperty(PropertyName = "freqDesc")]
+        public string PaymentFrquencyDescription { get; set; }
     }
 }

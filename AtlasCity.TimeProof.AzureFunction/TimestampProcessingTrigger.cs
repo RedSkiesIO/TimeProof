@@ -36,9 +36,10 @@ namespace AtlasCity.TimeProof.AzureFunction
             _netheriumWeb3 = netheriumWeb3;
         }
 
-        [FunctionName("TimestampProcessingFunction")]
+        //[FunctionName("TimestampProcessingFunction")]
         public async Task Run([TimerTrigger("0 */1 * * * *", RunOnStartup = true)]TimerInfo myTimer)
         {
+            return;
             var cancellationToken = new CancellationToken();
             var pendingTimestamps = await _timestampQueueService.GetTimestampMessage(5, new TimeSpan(0, 1, 0), cancellationToken);
             if (!pendingTimestamps.Any())

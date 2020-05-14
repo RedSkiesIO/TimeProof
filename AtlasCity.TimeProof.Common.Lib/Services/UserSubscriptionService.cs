@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions;
@@ -8,6 +9,7 @@ using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Responses;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Serilog;
 
@@ -19,7 +21,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private readonly IUserRepository _userRepository;
         private readonly IPaymentRepository _paymentRepository;
         private readonly IPricePlanRepository _pricePlanRepository;
-        private readonly IMembershipRenewRepository _membershipRenewRepository;
+        private readonly IPendingMembershipChangeRepository _pendingMembershipChangeRepository;
         private readonly IPaymentService _paymentService;
         private readonly ISystemDateTime _systemDateTime;
 
@@ -28,7 +30,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             IUserRepository userRepository,
             IPaymentRepository paymentRepository,
             IPricePlanRepository pricePlanRepository,
-            IMembershipRenewRepository membershipRenewRepository,
+            IPendingMembershipChangeRepository pendingMembershipChangeRepository,
             IPaymentService paymentService,
             ISystemDateTime systemDateTime)
         {
@@ -36,7 +38,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             Guard.Argument(userRepository, nameof(userRepository)).NotNull();
             Guard.Argument(paymentRepository, nameof(paymentRepository)).NotNull();
             Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
-            Guard.Argument(membershipRenewRepository, nameof(membershipRenewRepository)).NotNull();
+            Guard.Argument(pendingMembershipChangeRepository, nameof(pendingMembershipChangeRepository)).NotNull();
             Guard.Argument(paymentService, nameof(paymentService)).NotNull();
             Guard.Argument(systemDateTime, nameof(systemDateTime)).NotNull();
 
@@ -44,7 +46,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _userRepository = userRepository;
             _paymentRepository = paymentRepository;
             _pricePlanRepository = pricePlanRepository;
-            _membershipRenewRepository = membershipRenewRepository;
+            _pendingMembershipChangeRepository = pendingMembershipChangeRepository;
             _paymentService = paymentService;
             _systemDateTime = systemDateTime;
         }
@@ -109,9 +111,9 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             await _paymentRepository.CreatePaymentReceived(paymentDao, cancellationToken);
 
             user.CurrentPricePlanId = pricePlan.Id;
+            user.PendingPricePlanId = null;
             user.RemainingTimeStamps = pricePlan.NoOfStamps;
             user.PaymentIntentId = paymentIntentId;
-
             user.MembershipRenewDate = _systemDateTime.GetUtcDateTime().AddMonths(1);
 
             await _userRepository.UpdateUser(user, cancellationToken);
@@ -161,6 +163,12 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 return;
             }
 
+            var pendingPricePlan = await _pendingMembershipChangeRepository.GetByUser(user.Id, cancellationToken);
+            if (pendingPricePlan != null && pendingPricePlan.NewPricePlanId.Equals(pricePlanId, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SubscriptionException($"Requested Price plan is in pending state. Please wait for the membership renew date.");
+            }
+
             var currentPricePlan = await _pricePlanRepository.GetPricePlanById(user.CurrentPricePlanId, cancellationToken);
             if (currentPricePlan == null)
                 throw new SubscriptionException($"Unable to find the current price plan with '{user.CurrentPricePlanId}' identifier for user '{user.Id}'.");
@@ -179,22 +187,51 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 var paymentIntent = await _paymentService.CollectPayment(user.PaymentCustomerId, newPricePlan.Price, cancellationToken);
 
                 await ProcessPayment(user.Id, paymentIntent.Id, newPricePlan.Id, cancellationToken);
+
+                await _pendingMembershipChangeRepository.DeleteByUser(user.Id, cancellationToken);
             }
             else if (user.MembershipRenewDate.Date <= _systemDateTime.GetUtcDateTime().Date && isDowngradedToBasicPlan)
             {
                 user.CurrentPricePlanId = newPricePlan.Id;
+                user.PendingPricePlanId = null;
                 user.RemainingTimeStamps = newPricePlan.NoOfStamps;
-                user.MembershipRenewDate = _systemDateTime.GetUtcDateTime().AddMonths(1);
+                user.MembershipRenewDate = user.MembershipRenewDate.AddMonths(1);
 
                 await _userRepository.UpdateUser(user, cancellationToken);
             }
             else
             {
-                user.RenewPricePlanId = newPricePlan.Id;
-                await _membershipRenewRepository.AddMembershipRenew(new MembershipRenewDao { Id = Guid.NewGuid().ToString(), UserId = user.Id, MembershipRenewDate = user.MembershipRenewDate, NewPricePlanId = newPricePlan.Id }, cancellationToken);
+                user.PendingPricePlanId = newPricePlan.Id;
+                await _pendingMembershipChangeRepository.Add(new PendingMembershipChangeDao { Id = Guid.NewGuid().ToString(), UserId = user.Id, RenewEpoch = user.MembershipRenewDate.Date.ToEpoch(), NewPricePlanId = newPricePlan.Id }, cancellationToken);
 
                 await _userRepository.UpdateUser(user, cancellationToken);
             }
+        }
+        public async Task CancelPendingPricePlan(string userId, string pendingPricePlanId, CancellationToken cancellationToken)
+        {
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
+
+            var user = await _userRepository.GetUserById(userId, cancellationToken);
+            if (user == null)
+                throw new SubscriptionException("User does not exists.");
+
+            var pendingPricePlan = await _pendingMembershipChangeRepository.GetByUser(userId, cancellationToken);
+            if (pendingPricePlan == null)
+            {
+                _logger.Warning($"User '{userId}' do not have pending price plan.");
+                throw new SubscriptionException($"User '{userId}' do not have pending price plan.");
+            }
+
+            if (!pendingPricePlan.NewPricePlanId.Equals(pendingPricePlanId, StringComparison.InvariantCultureIgnoreCase))
+            {
+                _logger.Warning($"Pending price plan for the User '{userId}' does not match. Expected: '{pendingPricePlan.NewPricePlanId}' & Actual: '{pendingPricePlanId}'");
+                throw new SubscriptionException($"Pending price plan does not match");
+            }
+
+            user.PendingPricePlanId = null;
+            await _userRepository.UpdateUser(user, cancellationToken);
+
+            await _pendingMembershipChangeRepository.Delete(pendingPricePlan.Id, cancellationToken);
         }
     }
 }

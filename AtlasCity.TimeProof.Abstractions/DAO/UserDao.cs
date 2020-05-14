@@ -29,12 +29,13 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         [JsonProperty(PropertyName = "pricePlanId")]
         public string CurrentPricePlanId { get; set; }
 
-        [JsonProperty(PropertyName = "renewPricePlanId")]
-        public string RenewPricePlanId { get; set; }
+        [JsonProperty(PropertyName = "pendingPricePlanId")]
+        public string PendingPricePlanId { get; set; }
 
         [JsonProperty(PropertyName = "paymentIntentId")]
         public string PaymentIntentId { get; set; }
 
+        [JsonIgnore]
         public string FullName
         {
             get
@@ -46,5 +47,8 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         public DateTime MembershipStartDate { get; set; }
 
         public DateTime MembershipRenewDate { get; set; }
+
+        [JsonProperty(PropertyName = "keyEmailDate")]
+        public DateTime KeyEmailSentDate { get; set; }
     }
 }

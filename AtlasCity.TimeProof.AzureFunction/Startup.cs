@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts.Managed;
 using Serilog;
+using Stripe;
 
 [assembly: FunctionsStartup(typeof(AtlasCity.TimeProof.AzureFunction.Startup))]
 namespace AtlasCity.TimeProof.AzureFunction
@@ -41,9 +42,25 @@ namespace AtlasCity.TimeProof.AzureFunction
             var storageAccountConnectionString = configuration.GetConnectionString("StorageAccount");
             builder.Services.AddSingleton<ITimestampQueueService>(new TimestampQueueService(storageAccountConnectionString, Log.Logger));
 
+            
             var endpointUrl = configuration.GetSection("TransationCosmosDbEndpointUrl").Value;
             var authorizationKey = configuration.GetSection("TransationCosmosDbAuthorizationKey").Value;
+            
             builder.Services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
+            builder.Services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
+            builder.Services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));
+            builder.Services.AddSingleton<IPaymentRepository>(new PaymentRepository(endpointUrl, authorizationKey));
+            builder.Services.AddSingleton<IPendingMembershipChangeRepository>(new PendingMembershipChangeRepository(endpointUrl, authorizationKey));
+
+            var paymentApiKey = configuration.GetSection("PaymentApiKey").Value;
+            var stripeClient = new StripeClient(paymentApiKey);
+            builder.Services.AddSingleton(new PaymentIntentService(stripeClient));
+            builder.Services.AddSingleton(new CustomerService(stripeClient));
+            builder.Services.AddSingleton(new PaymentMethodService(stripeClient));
+            builder.Services.AddSingleton(new SetupIntentService(stripeClient));
+
+            builder.Services.AddSingleton<IPaymentService, StripePaymentService>();
+            builder.Services.AddSingleton<IUserSubscriptionService, UserSubscriptionService>();
         }
     }
 }

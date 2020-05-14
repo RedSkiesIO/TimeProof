@@ -3,6 +3,7 @@ using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
 using AtlasCity.TimeProof.Api.Extensions;
+using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using Dawn;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -90,13 +91,20 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
         [Route("user/upgrade/{ppid}")]
         [HttpPut]
-        public IActionResult UpgradePricePlan([FromRoute] string ppid, CancellationToken cancellationToken)
+        public IActionResult ChanePricePlan([FromRoute] string ppid, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(ppid))
                 return BadRequest();
 
-            _userSubscriptionService.ChangePricePlan(User.GetUserId(), ppid, cancellationToken).GetAwaiter().GetResult();
-            return new OkResult();
+            try
+            {
+                _userSubscriptionService.ChangePricePlan(User.GetUserId(), ppid, cancellationToken).GetAwaiter().GetResult();
+                return new OkResult();
+            }
+            catch(SubscriptionException ex)
+            {
+                return new ConflictActionResult(ex.Message);
+            }
         }
 
         [Route("user/setupintent")]
@@ -114,8 +122,32 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (keyStore == null)
                 return BadRequest();
 
+            try { 
             _userService.SendKeyAsEmailAttachment(User.GetUserId(), keyStore.ToString(), cancellationToken).GetAwaiter().GetResult();
             return new OkResult();
+            }
+            catch (UserException ex)
+            {
+                return new ConflictActionResult(ex.Message);
+            }
+        }
+
+        [Route("ppid/cancel/{ppid}")]
+        [HttpPut]
+        public IActionResult CancelChangePricePlan([FromRoute] string ppid, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(ppid))
+                return BadRequest();
+
+            try
+            {
+                _userSubscriptionService.CancelPendingPricePlan(User.GetUserId(), ppid, cancellationToken).GetAwaiter().GetResult();
+                return new OkResult();
+            }
+            catch (SubscriptionException ex)
+            {
+                return new ConflictActionResult(ex.Message);
+            }
         }
     }
 }
