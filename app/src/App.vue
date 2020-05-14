@@ -71,6 +71,7 @@ export default {
                 paymentIntentId: verifyResult.paymentIntentId,
                 membershipRenewDate: verifyResult.membershipRenewDate,
                 remainingTimeStamps: verifyResult.remainingTimeStamps,
+                pendingPricePlanId: verifyResult.pendingPricePlanId,
               },
             });
 

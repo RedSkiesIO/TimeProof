@@ -13,9 +13,6 @@ export default {
   },
   setSellingProduct: ({ commit }, product) => {
     commit(SET_SELLING_PRODUCT, product);
-    // this.$router.push({ name: 'payment', params: { price: 25.6 } });
-    // this.$router.push({ path: `/payment/${price}` });
-    // router.push('/payment');
   },
   setProducts: ({ commit }, products) => {
     commit(SET_PRODUCTS, products);

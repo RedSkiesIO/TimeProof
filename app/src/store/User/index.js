@@ -29,6 +29,7 @@ export default class User extends Model {
       userId: this.attr(''),
       clientSecret: this.attr(''),
       paymentIntentId: this.attr(''),
+      pendingPricePlanId: this.attr(''),
     };
   }
 

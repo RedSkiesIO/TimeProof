@@ -39,98 +39,67 @@ class PdfUtil {
     console.log(width, height);
 
     // Draw a string of text diagonally across the first page
-
     if (proof.file) {
-      try {
-        proof.file = proof.file.replace(/\n/g, '');
+      const fullLeng = pixelWidth(proof.file, { font: 'helvetica', size: 12 });
+
+      let y = 505;
+      if (fullLeng <= 358) {
+        y -= 10;
+      }
+      this.drawTextAccordingToPixels(proof.file, firstPage, helveticaFont, 175, y);
+    }
+
+    this.drawTextAccordingToPixels(proof.timestamp, firstPage, helveticaFont, 175, 434.75);
+
+    this.drawTextAccordingToPixels(proof.proofId.one + proof.proofId.two,
+      firstPage, helveticaFont, 175, 560);
+
+    this.drawTextAccordingToPixels(proof.user, firstPage, helveticaFont, 175, 374);
+
+    this.drawTextAccordingToPixels(proof.signature.one + proof.signature.two,
+      firstPage, helveticaFont, 175, 261.25);
+
+    this.drawTextAccordingToPixels(proof.hash.one + proof.hash.two,
+      firstPage, helveticaFont, 175, 321.25);
+
+    const output = await doc.save(); // Save the doc already replacement
+    this.saveDataToFile(output, name, 'application/pdf');
+  }
+
+  drawTextAccordingToPixels = async (data, firstPage, helveticaFont, x, y) => {
+    try {
+      if (data) {
+        data = data.replace(/\n/g, '');
+
         let str = '';
         let index = 0;
-        for (let i = 0; i < proof.file.length; i += 1) {
-          str += proof.file[i];
-          const leng = pixelWidth(str, { font: 'helvetica', size: 10 });
+        for (let i = 0; i < data.length; i += 1) {
+          str += data[i];
+          const leng = pixelWidth(str, { font: 'helvetica', size: 12 });
           if (leng > 358) {
             firstPage.drawText(str, {
-              x: 178.75,
-              y: 505 - index * 10,
-              size: 10,
+              x,
+              y: y - index * 15,
+              size: 12,
               font: helveticaFont,
               color: rgb(0, 0, 0),
             });
             str = '';
             index += 1;
-          } else if (i === proof.file.length - 1) {
+          } else if (i === data.length - 1) {
             firstPage.drawText(str, {
-              x: 178.75,
-              y: 505 - index * 10,
-              size: 10,
+              x,
+              y: y - index * 15,
+              size: 12,
               font: helveticaFont,
               color: rgb(0, 0, 0),
             });
           }
         }
-      } catch (err) {
-        console.log(err);
       }
+    } catch (err) {
+      console.log(err);
     }
-
-    firstPage.drawText(proof.timestamp, {
-      x: 178.75,
-      y: 434.75,
-      size: 14,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.proofId.one + proof.proofId.two, {
-      x: 178.75,
-      y: 554.75,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.user, {
-      x: 178.75,
-      y: 374,
-      size: 14,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.signature.one, {
-      x: 178.75,
-      y: 261.25,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.signature.two, {
-      x: 178.75,
-      y: 252.25,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.hash.one, {
-      x: 178.75,
-      y: 321.25,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.hash.two, {
-      x: 178.75,
-      y: 311.25,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    const output = await doc.save(); // Save the doc already replacement
-    this.saveDataToFile(output, name, 'application/pdf');
   }
 }
 

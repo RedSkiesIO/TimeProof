@@ -32,56 +32,59 @@ class UserServer extends Server {
 
   async verifyUserDetails() {
     // TO DO change user address
-    const user = this.getUser();
-    const account = this.getAccount();
+    try {
+      const user = this.getUser();
+      const account = this.getAccount();
 
-    if (account) {
-      let result = await this.axios.get(`${process.env.API}/user`);
+      if (account) {
+        let result = await this.axios.get(`${process.env.API}/user`);
+        console.log('vvvvvvvvvvvv');
+        console.log(result);
+        if (!result || !result.data) {
+          let address;
+          let data;
+          if (user) {
+            if (user.address) {
+              address = {
+                line1: user.address.line1,
+                line2: user.address.line2,
+                city: user.address.city,
+                state: user.address.state,
+                postcode: user.address.postcode,
+                country: user.address.country,
+              };
+            }
 
-      if (!result || !result.data) {
-        console.log('DATATATTATATTATATA');
-
-        let address;
-        let data;
-        if (user) {
-          if (user.address) {
-            address = {
-              line1: user.address.line1,
-              line2: user.address.line2,
-              city: user.address.city,
-              state: user.address.state,
-              postcode: user.address.postcode,
-              country: user.address.country,
+            data = {
+              email: user.email,
+              firstName: user.givenName,
+              lastName: user.familyName,
+              address,
+            };
+          } else {
+            data = {
+              email: account.idToken.emails[0],
+              firstName: account.idToken.given_name,
+              lastName: account.idToken.family_name,
             };
           }
-
-          data = {
-            email: user.email,
-            firstName: user.givenName,
-            lastName: user.familyName,
-            address,
-          };
+          console.log(data);
+          result = await this.axios.post(`${process.env.API}/user`, data);
+          console.log('New User created on Timeproof API');
+          console.log(result);
         } else {
-          data = {
-            email: account.idToken.emails[0],
-            firstName: account.idToken.given_name,
-            lastName: account.idToken.family_name,
-          };
+          console.log('User is already exist in timeproof api');
+          console.log(result.data);
         }
-        console.log(data);
-        result = await this.axios.post(`${process.env.API}/user`, data);
-        console.log('New User created on Timeproof API');
-        console.log(result);
-      } else {
-        console.log('User is already exist in timeproof api');
-        console.log(result.data);
-      }
 
-      if (!result || !result.data) {
-        throw new Error('user data not found');
-      }
+        if (!result || !result.data) {
+          throw new Error('user data not found');
+        }
 
-      return result.data;
+        return result.data;
+      }
+    } catch (err) {
+      console.log('OPOPOOOOOOOOOOOOO:', err);
     }
     return Promise.resolve();
   }
@@ -186,6 +189,26 @@ class UserServer extends Server {
     }
 
     return sendKeyResult;
+  }
+
+  async cancelFuturePlan() {
+    console.log('BEFORE CANCELLING FUTURE PLAN');
+    try {
+      const { status, error } = await
+      this.axios.put(`${process.env.API}/ppid/cancel/${this.getUser().pendingPricePlanId}`);
+      if (status === 200 && !error) {
+        User.update({
+          data: {
+            accountIdentifier: this.getUser().accountIdentifier,
+            pendingPricePlanId: '',
+          },
+        });
+      }
+      console.log('AFTER CANCELLING FUTURE PLAN');
+    } catch (err) {
+      console.log('AFTER CANCELLING FUTURE PLAN ERROR');
+      console.error(err);
+    }
   }
 }
 

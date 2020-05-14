@@ -38,20 +38,6 @@
           />
 
           <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
-            <!-- <div class="column">
-              <div>{{ $t('subscription') }}:</div>
-              <div class="text-green">
-                {{ $t(user.tier) }} {{ $t('tier') }}
-              </div>
-            </div>
-            <div
-              class="column"
-            >
-              <div>{{ $t('Allowance') }}:</div>
-              <div class="text-green">
-                {{ tiers[user.tier] }} timestamps p/m
-              </div>
-            </div> -->
             <div
               class="text-brown row text-h4 text-weight-bold q-mb-md"
             >

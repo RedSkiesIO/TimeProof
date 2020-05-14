@@ -8,17 +8,6 @@
       <div
         class="q-gutter-x-lg q-mb-md"
       >
-        <!-- <div class="col-auto">
-          <div class="row text-h6">
-            <q-icon
-              class="icon-spacing q-mr-sm text-weight-bold"
-              name="account_circle"
-              size="1.25rem"
-            />
-            Your Account
-          </div>
-          <Account />
-        </div> -->
         <div class="col-auto">
           <div class="row text-h6 text-weight-bold">
             <q-icon
@@ -65,7 +54,6 @@
 
 <script>
 import Timestamps from '../components/Timestamps';
-// import Account from '../components/AccountBox';
 import Usage from '../components/Usage';
 import User from '../store/User';
 import CreateFirstTimestampPopup from '../components/CreateFirstTimestampPopup';
@@ -74,7 +62,6 @@ export default {
   name: 'Dashboard',
   components: {
     Timestamps,
-    // Account,
     Usage,
     CreateFirstTimestampPopup,
   },
@@ -110,13 +97,7 @@ export default {
 .verify .q-card {
   padding: 0;
 }
-
 .icon-spacing {
   margin-top: 4px;
 }
-
-.dash-top-box {
-  height: 220px;
-}
-
 </style>
