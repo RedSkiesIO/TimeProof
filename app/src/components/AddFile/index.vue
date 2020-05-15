@@ -16,19 +16,30 @@
 
             class="q-my-xl q-pa-xl flex flex-center column text-center"
           >
-            <img
-              src="~assets/add-file.svg"
-              style="height: 12vw"
-            >
+            <template v-if="mode === 'sign'">
+              <img
+                src="~assets/stamp-image.svg"
+                style="height: 12vw"
+              >
 
-            <span
-              v-if="mode==='sign'"
-              class="q-pt-sm text-h6 text-weight-bold text-grey-6"
-            >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
-            <span
-              v-else
-              class="q-pt-sm text-h6 text-weight-bold text-grey-6"
-            >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+              <span
+                class="q-pt-md text-h6 text-weight-bold text-grey-6"
+              >
+                {{ $t('dragDrop') }} {{ $t('sign') }}
+              </span>
+            </template>
+
+            <template v-else>
+              <img
+                src="~assets/verify-image.svg"
+                style="height: 12vw"
+              >
+              <span
+                class="q-pt-md text-h6 text-weight-bold text-grey-6"
+              >
+                {{ $t('dragDrop') }} {{ $t('verify') }}
+              </span>
+            </template>
 
             <span class="text-body1 text-grey-7">
               {{ $t('or') }} <span

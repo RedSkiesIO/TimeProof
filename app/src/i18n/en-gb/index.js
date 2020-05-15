@@ -12,7 +12,7 @@ export default {
   size: 'Size',
   differentFile: 'choose a different file',
   anotherFile: 'choose another file',
-  sign: 'Stamp Now',
+  sign: 'stamp',
   file: 'File',
   signedBy: 'Signed by',
   id: 'id',

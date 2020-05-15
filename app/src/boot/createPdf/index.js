@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import Vue from 'vue';
 import {
-  PDFDocument, rgb, StandardFonts,
+  PDFDocument, rgb,
 } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 import pixelWidth from 'string-pixel-width';
 
 class PdfUtil {
@@ -26,75 +27,103 @@ class PdfUtil {
   };
 
   create = async (name, proof) => {
-    console.log(proof);
-    const response = await fetch('../../statics/CertificateTemplate.pdf');
-    const file = await response.arrayBuffer();
-    const doc = await PDFDocument.load(file);
-    const helveticaFont = await doc.embedFont(StandardFonts.Helvetica);
-    const pages = doc.getPages();
-    const firstPage = pages[0];
+    try {
+      const response = await fetch('../../statics/CertificateTemplate.pdf');
+      const file = await response.arrayBuffer();
+      const doc = await PDFDocument.load(file);
+      doc.registerFontkit(fontkit);
+      const fontResponse = await fetch('../../statics/Montserrat-Regular.ttf');
+      const montserratFont = await doc.embedFont(await fontResponse.arrayBuffer());
+      const pages = doc.getPages();
+      const firstPage = pages[0];
 
-    // Get the width and height of the first page
-    const { width, height } = firstPage.getSize();
-    console.log(width, height);
+      // Get the width and height of the first page
+      const { width, height } = firstPage.getSize();
+      console.log(width, height);
 
-    // Draw a string of text diagonally across the first page
-    if (proof.file) {
-      const fullLeng = pixelWidth(proof.file, { font: 'helvetica', size: 12 });
+      // Draw a string of text diagonally across the first page
+      if (proof.file) {
+        const lengWidth = pixelWidth(proof.file, { font: 'Verdana', size: 12 });
 
-      let y = 505;
-      if (fullLeng <= 358) {
-        y -= 10;
+        if (lengWidth) {
+          let y = 505;
+          if (lengWidth <= 358) {
+            y -= 10;
+          }
+
+          this.drawTextAccordingToPixels(proof.file, firstPage, montserratFont, 175, y);
+        } else {
+          firstPage.drawText(proof.file, {
+            x: 175,
+            y: 500,
+            size: 12,
+            font: montserratFont,
+            color: rgb(0, 0, 0),
+          });
+        }
       }
-      this.drawTextAccordingToPixels(proof.file, firstPage, helveticaFont, 175, y);
+
+      this.drawTextAccordingToPixels(proof.timestamp, firstPage, montserratFont, 175, 434.75);
+
+      this.drawTextAccordingToPixels(proof.proofId.one + proof.proofId.two,
+        firstPage, montserratFont, 175, 560);
+
+      this.drawTextAccordingToPixels(proof.user, firstPage, montserratFont, 175, 374);
+
+      this.drawTextAccordingToPixels(proof.signature.one + proof.signature.two,
+        firstPage, montserratFont, 175, 261.25);
+
+      this.drawTextAccordingToPixels(proof.hash.one + proof.hash.two,
+        firstPage, montserratFont, 175, 321.25);
+
+      const output = await doc.save(); // Save the doc already replacement
+      this.saveDataToFile(output, name, 'application/pdf');
+    } catch (err) {
+      console.log(err);
     }
-
-    this.drawTextAccordingToPixels(proof.timestamp, firstPage, helveticaFont, 175, 434.75);
-
-    this.drawTextAccordingToPixels(proof.proofId.one + proof.proofId.two,
-      firstPage, helveticaFont, 175, 560);
-
-    this.drawTextAccordingToPixels(proof.user, firstPage, helveticaFont, 175, 374);
-
-    this.drawTextAccordingToPixels(proof.signature.one + proof.signature.two,
-      firstPage, helveticaFont, 175, 261.25);
-
-    this.drawTextAccordingToPixels(proof.hash.one + proof.hash.two,
-      firstPage, helveticaFont, 175, 321.25);
-
-    const output = await doc.save(); // Save the doc already replacement
-    this.saveDataToFile(output, name, 'application/pdf');
   }
 
-  drawTextAccordingToPixels = async (data, firstPage, helveticaFont, x, y) => {
+  drawTextAccordingToPixels = async (data, firstPage, montserratFont, x, y) => {
     try {
       if (data) {
         data = data.replace(/\n/g, '');
 
         let str = '';
         let index = 0;
-        for (let i = 0; i < data.length; i += 1) {
-          str += data[i];
-          const leng = pixelWidth(str, { font: 'helvetica', size: 12 });
-          if (leng > 358) {
-            firstPage.drawText(str, {
-              x,
-              y: y - index * 15,
-              size: 12,
-              font: helveticaFont,
-              color: rgb(0, 0, 0),
-            });
-            str = '';
-            index += 1;
-          } else if (i === data.length - 1) {
-            firstPage.drawText(str, {
-              x,
-              y: y - index * 15,
-              size: 12,
-              font: helveticaFont,
-              color: rgb(0, 0, 0),
-            });
+
+        let width = pixelWidth(data, { font: 'Verdana', size: 12 });
+        if (width) {
+          for (let i = 0; i < data.length; i += 1) {
+            str += data[i];
+            width = pixelWidth(str, { font: 'Verdana', size: 12 });
+            if (width > 358) {
+              firstPage.drawText(str, {
+                x,
+                y: y - index * 15,
+                size: 12,
+                font: montserratFont,
+                color: rgb(0, 0, 0),
+              });
+              str = '';
+              index += 1;
+            } else if (i === data.length - 1) {
+              firstPage.drawText(str, {
+                x,
+                y: y - index * 15,
+                size: 12,
+                font: montserratFont,
+                color: rgb(0, 0, 0),
+              });
+            }
           }
+        } else {
+          firstPage.drawText(data, {
+            x,
+            y,
+            size: 12,
+            font: montserratFont,
+            color: rgb(0, 0, 0),
+          });
         }
       }
     } catch (err) {

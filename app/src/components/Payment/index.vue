@@ -444,7 +444,7 @@ export default {
       if (this.user.paymentIntentId) { // upgrade the package
         this.submitButtonDisable = false;
       } else {
-        this.card = this.elements.create('card', { style: this.style });
+        this.card = this.elements.create('card', { style: this.style, iconStyle: 'solid' });
 
         // Mount the Card Element on the page.
         this.card.mount('#card-element');
