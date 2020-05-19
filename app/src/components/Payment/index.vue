@@ -31,7 +31,22 @@
               />
             </section>
             <section v-show="!user.paymentIntentId">
-              <h2>Payment Information</h2>
+              <div class="row">
+                <h2 class="col-5">
+                  Payment Information
+                </h2>
+                <div
+                  class="col-7"
+                  style="padding-top:0.5rem"
+                >
+                  <div class="row">
+                    <div class="col-3 visa" />
+                    <div class="col-3 master-card" />
+                    <div class="col-3 american-express" />
+                    <div class="col-3 maestro" />
+                  </div>
+                </div>
+              </div>
               <nav
                 id="payment-methods"
               >
@@ -250,7 +265,7 @@
         </div>
         <div id="order-items" />
         <div id="order-total">
-          <div class="line-item demo">
+          <!-- <div class="line-item demo">
             <div id="demo">
               <p class="label">
                 Demo in test mode
@@ -285,7 +300,7 @@
                 Non-card payments will redirect to test pages.
               </p>
             </div>
-          </div>
+          </div> -->
           <div class="line-item">
             <img
               class="image"
@@ -293,16 +308,21 @@
               :alt="getSellingProduct.title"
             >
             <div class="label">
-              <p class="product">
+              <span class="product">
                 {{ getSellingProduct.title }}
+              </span>
+              <p class="sku">
+                <strong>
+                  {{ Object.values([getSellingProduct.noOfStamps,'timestamps']).join(' ') }}
+                </strong>
               </p>
               <p class="sku">
-                {{ Object.values([getSellingProduct.title,'Package']).join(' ') }}
+                {{ getSellingProduct.freqDesc }}
+              </p>
+              <p class="sku text-italic">
+                {{ getSellingProduct.description }}
               </p>
             </div>
-            <p class="count">
-              1
-            </p>
             <p class="price">
               {{ amount }}
             </p>

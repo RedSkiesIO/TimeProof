@@ -8,8 +8,8 @@ import {
 // const router = Router();
 
 export default {
-  setAuthenticatedAccount: (context, account) => {
-    context.commit(SET_AUTHENTICATED_ACCOUNT, account);
+  setAuthenticatedAccount: async ({ commit }, account) => {
+    commit(SET_AUTHENTICATED_ACCOUNT, account);
   },
   setSellingProduct: ({ commit }, product) => {
     commit(SET_SELLING_PRODUCT, product);

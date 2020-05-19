@@ -122,4 +122,5 @@ export default {
   certificate: 'Certificate',
   upgradeToCreateMoreProofs: 'Upgrade to create more proofs',
   loadingLoginSignupPage: 'Building your space...',
+  browseFileErrorMessage: 'file name must not exceed 200 characters.',
 };

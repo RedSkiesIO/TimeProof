@@ -77,7 +77,11 @@
               @click="redirectToExternalUrl(item.redirect)"
             >
               <q-item-section avatar>
-                <q-icon :name="item.icon" />
+                <q-icon
+                  :size="item.size"
+                  color="white"
+                  :name="item.icon"
+                />
               </q-item-section>
               <q-item-section>
                 {{ item.label }}
@@ -156,27 +160,32 @@ const menuList = [
     icon: 'fas fa-home',
     label: 'Dashboard',
     route: '/dashboard',
+    size: '1rem',
   },
   {
     icon: 'fas fa-stamp',
     label: 'Stamp',
     route: '/stamp',
+    size: '1rem',
   },
   {
-    icon: 'fas fa-fingerprint',
+    icon: 'img:statics/icons/fingerprint.png',
     label: 'Verify',
     route: '/verify',
+    size: '1.1rem',
   },
   {
     icon: 'fas fa-user',
     label: 'Account',
     route: '/account',
+    size: '1rem',
   },
   {
     icon: 'fas fa-info-circle',
     label: 'Need Help ?',
     route: '/',
     redirect: 'https://www.timeproof.it/faq',
+    size: '1rem',
   },
 ];
 

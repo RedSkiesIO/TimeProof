@@ -29,7 +29,6 @@ export default {
   },
   watch: {
     isAppIdle(val) {
-      console.log('idle ', val);
       if (val) {
         this.$auth.logout();
       }

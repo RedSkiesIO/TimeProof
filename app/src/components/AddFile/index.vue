@@ -6,6 +6,8 @@
     auto-upload
     hide-upload-btn
     :factory="hashFile"
+    :filter="checkFileNameLength"
+    @rejected="onRejected"
   >
     <template v-slot:list="scope">
       <div v-if="scope.files < 1">
@@ -90,7 +92,7 @@
             class="text-grey-4"
             style="font-size: 100px"
           />
-          <span class="q-mt-md text-h6 text-secondary">
+          <span class="q-mt-md text-h6 text-secondary wrapword">
             {{ file.name }}</span>
           <span
             v-if="file.type"
@@ -200,7 +202,6 @@ export default {
     UnlockKey,
     NewKey,
   },
-
   props: {
     mode: {
       type: String,
@@ -375,6 +376,20 @@ export default {
         this.file.verified = false;
         this.confirmed = true;
       }
+    },
+    checkFileNameLength(files) {
+      return files.filter(file => file && file.name && file.name.length <= 200);
+    },
+
+    onRejected() { // rejectedEntries
+      // Notify plugin needs to be installed
+      // https://quasar.dev/quasar-plugins/notify#Installation
+      this.$q.notify({
+        type: 'warning-notify',
+        // type: 'negative',
+        // ${rejectedEntries.length}
+        message: 'The file name must not exceed 200 characters.',
+      });
     },
   },
 };
