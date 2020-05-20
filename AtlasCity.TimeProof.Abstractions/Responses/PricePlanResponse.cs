@@ -19,7 +19,7 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
         [JsonProperty(PropertyName = "noOfStamps")]
         public int NoOfStamps { get; set; }
 
-        [JsonProperty(PropertyName = "confirDesc")]
-        public string ConfirmationDescription { get; set; }
+        [JsonProperty(PropertyName = "freqDesc")]
+        public string FreqDesc { get; set; }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -34,15 +36,6 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
             return response;
         }
 
-        public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
-        {
-            Guard.Argument(email, nameof(email)).NotNull().NotEmpty().NotWhiteSpace();
-
-            var option = new FeedOptions { EnableCrossPartitionQuery = true };
-            var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri, option).Where(s => s.Email.ToLower() == email.ToLower()).AsEnumerable().FirstOrDefault();
-            return response;
-        }
-
         public async Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken)
         {
             Guard.Argument(user, nameof(user)).NotNull();
@@ -60,7 +53,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
             try
             {
-                await Client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, userId), new RequestOptions { }, cancellationToken);
+                await Client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, userId), new RequestOptions { PartitionKey = new PartitionKey(userId) }, cancellationToken);
             }
             catch (DocumentClientException ex)
             {
@@ -74,6 +67,14 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
             var response = await Client.UpsertDocumentAsync(_documentCollectionUri, user, cancellationToken: cancellationToken);
             return JsonConvert.DeserializeObject<UserDao>(response.Resource.ToString());
+        }
+
+
+        public async Task<IEnumerable<UserDao>> GetRenewalMembershipByDate(DateTime renewDate, CancellationToken cancellationToken)
+        {
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<UserDao>(_documentCollectionUri, option).Where(s => s.MembershipRenewEpoch <= renewDate.Date.ToEpoch()).AsEnumerable();
+            return response;
         }
     }
 }

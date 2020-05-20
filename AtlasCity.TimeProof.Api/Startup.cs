@@ -98,7 +98,7 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPaymentRepository>(new PaymentRepository(endpointUrl, authorizationKey));
-            services.AddSingleton<IMembershipRenewRepository>(new MembershipRenewRepository(endpointUrl, authorizationKey));
+            services.AddSingleton<IPendingMembershipChangeRepository>(new PendingMembershipChangeRepository(endpointUrl, authorizationKey));
 
             var client = new SmtpClient(Configuration.GetValue("SMTPEmail:HostName"), int.Parse(Configuration.GetValue("SMTPEmail:Port")))
             {
@@ -109,12 +109,14 @@ namespace AtlasCity.TimeProof.Api
             };
 
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
+            services.AddSingleton<IEthClient, EthClient>();
 
             var toAddress = Configuration.GetValue("NetheriumAccount:ToAddress");
             var secretKey = Configuration.GetValue("NetheriumAccount:SecretKey");
             var networkName = Configuration.GetValue("NetheriumAccount:Network");
             var ethSetting = new EthSettings { ToAddress = toAddress, SecretKey = secretKey, Network = networkName };
-            services.AddSingleton<IEthHelper>(new EthHelper(ethSetting));
+
+            services.AddSingleton<IEthHelper>(provider => new EthHelper(ethSetting, provider.GetService<IEthClient>()));
 
             var timeProofLoginUri = Configuration.GetValue("TimeProofLoginUri");
             services.AddSingleton<IEmailTemplateHelper>(new EmailTemplateHelper(timeProofLoginUri));

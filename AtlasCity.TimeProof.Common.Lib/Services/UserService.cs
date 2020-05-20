@@ -7,6 +7,7 @@ using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Serilog;
 
@@ -43,14 +44,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _paymentService = paymentService;
             _emailService = emailService;
             _emailTemplateHelper = emailTemplateHelper;
-        }
-
-        [Obsolete]
-        public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
-        {
-            Guard.Argument(email, nameof(email)).NotNull().NotEmpty().NotWhiteSpace();
-            var user = await _userRepository.GetUserByEmail(email, cancellationToken);
-            return user;
         }
 
         public async Task<UserDao> GetUserById(string userId, CancellationToken cancellationToken)
@@ -91,6 +84,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             user.RemainingTimeStamps = freePricePlan.NoOfStamps;
             user.MembershipStartDate = DateTime.UtcNow;
             user.MembershipRenewDate = DateTime.UtcNow.AddMonths(1);
+            user.MembershipRenewEpoch = user.MembershipRenewDate.Date.ToEpoch();
 
             var newUser = await _userRepository.CreateUser(user, cancellationToken);
             _logger.Information($"Successfully created user with email '{user.Email}'");
@@ -138,6 +132,12 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             if (user == null)
                 throw new UserException($"User does not exists '{userId}'. Cannot send the welcome email with key as attachment");
 
+            if (user.KeyEmailSentDate > DateTime.MinValue)
+            {
+                _logger.Warning($"Key Email already sent for user '{userId}' on '{user.KeyEmailSentDate.ToLongDateTimeString()}'");
+                throw new UserException($"Key Email already sent.");
+            }
+
             var emailBody = await _emailTemplateHelper.GetWelcomeEmailBody(user.FirstName, cancellationToken);
             var emailMessage = new EmailDao
             {
@@ -152,6 +152,10 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _logger.Information($"Created key file '{filePath}' for user '{userId}'");
 
             await _emailService.SendEmail(emailMessage, filePath, cancellationToken);
+            _logger.Information($"Sent email with key file as attachment for user '{user.Id}'");
+
+            user.KeyEmailSentDate = DateTime.UtcNow;
+            await _userRepository.UpdateUser(user, cancellationToken);
 
             _emailTemplateHelper.DeleteFileDirectory(filePath);
             _logger.Information($"Deleted key file '{filePath}'");

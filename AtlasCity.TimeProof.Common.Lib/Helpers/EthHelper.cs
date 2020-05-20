@@ -1,4 +1,7 @@
-﻿using AtlasCity.TimeProof.Abstractions;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using Dawn;
@@ -10,13 +13,20 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
 {
     public class EthHelper : IEthHelper
     {
-        private readonly EthSettings _ethSettings;
+        const int Total_Gwei_In_Eth = 1000000000;
+        const int Gas_Limit = 30000;
+        const int Default_Gas_Price = 3;
 
-        public EthHelper(EthSettings ethSettings)
+        private readonly EthSettings _ethSettings;
+        private readonly IEthClient _ethClient;
+
+        public EthHelper(EthSettings ethSettings, IEthClient ethClient)
         {
             Guard.Argument(ethSettings, nameof(ethSettings)).NotNull();
+            Guard.Argument(ethClient, nameof(ethClient)).NotNull();
 
             _ethSettings = ethSettings;
+            _ethClient = ethClient;
         }
 
         public bool VerifyStamp(TimestampDao timestamp)
@@ -34,6 +44,23 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
         public EthSettings GetEthSettings()
         {
             return _ethSettings;
+        }
+
+        public async Task<int> GetGasPrice(double amountInPence, CancellationToken cancellationToken)
+        {
+            Guard.Argument(amountInPence, nameof(amountInPence)).InRange(1, 1000);
+
+            var oneEthToGBP = await _ethClient.GetCryptoCurrencyValue("ETH", "GBP", cancellationToken);
+            if (amountInPence <= 0)
+                return Default_Gas_Price;
+
+            var totalGweiInOnePence = Total_Gwei_In_Eth / (oneEthToGBP * 100);
+
+            var gweiToSpend = totalGweiInOnePence * amountInPence;
+
+            var gasPrice = Convert.ToInt32(Math.Floor(gweiToSpend / Gas_Limit));
+
+            return gasPrice;
         }
     }
 }

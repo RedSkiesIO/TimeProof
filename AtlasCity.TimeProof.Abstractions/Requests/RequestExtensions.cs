@@ -65,9 +65,10 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
                 Address = user.Address.ToResponse(),
                 RemainingTimeStamps = user.RemainingTimeStamps,
                 PricePlanId = user.CurrentPricePlanId,
-                RenewPricePlanId = user.RenewPricePlanId,
+                PendingPricePlanId = user.PendingPricePlanId,
                 PaymentIntentId = user.PaymentIntentId,
-                MembershipRenewDate = user.MembershipRenewDate
+                MembershipRenewDate = user.MembershipRenewDate,
+                KeyEmailDate = user.KeyEmailSentDate
             };
         }
 
@@ -129,7 +130,7 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
                 Description = pricePlan.Description,
                 Price = pricePlan.Price,
                 NoOfStamps = pricePlan.NoOfStamps,
-                ConfirmationDescription = pricePlan.ConfirmationDescription,
+                FreqDesc = pricePlan.PaymentFrquencyDescription,
             };
         }
 

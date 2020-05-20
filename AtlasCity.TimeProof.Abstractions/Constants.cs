@@ -6,6 +6,6 @@
 
         public const string AutomatedEmailFromAddress = "noreply@atlascity.io";
 
-        public const string WelcomeEmailSubject = "Welcome to Time Scribe";
+        public const string WelcomeEmailSubject = "Welcome to Timescribe";
     }
 }
