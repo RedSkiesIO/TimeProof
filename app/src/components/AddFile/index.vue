@@ -370,12 +370,12 @@ export default {
           this.file.error = this.$t('noProofFound');
           this.file.verified = false;
         }
-        this.confirmed = true;
       } catch (e) {
         this.file.error = this.$t('noProofFound');
         this.file.verified = false;
-        this.confirmed = true;
       }
+      this.confirmed = true;
+      this.proofId = '';
     },
     checkFileNameLength(files) {
       return files.filter(file => file && file.name && file.name.length <= 200);
