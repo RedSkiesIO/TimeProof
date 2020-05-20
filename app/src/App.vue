@@ -29,7 +29,6 @@ export default {
   },
   watch: {
     isAppIdle(val) {
-      console.log('idle ', val);
       if (val) {
         this.$auth.logout();
       }
@@ -71,6 +70,7 @@ export default {
                 paymentIntentId: verifyResult.paymentIntentId,
                 membershipRenewDate: verifyResult.membershipRenewDate,
                 remainingTimeStamps: verifyResult.remainingTimeStamps,
+                pendingPricePlanId: verifyResult.pendingPricePlanId,
               },
             });
 

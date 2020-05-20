@@ -6,6 +6,8 @@
     auto-upload
     hide-upload-btn
     :factory="hashFile"
+    :filter="checkFileNameLength"
+    @rejected="onRejected"
   >
     <template v-slot:list="scope">
       <div v-if="scope.files < 1">
@@ -16,19 +18,30 @@
 
             class="q-my-xl q-pa-xl flex flex-center column text-center"
           >
-            <img
-              src="~assets/add-file.svg"
-              style="height: 12vw"
-            >
+            <template v-if="mode === 'sign'">
+              <img
+                src="~assets/stamp-image.svg"
+                style="height: 12vw"
+              >
 
-            <span
-              v-if="mode==='sign'"
-              class="q-pt-sm text-h6 text-weight-bold text-grey-6"
-            >{{ $t('dragDrop') }} {{ $t('sign') }}</span>
-            <span
-              v-else
-              class="q-pt-sm text-h6 text-weight-bold text-grey-6"
-            >{{ $t('dragDrop') }} {{ $t('verify') }}</span>
+              <span
+                class="q-pt-md text-h6 text-weight-bold text-grey-6"
+              >
+                {{ $t('dragDrop') }} {{ $t('sign') }}
+              </span>
+            </template>
+
+            <template v-else>
+              <img
+                src="~assets/verify-image.svg"
+                style="height: 12vw"
+              >
+              <span
+                class="q-pt-md text-h6 text-weight-bold text-grey-6"
+              >
+                {{ $t('dragDrop') }} {{ $t('verify') }}
+              </span>
+            </template>
 
             <span class="text-body1 text-grey-7">
               {{ $t('or') }} <span
@@ -79,7 +92,7 @@
             class="text-grey-4"
             style="font-size: 100px"
           />
-          <span class="q-mt-md text-h6 text-secondary">
+          <span class="q-mt-md text-h6 text-secondary wrapword">
             {{ file.name }}</span>
           <span
             v-if="file.type"
@@ -189,7 +202,6 @@ export default {
     UnlockKey,
     NewKey,
   },
-
   props: {
     mode: {
       type: String,
@@ -358,12 +370,26 @@ export default {
           this.file.error = this.$t('noProofFound');
           this.file.verified = false;
         }
-        this.confirmed = true;
       } catch (e) {
         this.file.error = this.$t('noProofFound');
         this.file.verified = false;
-        this.confirmed = true;
       }
+      this.confirmed = true;
+      this.proofId = '';
+    },
+    checkFileNameLength(files) {
+      return files.filter(file => file && file.name && file.name.length <= 200);
+    },
+
+    onRejected() { // rejectedEntries
+      // Notify plugin needs to be installed
+      // https://quasar.dev/quasar-plugins/notify#Installation
+      this.$q.notify({
+        type: 'warning-notify',
+        // type: 'negative',
+        // ${rejectedEntries.length}
+        message: 'The file name must not exceed 200 characters.',
+      });
     },
   },
 };

@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import Vue from 'vue';
 import {
-  PDFDocument, rgb, StandardFonts,
+  PDFDocument, rgb,
 } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 import pixelWidth from 'string-pixel-width';
 
 class PdfUtil {
@@ -26,111 +27,108 @@ class PdfUtil {
   };
 
   create = async (name, proof) => {
-    console.log(proof);
-    const response = await fetch('../../statics/CertificateTemplate.pdf');
-    const file = await response.arrayBuffer();
-    const doc = await PDFDocument.load(file);
-    const helveticaFont = await doc.embedFont(StandardFonts.Helvetica);
-    const pages = doc.getPages();
-    const firstPage = pages[0];
+    try {
+      const response = await fetch('../../statics/CertificateTemplate.pdf');
+      const file = await response.arrayBuffer();
+      const doc = await PDFDocument.load(file);
+      doc.registerFontkit(fontkit);
+      const fontResponse = await fetch('../../statics/Montserrat-Regular.ttf');
+      const montserratFont = await doc.embedFont(await fontResponse.arrayBuffer());
+      const pages = doc.getPages();
+      const firstPage = pages[0];
 
-    // Get the width and height of the first page
-    const { width, height } = firstPage.getSize();
-    console.log(width, height);
+      // Get the width and height of the first page
+      const { width, height } = firstPage.getSize();
+      console.log(width, height);
 
-    // Draw a string of text diagonally across the first page
+      // Draw a string of text diagonally across the first page
+      if (proof.file) {
+        const lengWidth = pixelWidth(proof.file, { font: 'Verdana', size: 12 });
 
-    if (proof.file) {
-      try {
-        proof.file = proof.file.replace(/\n/g, '');
+        if (lengWidth) {
+          let y = 505;
+          if (lengWidth <= 358) {
+            y -= 10;
+          }
+
+          this.drawTextAccordingToPixels(proof.file, firstPage, montserratFont, 175, y);
+        } else {
+          firstPage.drawText(proof.file, {
+            x: 175,
+            y: 500,
+            size: 12,
+            font: montserratFont,
+            color: rgb(0, 0, 0),
+          });
+        }
+      }
+
+      this.drawTextAccordingToPixels(proof.timestamp, firstPage, montserratFont, 175, 434.75);
+
+      this.drawTextAccordingToPixels(proof.proofId.one + proof.proofId.two,
+        firstPage, montserratFont, 175, 560);
+
+      this.drawTextAccordingToPixels(proof.user, firstPage, montserratFont, 175, 374);
+
+      this.drawTextAccordingToPixels(proof.signature.one + proof.signature.two,
+        firstPage, montserratFont, 175, 261.25);
+
+      this.drawTextAccordingToPixels(proof.hash.one + proof.hash.two,
+        firstPage, montserratFont, 175, 321.25);
+
+      const output = await doc.save(); // Save the doc already replacement
+      this.saveDataToFile(output, name, 'application/pdf');
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  drawTextAccordingToPixels = async (data, firstPage, montserratFont, x, y) => {
+    try {
+      if (data) {
+        data = data.replace(/\n/g, '');
+
         let str = '';
         let index = 0;
-        for (let i = 0; i < proof.file.length; i += 1) {
-          str += proof.file[i];
-          const leng = pixelWidth(str, { font: 'helvetica', size: 10 });
-          if (leng > 358) {
-            firstPage.drawText(str, {
-              x: 178.75,
-              y: 505 - index * 10,
-              size: 10,
-              font: helveticaFont,
-              color: rgb(0, 0, 0),
-            });
-            str = '';
-            index += 1;
-          } else if (i === proof.file.length - 1) {
-            firstPage.drawText(str, {
-              x: 178.75,
-              y: 505 - index * 10,
-              size: 10,
-              font: helveticaFont,
-              color: rgb(0, 0, 0),
-            });
+
+        let width = pixelWidth(data, { font: 'Verdana', size: 12 });
+        if (width) {
+          for (let i = 0; i < data.length; i += 1) {
+            str += data[i];
+            width = pixelWidth(str, { font: 'Verdana', size: 12 });
+            if (width > 358) {
+              firstPage.drawText(str, {
+                x,
+                y: y - index * 15,
+                size: 12,
+                font: montserratFont,
+                color: rgb(0, 0, 0),
+              });
+              str = '';
+              index += 1;
+            } else if (i === data.length - 1) {
+              firstPage.drawText(str, {
+                x,
+                y: y - index * 15,
+                size: 12,
+                font: montserratFont,
+                color: rgb(0, 0, 0),
+              });
+            }
           }
+        } else {
+          firstPage.drawText(data, {
+            x,
+            y,
+            size: 12,
+            font: montserratFont,
+            color: rgb(0, 0, 0),
+          });
         }
-      } catch (err) {
-        console.log(err);
       }
+    } catch (err) {
+      console.log(err);
     }
-
-    firstPage.drawText(proof.timestamp, {
-      x: 178.75,
-      y: 434.75,
-      size: 14,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.proofId.one + proof.proofId.two, {
-      x: 178.75,
-      y: 554.75,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.user, {
-      x: 178.75,
-      y: 374,
-      size: 14,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.signature.one, {
-      x: 178.75,
-      y: 261.25,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.signature.two, {
-      x: 178.75,
-      y: 252.25,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.hash.one, {
-      x: 178.75,
-      y: 321.25,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    firstPage.drawText(proof.hash.two, {
-      x: 178.75,
-      y: 311.25,
-      size: 10,
-      font: helveticaFont,
-      color: rgb(0, 0, 0),
-    });
-
-    const output = await doc.save(); // Save the doc already replacement
-    this.saveDataToFile(output, name, 'application/pdf');
   }
 }
 

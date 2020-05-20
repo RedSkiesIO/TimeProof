@@ -13,9 +13,6 @@
           </div>
         </div>
         <hr>
-        <!-- <div class="row justify-center q-mb-sm text-weight-bold">
-          {{ $t('createFirstTimeStamp') }}
-        </div> -->
         <div
           class="row text-center justify-center"
         >
@@ -32,7 +29,7 @@
           v-close-popup
           flat
           data-test-key="cancelCreateFirstTimeStamp"
-          :label="$t('cancel')"
+          :label="$t('later')"
           color="blue"
           @click="buttonClose"
         />

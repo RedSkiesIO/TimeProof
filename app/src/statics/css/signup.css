@@ -965,8 +965,8 @@ html {
     background-color: white;
     box-shadow: 0 15px 30px rgba(0, 0, 0, .2),
                 0 10px 10px rgba(0, 0, 0, .2);
-    animation: .8s ease-out 0s 1 slideInFromTop;
-    -webkit-animation: .8s ease-out 0s 1 slideInFromTop;
+    /* animation: .8s ease-out 0s 1 slideInFromTop;
+    -webkit-animation: .8s ease-out 0s 1 slideInFromTop; */
 }
 
 .self_asserted_container .row .panel-default .panel-body {
@@ -1174,9 +1174,6 @@ div#email_info {
 }
 #background_branding_container{
   background: linear-gradient(to bottom right, #4cbbc2, #ddd);
-}
-.companyLogo{
-  background: #4cbbc2;
 }
 
 @-webkit-keyframes slideInFromTop {

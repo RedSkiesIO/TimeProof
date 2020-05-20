@@ -51,7 +51,7 @@
           @click="lockKey"
         />
       </div> -->
-      <div class="row justify-center q-gutter-x-xs">
+      <!-- <div class="row justify-center q-gutter-x-xs">
         <q-btn
           flat
           color="blue"
@@ -66,7 +66,7 @@
           label="new key"
           @click="openNewKeyDialog"
         />
-      </div>
+      </div> -->
       <div class="row justify-end" />
     </q-card>
 
@@ -118,22 +118,22 @@
             @click="unlockKey(password)"
           />
         </div> -->
-        <div class="row justify-center q-gutter-x-xs">
-          <q-btn
+        <!-- <div class="row justify-center q-gutter-x-xs"> -->
+        <!-- <q-btn
             flat
             color="blue"
             size="md"
             label="import key"
             @click="openImportDialog"
-          />
-          <q-btn
+          /> -->
+        <!-- <q-btn
             flat
             color="blue"
             size="md"
             label="new key"
             @click="openNewKeyDialog"
-          />
-        </div>
+          /> -->
+        <!-- </div> -->
         <div class="row justify-end" />
       </div>
     </q-card>

@@ -30,7 +30,7 @@
               class="col-md-4 col-sm-6 col-xs-8"
             >
               <q-icon
-                class="col-auto text-grey-6 q-ml-sm q-mr-md"
+                class="col-auto text-grey-6 q-ml-xs q-mr-sm"
                 name="fas fa-file"
                 style="font-size: 1.2em"
               />
@@ -75,6 +75,7 @@
                   color="grey"
                   icon="filter_none"
                   class="copy-button"
+                  :disable="stamp.status === 2"
                   @click="copy(stamp.txId)"
                 >
                   <q-tooltip anchor="top middle">

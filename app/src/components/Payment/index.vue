@@ -31,7 +31,22 @@
               />
             </section>
             <section v-show="!user.paymentIntentId">
-              <h2>Payment Information</h2>
+              <div class="row">
+                <h2 class="col-5">
+                  Payment Information
+                </h2>
+                <div
+                  class="col-7"
+                  style="padding-top:0.5rem"
+                >
+                  <div class="row">
+                    <div class="col-3 visa" />
+                    <div class="col-3 master-card" />
+                    <div class="col-3 american-express" />
+                    <div class="col-3 maestro" />
+                  </div>
+                </div>
+              </div>
               <nav
                 id="payment-methods"
               >
@@ -140,6 +155,9 @@
               {{ submitButtonText }}
             </button>
           </form>
+          <span class="q-mt-md text-grey">
+            Powered by <strong>stripe</strong>
+          </span>
           <div
             id="card-errors"
             class="element-errors"
@@ -157,8 +175,8 @@
         </div>
         <div id="confirmation">
           <div class="status processing">
-            <h1>Completing your order…</h1>
             <template v-if="!isFreePlan">
+              <h1>Completing your order...</h1>
               <p>
                 We’re just waiting for the confirmation
                 from your bank… This might take a moment but feel free to close this page.
@@ -166,14 +184,15 @@
               <p>We’ll send your receipt via email shortly.</p>
             </template>
             <template v-else>
+              <h1>Completing your downgrading...</h1>
               <p>
                 Processing… This might take a moment but feel free to close this page.
               </p>
             </template>
           </div>
           <div class="status success">
-            <h1>Thanks for your order!</h1>
             <template v-if="!isFreePlan">
+              <h1>Thanks for your order!</h1>
               <p>
                 Woot! You successfully made a payment.
               </p>
@@ -182,10 +201,14 @@
               </p>
             </template>
             <template v-else>
-              <p>
-                Woot! You successfully changed your plan
-              </p>
+              <h1>You have successfully changed your plan!</h1>
             </template>
+            <button
+              style="width: 20vh; height: 5vh"
+              @click="$router.push('/dashboard')"
+            >
+              Go to Dashboard
+            </button>
           </div>
           <div class="status receiver">
             <h1>Thanks! One last step!</h1>
@@ -213,12 +236,23 @@
             <p class="error-message">
               {{ confirmationElementErrorMessage }}
             </p>
-            <button
-              style="width: 15vh"
-              @click="tryAgain"
-            >
-              Try again
-            </button>
+            <div class="col-md-12 col-sm-12 row">
+              <button
+                class="col-md-5 col-sm-5 col-xs-5"
+                style="width: 18vh; height: 5vh"
+                @click="tryAgain"
+              >
+                Try again
+              </button>
+
+              <button
+                class="col-md-5 col-sm-5 col-xs-5"
+                style="width: 20vh; height: 5vh; margin-left:2rem"
+                @click="$router.push('/dashboard')"
+              >
+                Go to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </main>
@@ -231,7 +265,7 @@
         </div>
         <div id="order-items" />
         <div id="order-total">
-          <div class="line-item demo">
+          <!-- <div class="line-item demo">
             <div id="demo">
               <p class="label">
                 Demo in test mode
@@ -266,7 +300,7 @@
                 Non-card payments will redirect to test pages.
               </p>
             </div>
-          </div>
+          </div> -->
           <div class="line-item">
             <img
               class="image"
@@ -274,16 +308,21 @@
               :alt="getSellingProduct.title"
             >
             <div class="label">
-              <p class="product">
+              <span class="product">
                 {{ getSellingProduct.title }}
+              </span>
+              <p class="sku">
+                <strong>
+                  {{ Object.values([getSellingProduct.noOfStamps,'timestamps']).join(' ') }}
+                </strong>
               </p>
               <p class="sku">
-                {{ Object.values([getSellingProduct.title,'Package']).join(' ') }}
+                {{ getSellingProduct.freqDesc }}
+              </p>
+              <p class="sku text-italic">
+                {{ getSellingProduct.description }}
               </p>
             </div>
-            <p class="count">
-              1
-            </p>
             <p class="price">
               {{ amount }}
             </p>
@@ -425,7 +464,7 @@ export default {
       if (this.user.paymentIntentId) { // upgrade the package
         this.submitButtonDisable = false;
       } else {
-        this.card = this.elements.create('card', { style: this.style });
+        this.card = this.elements.create('card', { style: this.style, iconStyle: 'solid' });
 
         // Mount the Card Element on the page.
         this.card.mount('#card-element');
@@ -619,11 +658,9 @@ export default {
           this.paymentResultUpdate(false, false, false, true, false, false, false);
         } else if (status === 'succeeded') {
           this.confirmationElementNote = 'We just sent your receipt to your email address,';
-          this.$paymentServer.updateUserSubscription();
           this.paymentResultUpdate(true, false, false, false, true, false, false);
-          this.setSellingProduct(null);
         } else {
-          this.confirmationElementErrorMessage = 'Unsupported payment';
+          this.confirmationElementErrorMessage = 'Unsupported operation!';
           this.paymentResultUpdate(false, false, false, true, false, false, false);
         }
       } catch (err) {
@@ -953,7 +990,6 @@ export default {
       const response = await this.$paymentServer
         .subscribeToPackage(null, this.user,
           null, null, this.getSellingProduct.id);
-
       this.completePayment(response);
     },
 

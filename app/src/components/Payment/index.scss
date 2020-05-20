@@ -1312,4 +1312,39 @@
       text-align: center;
     }
   }
+
+  .visa {
+    background: url('~assets/payment-icons.png') no-repeat 0 11.191%;
+    background-size: 499px 308px;
+    width: 49px;
+    height: 31px;
+    // background: url('~assets/payment-icons.png') no-repeat 58.517% 11.141%;
+    // background-size: 2716px 1672px;
+    // width: 262px;
+    // height: 164px;
+    // transform: scale(0.2);
+    // transform-origin: 0 0;
+  }
+
+  .master-card {
+    background: url('~assets/payment-icons.png') no-repeat 13.762% 11.191%;
+    background-size: 499px 308px;
+    width: 49px;
+    height: 31px;
+  }
+
+  .american-express {
+    background: url('~assets/payment-icons.png') no-repeat 13.762% 88.989%;
+    background-size: 499px 308px;
+    width: 49px;
+    height: 31px;
+  }
+
+  .maestro {
+    background: url('~assets/payment-icons.png') no-repeat 27.525% 11.191%;
+    background-size: 499px 308px;
+    width: 49px;
+    height: 31px;
+  }
+  
 }

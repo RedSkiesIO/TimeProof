@@ -12,11 +12,9 @@ class PaymentServer extends Server {
     console.log('PRICE PLANSS');
     console.log(data);
     const productsData = {};
-    const colorList = ['orange', 'green', 'blue'];
     if (status === 200 && data) {
-      data.forEach((plan, index) => {
+      data.forEach((plan) => {
         productsData[plan.id] = plan;
-        productsData[plan.id].color = colorList[index];
       });
     }
     return productsData;
@@ -85,7 +83,7 @@ class PaymentServer extends Server {
   }
 
   async upgradePackage(pricePlanId) {
-    let upgradeResult;
+    let upgradeResult = {};
     console.log('BEFORE PAYMENT UPGRADE');
     console.log({
       pricePlanId,
@@ -97,13 +95,14 @@ class PaymentServer extends Server {
     } catch (err) {
       console.log('AFTER PAYMENT UPGRADE ERROR');
       console.error(err);
+      upgradeResult.error = err;
     }
 
     return upgradeResult;
   }
 
   async makePayment(paymentIntentId, pricePlanId) {
-    let paymentResult;
+    let paymentResult = {};
     console.log('BEFORE MAKE PAYMENT');
     console.log({
       paymentIntentId,
@@ -116,6 +115,7 @@ class PaymentServer extends Server {
     } catch (err) {
       console.log('AFTER MAKE PAYMENT RESULT ERROR');
       console.error(err);
+      paymentResult.error = err;
     }
 
     return paymentResult;
@@ -125,8 +125,6 @@ class PaymentServer extends Server {
     console.log('UPDATE USER SUBSCRIPTION');
     try {
       const verifyResult = await userServer.verifyUserDetails();
-      console.log('XXXXXXXX');
-      console.log(verifyResult.pricePlanId);
       if (verifyResult) {
         User.update({
           data: {
@@ -136,6 +134,7 @@ class PaymentServer extends Server {
             paymentIntentId: verifyResult.paymentIntentId,
             membershipRenewDate: verifyResult.membershipRenewDate,
             remainingTimeStamps: verifyResult.remainingTimeStamps,
+            pendingPricePlanId: verifyResult.pendingPricePlanId,
           },
         });
       }
@@ -185,17 +184,20 @@ class PaymentServer extends Server {
         } else {
           response.error = paymentIntentError;
         }
-      } else { // upgrade
+      } else { // upgrade and downgrade
         const { status, error } = await
         this.upgradePackage(pricePlanId);
         if (status === 200 && !error) {
           response.status = 'succeeded';
-        } else {
+        } else if (status === 409) {
+          response.error.message = 'You have already confirmed that you will switch to this plan. Cancel your future plan and try again.';
+        } else if (error) {
           response.error = error;
         }
       }
       console.log('AFTER USER SUBSCRIPTION');
       console.log(response);
+      this.updateUserSubscription();
     } catch (err) {
       console.log('AFTER USER SUBSCRIPTON ERROR');
       console.error(err);
