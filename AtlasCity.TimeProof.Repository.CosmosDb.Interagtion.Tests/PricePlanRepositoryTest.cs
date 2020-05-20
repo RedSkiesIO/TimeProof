@@ -29,10 +29,10 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
             var basicPricePlan= new PricePlanDao
             {
                 Title = Constants.FreePricePlanTitle,
-                Description = "Basic pack with free time stamps",
+                Description = "Slow confirmation",
                 Price = 0,
                 NoOfStamps = 10,
-                GasPrice = 3,
+                TransactionPrice = 1,
                 PaymentFrquencyDescription = "Per month"
             };
 
@@ -42,7 +42,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
                 Description = "Faster confirmation",
                 Price = 499,
                 NoOfStamps = 40,
-                GasPrice = 3,
+                TransactionPrice = 5,
                 PaymentFrquencyDescription = "Per month, billed monthly"
             };
 
@@ -52,7 +52,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
                 Description = "Faster confirmation",
                 Price = 2499,
                 NoOfStamps = 250,
-                GasPrice = 3,
+                TransactionPrice = 5,
                 PaymentFrquencyDescription = "Per month, billed monthly"
             };
 

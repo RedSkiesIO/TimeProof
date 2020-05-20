@@ -109,12 +109,14 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             };
 
             await _paymentRepository.CreatePaymentReceived(paymentDao, cancellationToken);
+            _logger.Information($"Previous remaining stamp for the user '{user.Id}' is '{user.RemainingTimeStamps}'.");
 
             user.CurrentPricePlanId = pricePlan.Id;
             user.PendingPricePlanId = null;
             user.RemainingTimeStamps = pricePlan.NoOfStamps;
             user.PaymentIntentId = paymentIntentId;
             user.MembershipRenewDate = _systemDateTime.GetUtcDateTime().AddMonths(1);
+            user.MembershipRenewEpoch = user.MembershipRenewDate.Date.ToEpoch();
 
             await _userRepository.UpdateUser(user, cancellationToken);
         }
@@ -192,17 +194,19 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             }
             else if (user.MembershipRenewDate.Date <= _systemDateTime.GetUtcDateTime().Date && isDowngradedToBasicPlan)
             {
+                _logger.Information($"Previous remaining stamp for the user '{user.Id}' is '{user.RemainingTimeStamps}'.");
                 user.CurrentPricePlanId = newPricePlan.Id;
                 user.PendingPricePlanId = null;
                 user.RemainingTimeStamps = newPricePlan.NoOfStamps;
                 user.MembershipRenewDate = user.MembershipRenewDate.AddMonths(1);
+                user.MembershipRenewEpoch = user.MembershipRenewDate.Date.ToEpoch();
 
                 await _userRepository.UpdateUser(user, cancellationToken);
             }
             else
             {
                 user.PendingPricePlanId = newPricePlan.Id;
-                await _pendingMembershipChangeRepository.Add(new PendingMembershipChangeDao { Id = Guid.NewGuid().ToString(), UserId = user.Id, RenewEpoch = user.MembershipRenewDate.Date.ToEpoch(), NewPricePlanId = newPricePlan.Id }, cancellationToken);
+                await _pendingMembershipChangeRepository.Add(new PendingMembershipChangeDao { Id = Guid.NewGuid().ToString(), UserId = user.Id, RenewEpoch = user.MembershipRenewEpoch, NewPricePlanId = newPricePlan.Id }, cancellationToken);
 
                 await _userRepository.UpdateUser(user, cancellationToken);
             }

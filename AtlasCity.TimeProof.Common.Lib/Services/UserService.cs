@@ -46,14 +46,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _emailTemplateHelper = emailTemplateHelper;
         }
 
-        [Obsolete]
-        public async Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken)
-        {
-            Guard.Argument(email, nameof(email)).NotNull().NotEmpty().NotWhiteSpace();
-            var user = await _userRepository.GetUserByEmail(email, cancellationToken);
-            return user;
-        }
-
         public async Task<UserDao> GetUserById(string userId, CancellationToken cancellationToken)
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
@@ -92,6 +84,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             user.RemainingTimeStamps = freePricePlan.NoOfStamps;
             user.MembershipStartDate = DateTime.UtcNow;
             user.MembershipRenewDate = DateTime.UtcNow.AddMonths(1);
+            user.MembershipRenewEpoch = user.MembershipRenewDate.Date.ToEpoch();
 
             var newUser = await _userRepository.CreateUser(user, cancellationToken);
             _logger.Information($"Successfully created user with email '{user.Email}'");

@@ -96,7 +96,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             try
             {
-                await SendTransaction(timestamp, pricePlan.GasPrice);
+                await SendTransaction(timestamp, pricePlan.TransactionPrice, cancellationToken);
 
                 var newTimestamp = await _timestampRepository.CreateTimestamp(timestamp, cancellationToken);
 
@@ -114,7 +114,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 _logger.Error(ex.Message);
                 throw ex;
             }
-            catch(RpcClientUnknownException ex)
+            catch (RpcClientUnknownException ex)
             {
                 _logger.Error(ex.Message);
                 throw new RpcClientException(ex.Message);
@@ -142,7 +142,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             return timestamp;
         }
 
-        private async Task<TimestampDao> SendTransaction(TimestampDao timestamp, int gasPrice)
+        private async Task<TimestampDao> SendTransaction(TimestampDao timestamp, double setTransactionPrice, CancellationToken cancellationToken)
         {
             bool proofVerified = _ethHelper.VerifyStamp(timestamp);
             if (!proofVerified)
@@ -172,9 +172,10 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 _logger.Warning($"Unable to parse '{ethSettings.Network}' to type '{typeof(Chain)}', so setting default to '{networkChain}'.");
             }
 
+            var gasPrice = await _ethHelper.GetGasPrice(setTransactionPrice, cancellationToken);
             var encoded = Web3.OfflineTransactionSigner.SignTransaction(
                     ethSettings.SecretKey,
-                    Nethereum.Signer.Chain.Kovan,
+                    networkChain,
                     ethSettings.ToAddress,
                     Web3.Convert.ToWei(0, UnitConversion.EthUnit.Gwei),
                     currentNonce,
@@ -182,7 +183,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                     new BigInteger(100000),
                     txData);
 
-            // TODO: Veysel Ask if we are charged here
             var verified = Web3.OfflineTransactionSigner.VerifyTransaction(encoded);
             if (!verified)
             {
@@ -197,7 +197,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             timestamp.Network = networkChain.ToString();
             timestamp.BlockNumber = -1;
 
-            // TODO: Veysel Ask if we are charged here
             if (string.IsNullOrWhiteSpace(txId))
             {
                 timestamp.Status = TimestampState.Failed;

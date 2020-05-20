@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
@@ -9,13 +10,12 @@ namespace AtlasCity.TimeProof.Abstractions.Repository
     {
         Task<UserDao> GetUserById(string userId, CancellationToken cancellationToken);
 
-        [Obsolete]
-        Task<UserDao> GetUserByEmail(string email, CancellationToken cancellationToken);
-
         Task<UserDao> CreateUser(UserDao user, CancellationToken cancellationToken);
         
         Task<UserDao> UpdateUser(UserDao user, CancellationToken cancellationToken);
         
         Task DeleteUser(string userId, CancellationToken cancellationToken);
+
+        Task<IEnumerable<UserDao>> GetRenewalMembershipByDate(DateTime renewDate, CancellationToken cancellationToken);
     }
 }

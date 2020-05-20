@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
+using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Microsoft.Azure.WebJobs;
 using Serilog;
 
 namespace AtlasCity.TimeProof.AzureFunction
 {
-    public class PendingMembershipChangeTrigger
+    public class PendingMembershipTrigger
     {
         private readonly ILogger _logger;
         private readonly IPendingMembershipChangeRepository _pendingMembershipChangeRepository;
@@ -20,7 +21,7 @@ namespace AtlasCity.TimeProof.AzureFunction
         private readonly IPaymentRepository _paymentRepository;
         private readonly IPaymentService _paymentService;
 
-        public PendingMembershipChangeTrigger(
+        public PendingMembershipTrigger(
             ILogger logger,
             IPendingMembershipChangeRepository pendingMembershipChangeRepository,
             IUserRepository userRepository,
@@ -44,8 +45,14 @@ namespace AtlasCity.TimeProof.AzureFunction
             _paymentService = paymentService;
         }
 
-        [FunctionName("PendingMembershipChangeFunction")]
-        public async Task Run([TimerTrigger("0 */5 * * * *", RunOnStartup = true)]TimerInfo myTimer)
+        [FunctionName("PendingMembershipFunction")]
+        public async Task Run([TimerTrigger("0 00 6 * * *", RunOnStartup = false)]TimerInfo myTimer)
+        {
+            //await ProcessPendingMemberships();
+            await ProcessRenewingMemberships();
+        }
+
+        private async Task ProcessPendingMemberships()
         {
             var cancellationToken = new CancellationToken();
             var currentDate = DateTime.UtcNow;
@@ -63,6 +70,8 @@ namespace AtlasCity.TimeProof.AzureFunction
                 try
                 {
                     await ChangePricePlan(pendingChanges.UserId, pendingChanges.NewPricePlanId, cancellationToken);
+                    await _pendingMembershipChangeRepository.DeleteByUser(pendingChanges.UserId, cancellationToken);
+                    _logger.Information($"Removed all pending plan update for user '{pendingChanges.UserId}'.");
                 }
                 catch (Exception ex)
                 {
@@ -73,6 +82,32 @@ namespace AtlasCity.TimeProof.AzureFunction
                         await _pendingMembershipChangeRepository.Update(pendingChanges, cancellationToken);
                     }
                     catch (Exception exRepo) { _logger.Error(exRepo.Message); }
+                }
+            }
+        }
+
+        private async Task ProcessRenewingMemberships()
+        {
+            var cancellationToken = new CancellationToken();
+            var currentDate = DateTime.UtcNow;
+            var pendingMembershipsToRenew = await _userRepository.GetRenewalMembershipByDate(currentDate, cancellationToken);
+            if (!pendingMembershipsToRenew.Any())
+            {
+                _logger.Information($"There is no pending renew membership on  '{currentDate}'.");
+                return;
+            }
+
+            _logger.Information($"Found '{pendingMembershipsToRenew.Count()}' pending membership to renew at '{currentDate}'.");
+
+            foreach (var pendingChanges in pendingMembershipsToRenew)
+            {
+                try
+                {
+                    await ChangePricePlan(pendingChanges.Id, pendingChanges.CurrentPricePlanId, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex.Message);
                 }
             }
         }
@@ -110,15 +145,15 @@ namespace AtlasCity.TimeProof.AzureFunction
                 await _paymentRepository.CreatePaymentReceived(paymentDao, cancellationToken);
             }
 
+            _logger.Information($"Previous remaining stamp for the user '{user.Id}' is '{user.RemainingTimeStamps}'.");
+
             user.CurrentPricePlanId = newPricePlan.Id;
             user.PendingPricePlanId = null;
             user.RemainingTimeStamps = newPricePlan.NoOfStamps;
             user.MembershipRenewDate = user.MembershipRenewDate.AddMonths(1);
+            user.MembershipRenewEpoch = user.MembershipRenewDate.Date.ToEpoch();
 
             await _userRepository.UpdateUser(user, cancellationToken);
-
-            await _pendingMembershipChangeRepository.DeleteByUser(user.Id, cancellationToken);
-            _logger.Information($"Removed all pending plan update for user '{user.Id}'.");
         }
     }
 }

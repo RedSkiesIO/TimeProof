@@ -101,7 +101,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
                 _userSubscriptionService.ChangePricePlan(User.GetUserId(), ppid, cancellationToken).GetAwaiter().GetResult();
                 return new OkResult();
             }
-            catch(SubscriptionException ex)
+            catch (SubscriptionException ex)
             {
                 return new ConflictActionResult(ex.Message);
             }
@@ -122,9 +122,10 @@ namespace AtlasCity.TimeProof.Api.Controllers
             if (keyStore == null)
                 return BadRequest();
 
-            try { 
-            _userService.SendKeyAsEmailAttachment(User.GetUserId(), keyStore.ToString(), cancellationToken).GetAwaiter().GetResult();
-            return new OkResult();
+            try
+            {
+                _userService.SendKeyAsEmailAttachment(User.GetUserId(), keyStore.ToString(), cancellationToken).GetAwaiter().GetResult();
+                return new OkResult();
             }
             catch (UserException ex)
             {
