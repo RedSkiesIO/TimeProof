@@ -173,8 +173,15 @@
             {{ ibanErrorContent }}
           </div>
         </div>
+
         <div id="confirmation">
           <div class="status processing">
+            <q-linear-progress
+              dark
+              indeterminate
+              size="md"
+              color="#4cbbc2"
+            />
             <template v-if="!isFreePlan">
               <h1>Completing your order...</h1>
               <p>
@@ -657,7 +664,7 @@ export default {
           this.confirmationElementErrorMessage = error.message;
           this.paymentResultUpdate(false, false, false, true, false, false, false);
         } else if (status === 'succeeded') {
-          this.confirmationElementNote = 'We just sent your receipt to your email address,';
+          this.confirmationElementNote = 'We just sent your receipt to your email address';
           this.paymentResultUpdate(true, false, false, false, true, false, false);
         } else {
           this.confirmationElementErrorMessage = 'Unsupported operation!';

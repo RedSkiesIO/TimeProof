@@ -46,6 +46,7 @@
             <span class="text-body1 text-grey-7">
               {{ $t('or') }} <span
                 class="text-blue cursor-pointer"
+                data-test-key="stampBrowseFile"
                 @click="scope.pickFiles()"
               >{{ $t('browse') }}</span> {{ $t('chooseFile') }}</span>
           </div>

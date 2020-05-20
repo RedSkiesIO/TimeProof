@@ -84,7 +84,7 @@ class UserServer extends Server {
         return result.data;
       }
     } catch (err) {
-      console.log('OPOPOOOOOOOOOOOOO:', err);
+      console.log('verifyUserDetails error: ', err);
     }
     return Promise.resolve();
   }

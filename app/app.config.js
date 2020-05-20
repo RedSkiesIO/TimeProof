@@ -21,6 +21,7 @@ module.exports = function (isDev, isTest, isProd) {
       AUTHORITY_EDIT_PROFILE: JSON.stringify('https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_EditProfile'),
       AUTHORITY_FORGOT_PASSWORD: JSON.stringify('https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_ForgotPassword'),
       REDIRECT_URI: JSON.stringify('http://localhost:6420/'),
+      STRIPE_PUBLISH_KEY: JSON.stringify('pk_test_YD41bvTMwCibc2T9yW2UYtPS00Jzsaku4h'),
     };
   } else if (isTest) {
     envVar = {
@@ -34,10 +35,11 @@ module.exports = function (isDev, isTest, isProd) {
       AUTHORITY_EDIT_PROFILE: JSON.stringify('https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_EditProfile'),
       AUTHORITY_FORGOT_PASSWORD: JSON.stringify('https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_ForgotPassword'),
       REDIRECT_URI: JSON.stringify('https://timeproof.netlify.app/'),
+      STRIPE_PUBLISH_KEY: JSON.stringify('pk_test_YD41bvTMwCibc2T9yW2UYtPS00Jzsaku4h'),
     };
   } else if (isProd) {
     envVar = {
-      API: JSON.stringify('https://atlascitytimeproofapi.azurewebsites.net/api'),
+      API: JSON.stringify('https://timescribeapiprod.azurewebsites.net/api'),
       ETHERSCAN: JSON.stringify('https://etherscan.io/tx'),
       INFURA: JSON.stringify('https://mainnet.infura.io/v3/679bbc6759454bf58a924bfaf55576b9'),
       PROD: JSON.stringify(true),
@@ -47,12 +49,14 @@ module.exports = function (isDev, isTest, isProd) {
       AUTHORITY_EDIT_PROFILE: JSON.stringify('https://timescribe.b2clogin.com/timescribe.onmicrosoft.com/B2C_1_EditProfile'),
       AUTHORITY_FORGOT_PASSWORD: JSON.stringify('https://timescribe.b2clogin.com/timescribe.onmicrosoft.com/B2C_1_ForgotPassword'),
       REDIRECT_URI: JSON.stringify('https://timescribe.netlify.app/'),
+      STRIPE_PUBLISH_KEY: JSON.stringify('pk_test_8MTSYKYklZcPyXgO9aekrw4800zvNKwveS'),
     };
   }
 
   envVar.B2C_1_SIGNUP_SIGNIN = JSON.stringify('B2C_1_SignUpSignIn');
   envVar.FORGOT_PASSWORD_ERROR_CODE = JSON.stringify('AADB2C90118');
   envVar.CANCEL_BUTTON_ERROR_CODE = JSON.stringify('AADB2C90091');
+  envVar.STRIPE_ACCOUNT_COUNTRY = JSON.stringify('GB');
 
   return envVar;
 };

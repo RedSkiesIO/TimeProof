@@ -70,6 +70,7 @@
               :key="item.label"
               v-ripple
               clickable
+              :data-test-key="item.label"
               :class="item.redirect ? 'fixed-bottom' : ''"
               :to="item.route"
               :disable="currentPath === '/new-key' && !item.redirect"
@@ -79,7 +80,6 @@
               <q-item-section avatar>
                 <q-icon
                   :size="item.size"
-                  color="white"
                   :name="item.icon"
                 />
               </q-item-section>
