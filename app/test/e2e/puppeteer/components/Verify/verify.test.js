@@ -18,7 +18,7 @@ describe('Stamp e2e Test', () => {
   let browser;
   beforeAll(async () => {
     browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       slowMo: 5,
       args: [
         '--disable-web-security',
@@ -26,6 +26,8 @@ describe('Stamp e2e Test', () => {
         '--disable-features=IsolateOrigins,site-per-process',
       ],
     });
+    const context = browser.defaultBrowserContext();
+    context.overridePermissions('http://localhost:6420', ['clipboard-read', 'clipboard-write']);
   });
 
   userList.forEach((user) => {
@@ -62,7 +64,10 @@ describe('Stamp e2e Test', () => {
         await click(page, 'cancelCreateFirstTimeStamp', 10000, false, Type.button); // Cancel Create Timestamp Popup -- go dashboard
       }
 
-      await click(page, 'Stamp', 10000, false, Type.a); // Open Stamp page
+      await click(page, 'timeStampsTxId', 10000, true, Type.button); // Copy txId
+      await page.waitFor(500);
+      const txId = await page.evaluate(() => navigator.clipboard.readText());
+      await click(page, 'Verify', 10000, false, Type.a); // Open Stamp page
 
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -70,24 +75,20 @@ describe('Stamp e2e Test', () => {
       ]);
       await fileChooser.accept(['test/e2e/puppeteer/components/tmp/imagetest.png']);
 
-      click(page, 'stamp', 10000, false, Type.button);
-
-      const stampProofPage = await page.waitForSelector("[data-test-key='stampProof']",
-        { visible: true, timeout: 30000 });
-
-      const stampPending = await page.waitForSelector("[data-test-key='stampPending']",
-        { visible: true, timeout: 10000 });
-
-      const stampProofTitle = await page.waitForSelector("[data-test-key='stampProofTitle']",
-        { visible: true, timeout: 10000 });
+      changeText(page, 'verifyProofId', txId, true, 10000, 30);
+      click(page, 'verify', 10000, false, Type.button);
 
       await page.waitFor(500);
 
-      expect(stampProofPage).not.toBeNull(); // stamp is finished
+      const stampVerifyPage = await page.waitForSelector("[data-test-key='stampVerify']",
+        { visible: true, timeout: 30000 });
 
-      expect(stampPending).not.toBeNull();
+      const stampVerifyTitle = await page.waitForSelector("[data-test-key='stampVerifyTitle']",
+        { visible: true, timeout: 10000 });
 
-      expect(await stampProofTitle.evaluate(node => node.innerText)).toBe("Your timestamp is on it's way");
+      expect(stampVerifyPage).not.toBeNull(); // verify is finished
+
+      expect(await stampVerifyTitle.evaluate(node => node.innerText)).toBe("Your timestamp is on it's way");
 
       await page.waitFor(2000);
 

@@ -12,6 +12,7 @@
       />
       <span
         class="text-h6 q-my-sm"
+        data-test-key="stampVerifyTitle"
       >{{ title }}</span>
       <div
         v-if="!proof.verified"

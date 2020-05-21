@@ -75,6 +75,7 @@
                   color="grey"
                   icon="filter_none"
                   class="copy-button"
+                  data-test-key="timeStampsTxId"
                   :disable="stamp.status === 2"
                   @click="copy(stamp.txId)"
                 >

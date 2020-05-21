@@ -40,8 +40,10 @@ module.exports = function (isDev, isTest, isProd) {
   } else if (isProd) {
     envVar = {
       API: JSON.stringify('https://timescribeapiprod.azurewebsites.net/api'),
-      ETHERSCAN: JSON.stringify('https://etherscan.io/tx'),
-      INFURA: JSON.stringify('https://mainnet.infura.io/v3/679bbc6759454bf58a924bfaf55576b9'),
+      ETHERSCAN: JSON.stringify('https://kovan.etherscan.io/tx'),
+      INFURA: JSON.stringify('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9'),
+      // ETHERSCAN: JSON.stringify('https://etherscan.io/tx'),
+      // INFURA: JSON.stringify('https://mainnet.infura.io/v3/679bbc6759454bf58a924bfaf55576b9'),
       PROD: JSON.stringify(true),
       B2C_SCOPES: JSON.stringify('https://timescribe.onmicrosoft.com/api/read'),
       CLIENT_ID: JSON.stringify('9361fd25-6b7f-438d-8e16-7a24a43cd992'),

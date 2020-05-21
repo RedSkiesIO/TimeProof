@@ -107,6 +107,7 @@
             unelevated
             size="lg"
             color="secondary"
+            :data-test-key="$t('sign')"
             :label="$t('sign')"
             @click="signHash"
           />
@@ -116,6 +117,7 @@
               v-model="proofId"
               outlined
               bottom-slots
+              data-test-key="verifyProofId"
               :placeholder="$t('proofId')"
               :rules="[
                 val => !!val || '* Required',
@@ -128,6 +130,7 @@
                 unelevated
                 :disable="!proofId"
                 color="secondary"
+                :data-test-key="$t('verify')"
                 :label="$t('verify')"
                 @click="verifyProof"
               />
@@ -144,6 +147,7 @@
           :proof-id="txId"
           :scope="scope"
           class="add-border"
+          data-test-key="stampProof"
           @userHasReachedToLimit="$emit('userHasReachedToLimit')"
         />
         <div class="row justify-center q-pa-md">
@@ -161,6 +165,7 @@
           v-if="confirmed && file.verify"
           :proof="file"
           :scope="scope"
+          data-test-key="stampVerify"
           class="add-border"
         />
       </div>

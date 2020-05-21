@@ -17,6 +17,7 @@
 
       <span
         class="text-h6 q-my-sm"
+        data-test-key="stampProofTitle"
       >{{ title }}</span>
       <a
         v-if="proof.status !== 0"
@@ -81,6 +82,7 @@
                 square
                 color="orange"
                 text-color="white"
+                data-test-key="stampPending"
               >
                 pending
               </q-chip>

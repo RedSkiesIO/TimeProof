@@ -50,7 +50,7 @@
           @click="lockKey"
         />
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <div
           class="text-blue q-mb-sm"
           @click="openImportDialog"
@@ -63,7 +63,7 @@
         >
           {{ $t('newKey') }}
         </div>
-      </div>
+      </div> -->
       <div class="row justify-end" />
     </q-card>
 

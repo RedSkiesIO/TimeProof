@@ -140,37 +140,39 @@ export default {
       city: '',
       state: '',
       postalCode: '',
-      country: '',
+      country: config.country,
       countryClassName: 'field gb',
-      zipSpanText: 'ZIP',
+      zipSpanText: 'Postcode',
     };
   },
+  created() {
+    this.selectCountry();
+  },
   mounted() {
-    this.country = config.country;
-    this.selectCountry(this.country);
+    this.changeThePaymentButtonContent();
   },
   methods: {
     countryChange(event) {
-      this.selectCountry(event.target.value);
+      this.country = event.target.value;
+      this.selectCountry();
     },
-    selectCountry(country) {
-      // const selector = document.getElementById('country');
-      // selector.querySelector(`option[value=${country}]`).selected = 'selected';
-      this.countryClassName = `field ${country.toLowerCase()}`;
-      // Trigger the methods to show relevant fields and payment methods on page load.
-      this.showRelevantFormFields(country);
-      this.showRelevantPaymentMethods(country);
+    selectCountry() {
+      this.countryClassName = `field ${this.country.toLowerCase()}`;
+      this.showRelevantFormFields();
     },
-    // Show only form fields that are relevant to the selected country.
     // eslint-disable-next-line vue/no-dupe-keys
-    showRelevantFormFields(country) {
-      if (country === 'US') {
+    showRelevantFormFields() {
+      if (this.country === 'US') {
         this.zipSpanText = 'ZIP';
-      } else if (country === 'GB') {
+      } else if (this.country === 'GB') {
         this.zipSpanText = 'Postcode';
       } else {
         this.zipSpanText = 'Postal Code';
       }
+    },
+
+    changeThePaymentButtonContent() {
+      this.showRelevantPaymentMethods(this.country);
     },
 
   },

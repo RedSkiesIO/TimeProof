@@ -6,11 +6,14 @@
     >
     <div class="text-box">
       <div class="text-h6 text-secondary">
-        Choose a password to encrypt your key
+        Choose a password to encrypt your signing key
       </div>
       <div class="encrypt-desc">
-        In order to keep your signing key safe
-        while it's stored in your browser storage we encrypt it with a password.
+        To maintain security,
+        we strongly recommend that you choose a password different from your account password.
+        <br>
+        <strong>Please record this password</strong>
+        as it cannot be reset/retrieved once it has been setup.
       </div>
     </div>
     <div class="row justify-center text-center q-mt-md">

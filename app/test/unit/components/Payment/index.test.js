@@ -75,7 +75,7 @@ describe('Mount Payment', () => {
     vm.$refs.paymentBilling.email = "veyseltosun.vt@gmail.com"
     vm.$refs.paymentBilling.address = "address 1";
     vm.$refs.paymentBilling.city = "London";
-    vm.$refs.paymentBilling.state = "";
+    vm.$refs.paymentBilling.state = "London";
     vm.$refs.paymentBilling.postalCode = "HA9 8BB";
     vm.$refs.paymentBilling.country = "GB";
 

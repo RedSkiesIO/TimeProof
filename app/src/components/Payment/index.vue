@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="payment-page">
+    <div
+      v-if="getSellingProduct"
+      class="payment-page"
+    >
       <main
         id="main"
         :class="{
@@ -154,23 +157,23 @@
             >
               {{ submitButtonText }}
             </button>
+            <div
+              id="card-errors"
+              class="element-errors"
+              :class="{ visible: cardErrorVisible}"
+            >
+              {{ cardErrorContent }}
+            </div>
+            <div
+              id="iban-errors"
+              class="element-errors"
+              :class="{ visible: ibanErrorVisible}"
+            >
+              {{ ibanErrorContent }}
+            </div>
           </form>
-          <span class="q-mt-md text-grey">
-            Powered by <strong>stripe</strong>
-          </span>
-          <div
-            id="card-errors"
-            class="element-errors"
-            :class="{ visible: cardErrorVisible}"
-          >
-            {{ cardErrorContent }}
-          </div>
-          <div
-            id="iban-errors"
-            class="element-errors"
-            :class="{ visible: ibanErrorVisible}"
-          >
-            {{ ibanErrorContent }}
+          <div style="margin-top:0.7rem">
+            <img src="./images/powered_by_stripe.png">
           </div>
         </div>
 
@@ -240,7 +243,10 @@
               </p>
             </template>
 
-            <p class="error-message">
+            <p
+              v-if="false"
+              class="error-message"
+            >
               {{ confirmationElementErrorMessage }}
             </p>
             <div class="col-md-12 col-sm-12 row">
@@ -443,10 +449,12 @@ export default {
     }
   },
   mounted() {
-    if (this.isFreePlan) {
-      this.downgradeToFreePlan();
-    } else {
-      this.setUpStripe();
+    if (this.getSellingProduct) {
+      if (this.isFreePlan) {
+        this.downgradeToFreePlan();
+      } else {
+        this.setUpStripe();
+      }
     }
   },
 
