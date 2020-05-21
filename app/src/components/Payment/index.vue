@@ -35,12 +35,12 @@
             </section>
             <section v-show="!user.paymentIntentId">
               <div class="row">
-                <h2 class="col-5">
+                <h2 class="col-7">
                   Payment Information
                 </h2>
                 <div
-                  class="col-7"
-                  style="padding-top:0.5rem"
+                  class="col-5"
+                  style="padding-top:0.5rem; padding-left:2.8rem"
                 >
                   <div class="row">
                     <div class="col-3 visa" />
