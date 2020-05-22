@@ -8,6 +8,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import moment from 'moment';
 import User from './store/User';
 
 export default {
@@ -71,13 +72,16 @@ export default {
                 membershipRenewDate: verifyResult.membershipRenewDate,
                 remainingTimeStamps: verifyResult.remainingTimeStamps,
                 pendingPricePlanId: verifyResult.pendingPricePlanId,
+                keyEmailDate: verifyResult.keyEmailDate,
               },
             });
 
             console.log('USERERRR');
             console.log(this.user);
 
-            if (!this.user.secretKey) {
+            // 0001-01-01T00:00:00
+            const keyMoment = moment(this.user.keyEmailDate, 'YYYY-MM-DD');
+            if (!this.user.secretKey && keyMoment.year() === 1) {
               this.$router.push('/new-key');
             }
 

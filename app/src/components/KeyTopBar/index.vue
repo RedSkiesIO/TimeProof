@@ -56,14 +56,14 @@
           @click="openImportDialog"
         >
           {{ $t('importKey') }}
-        </div>
-        <div
+        </div> -->
+      <!-- <div
           class=" text-blue"
           @click="openNewKeyDialog"
         >
           {{ $t('newKey') }}
-        </div>
-      </div> -->
+        </div> -->
+      <!-- </div> -->
       <div class="row justify-end" />
     </q-card>
 
@@ -126,13 +126,13 @@
           label="import key"
           @click="openImportDialog"
         />
-        <q-btn
+        <!-- <q-btn
           flat
           color="blue"
           size="md"
           label="new key"
           @click="openNewKeyDialog"
-        />
+        /> -->
       </div>
       <div class="row justify-end" />
     </q-card>
@@ -148,7 +148,10 @@
       <div class="row justify-center text-center">
         {{ $t('createKeyDesc') }}
       </div>
-      <div class="row justify-center q-my-sm">
+      <div
+        v-if="!userHasSavedKeyBefore"
+        class="row justify-center q-my-sm"
+      >
         <q-btn
           outline
           :label="$t('createKeyLabel')"
@@ -157,7 +160,8 @@
         />
       </div>
       <div
-        class="row justify-center text-blue q-mb-sm"
+        :class="userHasSavedKeyBefore ? 'q-pt-md' :''"
+        class="row justify-center text-blue q-mb-sm cursor-pointer"
         @click="openImportDialog"
       >
         {{ $t('importKey') }}
@@ -184,6 +188,7 @@
   </div>
 </template>
 <script>
+import moment from 'moment';
 import User from '../../store/User';
 import NewKey from './NewKey';
 import Backup from './DownloadKey';
@@ -220,6 +225,12 @@ export default {
     key() {
       return this.$store.state.settings.authenticatedAccount;
     },
+
+    userHasSavedKeyBefore() {
+      const keyMoment = moment(this.user.keyEmailDate, 'YYYY-MM-DD');
+      return keyMoment.year() !== 1;
+    },
+
   },
 
   methods: {
@@ -235,7 +246,6 @@ export default {
       this.newKey = true;
       this.dialogMode = 'backup';
     },
-
     openImportDialog() {
       this.newKey = true;
       this.dialogMode = 'import';
