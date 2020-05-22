@@ -82,7 +82,7 @@
           @input="validFile"
         >
           <template v-slot:error>
-            {{ $t('invalidKeystoe') }}
+            {{ $t('invalidKeystore') }}
           </template>
         </q-input>
       </div>

@@ -82,7 +82,7 @@
           @input="validFile"
         >
           <template v-slot:error>
-            {{ $t('invalidKeystoe') }}
+            {{ $t('invalidKeystore') }}
           </template>
         </q-input>
       </div>
@@ -139,8 +139,7 @@ export default {
     validFile(val) {
       // eslint-disable-next-line prefer-destructuring
       this.file = val[0];
-
-      if (this.file.type !== 'application/json') {
+      if (this.file.type !== 'text/plain') {
         this.isValid = false;
       } else {
         this.isValid = true;

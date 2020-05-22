@@ -142,30 +142,39 @@
       flat
       class="top-box"
     >
-      <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
-        <div>{{ $t('createKey') }}</div>
-      </div>
-      <div class="row justify-center text-center">
-        {{ $t('createKeyDesc') }}
-      </div>
-      <div
-        v-if="!userHasSavedKeyBefore"
-        class="row justify-center q-my-sm"
-      >
-        <q-btn
-          outline
-          :label="$t('createKeyLabel')"
-          color="secondary"
-          @click="newKey=true"
-        />
-      </div>
-      <div
-        :class="userHasSavedKeyBefore ? 'q-pt-md' :''"
-        class="row justify-center text-blue q-mb-sm cursor-pointer"
-        @click="openImportDialog"
-      >
-        {{ $t('importKey') }}
-      </div>
+      <template v-if="!userHasSavedKeyBefore">
+        <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
+          <div>{{ $t('createKey') }}</div>
+        </div>
+        <div class="row justify-center text-center">
+          {{ $t('createKeyDesc') }}
+        </div>
+        <div
+          class="row justify-center q-my-sm"
+        >
+          <q-btn
+            outline
+            :label="$t('createKeyLabel')"
+            color="secondary"
+            @click="newKey=true"
+          />
+        </div>
+      </template>
+      <template v-else>
+        <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
+          <div>{{ $t('importKey') }}</div>
+        </div>
+        <div class="row justify-center text-center">
+          {{ $t('importKeyContent') }}
+        </div>
+        <div
+          class="row justify-center text-blue q-mb-sm q-pt-md cursor-pointer"
+          @click="openImportDialog"
+        >
+          {{ $t('importKey') }}
+        </div>
+      </template>
+
       <div class="row justify-end" />
     </q-card>
     <q-dialog

@@ -80,6 +80,7 @@ export default {
   backupKeyDesc: 'If you lose your signing key you will not be able to prove your timestamps',
   importKey: 'Import a signing key',
   importKeyDesc: 'Select your key type',
+  importKeyContent: 'In order to create timestamps you need to import a signing key',
   newKey: 'Create a new signing key',
   signingKeyLocked: 'Your signing key is locked',
   signingKeyLockedDesc: 'Please enter your signing key password to unlock',
