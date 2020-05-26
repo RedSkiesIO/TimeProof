@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Mail;
 using AtlasCity.TimeProof.Abstractions;
@@ -89,11 +90,11 @@ namespace AtlasCity.TimeProof.Api
             var web3 = new Web3(account, nodeEndpoint);
             services.AddSingleton<IWeb3>(web3);
 
-            var storageAccountConnectionString = Configuration.GetValue("StorageAccountConnectionString");
+            var storageAccountConnectionString = Configuration.GetConnectionString("StorageAccount");
             services.AddSingleton<ITimestampQueueService>(new TimestampQueueService(storageAccountConnectionString, Log.Logger));
 
-            var endpointUrl = Configuration.GetValue("TransationCosmosDb:EndpointUrl");
-            var authorizationKey = Configuration.GetValue("TransationCosmosDb:AuthorizationKey");
+            var endpointUrl = Configuration.GetValue("TransationDbEndpointUrl");
+            var authorizationKey = Configuration.GetValue("TransationDbAuthorizationKey");
             services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));
@@ -103,7 +104,7 @@ namespace AtlasCity.TimeProof.Api
             var client = new SmtpClient(Configuration.GetValue("SMTPEmail:HostName"), int.Parse(Configuration.GetValue("SMTPEmail:Port")))
             {
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(Configuration.GetValue("SMTPEmail:UserName"), Configuration.GetValue("SMTPEmail:Password")),
+                Credentials = new NetworkCredential(Configuration.GetValue("SMTPEmail:UserName"), Configuration.GetValue("SMTPEmailPassword")),
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 EnableSsl = true
             };
@@ -112,8 +113,9 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IEthClient, EthClient>();
 
             var toAddress = Configuration.GetValue("NetheriumAccount:ToAddress");
-            var secretKey = Configuration.GetValue("NetheriumAccount:SecretKey");
+            var secretKey = Configuration.GetValue("NetheriumAccountSecretKey");
             var networkName = Configuration.GetValue("NetheriumAccount:Network");
+
             var ethSetting = new EthSettings { ToAddress = toAddress, SecretKey = secretKey, Network = networkName };
 
             services.AddSingleton<IEthHelper>(provider => new EthHelper(ethSetting, provider.GetService<IEthClient>()));
@@ -121,7 +123,7 @@ namespace AtlasCity.TimeProof.Api
             var timeProofLoginUri = Configuration.GetValue("TimeProofLoginUri");
             services.AddSingleton<IEmailTemplateHelper>(new EmailTemplateHelper(timeProofLoginUri));
 
-            var paymentApiKey = Configuration.GetValue("PaymentApiKey");
+            var paymentApiKey = Configuration.GetValue("StripePaymentApiKey");
             var stripeClient = new StripeClient(paymentApiKey);
             services.AddSingleton(new PaymentIntentService(stripeClient));
             services.AddSingleton(new CustomerService(stripeClient));

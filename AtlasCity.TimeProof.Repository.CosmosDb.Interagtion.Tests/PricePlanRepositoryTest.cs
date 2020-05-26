@@ -33,6 +33,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
                 Price = 0,
                 NoOfStamps = 10,
                 TransactionPrice = 1,
+                GasPrice = 2,
                 PaymentFrquencyDescription = "Per month"
             };
 
@@ -43,6 +44,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
                 Price = 499,
                 NoOfStamps = 40,
                 TransactionPrice = 5,
+                GasPrice = 10,
                 PaymentFrquencyDescription = "Per month, billed monthly"
             };
 
@@ -53,6 +55,7 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
                 Price = 2499,
                 NoOfStamps = 250,
                 TransactionPrice = 5,
+                GasPrice = 10,
                 PaymentFrquencyDescription = "Per month, billed monthly"
             };
 

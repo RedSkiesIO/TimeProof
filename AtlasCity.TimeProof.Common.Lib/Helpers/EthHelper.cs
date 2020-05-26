@@ -15,7 +15,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
     {
         const int Total_Gwei_In_Eth = 1000000000;
         const int Gas_Limit = 30000;
-        const int Default_Gas_Price = 3;
+        const int Default_Gas_Price = 2;
 
         private readonly EthSettings _ethSettings;
         private readonly IEthClient _ethClient;
