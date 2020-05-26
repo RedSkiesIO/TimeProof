@@ -79,7 +79,7 @@ export default {
             console.log('USERERRR');
             console.log(this.user);
 
-            // 0001-01-01T00:00:00
+            // 0001-01-01T00:00:00 for new user
             const keyMoment = moment(this.user.keyEmailDate, 'YYYY-MM-DD');
             if (!this.user.secretKey && keyMoment.year() === 1) {
               this.$router.push('/new-key');
