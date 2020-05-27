@@ -3,8 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.EthResponse;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using Dawn;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
 using TheDotNetLeague.MultiFormats.MultiBase;
@@ -61,6 +63,14 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
             var gasPrice = Convert.ToInt32(Math.Floor(gweiToSpend / Gas_Limit));
 
             return gasPrice;
+        }
+
+        public async Task<EthGasStationPrice> GetGasStationPrice(string apiEndPoint, CancellationToken cancellationToken)
+        {
+            var responseContent = await _ethClient.GetJsonResponseContent(apiEndPoint, cancellationToken);
+            var ethGasStationPrice = JsonConvert.DeserializeObject<EthGasStationPrice>(responseContent);
+
+            return ethGasStationPrice;
         }
     }
 }

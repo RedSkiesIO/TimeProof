@@ -1,6 +1,3 @@
-using System;
-using System.Net;
-using System.Net.Mail;
 using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
@@ -16,10 +13,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Nethereum.RPC.NonceServices;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts.Managed;
 using Serilog;
 using Stripe;
+using System.Net;
+using System.Net.Mail;
 
 namespace AtlasCity.TimeProof.Api
 {
@@ -84,10 +84,14 @@ namespace AtlasCity.TimeProof.Api
                 };
             });
 
+            var secretKey = Configuration.GetValue("NetheriumAccountSecretKey");
             var accountAddress = Configuration.GetValue("NetheriumAccount:FromAddress");
             var nodeEndpoint = Configuration.GetValue("NetheriumAccount:NodeEndpoint");
-            var account = new ManagedAccount(accountAddress, string.Empty);
+            var account = new Nethereum.Web3.Accounts.Account(secretKey);
+
             var web3 = new Web3(account, nodeEndpoint);
+            account.NonceService = new InMemoryNonceService(accountAddress, web3.Client);
+
             services.AddSingleton<IWeb3>(web3);
 
             var storageAccountConnectionString = Configuration.GetConnectionString("StorageAccount");
@@ -98,6 +102,7 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));
+            services.AddSingleton<IAddressNonceRepository>(new AddressNonceRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPaymentRepository>(new PaymentRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPendingMembershipChangeRepository>(new PendingMembershipChangeRepository(endpointUrl, authorizationKey));
 
@@ -113,10 +118,10 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IEthClient, EthClient>();
 
             var toAddress = Configuration.GetValue("NetheriumAccount:ToAddress");
-            var secretKey = Configuration.GetValue("NetheriumAccountSecretKey");
             var networkName = Configuration.GetValue("NetheriumAccount:Network");
+            var gasStationAPIEndpoint = Configuration.GetValue("NetheriumAccount:GasStationAPIEndpoint");
 
-            var ethSetting = new EthSettings { ToAddress = toAddress, SecretKey = secretKey, Network = networkName };
+            var ethSetting = new EthSettings { ToAddress = toAddress, SecretKey = secretKey, Network = networkName, GasStationAPIEndpoint = gasStationAPIEndpoint };
 
             services.AddSingleton<IEthHelper>(provider => new EthHelper(ethSetting, provider.GetService<IEthClient>()));
 
@@ -145,6 +150,7 @@ namespace AtlasCity.TimeProof.Api
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
             app.UseCors(MyAllowSpecificOrigins);
 
             app.UseSerilogRequestLogging();

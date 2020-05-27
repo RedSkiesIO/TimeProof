@@ -30,17 +30,16 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         [JsonProperty(PropertyName = "timestamp")]
         public DateTime Timestamp { get; set; }
 
-
-
         [JsonProperty(PropertyName = "txId")]
         public string TransactionId { get; set; }
 
         [JsonProperty(PropertyName = "blockNumber")]
         public long BlockNumber { get; set; }
 
+        [JsonProperty(PropertyName = "add")]
+        public string Address { get; set; }
+
         [JsonProperty(PropertyName = "nonce")]
         public long Nonce { get; set; }
-
-       
     }
 }

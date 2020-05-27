@@ -50,5 +50,33 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
 
             return 0;
         }
+
+        public async Task<string> GetJsonResponseContent(string clientUri, CancellationToken cancellationToken)
+        {
+            Guard.Argument(clientUri, nameof(clientUri)).NotNull().NotEmpty().NotWhiteSpace();
+
+            try
+            {
+                var client = new HttpClient();
+                var response = await client.GetAsync(clientUri, cancellationToken);
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    _logger.Warning($"Request to {client} resulted in status code {response.StatusCode}");
+                    return null;
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                _logger.Verbose($"Response from {client} returned {responseContent}");
+
+                return responseContent;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Error while getting response form {clientUri}. Error: {ex.Message}");
+            }
+
+            return null;
+        }
     }
 }
