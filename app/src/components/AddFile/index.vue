@@ -5,6 +5,7 @@
     :label="$t('selectFile')"
     auto-upload
     hide-upload-btn
+    max-file-size="52428800"
     :factory="hashFile"
     :filter="checkFileNameLength"
     @rejected="onRejected"
@@ -387,15 +388,26 @@ export default {
       return files.filter(file => file && file.name && file.name.length <= 200);
     },
 
-    onRejected() { // rejectedEntries
+    onRejected(rejectedEntries) { // rejectedEntries
       // Notify plugin needs to be installed
       // https://quasar.dev/quasar-plugins/notify#Installation
-      this.$q.notify({
-        type: 'warning-notify',
-        // type: 'negative',
-        // ${rejectedEntries.length}
-        message: 'The file name must not exceed 200 characters.',
-      });
+      if (rejectedEntries && Array.isArray(rejectedEntries) && rejectedEntries.length > 0) {
+        if (rejectedEntries[0].failedPropValidation === 'max-file-size') {
+          this.$q.notify({
+            type: 'warning-notify',
+            // type: 'negative',
+            // ${rejectedEntries.length}
+            message: 'The file size must not exceed 50 MB.',
+          });
+        } else { // failedPropValidation === 'filter'
+          this.$q.notify({
+            type: 'warning-notify',
+            // type: 'negative',
+            // ${rejectedEntries.length}
+            message: 'The file name must not exceed 200 characters.',
+          });
+        }
+      }
     },
   },
 };
@@ -430,6 +442,6 @@ export default {
 }
 
 .add-border {
-border: 1px solid lightgray;
+  border: 1px solid lightgray;
 }
 </style>
