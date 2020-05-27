@@ -83,6 +83,53 @@ module.exports = function (ctx) {
       // this is a configuration passed on
       // to the underlying Webpack
       devtool: 'source-map',
+  
+      /**
+       * 
+       *   (api, { quasarConf }) => ?Promise
+       */
+      afterBuild({ quasarConf }) {
+        let appHost = 'http://localhost:6420';
+        let b2cloginPage = 'https://timeproof.b2clogin.com';
+        if(ctx.dev){
+          appHost = 'http://localhost:6420';
+          b2cloginPage = 'https://timeproof.b2clogin.com';
+        }else if(process.env.test){
+          appHost = 'https://timescribewebteststorage.z35.web.core.windows.net';
+          b2cloginPage = 'https://timeproof.b2clogin.com';
+        }else if(process.env.prod){
+          appHost = 'https://timescribewebstorageprod.z16.web.core.windows.net';
+          b2cloginPage = 'https://timescribe.b2clogin.com';
+        }
+
+        const fileArr = [
+          './dist/spa/statics/login.html',
+          './dist/spa/statics/css/login.css',
+          './dist/spa/statics/signup.html',
+          './dist/spa/statics/css/signup.css',
+          './dist/spa/statics/forgotPassword.html',
+          './dist/spa/statics/css/forgotPassword.css'
+        ];
+
+        fileArr.forEach(async (file) => {
+          fs.readFile(file, 'utf8', async (err, data) => {
+            if (err) {
+              return console.log(err);
+            }
+
+            var result = data.replace(/{appHost}|{b2cloginPage}/g, function (m) {
+              return {
+                  '{appHost}': appHost,
+                  '{b2cloginPage}': b2cloginPage
+              }[m];
+            });
+          
+            fs.writeFile(file, result, 'utf8', function (err) {
+               if (err) return console.log(err);
+            });
+          });
+        });
+      },
 
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
       extendWebpack(cfg) {
@@ -101,29 +148,6 @@ module.exports = function (ctx) {
         //     ],
         //   },   
         // )
-
-        let appHost = 'https://app.timescribe.io';
-        if(ctx.dev){
-          appHost = 'http://localhost:6420';
-        }else if(process.env.test){
-          appHost = 'https://testapp.timescribe.io';
-        }else if(process.env.prod){
-          appHost = 'https://app.timescribe.io';
-        }
-        const fileArr = ['./src/statics/login.html', './src/statics/signup.html'];
-
-        fileArr.forEach(file => {
-          fs.readFile(file, 'utf8', function (err, data) {
-            if (err) {
-              return console.log(err);
-            }
-            var result = data.replace(/{host}/g, appHost);
-          
-            fs.writeFile(file, result, 'utf8', function (err) {
-               if (err) return console.log(err);
-            });
-          });
-        });
 
         cfg.module.rules.push(
           {

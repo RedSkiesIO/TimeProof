@@ -21,7 +21,6 @@ export default class User extends Model {
       address: this.hasOne(Address, 'accountIdentifier'),
       tokenExpires: this.attr(''),
       upgrade: this.attr(false),
-      firstTimeDialog: this.attr(true),
       membershipRenewDate: this.attr(''),
       remainingTimeStamps: this.attr(''),
       selectedCardNumber: this.attr(''),
