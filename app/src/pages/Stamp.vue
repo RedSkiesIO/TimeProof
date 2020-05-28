@@ -111,7 +111,7 @@ export default {
 .sign .q-uploader__list {
     border: 0px dashed lightgrey;
     background-color: white;
-    padding: 0;
+    // padding: 0;
     margin-top: 0;
 }
 

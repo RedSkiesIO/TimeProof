@@ -9,10 +9,6 @@ body {
     padding: 12px;
 }
 
-// .left-box {
-//     width :350px;
-// }
-
 .top-box {
     width : 50vmax;
 }
@@ -30,4 +26,10 @@ body {
     white-space: -webkit-pre-wrap; /* Newer versions of Chrome/Safari*/
     word-break: break-all;
     white-space: normal;
+}
+
+.q-field--filled.q-field--readonly .q-field__control:before {
+    opacity: 1;
+    background: transparent;
+    border-bottom-style: none;
 }

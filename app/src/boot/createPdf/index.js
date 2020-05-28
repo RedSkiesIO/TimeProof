@@ -48,7 +48,7 @@ class PdfUtil {
         if (lengWidth) {
           let y = 505;
           if (lengWidth <= 358) {
-            y -= 10;
+            y -= 20;
           }
 
           this.drawTextAccordingToPixels(proof.file, firstPage, montserratFont, 175, y);
@@ -63,18 +63,18 @@ class PdfUtil {
         }
       }
 
-      this.drawTextAccordingToPixels(proof.timestamp, firstPage, montserratFont, 175, 434.75);
-
       this.drawTextAccordingToPixels(proof.proofId.one + proof.proofId.two,
         firstPage, montserratFont, 175, 560);
 
-      this.drawTextAccordingToPixels(proof.user, firstPage, montserratFont, 175, 374);
+      this.drawTextAccordingToPixels(proof.timestamp, firstPage, montserratFont, 175, 405);
+
+      this.drawTextAccordingToPixels(proof.user, firstPage, montserratFont, 175, 345);
 
       this.drawTextAccordingToPixels(proof.signature.one + proof.signature.two,
-        firstPage, montserratFont, 175, 261.25);
+        firstPage, montserratFont, 175, 235);
 
       this.drawTextAccordingToPixels(proof.hash.one + proof.hash.two,
-        firstPage, montserratFont, 175, 321.25);
+        firstPage, montserratFont, 175, 295);
 
       const output = await doc.save(); // Save the doc already replacement
       this.saveDataToFile(output, name, 'application/pdf');

@@ -36,7 +36,7 @@
         <div class="col-auto">
           {{ $t('file') }}:
         </div>
-        <div class="col-auto">
+        <div class="col-auto wrapword">
           {{ proof.name }}
         </div>
       </div>
@@ -66,7 +66,10 @@
             {{ proof.pubKey.toLowerCase() }}
           </div>
         </div>
-        <div class="row proof-item justify-between">
+        <div
+          class="row proof-item justify-between"
+          :class="heightClass"
+        >
           <div class="col">
             <q-input
               v-model="proof.txId"
@@ -93,7 +96,10 @@
           </div>
         </div>
 
-        <div class="row proof-item justify-between">
+        <div
+          class="row proof-item justify-between"
+          :class="heightClass"
+        >
           <div class="col">
             <q-input
               v-model="proof.hash"
@@ -120,7 +126,10 @@
           </div>
         </div>
 
-        <div class="row proof-item justify-between">
+        <div
+          class="row proof-item justify-between"
+          :class="heightClass"
+        >
           <div class="col">
             <q-input
               v-model="proof.signature"
@@ -191,6 +200,10 @@ export default {
       return `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`;
     },
 
+    heightClass() {
+      return this.proof.name && this.proof.name.length < 51 ? 'text-height-short' : 'text-height-long';
+    },
+
     icon() {
       if (!this.proof.verified) {
         return {
@@ -241,17 +254,51 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style lang="css">
 
 .proof-item{
-    padding: 16px;
+  padding: 16px;
 }
 
-.break {
-  word-break: break-all;
-}
 .copy-button {
   right: -10px;
+}
+
+
+@media screen and (max-width: 1500px) {
+  .text-height-long textarea{
+    height: 2rem !important;
+  }
+  .text-height-short textarea{
+    height: 4rem !important;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .text-height-long textarea{
+    height: 3rem !important;
+  }
+  .text-height-short textarea{
+    height: 4rem !important;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .text-height-long textarea{
+    height: 4rem !important;
+  }
+  .text-height-short textarea{
+    height: 4rem !important;
+  }
+}
+
+@media screen and (max-width: 300px) {
+  .text-height-long textarea{
+    height: 5rem !important;
+  }
+  .text-height-short textarea{
+    height: 4rem !important;
+  }
 }
 
 </style>
