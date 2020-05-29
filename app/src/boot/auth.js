@@ -2,9 +2,6 @@ import Vue from 'vue';
 import * as Msal from 'msal';
 import User from '../store/User';
 
-console.log('AUTHHHHH');
-console.log(process.env);
-
 const appConfig = {
   b2cScopes: [process.env.B2C_SCOPES],
   webApi: '',
@@ -25,14 +22,12 @@ const msalConfig = {
   },
 };
 
-
 const loginRequest = {
   scopes: appConfig.b2cScopes,
 };
 const tokenRequest = {
   scopes: [process.env.CLIENT_ID],
 };
-
 
 // instantiate MSAL
 const myMSALObj = new Msal.UserAgentApplication(msalConfig);

@@ -5,7 +5,7 @@ console.log('PROD');
 console.log(process.env.prod);
 
 module.exports = function (isDev, isTest, isProd) {
-  console.log('ABOVVVVV');
+  console.log('app.config');
   console.log(isDev, isTest, isProd);
   let envVar = {};
 

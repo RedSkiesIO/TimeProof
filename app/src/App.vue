@@ -10,6 +10,7 @@
 import { mapActions } from 'vuex';
 import moment from 'moment';
 import User from './store/User';
+import { disableLog } from './util/log';
 
 export default {
   name: 'App',
@@ -34,6 +35,10 @@ export default {
         this.$auth.logout();
       }
     },
+  },
+
+  async beforeCreate() {
+    disableLog();
   },
 
   async created() {
