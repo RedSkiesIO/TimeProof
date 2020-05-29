@@ -1,15 +1,13 @@
-﻿using System;
-using AtlasCity.TimeProof.Abstractions.Repository;
+﻿using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Services;
 using AtlasCity.TimeProof.Repository.CosmosDb;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nethereum.Web3;
-using Nethereum.Web3.Accounts.Managed;
 using Serilog;
 using Stripe;
+using System;
 
 [assembly: FunctionsStartup(typeof(AtlasCity.TimeProof.AzureFunction.Startup))]
 namespace AtlasCity.TimeProof.AzureFunction
@@ -33,19 +31,21 @@ namespace AtlasCity.TimeProof.AzureFunction
             builder.Services.AddLogging(s => s.AddSerilog(Log.Logger));
             builder.Services.AddSingleton(Log.Logger);
 
-            var accountAddress = configuration.GetSection("NetheriumAccountFromAddress").Value;
-            var nodeEndpoint = configuration.GetSection("NetheriumAccountNodeEndpoint").Value;
-            var account = new ManagedAccount(accountAddress, string.Empty);
-            var web3 = new Web3(account, nodeEndpoint);
-            builder.Services.AddSingleton<IWeb3>(web3);
+            var veryfyTransactionSettings = new VeryfyTransactionSettings()
+            {
+                NetheriumPremiumAccountFromAddress = configuration.GetSection("NetheriumPremiumAccountFromAddress").Value,
+                NetheriumBasicAccountFromAddress = configuration.GetSection("NetheriumBasicAccountFromAddress").Value,
+                NetheriumAccountNodeEndpoint     = configuration.GetSection("NetheriumAccountNodeEndpoint").Value
+            };
+
+            builder.Services.AddSingleton(veryfyTransactionSettings);
 
             var storageAccountConnectionString = configuration.GetConnectionString("StorageAccount");
             builder.Services.AddSingleton<ITimestampQueueService>(new TimestampQueueService(storageAccountConnectionString, Log.Logger));
 
-            
             var endpointUrl = configuration.GetSection("TransationCosmosDbEndpointUrl").Value;
             var authorizationKey = configuration.GetSection("TransationCosmosDbAuthorizationKey").Value;
-            
+
             builder.Services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
             builder.Services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
             builder.Services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));

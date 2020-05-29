@@ -1,14 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.Enums;
+﻿using AtlasCity.TimeProof.Abstractions.Enums;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using Dawn;
 using Microsoft.Azure.WebJobs;
 using Nethereum.Web3;
+using Nethereum.Web3.Accounts.Managed;
 using Serilog;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AtlasCity.TimeProof.AzureFunction
 {
@@ -17,23 +18,23 @@ namespace AtlasCity.TimeProof.AzureFunction
         private readonly ILogger _logger;
         private readonly ITimestampQueueService _timestampQueueService;
         private readonly ITimestampRepository _timestampRepository;
-        private readonly IWeb3 _netheriumWeb3;
+        private readonly VeryfyTransactionSettings _settings;
 
         public TimestampProcessingTrigger(
             ILogger logger,
             ITimestampQueueService timestampQueueService,
             ITimestampRepository timestampRepository,
-            IWeb3 netheriumWeb3)
+            VeryfyTransactionSettings settings)
         {
             Guard.Argument(logger, nameof(logger)).NotNull();
             Guard.Argument(timestampQueueService, nameof(timestampQueueService)).NotNull();
             Guard.Argument(timestampRepository, nameof(timestampRepository)).NotNull();
-            Guard.Argument(netheriumWeb3, nameof(netheriumWeb3)).NotNull();
+            Guard.Argument(settings, nameof(settings)).NotNull();
 
             _logger = logger;
             _timestampQueueService = timestampQueueService;
             _timestampRepository = timestampRepository;
-            _netheriumWeb3 = netheriumWeb3;
+            _settings = settings;
         }
 
         [FunctionName("TimestampProcessingFunction")]
@@ -51,7 +52,7 @@ namespace AtlasCity.TimeProof.AzureFunction
 
             foreach (var pendingTimestamp in pendingTimestamps)
             {
-                var hasTransactionMinned = await HasTransactionMinned(pendingTimestamp.TimestampId, pendingTimestamp.TransactionId, cancellationToken);
+                var hasTransactionMinned = await HasTransactionMinned(pendingTimestamp.TimestampId, pendingTimestamp.TransactionId, pendingTimestamp.IsPremiumPlan, cancellationToken);
                 if (hasTransactionMinned)
                 {
                     _logger.Information($"Removing message with transactionId '{pendingTimestamp.TransactionId}' and timestampId '{pendingTimestamp.TransactionId}' for message Id '{pendingTimestamp.Id}'.");
@@ -60,13 +61,27 @@ namespace AtlasCity.TimeProof.AzureFunction
             }
         }
 
-        private async Task<bool> HasTransactionMinned(string timestampId, string transactionId, CancellationToken cancellationToken)
+        private async Task<bool> HasTransactionMinned(string timestampId, string transactionId, bool isPremiumPlan, CancellationToken cancellationToken)
         {
             Guard.Argument(timestampId, nameof(timestampId)).NotNull().NotEmpty().NotWhiteSpace();
             Guard.Argument(transactionId, nameof(transactionId)).NotNull().NotEmpty().NotWhiteSpace();
 
-            _logger.Information($"Checking ETH transaction with transactionId '{transactionId}' for timestampId '{timestampId}'.");
-            var receipt = await _netheriumWeb3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionId);
+            IWeb3 web3 = null;
+            if (isPremiumPlan)
+            {
+                var premiumAccount = new ManagedAccount(_settings.NetheriumPremiumAccountFromAddress, string.Empty);
+                web3 = new Web3(premiumAccount, _settings.NetheriumAccountNodeEndpoint);
+            }
+            else
+            {
+                var basicAccount = new ManagedAccount(_settings.NetheriumBasicAccountFromAddress, string.Empty);
+                web3 = new Web3(basicAccount, _settings.NetheriumAccountNodeEndpoint);
+            }
+
+            _logger.Information($"Checking ETH transaction with transactionId '{transactionId}' for timestampId '{timestampId}' on '{web3.TransactionManager.Account.Address}'.");
+            var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionId);
+
+
             if (receipt == null || receipt.BlockNumber.Value < 0)
             {
                 _logger.Information($"ETH transaction with transactionId '{transactionId}' still pending.");

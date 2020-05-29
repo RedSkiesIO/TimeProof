@@ -11,7 +11,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         [JsonProperty(PropertyName = "paymentServiceId")]
         public string PaymentServiceId { get; set; }
 
-        [JsonProperty(PropertyName = "email")]
+        [JsonProperty(PropertyName = "amount")]
         public long Amount { get; set; }
 
         [JsonProperty(PropertyName = "pricePlanId")]

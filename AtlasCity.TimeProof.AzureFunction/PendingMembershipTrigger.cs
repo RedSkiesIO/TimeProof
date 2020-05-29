@@ -48,7 +48,7 @@ namespace AtlasCity.TimeProof.AzureFunction
         [FunctionName("PendingMembershipFunction")]
         public async Task Run([TimerTrigger("0 00 6 * * *", RunOnStartup = false)]TimerInfo myTimer)
         {
-            //await ProcessPendingMemberships();
+            await ProcessPendingMemberships();
             await ProcessRenewingMemberships();
         }
 
