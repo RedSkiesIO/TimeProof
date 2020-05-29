@@ -20,7 +20,8 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "NetheriumAccountSecretKey": "35641a29e6da0ae19bc594c6611bb5660ce2a038f9c2c9918334e68101f314f6",
+        "NetheriumPremiumAccountSecretKey": "35641a29e6da0ae19bc594c6611bb5660ce2a038f9c2c9918334e68101f314f6",
+        "NetheriumBasicAccountSecretKey": "35641a29e6da0ae19bc594c6611bb5660ce2a038f9c2c9918334e68101f314f6",
         "StripePaymentApiKey": "sk_test_cWWzTkeFvCFbKEUsFpe1CRSt00DzkGfYAn",
         "SMTPEmailPassword": "on6TSs4SNaVwXUqQQHJaU2dioYxBnS",
         "TransationDbAuthorizationKey": "gVpoXnUxYo2eYSPRDeeajoM8Rf3niQDUQQM0PHpDzwMdhzSXeAe7hayZNC4YeyhdnwsJvZjHJc0lZw3jfs0ZTQ==",

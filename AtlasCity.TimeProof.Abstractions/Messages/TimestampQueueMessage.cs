@@ -20,5 +20,8 @@ namespace AtlasCity.TimeProof.Abstractions.Messages
 
         [JsonProperty(PropertyName = "created", Required = Required.Always)]
         public DateTime Created { get; set; }
+
+        [JsonProperty(PropertyName = "isPremiumPlan", Required = Required.Always)]
+        public bool IsPremiumPlan { get; set; }
     }
 }

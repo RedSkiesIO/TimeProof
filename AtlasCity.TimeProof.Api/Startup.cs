@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nethereum.RPC.NonceServices;
 using Nethereum.Web3;
-using Nethereum.Web3.Accounts.Managed;
 using Serilog;
 using Stripe;
 using System.Net;
@@ -84,16 +83,6 @@ namespace AtlasCity.TimeProof.Api
                 };
             });
 
-            var secretKey = Configuration.GetValue("NetheriumAccountSecretKey");
-            var accountAddress = Configuration.GetValue("NetheriumAccount:FromAddress");
-            var nodeEndpoint = Configuration.GetValue("NetheriumAccount:NodeEndpoint");
-            var account = new Nethereum.Web3.Accounts.Account(secretKey);
-
-            var web3 = new Web3(account, nodeEndpoint);
-            account.NonceService = new InMemoryNonceService(accountAddress, web3.Client);
-
-            services.AddSingleton<IWeb3>(web3);
-
             var storageAccountConnectionString = Configuration.GetConnectionString("StorageAccount");
             services.AddSingleton<ITimestampQueueService>(new TimestampQueueService(storageAccountConnectionString, Log.Logger));
 
@@ -117,11 +106,13 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
             services.AddSingleton<IEthClient, EthClient>();
 
+            var basicAccountSecretKey = Configuration.GetValue("NetheriumBasicAccountSecretKey");
+            var premiumAccountSecretKey = Configuration.GetValue("NetheriumPremiumAccountSecretKey");
             var toAddress = Configuration.GetValue("NetheriumAccount:ToAddress");
             var networkName = Configuration.GetValue("NetheriumAccount:Network");
             var gasStationAPIEndpoint = Configuration.GetValue("NetheriumAccount:GasStationAPIEndpoint");
 
-            var ethSetting = new EthSettings { ToAddress = toAddress, SecretKey = secretKey, Network = networkName, GasStationAPIEndpoint = gasStationAPIEndpoint };
+            var ethSetting = new EthSettings { ToAddress = toAddress, BasicAccountSecretKey = basicAccountSecretKey, PremiumAccountSecretKey = premiumAccountSecretKey,  Network = networkName, GasStationAPIEndpoint = gasStationAPIEndpoint };
 
             services.AddSingleton<IEthHelper>(provider => new EthHelper(ethSetting, provider.GetService<IEthClient>()));
 
@@ -138,7 +129,28 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IUserSubscriptionService, UserSubscriptionService>();
-            services.AddSingleton<ITimestampService, TimestampService>();
+
+            var nodeEndpoint = Configuration.GetValue("NetheriumAccount:NodeEndpoint");
+
+            var basicAccountFromAddress = Configuration.GetValue("NetheriumAccount:BasicAccountFromAddress");
+            var basicAccount = new Nethereum.Web3.Accounts.Account(basicAccountSecretKey);
+            var basicAccountWeb3 = new Web3(basicAccount, nodeEndpoint);
+            basicAccount.NonceService = new InMemoryNonceService(basicAccountFromAddress, basicAccountWeb3.Client);
+
+            var premiumAccountFromAddress = Configuration.GetValue("NetheriumAccount:PremiumAccountFromAddress");
+            var premiumAccount = new Nethereum.Web3.Accounts.Account(premiumAccountSecretKey);
+            var premiumAccountWeb3 = new Web3(premiumAccount, nodeEndpoint);
+            premiumAccount.NonceService = new InMemoryNonceService(premiumAccountFromAddress, premiumAccountWeb3.Client);
+
+            services.AddSingleton<ITimestampService>(provider =>
+            new TimestampService(provider.GetService<ILogger>(),
+                provider.GetService<ITimestampRepository>(),
+                provider.GetService<IUserRepository>(),
+                provider.GetService<IPricePlanRepository>(),
+                provider.GetService<IEthHelper>(),
+                provider.GetService<ITimestampQueueService>(),
+                basicAccountWeb3,
+                premiumAccountWeb3));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger logger)

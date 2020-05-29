@@ -1,4 +1,5 @@
-﻿using AtlasCity.TimeProof.Abstractions.DAO;
+﻿using AtlasCity.TimeProof.Abstractions;
+using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Enums;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Messages;
@@ -28,38 +29,39 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private readonly ITimestampRepository _timestampRepository;
         private readonly IUserRepository _userRepository;
         private readonly IPricePlanRepository _pricePlanRepository;
-        private readonly IAddressNonceRepository _nonceAddressRepository;
         private readonly IEthHelper _ethHelper;
         private readonly ITimestampQueueService _timestampQueueService;
-        private readonly IWeb3 _netheriumWeb3;
+        private readonly IWeb3 _basicWeb3;
+        private readonly IWeb3 _premiumWeb3;
 
         public TimestampService(
            ILogger logger,
            ITimestampRepository timestampRepository,
            IUserRepository userRepository,
            IPricePlanRepository pricePlanRepository,
-           IAddressNonceRepository nonceAddressRepository,
            IEthHelper ethHelper,
            ITimestampQueueService timestampQueueService,
-           IWeb3 netheriumWeb3)
+           IWeb3 basicWeb3,
+           IWeb3 premiumWeb3)
         {
             Guard.Argument(logger, nameof(logger)).NotNull();
             Guard.Argument(timestampRepository, nameof(timestampRepository)).NotNull();
             Guard.Argument(userRepository, nameof(userRepository)).NotNull();
             Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
-            Guard.Argument(nonceAddressRepository, nameof(nonceAddressRepository)).NotNull();
             Guard.Argument(ethHelper, nameof(ethHelper)).NotNull();
             Guard.Argument(timestampQueueService, nameof(timestampQueueService)).NotNull();
-            Guard.Argument(netheriumWeb3, nameof(netheriumWeb3)).NotNull();
+            Guard.Argument(basicWeb3, nameof(basicWeb3)).NotNull();
+            Guard.Argument(premiumWeb3, nameof(premiumWeb3)).NotNull();
 
             _logger = logger;
             _timestampRepository = timestampRepository;
             _userRepository = userRepository;
             _pricePlanRepository = pricePlanRepository;
-            _nonceAddressRepository = nonceAddressRepository;
             _ethHelper = ethHelper;
             _timestampQueueService = timestampQueueService;
-            _netheriumWeb3 = netheriumWeb3;
+
+            _basicWeb3 = basicWeb3;
+            _premiumWeb3 = premiumWeb3;
         }
 
         public async Task<IEnumerable<TimestampDao>> GetUesrTimestamps(string userId, CancellationToken cancellationToken)
@@ -104,7 +106,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
                 var newTimestamp = await _timestampRepository.CreateTimestamp(timestamp, cancellationToken);
 
-                await _timestampQueueService.AddTimestampMessage(new TimestampQueueMessage { TimestampId = newTimestamp.Id, TransactionId = newTimestamp.TransactionId, Created = DateTime.UtcNow }, cancellationToken);
+                await _timestampQueueService.AddTimestampMessage(new TimestampQueueMessage { TimestampId = newTimestamp.Id, TransactionId = newTimestamp.TransactionId, Created = DateTime.UtcNow, IsPremiumPlan = pricePlan.Price > 0 }, cancellationToken);
 
                 user.RemainingTimeStamps--;
                 await _userRepository.UpdateUser(user, cancellationToken);
@@ -160,7 +162,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             return timestamp;
         }
 
-        private async Task<TimestampDao> SendTransaction(TimestampDao timestamp, double gasPrice, bool isFreePlan, CancellationToken cancellationToken)
+        private async Task SendTransaction(TimestampDao timestamp, double gasPrice, bool isFreePlan, CancellationToken cancellationToken)
         {
             var ethSettings = _ethHelper.GetEthSettings();
 
@@ -187,6 +189,20 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 throw new TimestampException(message);
             }
 
+            if (isFreePlan)
+                await SendRawTransaction(timestamp, _basicWeb3, ethSettings.BasicAccountSecretKey, estimateGasPrice, ethSettings);
+            else
+                await SendRawTransaction(timestamp, _premiumWeb3, ethSettings.PremiumAccountSecretKey, estimateGasPrice, ethSettings);
+        }
+
+        private async Task SendRawTransaction(TimestampDao timestamp, IWeb3 web3, string secretKey, double estimateGasPrice, EthSettings ethSettings)
+        {
+            if (!Enum.TryParse(ethSettings.Network, true, out Chain networkChain))
+            {
+                networkChain = Chain.MainNet;
+                _logger.Warning($"Unable to parse '{ethSettings.Network}' to type '{typeof(Chain)}', so setting default to '{networkChain}'.");
+            }
+
             bool proofVerified = _ethHelper.VerifyStamp(timestamp);
             if (!proofVerified)
             {
@@ -206,21 +222,14 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             var txData = HexStringUTF8ConvertorExtensions.ToHexUTF8(proofStr);
 
-            if (!Enum.TryParse(ethSettings.Network, true, out Chain networkChain))
-            {
-                networkChain = Chain.MainNet;
-                _logger.Warning($"Unable to parse '{ethSettings.Network}' to type '{typeof(Chain)}', so setting default to '{networkChain}'.");
-            }
+            var fromAddress = web3.TransactionManager.Account.Address;
+            var futureNonce = await web3.TransactionManager.Account.NonceService.GetNextNonceAsync();
+
+            _logger.Information($"Signed transaction on chain: {networkChain}, To: {ethSettings.ToAddress}, Nonce: {futureNonce}, GasPrice: {estimateGasPrice}, From Address :{fromAddress}");
 
             var offlineTransactionSigner = new TransactionSigner();
-
-            var fromAddress = _netheriumWeb3.TransactionManager.Account.Address;
-            var futureNonce = await _netheriumWeb3.TransactionManager.Account.NonceService.GetNextNonceAsync();
-
-            _logger.Information($"Signed transaction on chain: {networkChain}, To: {ethSettings.ToAddress}, Nonce: {futureNonce}, GasPrice: {estimateGasPrice}, Address :{fromAddress}");
-
             var encoded = offlineTransactionSigner.SignTransaction(
-                    ethSettings.SecretKey,
+                    secretKey,
                     networkChain,
                     ethSettings.ToAddress,
                     Web3.Convert.ToWei(0, UnitConversion.EthUnit.Gwei),
@@ -239,7 +248,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             try
             {
-                var txId = await _netheriumWeb3.Eth.Transactions.SendRawTransaction.SendRequestAsync("0x" + encoded);
+                var txId = await web3.Eth.Transactions.SendRawTransaction.SendRequestAsync("0x" + encoded);
 
                 timestamp.Address = fromAddress;
                 timestamp.Nonce = (long)futureNonce.Value;
@@ -263,8 +272,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
                 throw;
             }
-
-            return timestamp;
         }
     }
 }
