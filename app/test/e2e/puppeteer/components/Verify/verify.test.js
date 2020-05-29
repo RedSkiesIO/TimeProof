@@ -14,7 +14,7 @@ const userList = [
   },
 ];
 
-describe('Stamp e2e Test', () => {
+describe('Verify e2e Test', () => {
   let browser;
   beforeAll(async () => {
     browser = await puppeteer.launch({
@@ -27,6 +27,7 @@ describe('Stamp e2e Test', () => {
       ],
     });
     const context = browser.defaultBrowserContext();
+    context.clearPermissionOverrides();
     context.overridePermissions('http://localhost:6420', ['clipboard-read', 'clipboard-write']);
   });
 
@@ -64,8 +65,8 @@ describe('Stamp e2e Test', () => {
         await click(page, 'cancelCreateFirstTimeStamp', 10000, false, Type.button); // Cancel Create Timestamp Popup -- go dashboard
       }
 
-      await click(page, 'timeStampsTxId', 10000, true, Type.button); // Copy txId
-      await page.waitFor(500);
+      await click(page, 'timeStampsTxId', 10000, true, Type.button); //
+      await page.waitFor(2000);
       const txId = await page.evaluate(() => navigator.clipboard.readText());
       await click(page, 'Verify', 10000, false, Type.a); // Open Stamp page
 

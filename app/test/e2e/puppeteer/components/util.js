@@ -16,7 +16,7 @@ const click = async (page, name, timeout, multiple, type) => {
     button = await page.$(buttonSelector);
   } else {
     const buttons = await page.$$(buttonSelector);
-    if (Array.isArray(buttons) && buttons.length > 1) {
+    if (Array.isArray(buttons) && buttons.length > 0) {
       button = buttons[1];
     }
   }
@@ -25,7 +25,6 @@ const click = async (page, name, timeout, multiple, type) => {
     expect(button).not.toBeNull();
     expect(await button.evaluate(node => node.innerText)).toBe('Pay £4.99');
   }
-
   await page.evaluate(el => el.click(), button);
 };
 

@@ -14,7 +14,7 @@ const userList = [
   },
 ];
 
-describe('Stamp e2e Test', () => {
+describe.skip('Stamp e2e Test', () => {
   let browser;
   beforeAll(async () => {
     browser = await puppeteer.launch({
