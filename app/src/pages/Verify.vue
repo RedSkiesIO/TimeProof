@@ -39,8 +39,8 @@ export default {
 }
 
 .verify .q-uploader__list {
-    background-color: white;
-    padding: 0;
+  background-color: white;
+  // padding: 0;
 }
 
 </style>

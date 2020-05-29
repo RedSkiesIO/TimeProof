@@ -75,6 +75,7 @@
           <select
             v-model="country"
             name="country"
+            disabled
             data-test-key="paymentBillingCountry"
             @change.prevent="countryChange"
           >

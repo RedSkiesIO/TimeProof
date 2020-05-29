@@ -108,7 +108,9 @@ module.exports = function (ctx) {
           './dist/spa/statics/signup.html',
           './dist/spa/statics/css/signup.css',
           './dist/spa/statics/forgotPassword.html',
-          './dist/spa/statics/css/forgotPassword.css'
+          './dist/spa/statics/css/forgotPassword.css',
+          './dist/spa/statics/editProfile.html',
+          './dist/spa/statics/css/editProfile.css'
         ];
 
         fileArr.forEach(async (file) => {
