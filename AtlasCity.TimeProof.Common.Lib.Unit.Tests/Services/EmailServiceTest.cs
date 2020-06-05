@@ -1,15 +1,14 @@
-﻿using System;
-using System.Net;
-using System.Net.Mail;
-using System.Threading;
-using AtlasCity.TimeProof.Abstractions;
+﻿using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Common.Lib.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Serilog;
+using System;
+using System.Net.Mail;
+using System.Threading;
 
-namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
+namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests.Services
 {
     [TestClass]
     public class EmailServiceTest
@@ -22,10 +21,9 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
         [TestInitialize]
         public void Setup()
         {
-            smtpClient = new SmtpClient(ConfigurationHelper.GetConfigValue("SMTPEmail:HostName"), ConfigurationHelper.GetConfigValueAsInt("SMTPEmail:Port"))
+            smtpClient = new SmtpClient("smtp.office365.com", 587)
             {
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(ConfigurationHelper.GetConfigValue("SMTPEmail:UserName"), ConfigurationHelper.GetConfigValue("SMTPEmail:Password")),
                 DeliveryMethod = SmtpDeliveryMethod.Network,
                 EnableSsl = true
             };

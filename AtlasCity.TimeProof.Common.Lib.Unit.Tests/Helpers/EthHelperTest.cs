@@ -1,28 +1,25 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions;
+﻿using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Common.Lib.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Serilog;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace AtlasCity.TimeProof.Common.Lib.Tests.Helpers
+namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests.Helpers
 {
     [TestClass]
     public class EthHelperTest
     {
         IEthHelper etheHelper;
         Mock<IEthClient> ethClientMock;
-        Mock<ILogger> loggerMock;
 
         [TestInitialize]
         public void Setup()
         {
             ethClientMock = new Mock<IEthClient>();
-            loggerMock = new Mock<ILogger>();
-
+            
             etheHelper = new EthHelper(new EthSettings { }, ethClientMock.Object);
         }
 
@@ -38,11 +35,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Helpers
         {
             ethClientMock.Setup(s => s.GetCryptoCurrencyValue(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(164.6));
 
-            etheHelper = new EthHelper(new EthSettings { }, new EthClient(loggerMock.Object));
-
             var actualResult = etheHelper.GetGasPrice(2.5, default).GetAwaiter().GetResult();
             Assert.AreEqual(5, actualResult);
         }
-
     }
 }

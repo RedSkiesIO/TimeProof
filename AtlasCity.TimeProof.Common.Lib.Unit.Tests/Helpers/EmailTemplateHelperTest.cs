@@ -4,7 +4,7 @@ using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Common.Lib.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace AtlasCity.TimeProof.Common.Lib.Tests.Helpers
+namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests.Helpers
 {
     [TestClass]
     public class EmailTemplateHelperTest

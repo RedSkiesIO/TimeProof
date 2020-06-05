@@ -16,13 +16,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Abstrac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Common.Lib", "AtlasCity.TimeProof.Common.Lib\AtlasCity.TimeProof.Common.Lib.csproj", "{34C6760B-55AC-4EEC-9A46-A125B5D781EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Common.Lib.Tests", "AtlasCity.TimeProof.Common.Lib.Tests\AtlasCity.TimeProof.Common.Lib.Tests.csproj", "{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Api.Unit.Tests", "AtlasCity.TimeProof.Api.Unit.Tests\AtlasCity.TimeProof.Api.Unit.Tests.csproj", "{5AF9053C-5C52-4B18-997D-B6A544D789F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests", "AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests\AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests.csproj", "{1183D947-F82A-45F6-829D-40B03D493A8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasCity.TimeProof.AzureFunction", "AtlasCity.TimeProof.AzureFunction\AtlasCity.TimeProof.AzureFunction.csproj", "{8B24A208-4EF0-462C-85FA-6388C2B1D88A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.AzureFunction", "AtlasCity.TimeProof.AzureFunction\AtlasCity.TimeProof.AzureFunction.csproj", "{8B24A208-4EF0-462C-85FA-6388C2B1D88A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCity.TimeProof.Common.Lib.Unit.Tests", "AtlasCity.TimeProof.Common.Lib.Unit.Tests\AtlasCity.TimeProof.Common.Lib.Unit.Tests.csproj", "{A631973E-05FA-4C99-B216-4ECF8208F24A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,14 +64,6 @@ Global
 		{34C6760B-55AC-4EEC-9A46-A125B5D781EA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{34C6760B-55AC-4EEC-9A46-A125B5D781EA}.Release|x64.ActiveCfg = Release|Any CPU
 		{34C6760B-55AC-4EEC-9A46-A125B5D781EA}.Release|x64.Build.0 = Release|Any CPU
-		{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}.Debug|x64.Build.0 = Debug|Any CPU
-		{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}.Release|x64.ActiveCfg = Release|Any CPU
-		{3EE1E980-5C2E-4F3A-B6AE-E01381435CE8}.Release|x64.Build.0 = Release|Any CPU
 		{5AF9053C-5C52-4B18-997D-B6A544D789F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5AF9053C-5C52-4B18-997D-B6A544D789F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AF9053C-5C52-4B18-997D-B6A544D789F2}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -96,6 +88,14 @@ Global
 		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Release|x64.ActiveCfg = Release|Any CPU
 		{8B24A208-4EF0-462C-85FA-6388C2B1D88A}.Release|x64.Build.0 = Release|Any CPU
+		{A631973E-05FA-4C99-B216-4ECF8208F24A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A631973E-05FA-4C99-B216-4ECF8208F24A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A631973E-05FA-4C99-B216-4ECF8208F24A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A631973E-05FA-4C99-B216-4ECF8208F24A}.Debug|x64.Build.0 = Debug|Any CPU
+		{A631973E-05FA-4C99-B216-4ECF8208F24A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A631973E-05FA-4C99-B216-4ECF8208F24A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A631973E-05FA-4C99-B216-4ECF8208F24A}.Release|x64.ActiveCfg = Release|Any CPU
+		{A631973E-05FA-4C99-B216-4ECF8208F24A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

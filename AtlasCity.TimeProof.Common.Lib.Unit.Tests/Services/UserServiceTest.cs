@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Serilog;
 
-namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
+namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests.Services
 {
     [TestClass]
     public class UserServiceTest

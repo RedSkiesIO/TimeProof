@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
 
-namespace AtlasCity.TimeProof.Common.Lib.Tests
+namespace AtlasCity.TimeProof.Common.Lib.Unit.Tests
 {
     public static class ConfigurationHelper
     {
