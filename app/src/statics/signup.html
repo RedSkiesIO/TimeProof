@@ -1,65 +1,134 @@
 <!DOCTYPE html>
 <html lang="en-US">
+    <head>
+        <title>Timescribe | Signup</title>
+        <link rel="icon" type="image/png" sizes="16x16" href="{appHost}/statics/icons/favicon-16x16.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="{appHost}/statics/icons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="{appHost}/statics/icons/favicon-96x96.png">
+        <link rel="icon" type="image/ico" href="{appHost}/statics/icons/favicon.png">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+        <link href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" data-preload="true">
+        <link href="{appHost}/statics/css/signup.css" rel="stylesheet" type="text/css" data-preload="true">
+    </head>
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-    <title>User details</title>
-    <link href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" data-preload="true">
-    <link href="{appHost}/statics/css/signup.css" rel="stylesheet" type="text/css" data-preload="true">
-</head>
-
-<body data-gr-c-s-loaded="true">
-    <noscript>
-        <div id="no_js">
+    <body data-gr-c-s-loaded="true">
+        <noscript>
+            <div id="no_js">
+                <div class="error_container">
+                    <div>
+                        <h1>We can't sign you in</h1>
+                        <p>Your browser is currently set to block JavaScript. You need to allow JavaScript to use this service.</p>
+                        <p>To learn how to allow JavaScript or to find out whether your browser supports JavaScript, check the online help in your web browser.</p>
+                    </div>
+                </div>
+            </div>
+        </noscript>
+        <div id="no_cookie" class="no_display">
             <div class="error_container">
                 <div>
                     <h1>We can't sign you in</h1>
-                    <p>Your browser is currently set to block JavaScript. You need to allow JavaScript to use this service.</p>
-                    <p>To learn how to allow JavaScript or to find out whether your browser supports JavaScript, check the online help in your web browser.</p>
+                    <p>Your browser is currently set to block cookies. You need to allow cookies to use this service.</p>
+                    <p>Cookies are small text files stored on your computer that tell us when you're signed in. To learn how to allow cookies, check the online help in your web browser.</p>
                 </div>
             </div>
         </div>
-    </noscript>
-    <div id="no_cookie" class="no_display">
-        <div class="error_container">
-            <div>
-                <h1>We can't sign you in</h1>
-                <p>Your browser is currently set to block cookies. You need to allow cookies to use this service.</p>
-                <p>Cookies are small text files stored on your computer that tell us when you're signed in. To learn how to allow cookies, check the online help in your web browser.</p>
-            </div>
+        <div id="background_branding_container" data-tenant-branding-background-color="true">
+            <!--<img data-tenant-branding-background="true" src="{b2cloginPage}/static/tenant/templates/backgrounds/1-1.png">-->
         </div>
-    </div>
-    <div id="background_branding_container" data-tenant-branding-background-color="true">
-        <!--<img data-tenant-branding-background="true" src="{b2cloginPage}/static/tenant/templates/backgrounds/1-1.png">-->
-    </div>
-    <div class="container  self_asserted_container">
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <img alt="Company Logo" class="companyLogo" data-tenant-branding-logo="true"
-                             src="{appHost}/statics/icons/logo-white-bg.png">
-                        <div class="terms">
-                            By signing up, you agree to the
-                           <a>Terms of Use</a> and <a>Privacy Policy</a>
+        <div class="container  self_asserted_container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <img alt="Company Logo" class="companyLogo" data-tenant-branding-logo="true"
+                                src="{appHost}/statics/icons/logo-white-bg.png">
+                            <div class="terms">
+                                By signing up, you agree to the
+                            <a>Terms of Use</a> and <a>Privacy Policy</a>
+                            </div>
+                            <div id="api" />
                         </div>
-                        <div id="api" />
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script type="text/javascript">
-        var termsNode = document.querySelector('.terms');
-        var buttonsNode = document.querySelector('#attributeList');
-        if(buttonsNode && termsNode){
-          buttonsNode.after(termsNode);
-          termsNode.style.display = 'block';
-        }
-    </script>
-</body>
+        <script type="text/javascript">
 
+            try{
+
+                let termsNode = document.querySelector('.terms');
+                let buttonsNode = document.querySelector('#attributeList');
+                if(buttonsNode && termsNode){
+                    buttonsNode.after(termsNode);
+                    termsNode.style.display = 'block';
+                }
+
+                function toggleVisibility(display){
+                    const passwordList = document.querySelectorAll('.Password');
+
+                    if(passwordList){
+                        passwordList.forEach(el => {
+                            el.style.display = display;
+                        });
+                    }
+
+                    const textBoxList = document.querySelectorAll('.TextBox');
+
+                    if(textBoxList){
+                        textBoxList.forEach(el => {
+                            el.style.display = display;
+                        });
+                    }
+
+                    const continueButton = document.getElementById('continue');
+                    const cancelButton = document.getElementById('cancel');
+
+                    if(continueButton){
+                        continueButton.style.display = display;
+                    }
+
+                    if(cancelButton){
+                        cancelButton.style.display = display;
+                    }
+
+                    const termList = document.querySelectorAll('.terms');
+
+                    if(termList){
+                        termList.forEach(el => {
+                            el.style.display = display;
+                        });
+                    }
+                }    
+                    
+                toggleVisibility('none');
+
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutationRecord) {
+                        const displayInline = "inline";
+                        if(mutationRecord && mutationRecord.target 
+                            && mutationRecord.target.style.display === displayInline){
+                            toggleVisibility(displayInline);
+                            const emailChangeButton =  document.getElementById('email_ver_but_edit');
+                            if(emailChangeButton){
+                                emailChangeButton.style.display = 'none';
+                            }
+
+                            const buttonsVerifySection =  document.querySelector('.buttons.verify');
+                            if(buttonsVerifySection){
+                                buttonsVerifySection.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+
+                const verificationSuccessText =  document.querySelector('.verificationSuccessText');
+                observer.observe(verificationSuccessText, { attributes : true, attributeFilter : ['style'] });
+            }catch(ex){
+                console.log(err);
+            }
+        </script>
+    </body>
 </html>

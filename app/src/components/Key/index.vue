@@ -79,9 +79,9 @@
         <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
           <div>{{ $t('signingKeyLocked') }}</div>
         </div>
-        <div class="row justify-center">
+        <!-- <div class="row justify-center">
           {{ $t('signingKeyLockedDesc') }}
-        </div>
+        </div> -->
         <div class="row">
           <q-input
             v-model="password"
@@ -118,14 +118,14 @@
             @click="unlockKey(password)"
           />
         </div> -->
-        <div class="row justify-center q-gutter-x-xs">
+        <!-- <div class="row justify-center q-gutter-x-xs">
           <q-btn
             flat
             color="blue"
             size="md"
             label="import key"
             @click="openImportDialog"
-          />
+          /> -->
         <!-- <q-btn
             flat
             color="blue"
@@ -133,7 +133,7 @@
             label="new key"
             @click="openNewKeyDialog"
           /> -->
-        </div>
+        <!-- </div> -->
         <div class="row justify-end" />
       </div>
     </q-card>
@@ -151,9 +151,9 @@
           <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
             <div>{{ $t('createKey') }}</div>
           </div>
-          <div class="row justify-center text-center">
+          <!-- <div class="row justify-center text-center">
             {{ $t('createKeyDesc') }}
-          </div>
+          </div> -->
           <div
             class="row justify-center q-my-sm"
           >
@@ -169,9 +169,9 @@
           <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
             <div>{{ $t('importKey') }}</div>
           </div>
-          <div class="row justify-center text-center">
+          <!-- <div class="row justify-center text-center">
             {{ $t('importKeyContent') }}
-          </div>
+          </div> -->
           <div
             class="row justify-center text-blue q-mb-sm q-pt-md cursor-pointer"
             @click="openImportDialog"

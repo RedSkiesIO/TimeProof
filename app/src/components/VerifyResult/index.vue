@@ -264,16 +264,15 @@ export default {
   right: -10px;
 }
 
-
 @media screen and (max-width: 1500px) {
   .proof{
-    width: 50rem;
+    width: 57rem;
   }
   .text-height-long textarea{
     height: 2rem !important;
   }
   .text-height-short textarea{
-    height: 4rem !important;
+    height: 3rem !important;
   }
 }
 
@@ -282,10 +281,10 @@ export default {
     width: 40rem;
   }
   .text-height-long textarea{
-    height: 3rem !important;
+    height: 3.5rem !important;
   }
   .text-height-short textarea{
-    height: 4rem !important;
+    height: 3.5rem !important;
   }
 }
 

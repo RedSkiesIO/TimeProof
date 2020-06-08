@@ -116,7 +116,7 @@ export default {
   data() {
     return {
       importKey: false,
-      importKeystore: false,
+      importKeystore: true,
       secretKey: null,
       isValid: true,
       isPwd: true,
