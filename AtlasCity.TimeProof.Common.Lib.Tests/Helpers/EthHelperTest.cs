@@ -38,8 +38,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Helpers
         {
             ethClientMock.Setup(s => s.GetCryptoCurrencyValue(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(164.6));
 
-            etheHelper = new EthHelper(new EthSettings { }, new EthClient(loggerMock.Object));
-
             var actualResult = etheHelper.GetGasPrice(2.5, default).GetAwaiter().GetResult();
             Assert.AreEqual(5, actualResult);
         }
