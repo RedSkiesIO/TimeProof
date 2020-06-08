@@ -234,6 +234,7 @@ export default {
 
     logOut(e) {
       e.preventDefault();
+      localStorage.setItem('loggedOut', true);
       this.$auth.logout();
     },
     drawerClick(e) {
