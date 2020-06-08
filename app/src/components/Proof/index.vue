@@ -393,6 +393,9 @@ export default {
 }
 
 @media screen and (max-width: 1500px) {
+  .proof{
+    width: 50rem;
+  }
   .text-height-long textarea{
     height: 2rem !important;
   }
@@ -402,6 +405,9 @@ export default {
 }
 
 @media screen and (max-width: 1000px) {
+  .proof{
+    width: 40rem;
+  }
   .text-height-long textarea{
     height: 3rem !important;
   }
@@ -411,6 +417,9 @@ export default {
 }
 
 @media screen and (max-width: 750px) {
+  .proof{
+    width: 28rem;
+  }
   .text-height-long textarea{
     height: 4rem !important;
   }
@@ -420,11 +429,14 @@ export default {
 }
 
 @media screen and (max-width: 300px) {
+  .proof{
+    width: 100%;
+  }
   .text-height-long textarea{
     height: 5rem !important;
   }
   .text-height-short textarea{
-    height: 4rem !important;
+    height: 5rem !important;
   }
 }
 
