@@ -5,18 +5,18 @@
   "productName": "Timescribe",
   "cordovaId": "org.upgradedgiggle.atlascity.app",
   "capacitorId": "",
-  "author": "stephenhorsfall <stephen.horsfall@atlascity.io>",
+  "author": "Atlas City <info@atlascity.io>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "test": "jest --config jest.config.js",
     "test:unit": "quasar test:unit",
-    "build:test": "test=true quasar build",
-    "build:prod": "prod=true quasar build"
+    "build:test": "cross-env test=true quasar build",
+    "build:prod": "cross-env prod=true quasar build"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "0.0.4",
-    "@quasar/app": "^1.8.6",
+    "@quasar/app": "^1.9.6",
     "@quasar/extras": "^1.8.1",
     "@stripe/stripe-js": "^1.5.0",
     "@vue/cli-service": "^4.3.1",
@@ -52,6 +52,7 @@
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.33",
     "babel-eslint": "^10.0.1",
+    "cross-env": "^7.0.2",
     "eslint": "^5.10.0",
     "eslint-loader": "^2.1.1",
     "eslint-plugin-vue": "^5.0.0",
