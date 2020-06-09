@@ -15,6 +15,7 @@
     "build:prod": "cross-env prod=true quasar build"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.10.1",
     "@pdf-lib/fontkit": "0.0.4",
     "@quasar/app": "^1.9.6",
     "@quasar/extras": "^1.8.1",
@@ -46,12 +47,16 @@
     "web3": "^1.2.7"
   },
   "devDependencies": {
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
     "@quasar/quasar-app-extension-qpdfviewer": "^1.0.0-beta.5",
     "@quasar/quasar-app-extension-testing": "^1.0.0",
     "@quasar/quasar-app-extension-testing-unit-jest": "^1.1.0-beta.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.33",
     "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.1.0",
     "cross-env": "^7.0.2",
     "eslint": "^5.10.0",
     "eslint-loader": "^2.1.1",
@@ -61,7 +66,8 @@
     "puppeteer": "^3.0.2",
     "vue-jest": "^3.0.5",
     "vue-loader": "^15.9.1",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "webpack-bundle-analyzer": "^3.8.0"
   },
   "engines": {
     "node": ">= 8.9.0",
@@ -69,6 +75,6 @@
     "yarn": ">= 1.6.0"
   },
   "browserslist": [
-    "last 1 version, not dead, ie >= 11"
+    "last 1 version, not dead, ie >= 11, edge >= 17"
   ]
 }

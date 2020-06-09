@@ -1,4 +1,20 @@
 {
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "modules": "commonjs",
+        "targets": [
+          "last 2 versions",
+          "not dead",
+          "ie >= 11",
+          "edge >= 17"
+        ],
+        "useBuiltIns": "entry",
+        "corejs": "2.0"
+      }
+    ]
+  ],
   "plugins": ["@babel/plugin-syntax-dynamic-import"],
   "env": {
     "test": {
