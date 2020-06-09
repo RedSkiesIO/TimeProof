@@ -12,13 +12,13 @@ try {
 }
 
 const disableLog = () => {
-  if (!process.env.DEV) {
+  if (process.env.PROD) {
     console.disableLogging();
   }
 };
 
 const enableLog = () => {
-  if (process.env.DEV) {
+  if (!process.env.PROD) {
     console.enableLogging();
   }
 };
