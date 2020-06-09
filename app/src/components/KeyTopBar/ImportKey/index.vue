@@ -153,7 +153,9 @@ export default {
     async importFromKeystore() {
       const reader = await new FileReader();
       console.log('TEST1');
-      reader.onload = async (evt) => {
+      // reader.onload = async (evt) => {
+      // it is added for old microsoft edge browser support
+      reader.addEventListener('load', async (evt) => {
         try {
           console.log('TEST2');
           const json = JSON.parse(evt.target.result);
@@ -179,7 +181,7 @@ export default {
           console.log(e);
           this.isValid = false;
         }
-      };
+      });
       reader.readAsText(this.file);
       console.log('TEST8');
     },
