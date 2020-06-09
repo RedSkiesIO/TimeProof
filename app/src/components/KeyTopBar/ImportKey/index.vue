@@ -79,7 +79,7 @@
         <q-input
           type="file"
           :error="!isValid"
-          @input="validFile"
+          @change="validFile"
         >
           <template v-slot:error>
             {{ $t('invalidKeystore') }}
@@ -136,13 +136,17 @@ export default {
   },
 
   methods: {
-    validFile(val) {
-      // eslint-disable-next-line prefer-destructuring
-      this.file = val[0];
-      if (this.file.type !== 'text/plain') {
-        this.isValid = false;
-      } else {
-        this.isValid = true;
+    validFile(e) {
+      try {
+        // eslint-disable-next-line prefer-destructuring
+        this.file = e.target.files[0];
+        if (this.file.type !== 'text/plain') {
+          this.isValid = false;
+        } else {
+          this.isValid = true;
+        }
+      } catch (ex) {
+        console.log(ex);
       }
     },
     async importFromKey() {
@@ -152,18 +156,11 @@ export default {
 
     async importFromKeystore() {
       const reader = await new FileReader();
-      console.log('TEST1');
-      // reader.onload = async (evt) => {
-      // it is added for old microsoft edge browser support
-      reader.addEventListener('load', async (evt) => {
+      reader.onload = async (evt) => {
         try {
-          console.log('TEST2');
           const json = JSON.parse(evt.target.result);
-          console.log('TEST3');
           if (json.cipher) {
-            console.log('TEST4');
             this.$store.dispatch('settings/setAuthenticatedAccount', null);
-            console.log('TEST5');
             await User.update({
               data: {
                 accountIdentifier: this.account.accountIdentifier,
@@ -171,9 +168,7 @@ export default {
                 secretKey: json.cipher,
               },
             });
-            console.log('TEST6');
             this.$emit('close');
-            console.log('TEST7');
           } else {
             this.isValid = false;
           }
@@ -181,9 +176,8 @@ export default {
           console.log(e);
           this.isValid = false;
         }
-      });
+      };
       reader.readAsText(this.file);
-      console.log('TEST8');
     },
   },
 };

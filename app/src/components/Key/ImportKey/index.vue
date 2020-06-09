@@ -79,7 +79,7 @@
         <q-input
           type="file"
           :error="!isValid"
-          @input="validFile"
+          @change="validFile"
         >
           <template v-slot:error>
             {{ $t('invalidKeystore') }}
@@ -136,13 +136,18 @@ export default {
   },
 
   methods: {
-    validFile(val) {
+    validFile(e) {
       // eslint-disable-next-line prefer-destructuring
-      this.file = val[0];
-      if (this.file.type !== 'text/plain') {
-        this.isValid = false;
-      } else {
-        this.isValid = true;
+      try {
+        // eslint-disable-next-line prefer-destructuring
+        this.file = e.target.files[0];
+        if (this.file.type !== 'text/plain') {
+          this.isValid = false;
+        } else {
+          this.isValid = true;
+        }
+      } catch (ex) {
+        console.log(ex);
       }
     },
     async importFromKey() {
