@@ -152,11 +152,16 @@ export default {
 
     async importFromKeystore() {
       const reader = await new FileReader();
+      console.log('TEST1');
       reader.onload = async (evt) => {
         try {
+          console.log('TEST2');
           const json = JSON.parse(evt.target.result);
+          console.log('TEST3');
           if (json.cipher) {
+            console.log('TEST4');
             this.$store.dispatch('settings/setAuthenticatedAccount', null);
+            console.log('TEST5');
             await User.update({
               data: {
                 accountIdentifier: this.account.accountIdentifier,
@@ -164,15 +169,19 @@ export default {
                 secretKey: json.cipher,
               },
             });
+            console.log('TEST6');
             this.$emit('close');
+            console.log('TEST7');
           } else {
             this.isValid = false;
           }
         } catch (e) {
+          console.log(e);
           this.isValid = false;
         }
       };
       reader.readAsText(this.file);
+      console.log('TEST8');
     },
   },
 };
