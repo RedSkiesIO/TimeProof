@@ -256,6 +256,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             }
             catch (RpcResponseException ex)
             {
+                await web3.TransactionManager.Account.NonceService.ResetNonce();
+
                 if (ex.Message.Contains("nonce too low", StringComparison.InvariantCultureIgnoreCase))
                     throw new RpcClientNonceException(ex.Message);
                 else if (ex.Message.Contains("transaction underpriced", StringComparison.InvariantCultureIgnoreCase))
