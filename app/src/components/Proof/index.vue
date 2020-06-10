@@ -1,6 +1,6 @@
 <template>
   <div
-    class="proof"
+    :class="scope.dialog ? 'proof-dialog' : 'proof'"
   >
     <div
       v-if="ready"
@@ -31,7 +31,10 @@
     </div>
 
     <div class="column q-px-md">
-      <div class="row proof-item justify-between">
+      <div
+        class="row justify-between"
+        :class="scope.dialog ? 'proof-dialog-item' : 'proof-item'"
+      >
         <template v-if="scope.dialog">
           <div class="col">
             <q-input
@@ -57,7 +60,10 @@
       </div>
 
       <div>
-        <div class="row proof-item justify-between">
+        <div
+          class="row justify-between"
+          :class="scope.dialog ? 'proof-dialog-item' : 'proof-item'"
+        >
           <template v-if="scope.dialog">
             <div class="col">
               <q-input
@@ -97,7 +103,10 @@
           </template>
         </div>
 
-        <div class="row proof-item justify-between">
+        <div
+          class="row justify-between"
+          :class="scope.dialog ? 'proof-dialog-item' : 'proof-item'"
+        >
           <template v-if="scope.dialog">
             <div class="col">
               <q-input
@@ -130,7 +139,7 @@
           </template>
         </div>
         <div
-          class="row proof-item justify-between text-height"
+          class="row justify-between"
           :class="heightClass"
         >
           <div class="col">
@@ -168,7 +177,7 @@
         </q-badge>
 
         <div
-          class="row proof-item justify-between"
+          class="row justify-between"
           :class="heightClass"
         >
           <div class="col">
@@ -199,7 +208,7 @@
         </div>
 
         <div
-          class="row proof-item justify-between"
+          class="row justify-between"
           :class="heightClass"
         >
           <div class="col">
@@ -303,7 +312,11 @@ export default {
     },
 
     heightClass() {
-      return this.proof.name && this.proof.name.length < 51 ? 'text-height-short' : 'text-height-long';
+      if (this.scope.dialog) {
+        return 'proof-dialog-item ';
+      }
+      return this.proof.name && this.proof.name.length < 51
+        ? 'proof-item text-height-short' : 'proof-item text-height-long';
     },
 
     signedBy() {
@@ -388,19 +401,30 @@ export default {
   padding: 16px;
 }
 
+.proof-dialog-item{
+  padding: 16px;
+}
+
 .copy-button {
   right: -10px;
 }
 
+.proof-dialog{
+  width: 100%;
+}
+
 @media screen and (max-width: 1500px) {
   .proof{
-    width: 50rem;
+    width: 57rem;
   }
   .text-height-long textarea{
-    height: 2rem !important;
+    height: 3rem !important;
   }
   .text-height-short textarea{
-    height: 4rem !important;
+    height: 3rem !important;
+  }
+  .proof-dialog-item textarea{
+    height: 3rem !important;
   }
 }
 
@@ -409,14 +433,17 @@ export default {
     width: 40rem;
   }
   .text-height-long textarea{
-    height: 3rem !important;
+    height: 3.5rem !important;
   }
   .text-height-short textarea{
+    height: 3.5rem !important;
+  }
+  .proof-dialog-item textarea{
     height: 4rem !important;
   }
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 850px) {
   .proof{
     width: 28rem;
   }
@@ -426,9 +453,18 @@ export default {
   .text-height-short textarea{
     height: 4rem !important;
   }
+  .proof-dialog-item textarea{
+    height: 5rem !important;
+  }
 }
 
-@media screen and (max-width: 300px) {
+@media screen and (max-width: 575px) {
+  .proof-dialog-item{
+    width: 17rem !important;
+  }
+}
+
+@media screen and (max-width: 500px) {
   .proof{
     width: 100%;
   }
@@ -437,6 +473,30 @@ export default {
   }
   .text-height-short textarea{
     height: 5rem !important;
+  }
+  .proof-dialog-item{
+    width: 15rem !important;
+  }
+  .proof-dialog-item textarea{
+    height: 7rem !important;
+  }
+}
+
+@media screen and (max-width: 250px) {
+  .proof{
+    width: 100%;
+  }
+  .text-height-long textarea{
+    height: 6rem !important;
+  }
+  .text-height-short textarea{
+    height: 6rem !important;
+  }
+  .proof-dialog-item{
+    width: 10rem !important;
+  }
+  .proof-dialog-item textarea{
+    height: 8rem !important;
   }
 }
 

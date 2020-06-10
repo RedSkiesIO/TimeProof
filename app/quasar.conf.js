@@ -6,6 +6,7 @@
 const fs = require('fs');
 const glob = require('glob');
 const appConfig = require('./app.config');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 module.exports = function (ctx) {
   return {
@@ -68,7 +69,7 @@ module.exports = function (ctx) {
       plugins: ['Loading','Notify'],
     },
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
-    supportIE: false,
+    supportIE: true,
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       scopeHoisting: true,
@@ -161,9 +162,23 @@ module.exports = function (ctx) {
               formatter: require('eslint').CLIEngine.getFormatter('stylish'),
             },
           },
+          // {
+          //   enforce: 'pre',
+          //   test: /\.(js)$/,
+          //   loader: 'babel-loader',
+          //   exclude: /node_modules/,
+          // },
         );
 
         // Output an html file for the page
+        
+        cfg.plugins.push(
+          new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            openAnalyzer: false,
+            reportFilename: 'bundle-size.html'
+          })
+        );
         // cfg.plugins.push(
         //   new HtmlWebpackPlugin({
         //     template: './src/loginSignup/login.html',

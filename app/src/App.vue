@@ -104,7 +104,10 @@ export default {
           console.log(e);
         }
       } else {
-        this.$auth.signIn();
+        setTimeout(() => {
+          this.$auth.signIn();
+          localStorage.setItem('loggedOut', '');
+        }, 5000);
       }
 
       this.ready = true;

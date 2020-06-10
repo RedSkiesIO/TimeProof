@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AtlasCity.TimeProof.Common.Lib.Unit.Tests": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Key": "Value"
+      }
+    }
+  }
+}

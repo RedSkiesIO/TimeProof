@@ -55,7 +55,7 @@
         <div
           class="row text-secondary text-h6 justify-center q-mt-sm"
         >
-          The file never leaves your system
+          The file never leaves your device
         </div>
       </div>
       <div

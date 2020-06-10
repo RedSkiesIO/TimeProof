@@ -17,6 +17,12 @@ import { QSpinnerGrid } from 'quasar';
 export default {
   name: 'NotLoggedInLayout',
 
+  computed: {
+    user() {
+      return this.$auth.user();
+    },
+  },
+
   created() {
     /* This is for Codepen (using UMD) to work */
     const spinner = typeof QSpinnerGrid !== 'undefined'
@@ -29,7 +35,7 @@ export default {
       spinnerColor: 'primary',
       spinnerSize: 70,
       backgroundColor: 'transparent',
-      message: this.$t('loadingLoginSignupPage'),
+      message: !localStorage.getItem('loggedOut') ? this.$t('loadingLoginSignupPage') : '',
       messageColor: 'black',
       delay: 0,
     });

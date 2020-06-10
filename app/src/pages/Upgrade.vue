@@ -12,7 +12,10 @@
       >
         <q-card
           class="q-mt-md"
+          :class="isSelectablePlan(item) ? 'cursor-pointer' : 'cursor-not-allowed'"
+          :style="{ opacity : currentMemberShip === item.id ? '0.7': '1'}"
           bordered
+          @click.prevent="isSelectablePlan(item) ? choosePlan(item) : ''"
         >
           <q-card-section
             vertical
@@ -45,31 +48,39 @@
               {{ item.description }}
             </div>
           </q-card-section>
-          <q-separator />
 
-          <q-card-actions class="row justify-between">
-            <template v-if="user.pendingPricePlanId === item.id">
-              <q-btn
-                flat
-                data-test-key="cancelFuturePlan"
-                color="secondary text-weight-bold"
-                @click="cancelPlan"
+          <template v-if="!isSelectablePlan(item)">
+            <q-separator />
+
+            <q-card-actions
+              class="row"
+              style="height: 3.5rem;"
+              :class="currentMemberShip === item.id ? 'justify-center': 'justify-between'"
+            >
+              <template v-if="user.pendingPricePlanId === item.id">
+                <q-btn
+                  flat
+                  data-test-key="cancelFuturePlan"
+                  color="secondary text-weight-bold"
+                  @click.stop="cancelPlan"
+                >
+                  Cancel
+                </q-btn>
+                <span class="info text-italic text-grey">
+                  (This plan will be activated on
+                  {{ moment(user.membershipRenewDate).format('DD-MM-YYYY') }})
+                </span>
+                <q-badge
+                  outline
+                  class="q-ml-sm"
+                  color="blue"
+                  label="Future"
+                />
+              </template>
+              <template
+                v-else
               >
-                Cancel
-              </q-btn>
-              <span class="info text-italic text-grey">
-                (This plan will be activated on
-                {{ moment(user.membershipRenewDate).format('DD-MM-YYYY') }})
-              </span>
-              <q-badge
-                outline
-                class="q-ml-sm"
-                color="blue"
-                label="Future"
-              />
-            </template>
-            <template v-else>
-              <q-btn
+                <!-- <q-btn
                 :disable="currentMemberShip === item.id"
                 flat
                 data-test-key="choosePlanButton"
@@ -77,16 +88,18 @@
                 @click="choosePlan(item)"
               >
                 Choose Plan
-              </q-btn>
-              <q-badge
-                v-if="currentMemberShip === item.id"
-                outline
-                class="q-ml-md"
-                color="orange"
-                label="Active"
-              />
-            </template>
-          </q-card-actions>
+              </q-btn> -->
+                <q-badge
+                  v-if="currentMemberShip === item.id"
+                  outline
+                  style="font-size: 1rem"
+                  class="q-ml-md"
+                  color="orange"
+                  label="Active"
+                />
+              </template>
+            </q-card-actions>
+          </template>
         </q-card>
       </div>
     </div>
@@ -123,7 +136,7 @@ export default {
       products: 'settings/getProducts',
     }),
     currentMemberShip() {
-      return this.$auth.account().idToken.extension_membershipTier || this.$auth.user().tier;
+      return this.$auth.user().tier || this.$auth.account().idToken.extension_membershipTier;
     },
     user() {
       return this.$auth.user();
@@ -149,10 +162,15 @@ export default {
       }
     },
     confirmDowngrade() {
+      this.downgradeConfirmationDialog = false;
       this.$router.push('/payment');
     },
     cancelPlan() {
       this.$userServer.cancelFuturePlan();
+    },
+    isSelectablePlan(selectedItem) {
+      return this.currentMemberShip !== selectedItem.id
+      && this.user.pendingPricePlanId !== selectedItem.id;
     },
   },
 };

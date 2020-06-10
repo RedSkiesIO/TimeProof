@@ -5,15 +5,14 @@
       style="height: 15vw"
     >
     <div class="text-h6 text-secondary">
-      Please download the keystore file
+      Please download your signing key file
     </div>
     <div class="row justify-center text-center">
       <div class="desc">
-        The keystore file is your signing key.
-        You will require it if you change your device or browser.
+        You will require this file when you sign in on a new device or browser.
         <br>
-        This keystore file cannot be regenerated,
-        so make sure to store it somewhere safe and take backups
+        <strong>The signing key file cannot be regenerated.</strong>
+        So make sure to store it somewhere safe and take backups.
       </div>
     </div>
     <div class="row justify-center">
