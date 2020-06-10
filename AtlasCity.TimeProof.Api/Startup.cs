@@ -114,7 +114,7 @@ namespace AtlasCity.TimeProof.Api
 
             var ethSetting = new EthSettings { ToAddress = toAddress, BasicAccountSecretKey = basicAccountSecretKey, PremiumAccountSecretKey = premiumAccountSecretKey,  Network = networkName, GasStationAPIEndpoint = gasStationAPIEndpoint };
 
-            services.AddSingleton<IEthHelper>(provider => new EthHelper(ethSetting, provider.GetService<IEthClient>()));
+            services.AddSingleton<IEthHelper>(provider => new EthHelper(ethSetting, provider.GetService<IEthClient>(), provider.GetService<ILogger>()));
 
             var timeProofLoginUri = Configuration.GetValue("TimeProofLoginUri");
             services.AddSingleton<IEmailTemplateHelper>(new EmailTemplateHelper(timeProofLoginUri));

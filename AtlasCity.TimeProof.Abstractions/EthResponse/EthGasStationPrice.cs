@@ -8,11 +8,17 @@ namespace AtlasCity.TimeProof.Abstractions.EthResponse
         [JsonProperty(PropertyName = "fast")]
         public string Fast { get; set; }
 
+        [JsonProperty(PropertyName = "average")]
+        public string Average { get; set; }
+
         [JsonProperty(PropertyName = "safeLow")]
         public string SafeLow { get; set; }
 
         [JsonProperty(PropertyName = "fastWait")]
         public string FastWait { get; set; }
+
+        [JsonProperty(PropertyName = "avgWait")]
+        public string AverageWait { get; set; }
 
         [JsonProperty(PropertyName = "safeLowWait")]
         public string SafeLowWait { get; set; }
@@ -28,6 +34,21 @@ namespace AtlasCity.TimeProof.Abstractions.EthResponse
                         return parsedValue / 10;
                 }
 
+                return 0;
+            }
+        }
+
+        [JsonIgnore]
+        public double AverageGwei
+        {
+            get
+            {
+                if (double.TryParse(Average, out double parsedValue))
+                {
+                    if (parsedValue >= 10)
+                        return parsedValue / 10;
+
+                }
                 return 0;
             }
         }
@@ -53,6 +74,15 @@ namespace AtlasCity.TimeProof.Abstractions.EthResponse
             get
             {
                 return new TimeSpan(0, ParserInt(FastWait), 0);
+            }
+        }
+
+        [JsonIgnore]
+        public TimeSpan AverageWaitTime
+        {
+            get
+            {
+                return new TimeSpan(0, ParserInt(AverageWait), 0);
             }
         }
 
