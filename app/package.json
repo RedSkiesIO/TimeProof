@@ -1,7 +1,7 @@
 {
   "name": "timescribe",
   "version": "0.0.1",
-  "description": "Time stamping app",
+  "description": "Blockchain-based timestamping technology that records time and ownership for all your files.",
   "productName": "Timescribe",
   "cordovaId": "org.upgradedgiggle.atlascity.app",
   "capacitorId": "",
