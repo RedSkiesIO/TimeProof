@@ -45,6 +45,10 @@
                         <div class="panel-body">
                             <img alt="Company Logo" class="companyLogo" data-tenant-branding-logo="true"
                                 src="{appHost}/statics/icons/logo-white-bg.png">
+                            <span class="emailVerificationDesc" style="display: none;">
+                                Please check your inbox! We have sent your account 
+                                verification code to the email address you provided.
+                           </span>
                             <div class="terms">
                                 By signing up, you agree to the
                             <a>Terms of Use</a> and <a>Privacy Policy</a>
@@ -59,11 +63,39 @@
 
             try{
 
-                let termsNode = document.querySelector('.terms');
+                const termsNode = document.querySelector('.terms');
                 let buttonsNode = document.querySelector('#attributeList');
                 if(buttonsNode && termsNode){
                     buttonsNode.after(termsNode);
                     termsNode.style.display = 'block';
+                }
+
+                const sendVerificationCodeButton =  document.getElementById('email_ver_but_send');
+
+                if(sendVerificationCodeButton){
+                    sendVerificationCodeButton.onclick = (e) => {
+
+                        var observer = new MutationObserver(function(mutations) {
+                            const displayInline = "inline";
+                            const emailVerificationDesc = document.querySelector('.emailVerificationDesc');
+                            mutations.forEach(function(mutationRecord) {
+                                if(mutationRecord && mutationRecord.target 
+                                    && mutationRecord.target.style.display === displayInline){
+
+                                    let email = document.getElementById('email');
+                                    if(email && emailVerificationDesc){
+                                        email.after(emailVerificationDesc);
+                                        emailVerificationDesc.style.display = 'block';
+                                    }
+                                }else{
+                                    emailVerificationDesc.style.display = 'none';
+                                }
+                            });
+                        });
+
+                        const emailVerifyButton =  document.getElementById('email_ver_but_verify');
+                        observer.observe(emailVerifyButton, {attributes: true, attributeFilter: ['style']} );
+                    }
                 }
 
                 function toggleVisibility(display){
@@ -79,19 +111,16 @@
 
                     if(textBoxList){
                         textBoxList.forEach(el => {
-                            el.style.display = display;
+                            if(el && !el.querySelector('#email')){
+                                el.style.display = display;
+                            }
                         });
                     }
 
                     const continueButton = document.getElementById('continue');
-                    const cancelButton = document.getElementById('cancel');
 
                     if(continueButton){
                         continueButton.style.display = display;
-                    }
-
-                    if(cancelButton){
-                        cancelButton.style.display = display;
                     }
 
                     const termList = document.querySelectorAll('.terms');
@@ -106,8 +135,8 @@
                 toggleVisibility('none');
 
                 var observer = new MutationObserver(function(mutations) {
+                    const displayInline = "inline";
                     mutations.forEach(function(mutationRecord) {
-                        const displayInline = "inline";
                         if(mutationRecord && mutationRecord.target 
                             && mutationRecord.target.style.display === displayInline){
                             toggleVisibility(displayInline);
