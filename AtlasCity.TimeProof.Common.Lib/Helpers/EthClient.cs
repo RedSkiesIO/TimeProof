@@ -1,12 +1,12 @@
-﻿using System;
+﻿using AtlasCity.TimeProof.Abstractions.Helpers;
+using Dawn;
+using Newtonsoft.Json.Linq;
+using Serilog;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.Helpers;
-using Dawn;
-using Newtonsoft.Json.Linq;
-using Serilog;
 
 namespace AtlasCity.TimeProof.Common.Lib.Helpers
 {
@@ -17,7 +17,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
         public EthClient(ILogger logger)
         {
             Guard.Argument(logger, nameof(logger)).NotNull();
-            
+
             _logger = logger;
         }
 
