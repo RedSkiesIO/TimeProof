@@ -1,35 +1,40 @@
 {
-  // "presets": [
-  //   [
-  //     "@babel/preset-env",
-  //     {
-  //       "modules": "commonjs",
-  //       "targets": [
-  //         "last 2 versions",
-  //         "not dead",
-  //         "ie >= 11",
-  //         "edge >= 17"
-  //       ],
-  //       "useBuiltIns": "entry",
-  //       "corejs": "2.0"
-  //     }
-  //   ]
-  // ],
-  "plugins": ["@babel/plugin-syntax-dynamic-import"],
-  "env": {
-    "test": {
-      "plugins": ["dynamic-import-node"],
-      "presets": [
-        [
-          "@babel/preset-env",
-          {
-            "modules": "commonjs",
-            "targets": {
-              "node": "current"
-            }
-          }
-        ]
-      ]
-    }
-  }
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        // already looks browserslist in package.json
+        "targets": [
+          "last 2 versions",
+          "ie >= 11",
+          "edge >= 17"
+        ],
+        "useBuiltIns": "usage",
+        "corejs": {
+          "version": 3
+        }
+      }
+    ],
+    [ "@vue/app", { "useBuiltIns": "usage" } ] 
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime"
+  ]
+  // "plugins": ["@babel/plugin-syntax-dynamic-import"],
+  // "env": {
+  //   "test": {
+  //     "plugins": ["dynamic-import-node"],
+  //     "presets": [
+  //       [
+  //         "@babel/preset-env",
+  //         {
+  //           "modules": "commonjs",
+  //           "targets": {
+  //             "node": "current"
+  //           }
+  //         }
+  //       ]
+  //     ]
+  //   }
+  // }
 }
