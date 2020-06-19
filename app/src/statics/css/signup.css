@@ -615,8 +615,7 @@ label {
 }
 
 #attributeList ul li .attrEntry .verify {
-    margin-top: 2rem;
-    padding-bottom: 10px;
+    margin-bottom: -1rem;
     position: relative
 }
 
@@ -857,7 +856,7 @@ label {
     #attributeVerification #attributeList ul li #email_ver_input {
         min-width: 50%;
         width: 60%;
-        float: left
+        float: left;
     }
     #attributeVerification #attributeList ul li #email_ver_but_resend {
         top: 10px;
@@ -1235,4 +1234,15 @@ div#email_info {
 #verifying_blurb{
   color: gray;
   font-size: 1rem;
+}
+
+.emailVerificationDesc{
+    font-size: 0.65rem;
+    font-style: italic;
+    margin-top: 0.4rem;
+    text-align: left;
+}
+
+#attributeVerification #attributeList ul li #email_ver_input {
+    margin-bottom: 1.5rem;
 }

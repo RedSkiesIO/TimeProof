@@ -21,7 +21,7 @@ module.exports = function (isDev, isTest, isProd) {
       AUTHORITY_EDIT_PROFILE: JSON.stringify('https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_EditProfile'),
       AUTHORITY_FORGOT_PASSWORD: JSON.stringify('https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_ForgotPassword'),
       REDIRECT_URI: JSON.stringify('http://localhost:6420/'),
-      STRIPE_PUBLISH_KEY: JSON.stringify('pk_test_YD41bvTMwCibc2T9yW2UYtPS00Jzsaku4h'),
+      STRIPE_PUBLISH_KEY: JSON.stringify('pk_test_8MTSYKYklZcPyXgO9aekrw4800zvNKwveS'),
     };
   } else if (isTest) {
     envVar = {
@@ -35,7 +35,7 @@ module.exports = function (isDev, isTest, isProd) {
       AUTHORITY_EDIT_PROFILE: JSON.stringify('https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_EditProfile'),
       AUTHORITY_FORGOT_PASSWORD: JSON.stringify('https://timeproof.b2clogin.com/timeproof.onmicrosoft.com/B2C_1_ForgotPassword'),
       REDIRECT_URI: JSON.stringify('https://testapp.timescribe.io/'),
-      STRIPE_PUBLISH_KEY: JSON.stringify('pk_test_YD41bvTMwCibc2T9yW2UYtPS00Jzsaku4h'),
+      STRIPE_PUBLISH_KEY: JSON.stringify('pk_test_8MTSYKYklZcPyXgO9aekrw4800zvNKwveS'),
     };
   } else if (isProd) {
     envVar = {

@@ -4,7 +4,6 @@
 // const HtmlWebpackPlugin = require('@quasar/app/node_modules/html-webpack-plugin')
 // const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const fs = require('fs');
-const glob = require('glob');
 const appConfig = require('./app.config');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
