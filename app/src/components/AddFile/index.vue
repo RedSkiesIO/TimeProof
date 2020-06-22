@@ -5,7 +5,6 @@
     :label="$t('selectFile')"
     auto-upload
     hide-upload-btn
-    max-file-size="52428800"
     :factory="hashFile"
     :filter="checkFileNameLength"
     @rejected="onRejected"
@@ -231,6 +230,10 @@ export default {
       re: /(?:\.([^.]+))?$/,
       txId: null,
       fileIcon,
+      previous: [],
+      lastOffset: 0,
+      chunkSize: 1024 * 1024,
+      blake2b: null,
     };
   },
 
@@ -287,20 +290,87 @@ export default {
     },
 
     async hashFile(files) {
+      let offset = 0;
+      this.lastOffset = 0;
+      const size = this.chunkSize;
+      let partial;
+      let index = 0;
+      this.blake2b = this.$blake2b((new Uint8Array(64)).length);
+      const currentFile = files[0];
       this.confirmed = false;
       this.file = {
-        name: files[0].name,
-        type: this.re.exec(files[0].name)[1],
-        size: this.getSize(files[0].size),
+        name: currentFile.name,
+        type: this.re.exec(currentFile.name)[1],
+        size: this.getSize(currentFile.size),
       };
-      const reader = await new FileReader();
-      reader.onload = (evt) => {
-        const input = Buffer.from(evt.target.result);
-        const output = new Uint8Array(64);
-        this.file.hashBuffer = this.$blake2b(output.length).update(input).digest();
-        this.file.hash = this.$base32(this.file.hashBuffer).toLowerCase();
+
+      if (currentFile.size !== 0) {
+        while (offset < currentFile.size) {
+          partial = currentFile.slice(offset, offset + size);
+          const reader = new FileReader();
+          reader.size = size;
+          reader.offset = offset;
+          reader.index = index;
+          // eslint-disable-next-line no-loop-func
+          reader.onload = (evt) => {
+            this.callbackRead(reader, currentFile, evt,
+              this.callbackProgress, this.callbackFinal);
+          };
+          reader.readAsArrayBuffer(partial);
+          offset += this.chunkSize;
+          index += 1;
+        }
+      }
+    },
+
+    // memory reordering
+    callbackRead(reader, currentFile, evt, callbackProgress, callbackFinal) {
+      if (this.lastOffset !== reader.offset) {
+        this.previous.push({ offset: reader.offset, size: reader.size, result: reader.result });
+        return;
+      }
+
+      const parseResult = (offset, size, result) => {
+        this.lastOffset = offset + size;
+        if (this.lastOffset < currentFile.size) {
+          callbackProgress(result);
+        } else {
+          callbackFinal(result);
+          this.lastOffset = 0;
+        }
       };
-      reader.readAsArrayBuffer(files[0]);
+
+      parseResult(reader.offset, reader.size, reader.result);
+
+      while (this.previous && this.previous.length > 0) {
+        const previousInitSize = this.previous.length;
+        this.previous = this.previous.filter((item) => {
+          if (item.offset === this.lastOffset) {
+            parseResult(item.offset, item.size, item.result);
+            return false;
+          }
+          return true;
+        });
+
+        if (this.previous.length === previousInitSize) {
+          break;
+        }
+      }
+    },
+
+    callbackProgress(data) {
+      this.blake2b.update(Buffer.from(data));
+    },
+
+    callbackFinal(data) {
+      console.log('DATA');
+      console.log(data);
+      console.log('BUFFER FROM DATA');
+      console.log(Buffer.from(data));
+      this.file.hashBuffer = this.blake2b.update(Buffer.from(data)).digest();
+      this.file.hash = this.$base32(this.file.hashBuffer).toLowerCase();
+      console.log('finalllll');
+      console.log(this.file.hash);
     },
 
     signHash() {
@@ -392,7 +462,7 @@ export default {
       // Notify plugin needs to be installed
       // https://quasar.dev/quasar-plugins/notify#Installation
       if (rejectedEntries && Array.isArray(rejectedEntries) && rejectedEntries.length > 0) {
-        if (rejectedEntries[0].failedPropValidation === 'max-file-size') {
+        /* if (rejectedEntries[0].failedPropValidation === 'max-file-size') {
           this.$q.notify({
             type: 'warning-notify',
             // type: 'negative',
@@ -402,8 +472,13 @@ export default {
         } else { // failedPropValidation === 'filter'
           this.$q.notify({
             type: 'warning-notify',
-            // type: 'negative',
-            // ${rejectedEntries.length}
+            message: 'The file name must not exceed 200 characters.',
+          });
+        } */
+
+        if (rejectedEntries[0].failedPropValidation === 'filter') {
+          this.$q.notify({
+            type: 'warning-notify',
             message: 'The file name must not exceed 200 characters.',
           });
         }
