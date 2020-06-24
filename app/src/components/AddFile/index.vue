@@ -93,6 +93,23 @@
             class="text-grey-4"
             style="font-size: 100px"
           />
+          <div>
+            <q-knob
+              v-if="fileIsLoading"
+              :value="uploadPercent"
+              readonly
+              show-value
+              instant-feedback
+              font-size="15px"
+              size="70px"
+              :thickness="0.1"
+              color="cyan-4"
+              track-color="grey-3"
+              class="q-ma-md"
+            >
+              {{ uploadPercent }}%
+            </q-knob>
+          </div>
           <span class="q-mt-md text-h6 text-secondary wrapword">
             {{ file.name }}</span>
           <span
@@ -104,6 +121,7 @@
             {{ $t('size') }}: {{ file.size }}</span>
           <q-btn
             v-if="mode==='sign'"
+            :disabled="fileIsLoading"
             unelevated
             size="lg"
             color="secondary"
@@ -234,6 +252,9 @@ export default {
       lastOffset: 0,
       chunkSize: 1024 * 1024,
       blake2b: null,
+      fileIsLoading: false,
+      counter: 0,
+      increment: 0,
     };
   },
 
@@ -246,6 +267,9 @@ export default {
     },
     key() {
       return this.$store.state.settings.authenticatedAccount;
+    },
+    uploadPercent() {
+      return parseInt((this.counter / this.file.byteSize) * 100, 10);
     },
   },
 
@@ -290,6 +314,8 @@ export default {
     },
 
     async hashFile(files) {
+      this.counter = 0;
+      this.fileIsLoading = true;
       let offset = 0;
       this.lastOffset = 0;
       const size = this.chunkSize;
@@ -302,9 +328,11 @@ export default {
         name: currentFile.name,
         type: this.re.exec(currentFile.name)[1],
         size: this.getSize(currentFile.size),
+        byteSize: currentFile.size,
       };
 
       if (currentFile.size !== 0) {
+        this.$q.loadingBar.start();
         while (offset < currentFile.size) {
           partial = currentFile.slice(offset, offset + size);
           const reader = new FileReader();
@@ -360,17 +388,21 @@ export default {
 
     callbackProgress(data) {
       this.blake2b.update(Buffer.from(data));
+      this.counter += data.byteLength;
+      setTimeout(() => {
+        this.$q.loadingBar.increment(parseFloat((this.counter / this.file.byteSize).toFixed(5)));
+      }, 100);
     },
 
     callbackFinal(data) {
-      console.log('DATA');
-      console.log(data);
-      console.log('BUFFER FROM DATA');
-      console.log(Buffer.from(data));
       this.file.hashBuffer = this.blake2b.update(Buffer.from(data)).digest();
       this.file.hash = this.$base32(this.file.hashBuffer).toLowerCase();
-      console.log('finalllll');
-      console.log(this.file.hash);
+      this.counter += data.byteLength;
+      setTimeout(() => {
+        this.$q.loadingBar.increment(parseFloat((this.counter / this.file.byteSize).toFixed(5)));
+        this.$q.loadingBar.stop();
+        this.fileIsLoading = false;
+      });
     },
 
     signHash() {
@@ -518,5 +550,11 @@ export default {
 
 .add-border {
   border: 1px solid lightgray;
+}
+
+.centered {
+  position: fixed; /* or absolute */
+  top: 28%;
+  left: 48.5%;
 }
 </style>
