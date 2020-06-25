@@ -1,7 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.EthResponse;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AtlasCity.TimeProof.Abstractions.Helpers
 {
@@ -13,6 +13,8 @@ namespace AtlasCity.TimeProof.Abstractions.Helpers
 
         Task<int> GetGasPrice(double amountInPence, CancellationToken cancellationToken);
 
-        Task<EthGasStationPrice> GetGasStationPrice(string apiEndPoint, CancellationToken cancellationToken);
+        Task<EthCharge> GetFreePlanGwei(string apiEndPoint, CancellationToken cancellationToken);
+
+        Task<EthCharge> GetPaidPlanGwei(string apiEndPoint, CancellationToken cancellationToken);
     }
 }

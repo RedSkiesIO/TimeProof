@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions;
+﻿using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.EthResponse;
 using AtlasCity.TimeProof.Abstractions.Helpers;
@@ -9,6 +6,10 @@ using Dawn;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
+using Serilog;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using TheDotNetLeague.MultiFormats.MultiBase;
 
 namespace AtlasCity.TimeProof.Common.Lib.Helpers
@@ -21,14 +22,17 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
 
         private readonly EthSettings _ethSettings;
         private readonly IEthClient _ethClient;
+        private readonly ILogger _logger;
 
-        public EthHelper(EthSettings ethSettings, IEthClient ethClient)
+        public EthHelper(EthSettings ethSettings, IEthClient ethClient, ILogger logger)
         {
             Guard.Argument(ethSettings, nameof(ethSettings)).NotNull();
             Guard.Argument(ethClient, nameof(ethClient)).NotNull();
+            Guard.Argument(logger, nameof(logger)).NotNull();
 
             _ethSettings = ethSettings;
             _ethClient = ethClient;
+            _logger = logger;
         }
 
         public bool VerifyStamp(TimestampDao timestamp)
@@ -65,12 +69,40 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
             return gasPrice;
         }
 
-        public async Task<EthGasStationPrice> GetGasStationPrice(string apiEndPoint, CancellationToken cancellationToken)
+        public async Task<EthCharge> GetFreePlanGwei(string apiEndPoint, CancellationToken cancellationToken)
         {
+            Guard.Argument(apiEndPoint, nameof(apiEndPoint)).NotNull().NotEmpty().NotWhiteSpace();
+
             var responseContent = await _ethClient.GetJsonResponseContent(apiEndPoint, cancellationToken);
             var ethGasStationPrice = JsonConvert.DeserializeObject<EthGasStationPrice>(responseContent);
 
-            return ethGasStationPrice;
+            if (ethGasStationPrice != null)
+            {
+                if (ethGasStationPrice.SafeLowGwei < ethGasStationPrice.AverageGwei / 2)
+                {
+                    _logger.Information($"FastGwei: '{ethGasStationPrice.FastGwei}', AverageGwei: '{ethGasStationPrice.AverageGwei}', SafeLowGwei: '{ethGasStationPrice.SafeLowGwei}'");
+                    return new EthCharge { Gwei = ethGasStationPrice.AverageGwei, WaitTime = ethGasStationPrice.AverageWaitTime };
+                }
+                else
+                {
+                    return new EthCharge { Gwei = ethGasStationPrice.SafeLowGwei, WaitTime = ethGasStationPrice.SafeLowWaitTime };
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<EthCharge> GetPaidPlanGwei(string apiEndPoint, CancellationToken cancellationToken)
+        {
+            Guard.Argument(apiEndPoint, nameof(apiEndPoint)).NotNull().NotEmpty().NotWhiteSpace();
+
+            var responseContent = await _ethClient.GetJsonResponseContent(apiEndPoint, cancellationToken);
+            var ethGasStationPrice = JsonConvert.DeserializeObject<EthGasStationPrice>(responseContent);
+
+            if (ethGasStationPrice != null)
+                return new EthCharge { Gwei = ethGasStationPrice.FastGwei, WaitTime = ethGasStationPrice.FastWaitTime };
+
+            return null;
         }
     }
 }

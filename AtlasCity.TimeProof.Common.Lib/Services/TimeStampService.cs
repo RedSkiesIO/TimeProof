@@ -165,26 +165,17 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private async Task SendTransaction(TimestampDao timestamp, double gasPrice, bool isFreePlan, CancellationToken cancellationToken)
         {
             var ethSettings = _ethHelper.GetEthSettings();
-
             var estimateGasPrice = gasPrice;
-            var gasStationPrice = await _ethHelper.GetGasStationPrice(ethSettings.GasStationAPIEndpoint, cancellationToken);
-            if (gasStationPrice != null)
+
+            var gasStationPrice = isFreePlan ? await _ethHelper.GetFreePlanGwei(ethSettings.GasStationAPIEndpoint, cancellationToken) : await _ethHelper.GetPaidPlanGwei(ethSettings.GasStationAPIEndpoint, cancellationToken);
+            if (gasStationPrice != null && gasStationPrice.Gwei > double.MinValue)
             {
-                if (isFreePlan)
-                {
-                    if (gasStationPrice.SafeLowGwei > 0)
-                        estimateGasPrice = gasStationPrice.SafeLowGwei;
-                }
-                else
-                {
-                    if (gasStationPrice.FastGwei > 0)
-                        estimateGasPrice = gasStationPrice.FastGwei;
-                }
+                estimateGasPrice = gasStationPrice.Gwei;
             }
 
             if (estimateGasPrice > MaxGwei)
             {
-                var message = $"Cannot send transaction with '{estimateGasPrice}' Gwei. Maximum set to '{MaxGwei }' Gwei.";
+                var message = $"Cannot send transaction with '{estimateGasPrice}' Gwei. Maximum set to '{MaxGwei}' Gwei.";
                 _logger.Error(message);
                 throw new TimestampException(message);
             }

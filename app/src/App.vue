@@ -42,6 +42,11 @@ export default {
   },
 
   async created() {
+    if (this.account) {
+      localStorage.setItem('loggedOut', '');
+    } else {
+      localStorage.setItem('loggedOut', true);
+    }
     this.setProducts(await this.$paymentServer.listAllPriceplans());
   },
   mounted() {
@@ -60,7 +65,7 @@ export default {
           const verifyResult = await
           this.$userServer.verifyUserDetails();
 
-          console.log('WOWOWOWOOWOWOWw');
+          console.log('START APP CHECK USER');
           console.log(verifyResult);
           if (verifyResult) {
             User.insertOrUpdate({
@@ -104,10 +109,7 @@ export default {
           console.log(e);
         }
       } else {
-        setTimeout(() => {
-          this.$auth.signIn();
-          localStorage.setItem('loggedOut', '');
-        }, 5000);
+        this.$auth.signIn();
       }
 
       this.ready = true;

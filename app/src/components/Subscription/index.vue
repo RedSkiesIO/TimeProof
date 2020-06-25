@@ -143,7 +143,7 @@
         flat
         no-caps
         size="sm"
-        color="white bg-black"
+        style="background: #002366; color: white"
         label="Change My Subscription"
         @click="$router.push('/upgrade')"
       />
