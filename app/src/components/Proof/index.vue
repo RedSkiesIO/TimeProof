@@ -30,7 +30,7 @@
       </a>
     </div>
 
-    <div class="column q-px-md">
+    <!-- <div class="column q-px-md">
       <div
         class="row justify-between"
         :class="scope.dialog ? 'proof-dialog-item' : 'proof-item'"
@@ -238,15 +238,18 @@
           </div>
         </div>
       </div>
+    </div> -->
+    <div class="flex flex-center column text-center q-pt-lg q-pb-md">
+      <q-btn
+        v-if="!scope.dialog"
+        no-caps
+        text-color="white"
+        color="secondary"
+        :label="$t('stampAnotherFile')"
+        @click="selectAnotherFile(scope)"
+      />
     </div>
-    <div
-      v-if="!scope.dialog"
-      class="q-mt-sm text-blue text-center q-pb-md cursor-pointer"
-      @click="selectAnotherFile(scope)"
-    >
-      {{ $t('anotherFile') }}
-    </div>
-    <div class="q-px-lg flex flex-center column text-center q-pt-lg">
+    <div class="q-pb-lg flex flex-center column text-center q-pt-lg">
       <template v-if="scope.dialog">
         <q-btn
           v-if="proof.status !== 0 && ready"
@@ -324,10 +327,9 @@ export default {
     },
 
     getDate() {
-      console.log(this.proof.date);
       const date = new Date(this.proof.date);
 
-      return `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`;
+      return `${date.toLocaleTimeString()} ${date.toLocaleDateString('en-GB')}`;
     },
 
     icon() {
@@ -415,7 +417,7 @@ export default {
 
 @media screen and (max-width: 1500px) {
   .proof{
-    width: 57rem;
+    width: 35rem;
   }
   .text-height-long textarea{
     height: 3rem !important;
@@ -430,7 +432,7 @@ export default {
 
 @media screen and (max-width: 1000px) {
   .proof{
-    width: 40rem;
+    width: 26rem;
   }
   .text-height-long textarea{
     height: 3.5rem !important;
@@ -460,7 +462,7 @@ export default {
 
 @media screen and (max-width: 575px) {
   .proof-dialog-item{
-    width: 17rem !important;
+    width: 11rem !important;
   }
 }
 

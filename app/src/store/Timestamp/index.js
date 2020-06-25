@@ -26,7 +26,7 @@ export default class Timestamp extends Model {
 
   get timestampDate() {
     const stampDate = new Date(this.date);
-    return `${stampDate.toLocaleDateString()} ${stampDate.toLocaleTimeString()}`;
+    return `${stampDate.toLocaleDateString()} ${stampDate.toLocaleTimeString('en-GB')}`;
   }
 
   get certificate() {

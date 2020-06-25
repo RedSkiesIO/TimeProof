@@ -151,16 +151,6 @@
           data-test-key="stampProof"
           @userHasReachedToLimit="$emit('userHasReachedToLimit')"
         />
-        <div class="row justify-center q-pa-md">
-          <q-btn
-            v-if="confirmed && !file.verify"
-            flat
-            label="Go back to the dashboard"
-            color="blue"
-            class="row justify-center q-pa-md text-blue"
-            @click="backToDashboard"
-          />
-        </div>
 
         <VerifyResult
           v-if="confirmed && file.verify"
@@ -250,10 +240,6 @@ export default {
     reset(scope) {
       scope.reset();
       this.error = false;
-    },
-
-    backToDashboard() {
-      this.$router.push('/dashboard');
     },
 
     async insertTimestamp(file) {
