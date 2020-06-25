@@ -105,7 +105,7 @@
               :thickness="0.1"
               color="cyan-4"
               track-color="grey-3"
-              class="q-ma-md"
+              class="q-mt-md"
             >
               {{ uploadPercent }}%
             </q-knob>
