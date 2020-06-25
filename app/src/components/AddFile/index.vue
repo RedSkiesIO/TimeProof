@@ -259,7 +259,10 @@ export default {
       return this.$store.state.settings.authenticatedAccount;
     },
     uploadPercent() {
-      return parseInt((this.counter / this.file.byteSize) * 100, 10);
+      if (this.file && this.file.byteSize > 0) {
+        return parseInt((this.counter / this.file.byteSize) * 100, 10);
+      }
+      return 0;
     },
   },
 
@@ -307,33 +310,40 @@ export default {
       const size = this.chunkSize;
       let partial;
       let index = 0;
-      this.blake2b = this.$blake2b((new Uint8Array(64)).length);
-      const currentFile = files[0];
-      this.confirmed = false;
-      this.file = {
-        name: currentFile.name,
-        type: this.re.exec(currentFile.name)[1],
-        size: this.getSize(currentFile.size),
-        byteSize: currentFile.size,
-      };
 
-      if (currentFile.size !== 0) {
-        this.$q.loadingBar.start();
-        while (offset < currentFile.size) {
-          partial = currentFile.slice(offset, offset + size);
-          const reader = new FileReader();
-          reader.size = size;
-          reader.offset = offset;
-          reader.index = index;
-          // eslint-disable-next-line no-loop-func
-          reader.onload = (evt) => {
-            this.callbackRead(reader, currentFile, evt,
-              this.callbackProgress, this.callbackFinal);
-          };
-          reader.readAsArrayBuffer(partial);
-          offset += this.chunkSize;
-          index += 1;
+
+      try {
+        this.blake2b = this.$blake2b((new Uint8Array(64)).length);
+        const currentFile = files[0];
+        this.confirmed = false;
+        this.file = {
+          name: currentFile.name,
+          type: this.re.exec(currentFile.name)[1],
+          size: this.getSize(currentFile.size),
+          byteSize: currentFile.size,
+        };
+
+        if (currentFile.size !== 0) {
+          this.$q.loadingBar.start();
+          while (offset < currentFile.size) {
+            partial = currentFile.slice(offset, offset + size);
+            const reader = new FileReader();
+            reader.size = size;
+            reader.offset = offset;
+            reader.index = index;
+            // eslint-disable-next-line no-loop-func
+            reader.onload = (evt) => {
+              this.callbackRead(reader, currentFile, evt,
+                this.callbackProgress, this.callbackFinal);
+            };
+            reader.readAsArrayBuffer(partial);
+            offset += this.chunkSize;
+            index += 1;
+          }
         }
+      } catch (ex) {
+        this.$q.loadingBar.stop();
+        console.log('File upload error: ', ex);
       }
     },
 
@@ -384,11 +394,9 @@ export default {
       this.file.hashBuffer = this.blake2b.update(Buffer.from(data)).digest();
       this.file.hash = this.$base32(this.file.hashBuffer).toLowerCase();
       this.counter += data.byteLength;
-      setTimeout(() => {
-        this.$q.loadingBar.increment(parseFloat((this.counter / this.file.byteSize).toFixed(5)));
-        this.$q.loadingBar.stop();
-        this.fileIsLoading = false;
-      });
+      this.$q.loadingBar.increment(parseFloat((this.counter / this.file.byteSize).toFixed(5)));
+      this.$q.loadingBar.stop();
+      this.fileIsLoading = false;
     },
 
     signHash() {
