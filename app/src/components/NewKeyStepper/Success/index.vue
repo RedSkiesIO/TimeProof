@@ -28,7 +28,7 @@
 <script>
 
 export default {
-  name: 'EncryptKey',
+  name: 'Success',
 
   data() {
     return {
@@ -36,7 +36,7 @@ export default {
     };
   },
   mounted() {
-    // setTimeout(() => this.$router.push('/dashboard'), 2000);
+    setTimeout(() => this.$router.push('/dashboard'), 2000);
   },
 };
 </script>
