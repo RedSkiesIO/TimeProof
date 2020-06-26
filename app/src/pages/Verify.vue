@@ -5,7 +5,7 @@
         class="go-dashboard q-pb-sm cursor-pointer"
         @click="backToDashboard"
       >
-        &nbsp;Go back to the dashboard
+        <span style="color:#336699">&nbsp;Go back to the dashboard</span>
       </a>
     </div>
     <div

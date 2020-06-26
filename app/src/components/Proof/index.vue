@@ -30,7 +30,10 @@
       </a>
     </div>
 
-    <!-- <div class="column q-px-md">
+    <div
+      v-if="scope.dialog"
+      class="column q-px-md"
+    >
       <div
         class="row justify-between"
         :class="scope.dialog ? 'proof-dialog-item' : 'proof-item'"
@@ -156,9 +159,8 @@
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.txId)"
               >
                 <q-tooltip anchor="top middle">
@@ -194,9 +196,8 @@
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.hash)"
               >
                 <q-tooltip anchor="top middle">
@@ -225,9 +226,8 @@
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.signature)"
               >
                 <q-tooltip anchor="top middle">
@@ -238,13 +238,13 @@
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
     <div class="flex flex-center column text-center q-pt-lg q-pb-md">
       <q-btn
         v-if="!scope.dialog"
         no-caps
         text-color="white"
-        color="secondary"
+        class="shade-color"
         :label="$t('stampAnotherFile')"
         @click="selectAnotherFile(scope)"
       />
@@ -253,8 +253,7 @@
       <template v-if="scope.dialog">
         <q-btn
           v-if="proof.status !== 0 && ready"
-          text-color="secondary"
-          color="white"
+          class="shade-color"
           label="Download Certificate"
           @click="getCertificate"
         />
@@ -262,8 +261,8 @@
       <template v-else>
         <q-btn
           v-if="proof.status !== 0 && ready"
-          outline
-          color="secondary"
+          flat
+          class="shade-color"
           label="Download Certificate"
           @click="getCertificate"
         />

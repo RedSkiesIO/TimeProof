@@ -12,7 +12,7 @@
         <div class="row justify-center q-mt-sm">
           <q-btn
             outline
-            color="black"
+            class="shade-color"
             :label="$t('backup')"
             @click="openBackupdialog"
           />
@@ -33,9 +33,9 @@
               @click="isPwd = !isPwd"
             />
             <q-btn
-              outline
+              flat
               round
-              color="secondary"
+              class="shade-color"
               icon="lock"
               @click="lockKey"
             />
@@ -98,10 +98,10 @@
                 @click="isPwd = !isPwd"
               />
               <q-btn
-                outline
+                flat
                 round
                 icon="lock_open"
-                color="secondary"
+                class="shade-color"
                 @click="unlockKey(password)"
               />
             </template>
@@ -160,7 +160,7 @@
             <q-btn
               outline
               :label="$t('createKeyLabel')"
-              color="secondary"
+              class="shade-color"
               @click="newKey=true"
             />
           </div>

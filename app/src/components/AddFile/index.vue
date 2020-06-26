@@ -124,7 +124,7 @@
             :disabled="fileIsLoading"
             unelevated
             size="lg"
-            color="secondary"
+            class="shade-color"
             :data-test-key="$t('sign')"
             :label="$t('sign')"
             @click="signHash"
@@ -147,7 +147,7 @@
               <q-btn
                 unelevated
                 :disable="!proofId"
-                color="secondary"
+                class="shade-color"
                 :data-test-key="$t('verify')"
                 :label="$t('verify')"
                 @click="verifyProof"

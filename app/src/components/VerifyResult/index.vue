@@ -83,9 +83,8 @@
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.txId)"
               >
                 <q-tooltip anchor="top middle">
@@ -113,9 +112,8 @@
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.hash)"
               >
                 <q-tooltip anchor="top middle">
@@ -143,9 +141,8 @@
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.signature)"
               >
                 <q-tooltip anchor="top middle">
@@ -161,8 +158,7 @@
       <q-btn
         v-if="!scope.dialog"
         no-caps
-        text-color="white"
-        color="secondary"
+        class="shade-color"
         :label="$t('verifyAnotherFile')"
         @click="scope.reset()"
       />

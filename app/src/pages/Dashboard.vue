@@ -35,9 +35,8 @@
       <q-btn
         unelevated
         flat
-        color="blue"
         :label="$t('signUpSignIn')"
-        class="q-mt-md"
+        class="q-mt-md shade-color"
         @click="$auth.signIn()"
       />
     </div>

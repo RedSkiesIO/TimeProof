@@ -160,14 +160,14 @@
             <div
               id="card-errors"
               class="element-errors"
-              :class="{ visible: cardErrorVisible}"
+              :class="{visible: cardErrorVisible}"
             >
               {{ cardErrorContent }}
             </div>
             <div
               id="iban-errors"
               class="element-errors"
-              :class="{ visible: ibanErrorVisible}"
+              :class="{visible: ibanErrorVisible}"
             >
               {{ ibanErrorContent }}
             </div>

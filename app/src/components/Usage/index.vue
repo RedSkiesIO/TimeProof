@@ -73,9 +73,19 @@
         />
         <div class="row justify-center items-center">
           <q-btn
+            v-if="!upgradeIsNeeded"
+            flat
+            no-caps
+            class="shade-color"
+            data-test-key="upgradeButton"
+            :label="upgradeButtonLabel"
+            @click.prevent="upgradeUser"
+          />
+          <q-btn
+            v-else
             outline
             no-caps
-            :color="upgradeButtonColor"
+            color="red"
             data-test-key="upgradeButton"
             :label="upgradeButtonLabel"
             @click.prevent="upgradeUser"
@@ -110,8 +120,8 @@ export default {
     usedClass() {
       return this.user.remainingTimeStamps <= 0 ? 'text-red' : 'text-green';
     },
-    upgradeButtonColor() {
-      return this.user.remainingTimeStamps <= 0 ? 'red' : 'secondary';
+    upgradeIsNeeded() {
+      return this.user.remainingTimeStamps <= 0;
     },
     upgradeButtonLabel() {
       return this.user.remainingTimeStamps <= 0 ? this.$t('upgradeToCreateMoreProofs') : this.$t('needAnUpgrade');

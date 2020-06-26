@@ -6,15 +6,13 @@
     <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
       <q-btn
         flat
-        class="col-xs-6"
-        color="blue"
+        class="col-xs-6 shade-color q-mb-md"
         label="Edit Profile"
         @click="editProfile"
       />
       <q-btn
         flat
-        class="col-xs-6"
-        color="blue"
+        class="col-xs-6 shade-color"
         label="change password"
         @click="forgotPassword"
       />

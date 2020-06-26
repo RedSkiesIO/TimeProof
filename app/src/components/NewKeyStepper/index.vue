@@ -40,13 +40,12 @@
             <q-btn
               v-if="step > 1"
               flat
-              color="secondary"
               label="Back"
-              class="q-ml-sm"
+              class="q-ml-sm shade-color"
               @click="$refs.stepper.previous()"
             />
             <q-btn
-              color="secondary"
+              class="shade-color"
               data-test-key="newKeyContinue"
               :disable="step === 2 && disableButton"
               :label="step === 3 ? 'Go to Dashboard' : 'Continue'"

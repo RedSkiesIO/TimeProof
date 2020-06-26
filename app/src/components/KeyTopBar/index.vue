@@ -18,7 +18,7 @@
         <div class="row justify-center q-mt-sm">
           <q-btn
             outline
-            color="black"
+            class="shade-color"
             :label="$t('backup')"
             @click="openBackupdialog"
           />
@@ -41,15 +41,15 @@
           </template>
         </q-input>
       </div>
-      <div class="row justify-center q-mb-sm">
+      <!-- <div class="row justify-center q-mb-sm">
         <q-btn
-          outline
+          flat
           round
-          color="secondary"
+          class="shade-color"
           icon="lock"
           @click="lockKey"
         />
-      </div>
+      </div> -->
       <!-- <div class="row">
         <div
           class="text-blue q-mb-sm"
@@ -101,18 +101,18 @@
             </template>
           </q-input>
         </div>
-        <div class="col-2 q-ml-sm unlock-button">
+        <div class="col-2 q-ml-lg unlock-button">
           <q-btn
-            outline
+            flat
             :label="$t('unlock')"
-            color="secondary"
+            class="shade-color"
             @click="unlockKey(password)"
           />
         </div>
       </div>
       <!-- <div class="row justify-center q-mb-sm">
         <q-btn
-          outline
+          flat
           :label="$t('unlock')"
           color="secondary"
           @click="unlockKey(password)"
@@ -155,7 +155,7 @@
           <q-btn
             outline
             :label="$t('createKeyLabel')"
-            color="secondary"
+            class="shade-color"
             @click="newKey=true"
           />
         </div>

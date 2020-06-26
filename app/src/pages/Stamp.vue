@@ -1,11 +1,13 @@
 <template>
   <q-page class="flex justify-center">
-    <div class="q-pa-md">
+    <div
+      class="q-pa-md"
+    >
       <a
         class="go-dashboard q-pb-sm cursor-pointer"
         @click="backToDashboard"
       >
-        &nbsp;Go back to the dashboard
+        <span style="color:#336699">&nbsp;Go back to the dashboard</span>
       </a>
     </div>
 
@@ -55,7 +57,7 @@
         <q-banner class="bg-grey-3 fixed-center absolute-center">
           <template v-slot:avatar>
             <q-icon
-              name="signal_wifi_off"
+              name="warning"
               color="primary"
             />
           </template>
@@ -65,7 +67,7 @@
           <template v-slot:action>
             <q-btn
               flat
-              color="primary"
+              class="shade-color"
               label="Upgrade"
               @click="$router.push('/upgrade')"
             />

@@ -30,14 +30,14 @@
           flat
           data-test-key="cancelCreateFirstTimeStamp"
           :label="$t('later')"
-          color="blue"
+          class="shade-color"
           @click="buttonClose"
         />
         <q-btn
           flat
           data-test-key="continueCreateFirstTimeStamp"
           :label="$t('sign')"
-          color="blue"
+          class="shade-color q-ml-md"
           @click="buttonAction"
         />
       </div>
