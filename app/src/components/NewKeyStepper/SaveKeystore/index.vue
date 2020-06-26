@@ -17,10 +17,10 @@
     </div>
     <div class="row justify-center">
       <q-btn
-        outline
+        flat
         label="download keystore file"
         style="width: 250px"
-        class="shade-color"
+        class="shade-color q-mt-md"
         data-test-key="saveKeyDownloadKeystore"
         @click="buttonAction"
       />

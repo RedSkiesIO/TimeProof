@@ -31,24 +31,29 @@
         title="Signing key created"
         icon="fas fa-thumbs-up"
       >
-        <Success />
+        <q-dialog v-model="successMode">
+          <Success />
+        </q-dialog>
       </q-step>
 
-      <template v-slot:navigation>
+      <template
+        v-if="step < 3"
+        v-slot:navigation
+      >
         <q-stepper-navigation>
           <div class="text-center">
             <q-btn
               v-if="step > 1"
               flat
               label="Back"
-              class="q-ml-sm shade-color"
+              class="q-mr-md shade-color"
               @click="$refs.stepper.previous()"
             />
             <q-btn
               class="shade-color"
               data-test-key="newKeyContinue"
               :disable="step === 2 && disableButton"
-              :label="step === 3 ? 'Go to Dashboard' : 'Continue'"
+              label="Continue"
               @click="clickAction"
             />
           </div>
@@ -76,6 +81,7 @@ export default {
     return {
       step: 1,
       disableButton: true,
+      successMode: false,
     };
   },
 
@@ -95,11 +101,11 @@ export default {
         case 1:
           this.addKey();
           break;
-        case 3:
-          this.$router.push('/dashboard');
+        case 2:
+          this.$refs.stepper.next();
+          this.successMode = true;
           break;
         default:
-          this.$refs.stepper.next();
       }
     },
 
@@ -134,7 +140,6 @@ export default {
     },
 
     downloadKeystore() {
-      console.log('called');
       this.disableButton = false;
       this.$crypto.createKeystore(this.user);
     },
