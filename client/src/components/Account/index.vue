@@ -6,19 +6,19 @@
     <div class="column justify-center q-mx-sm">
       <q-btn
         flat
-        color="blue"
+        class="shade-color"
         label="Edit Profile"
         @click="editProfile"
       />
       <q-btn
         flat
-        color="blue"
+        class="shade-color"
         label="change password"
         @click="forgotPassword"
       />
       <q-btn
         flat
-        color="blue"
+        class="shade-color"
         label="upgrade plan"
       />
     </div>

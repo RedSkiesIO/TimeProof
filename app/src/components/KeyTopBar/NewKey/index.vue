@@ -66,7 +66,7 @@
       <q-btn
         outline
         :label="buttonLabel"
-        color="secondary"
+        class="shade-color"
         @click="buttonAction"
       />
     </div>

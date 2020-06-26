@@ -84,7 +84,7 @@
         <q-btn
           flat
           no-caps
-          color="blue"
+          class="shade-color"
           label="Change"
           @click="changeCard"
         />
@@ -96,10 +96,9 @@
         <div class="row">
           <q-btn
             flat
-            class="col-md-6 col-sm-6 col-xs-6"
+            class="col-md-6 col-sm-6 col-xs-6 shade-color"
             no-caps
             :disable="cardSaveDisable"
-            color="blue"
             :label="loading ? '' : 'Save'"
             @click="saveCard"
           >
@@ -112,10 +111,9 @@
           </q-btn>
           <q-btn
             flat
-            class="col-md-6 col-sm-6 col-xs-6"
+            class="col-md-6 col-sm-6 col-xs-6 shade-color"
             no-caps
             :disable="loading"
-            color="blue"
             label="Cancel"
             @click="saveMode = false"
           />
@@ -143,7 +141,7 @@
         flat
         no-caps
         size="sm"
-        style="background: #002366; color: white"
+        class="shade-color"
         label="Change My Subscription"
         @click="$router.push('/upgrade')"
       />

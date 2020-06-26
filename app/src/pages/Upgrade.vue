@@ -61,7 +61,7 @@
                 <q-btn
                   flat
                   data-test-key="cancelFuturePlan"
-                  color="secondary text-weight-bold"
+                  class="shade-color"
                   @click.stop="cancelPlan"
                 >
                   Cancel

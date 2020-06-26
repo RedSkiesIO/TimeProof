@@ -11,7 +11,7 @@ module.exports = function (isDev, isTest, isProd) {
 
   if (isDev) {
     envVar = {
-      API: JSON.stringify('http://localhost:5000/api'),
+      API: JSON.stringify('https://timescribeapitest.azurewebsites.net/api'),
       ETHERSCAN: JSON.stringify('https://kovan.etherscan.io/tx'),
       INFURA: JSON.stringify('https://kovan.infura.io/v3/679bbc6759454bf58a924bfaf55576b9'),
       DEV: JSON.stringify(true),

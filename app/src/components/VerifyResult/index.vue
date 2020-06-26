@@ -83,9 +83,8 @@
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.txId)"
               >
                 <q-tooltip anchor="top middle">
@@ -113,9 +112,8 @@
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.hash)"
               >
                 <q-tooltip anchor="top middle">
@@ -143,9 +141,8 @@
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.signature)"
               >
                 <q-tooltip anchor="top middle">
@@ -157,12 +154,14 @@
         </div>
       </div>
     </div>
-    <div
-      v-if="!scope.dialog"
-      class="q-mt-sm text-blue text-center q-pb-md cursor-pointer"
-      @click="scope.reset()"
-    >
-      {{ $t('anotherFile') }}
+    <div class="flex flex-center column text-center q-pt-lg q-pb-md">
+      <q-btn
+        v-if="!scope.dialog"
+        no-caps
+        class="shade-color"
+        :label="$t('verifyAnotherFile')"
+        @click="scope.reset()"
+      />
     </div>
   </div>
 </template>
@@ -197,7 +196,7 @@ export default {
     getDate() {
       const date = new Date(this.proof.date);
 
-      return `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`;
+      return `${date.toLocaleTimeString()} ${date.toLocaleDateString('en-GB')}`;
     },
 
     heightClass() {
@@ -266,7 +265,7 @@ export default {
 
 @media screen and (max-width: 1500px) {
   .proof{
-    width: 57rem;
+    width: 35rem;
   }
   .text-height-long textarea{
     height: 2rem !important;
@@ -278,19 +277,7 @@ export default {
 
 @media screen and (max-width: 1000px) {
   .proof{
-    width: 40rem;
-  }
-  .text-height-long textarea{
-    height: 3.5rem !important;
-  }
-  .text-height-short textarea{
-    height: 3.5rem !important;
-  }
-}
-
-@media screen and (max-width: 750px) {
-  .proof{
-    width: 28rem;
+    width: 30rem;
   }
   .text-height-long textarea{
     height: 4rem !important;
@@ -300,15 +287,15 @@ export default {
   }
 }
 
-@media screen and (max-width: 300px) {
+@media screen and (max-width: 600px) {
   .proof{
     width: 100%;
   }
   .text-height-long textarea{
-    height: 5rem !important;
+    height: 4.5rem !important;
   }
   .text-height-short textarea{
-    height: 4rem !important;
+    height: 4.5rem !important;
   }
 }
 

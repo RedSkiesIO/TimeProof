@@ -24,7 +24,7 @@
     <div class="row justify-center q-mt-md">
       <q-btn
         outline
-        color="secondary"
+        class="shade-color"
         label="Create your signing key"
         style="width: 250px"
         data-test-key="createYourSigningKey"
