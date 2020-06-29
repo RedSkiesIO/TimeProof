@@ -4,7 +4,7 @@
     {
         public const string FreePricePlanTitle = "Basic";
 
-        public const string AutomatedEmailFromAddress = "noreply@atlascity.io";
+        public const string AutomatedEmailFromAddress = "noreply@atlas3t.com";
 
         public const string WelcomeEmailSubject = "Welcome to Timescribe";
     }
