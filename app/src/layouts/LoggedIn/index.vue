@@ -15,7 +15,7 @@
         />
         <div
           class="logo text-center text-weight-bold q-pt-sm"
-          @click="$router.push('/')"
+          @click="mainLogoClick"
         >
           <img
             src="~assets/logo.png"
@@ -254,6 +254,12 @@ export default {
         window.open(url);
       }
     },
+    mainLogoClick() {
+      if (this.user.secretKey) {
+        this.$router.push('/');
+      }
+    },
+
   },
 };
 </script>
