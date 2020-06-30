@@ -54,7 +54,7 @@
       </div>
       <div class="row justify-center">
         <q-btn
-          outline
+          flat
           :label="$t('addKey')"
           class="shade-color"
           @click="importFromKey()"
@@ -88,7 +88,7 @@
       </div>
       <div class="row justify-center">
         <q-btn
-          outline
+          flat
           :label="$t('addKey')"
           class="shade-color"
           @click="importFromKeystore()"

@@ -64,7 +64,7 @@
     </div>
     <div class="row justify-center q-mb-sm">
       <q-btn
-        outline
+        flat
         :label="buttonLabel"
         class="shade-color"
         @click="buttonAction"
