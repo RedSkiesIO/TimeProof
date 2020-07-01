@@ -52,7 +52,7 @@
             <q-btn
               class="shade-color"
               data-test-key="newKeyContinue"
-              :disable="step === 2 && disableButton"
+              :disable="(disableButton && step === 2) || (!isFilledInput && step === 1)"
               label="Continue"
               @click="clickAction"
             />
@@ -82,6 +82,7 @@ export default {
       step: 1,
       disableButton: true,
       successMode: false,
+      mounted: false,
     };
   },
 
@@ -92,6 +93,22 @@ export default {
     user() {
       return this.$auth.user();
     },
+    isFilledInput() {
+      if (this.mounted) {
+        const { input } = this.$refs.form.$refs;
+        input.validate();
+
+        if (!input.hasError) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+  },
+
+  mounted() {
+    this.mounted = true;
   },
 
   methods: {

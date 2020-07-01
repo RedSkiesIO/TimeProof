@@ -43,7 +43,7 @@
         v-model="password"
         autofocus
         data-test-key="newKeyPassword"
-        :label="$t('enterPassword')"
+        :label="$t('enterPin')"
         mask="######"
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"

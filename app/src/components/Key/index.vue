@@ -82,7 +82,7 @@
         <div class="row">
           <q-input
             v-model="password"
-            :label="$t('enterPassword')"
+            :label="$t('enterPin')"
             mask="######"
             :type="isPwd ? 'password' : 'text'"
             :error="!isValid"
