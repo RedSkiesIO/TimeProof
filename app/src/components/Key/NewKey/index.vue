@@ -48,7 +48,7 @@
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"
         :rules="mode !=='unlock' ?
-          [ val => val && val.length === 6 || $t('invalidPasswordLength')] : []"
+          [ val => val && val.length === 6 || $t('invalidPinLength')] : []"
         class="q-ma-sm signing-key"
         @keyup.enter="buttonAction"
       >

@@ -95,27 +95,27 @@
                 class="cursor-pointer"
                 @click="isPwd = !isPwd"
               />
-              <q-btn
+              <!--<q-btn
                 flat
                 round
                 icon="lock_open"
                 class="shade-color"
                 @click="unlockKey(password)"
-              />
+              />-->
             </template>
             <template v-slot:error>
               {{ $t('wrongPassword') }}
             </template>
           </q-input>
         </div>
-        <!-- <div class="row justify-center q-mb-sm">
+        <div class="row justify-center q-mb-sm">
           <q-btn
-            outline
+            flat
             :label="$t('unlock')"
-            color="secondary"
+            class="shade-color"
             @click="unlockKey(password)"
           />
-        </div> -->
+        </div>
         <!-- <div class="row justify-center q-gutter-x-xs">
           <q-btn
             flat
@@ -132,7 +132,7 @@
             @click="openNewKeyDialog"
           /> -->
         <!-- </div> -->
-        <div class="row justify-end" />
+        <!--<div class="row justify-end" /> -->
       </div>
     </q-card>
 

@@ -110,7 +110,7 @@ export default {
   keystoreFile: 'Keystore file',
   privateKey: 'Private Key',
   invalidKeystore: 'Invalid keystore file',
-  invalidPasswordLength: 'Password must contain at least 8 characters',
+  invalidPinLength: 'PIN must contains 6 numerics',
   verifyTimestamp: 'Verify a timestamp',
   createTimestamp: 'Create a timestamp',
   createFirstTimeStamp: "Let's get you started!",

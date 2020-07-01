@@ -28,7 +28,7 @@
         :label="$t('enterPassword')"
         style="width: 25vw"
         :rules="
-          [ val => val && val.length === 6 || $t('invalidPasswordLength')]"
+          [ val => val && val.length === 6 || $t('invalidPinLength')]"
       />
     </div>
   </div>

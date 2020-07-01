@@ -401,6 +401,7 @@ export default {
 
     signHash() {
       if (this.key) {
+        this.newKey = false;
         const sig = this.$keypair.signMessage(this.file.hashBuffer, this.key);
         this.file.signature = this.$base32(sig).toLowerCase();
         this.sendProof();
