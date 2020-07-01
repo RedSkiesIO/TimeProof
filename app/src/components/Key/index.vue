@@ -79,16 +79,15 @@
         <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
           <div>{{ $t('signingKeyLocked') }}</div>
         </div>
-        <!-- <div class="row justify-center">
-          {{ $t('signingKeyLockedDesc') }}
-        </div> -->
         <div class="row">
           <q-input
             v-model="password"
             :label="$t('enterPassword')"
+            mask="######"
             :type="isPwd ? 'password' : 'text'"
             :error="!isValid"
             class="q-my-sm signing-key"
+            :rules="[val => val && val.length === 6 || $t('invalidPinLength')]"
             @keyup.enter="unlockKey(password)"
           >
             <template v-slot:append>
@@ -97,27 +96,27 @@
                 class="cursor-pointer"
                 @click="isPwd = !isPwd"
               />
-              <q-btn
+              <!--<q-btn
                 flat
                 round
                 icon="lock_open"
                 class="shade-color"
                 @click="unlockKey(password)"
-              />
+              />-->
             </template>
             <template v-slot:error>
               {{ $t('wrongPassword') }}
             </template>
           </q-input>
         </div>
-        <!-- <div class="row justify-center q-mb-sm">
+        <div class="row justify-center q-mb-sm">
           <q-btn
-            outline
+            flat
             :label="$t('unlock')"
-            color="secondary"
+            class="shade-color"
             @click="unlockKey(password)"
           />
-        </div> -->
+        </div>
         <!-- <div class="row justify-center q-gutter-x-xs">
           <q-btn
             flat
@@ -134,7 +133,7 @@
             @click="openNewKeyDialog"
           /> -->
         <!-- </div> -->
-        <div class="row justify-end" />
+        <!--<div class="row justify-end" /> -->
       </div>
     </q-card>
 
@@ -209,6 +208,7 @@ import Import from './ImportKey';
 
 export default {
   name: 'Key',
+
   components: {
     NewKey,
     Backup,

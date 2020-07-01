@@ -75,18 +75,17 @@
       <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
         <div>{{ $t('signingKeyLocked') }}</div>
       </div>
-      <!-- <div class="row justify-center">
-        {{ $t('signingKeyLockedDesc') }}
-      </div> -->
       <div class="row justify-center">
         <div class="col-5">
           <q-input
             v-model="password"
             dense
+            mask="######"
             :label="$t('enterPassword')"
             :type="isPwd ? 'password' : 'text'"
             :error="!isValid"
             class="q-my-sm signing-key"
+            :rules="[val => val && val.length === 6 || $t('invalidPinLength')]"
             @keyup.enter="unlockKey(password)"
           >
             <template v-slot:append>

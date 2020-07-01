@@ -42,11 +42,11 @@
         ref="passwordInput"
         v-model="password"
         autofocus
+        mask="######"
         :label="$t('enterPassword')"
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"
-        :rules="mode !=='unlock' ?
-          [ val => val && val.length >= 8 || $t('invalidPasswordLength')] : []"
+        :rules="[val => val && val.length === 6 || $t('invalidPinLength')]"
         class="q-ma-sm signing-key"
         @keyup.enter="buttonAction"
       >
