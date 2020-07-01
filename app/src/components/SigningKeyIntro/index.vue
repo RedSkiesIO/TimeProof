@@ -1,11 +1,11 @@
 <template>
   <div
-    class="flex column justify-center text-center q-pa-md q-gutter-sm"
+    class="justify-center text-center q-pa-md q-gutter-sm"
     style="margin-top: 73px;"
   >
     <img
-      src="~assets/signing-key.svg"
-      style="height: 15vw"
+      src="~assets/signing-key-intro.png"
+      style="height: 15vw; width: 20vw"
     >
     <div class="text-h4 text-secondary">
       Welcome to Timescribe {{ user.givenName }}!
@@ -15,9 +15,9 @@
         class="text-body1"
         style="width: 50vw;"
       >
-        To get you started on Timescribe we need to create your signing key. <br>
-        Your signing key is used to prove your ownership of a timestamp.
-        It's stored locally on your device so that only you have access to it.
+        To complete your setup, we need to create your signing key.<br>
+        Your signing key is used for uniquely marking your asset evidences
+        with your identity i.e. proof of ownership.
       </div>
     </div>
 
