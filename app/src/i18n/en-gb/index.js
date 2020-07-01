@@ -91,7 +91,7 @@ export default {
   createKeyLabel: 'Create Key',
   newKeyDesc: 'Please choose a password to encrypt your signing key',
   unlockKey: 'Please unlock your signing key',
-  unlockKeyDesc: 'Enter the password for your signing key to create a timestamp',
+  unlockKeyDesc: 'Enter the PIN code for your signing key to create a timestamp',
   unlockKeyLabel: 'Unlock Key',
   wrongPassword: 'Wrong password',
   saveKeystore: 'Save your Keystore file',

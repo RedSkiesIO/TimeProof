@@ -184,10 +184,14 @@
           @closeUnlock="dialog=false"
           @sign="signHash"
         />
-        <NewKey
+        <!-- <NewKey
           v-if="newKey"
           @close="dialog=false"
           @sign="signHash"
+        /> -->
+        <Import
+          v-if="newKey"
+          @close="signHash"
         />
       </q-dialog>
       <q-inner-loading :showing="visible">
@@ -205,7 +209,7 @@ import Timestamp from '../../store/Timestamp';
 import Proof from '../Proof';
 import VerifyResult from '../VerifyResult';
 import UnlockKey from '../Key/NewKey';
-import NewKey from '../Key';
+import Import from '../Key/ImportKey';
 import { fileIcon } from '../../util';
 
 export default {
@@ -214,7 +218,7 @@ export default {
     Proof,
     VerifyResult,
     UnlockKey,
-    NewKey,
+    Import,
   },
   props: {
     mode: {
@@ -400,8 +404,8 @@ export default {
     },
 
     signHash() {
+      this.clearDialog();
       if (this.key) {
-        this.newKey = false;
         const sig = this.$keypair.signMessage(this.file.hashBuffer, this.key);
         this.file.signature = this.$base32(sig).toLowerCase();
         this.sendProof();
@@ -412,6 +416,11 @@ export default {
         this.unlockKey = true;
         this.dialog = true;
       }
+    },
+
+    clearDialog() {
+      this.newKey = false;
+      this.dialog = false;
     },
 
     async sendProof() {

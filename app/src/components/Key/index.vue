@@ -87,6 +87,7 @@
             :type="isPwd ? 'password' : 'text'"
             :error="!isValid"
             class="q-my-sm signing-key"
+            :rules="[val => val && val.length === 6 || $t('invalidPinLength')]"
             @keyup.enter="unlockKey(password)"
           >
             <template v-slot:append>
@@ -207,6 +208,7 @@ import Import from './ImportKey';
 
 export default {
   name: 'Key',
+
   components: {
     NewKey,
     Backup,

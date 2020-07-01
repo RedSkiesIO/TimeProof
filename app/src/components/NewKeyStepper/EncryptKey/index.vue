@@ -20,16 +20,23 @@
       <q-input
         ref="input"
         v-model="password"
-        type="password"
         mask="######"
+        :type="isPwd ? 'password' : 'text'"
         filled
         autofocus
         data-test-key="encryptKeyPassword"
         :label="$t('enterPassword')"
         style="width: 25vw"
-        :rules="
-          [ val => val && val.length === 6 || $t('invalidPinLength')]"
-      />
+        :rules="[val => val && val.length === 6 || $t('invalidPinLength')]"
+      >
+        <template v-slot:append>
+          <q-icon
+            :name="isPwd ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            @click="isPwd = !isPwd"
+          />
+        </template>
+      </q-input>
     </div>
   </div>
 </template>
@@ -41,6 +48,7 @@ export default {
   data() {
     return {
       password: '',
+      isPwd: true,
     };
   },
 };
