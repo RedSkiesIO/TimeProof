@@ -79,13 +79,11 @@
         <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
           <div>{{ $t('signingKeyLocked') }}</div>
         </div>
-        <!-- <div class="row justify-center">
-          {{ $t('signingKeyLockedDesc') }}
-        </div> -->
         <div class="row">
           <q-input
             v-model="password"
             :label="$t('enterPassword')"
+            mask="######"
             :type="isPwd ? 'password' : 'text'"
             :error="!isValid"
             class="q-my-sm signing-key"

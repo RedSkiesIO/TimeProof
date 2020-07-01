@@ -21,13 +21,14 @@
         ref="input"
         v-model="password"
         type="password"
+        mask="######"
         filled
         autofocus
         data-test-key="encryptKeyPassword"
         :label="$t('enterPassword')"
         style="width: 25vw"
         :rules="
-          [ val => val && val.length >= 8 || $t('invalidPasswordLength')]"
+          [ val => val && val.length === 6 || $t('invalidPasswordLength')]"
       />
     </div>
   </div>

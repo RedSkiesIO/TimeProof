@@ -44,10 +44,11 @@
         autofocus
         data-test-key="newKeyPassword"
         :label="$t('enterPassword')"
+        mask="######"
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"
         :rules="mode !=='unlock' ?
-          [ val => val && val.length >= 8 || $t('invalidPasswordLength')] : []"
+          [ val => val && val.length === 6 || $t('invalidPasswordLength')] : []"
         class="q-ma-sm signing-key"
         @keyup.enter="buttonAction"
       >

@@ -42,6 +42,7 @@
         ref="passwordInput"
         v-model="password"
         autofocus
+        mask="######"
         :label="$t('enterPassword')"
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"
