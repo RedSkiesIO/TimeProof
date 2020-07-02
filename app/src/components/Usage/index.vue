@@ -20,15 +20,14 @@
               class="text-blue q-ma-md"
             /> -->
             <div
-              class="row text-h4 text-weight-bold q-mb-md"
-              :class="usedClass"
+              class="row text-h3 text-weight-bold q-mb-md usage-color"
             >
               {{ timestampsUsed }}
             </div>
-            <div class="row text-h8 text-weight-bold q-mb-md">
+            <div class="row text-h7 text-weight-bold">
               Stamps Used
             </div>
-            <div class="row text-h12 q-mb-md">
+            <div class="row text-h12">
               This Month
             </div>
           </div>
@@ -39,14 +38,14 @@
 
           <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
             <div
-              class="text-brown row text-h4 text-weight-bold q-mb-md"
+              class="row text-h3 text-weight-bold q-mb-md usage-color"
             >
               {{ allowedTimestamps }}
             </div>
-            <div class="row text-h8 text-weight-bold q-mb-md">
+            <div class="row text-h7 text-weight-bold">
               Stamps Allowed
             </div>
-            <div class="row text-h12 q-mb-md">
+            <div class="row text-h12">
               This Month
             </div>
           </div>
@@ -55,13 +54,13 @@
             inset
           />
           <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
-            <div class="text-blue row text-h4 text-weight-bold q-mb-md">
+            <div class="row text-h3 text-weight-bold q-mb-md usage-color">
               {{ totalUsage }}
             </div>
-            <div class="row text-h8 text-weight-bold q-mb-md">
+            <div class="row text-h7 text-weight-bold">
               Stamps Used
             </div>
-            <div class="row text-h12 q-mb-md">
+            <div class="row text-h12">
               All Time
             </div>
           </div>
@@ -117,9 +116,6 @@ export default {
     totalUsage() {
       return this.user.totalTimestamps;
     },
-    usedClass() {
-      return this.user.remainingTimeStamps <= 0 ? 'text-red' : 'text-green';
-    },
     upgradeIsNeeded() {
       return this.user.remainingTimeStamps <= 0;
     },
@@ -140,5 +136,8 @@ export default {
 .usage-summary {
     border: 2px solid rgba(0, 0, 0, 0.12);
     max-width: 400px;
+}
+.usage-color{
+  color:#4cbbc2;
 }
 </style>

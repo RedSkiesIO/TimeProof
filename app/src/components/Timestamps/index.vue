@@ -2,7 +2,7 @@
   <div>
     <div class="row text-weight-bold text-h6 justify-start text-weight-bold">
       <q-icon
-        class="icon-spacing q-mr-sm"
+        class="icon-spacing q-mr-sm q-mt-xs"
         name="fas fa-history"
         size="1.25rem"
       />
@@ -24,16 +24,10 @@
           :bar-style="barStyle"
         >
           <div
-            class="text-uppercase text-weight-bold text-secondary row no-wrap"
+            class="text-uppercase text-weight-bold text-secondary row no-wrap sticky"
           >
-            <div
-              class="col-md-4 col-sm-6 col-xs-8"
-            >
-              <q-icon
-                class="col-auto text-grey-6 q-ml-xs q-mr-sm"
-                name="fas fa-file"
-                style="font-size: 1.2em"
-              />
+            <div class="col-xxs" />
+            <div class="col-md-3 col-sm-6 col-xs-8">
               {{ $t('file') }}
             </div>
             <div class="col-md-2 col-sm-4 col-xs-6">
@@ -54,14 +48,16 @@
             :key="stamp.txId"
             class="row no-wrap stamp-item2"
           >
-            <div
-              class="col-md-4 col-sm-6 col-xs-8 q-px-sm overflow"
-            >
+            <div class="col-xxs">
               <q-icon
                 class="col-auto text-grey-6 q-pr-sm"
                 :name="fileIcon(stamp.type)"
                 style="font-size: 1.5em"
               />
+            </div>
+            <div
+              class="col-md-3 col-sm-6 col-xs-8 overflow"
+            >
               {{ stamp.name }}
             </div>
             <div
@@ -152,7 +148,7 @@
           <br> Head over to the
 
           <span
-            class="text-blue link"
+            class="text-blue link cursor-pointer"
             @click="goToStamp"
           >stamp</span>
           section to get started
@@ -262,8 +258,9 @@ export default {
 }
 
 .stamp-item2 {
-  border-top: 1px solid $grey-4;
+  border-bottom: 1px solid $grey-4;
   padding: 1rem 0;
+  z-index: 0;
 }
 
 .stamp-item2:hover {
@@ -290,5 +287,20 @@ export default {
   height: 50vw;
 }
 
+.sticky {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1;
+  border-bottom: 1px solid $grey-4;
+}
+
+@media (min-width: 600px){
+  .row > .col-xxs {
+      height: auto;
+      width: 3%;
+  }
+}
 
 </style>

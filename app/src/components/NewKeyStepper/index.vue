@@ -31,8 +31,13 @@
         title="Signing key created"
         icon="fas fa-thumbs-up"
       >
-        <q-dialog v-model="successMode">
-          <Success />
+        <q-dialog
+          v-model="successMode"
+          persistent
+          transition-show="flip-down"
+          transition-hide="flip-up"
+        >
+          <Success @close="successClose" />
         </q-dialog>
       </q-step>
 
@@ -159,6 +164,11 @@ export default {
     downloadKeystore() {
       this.disableButton = false;
       this.$crypto.createKeystore(this.user);
+    },
+
+    successClose() {
+      this.successMode = false;
+      this.$router.push('/dashboard');
     },
   },
 };

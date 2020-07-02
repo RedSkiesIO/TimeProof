@@ -3,6 +3,14 @@
     flat
     class="q-pa-sm"
   >
+    <div class="row justify-end">
+      <q-icon
+        size="md"
+        name="close"
+        class="cursor-pointer"
+        @click="$emit('close')"
+      />
+    </div>
     <q-card-section class="row items-center">
       <div class="flex justify-center text-center">
         <img
@@ -34,9 +42,6 @@ export default {
     return {
       password: '',
     };
-  },
-  mounted() {
-    setTimeout(() => this.$router.push('/dashboard'), 2000);
   },
 };
 </script>
