@@ -31,7 +31,12 @@
         title="Signing key created"
         icon="fas fa-thumbs-up"
       >
-        <q-dialog v-model="successMode">
+        <q-dialog
+          v-model="successMode"
+          persistent
+          transition-show="flip-down"
+          transition-hide="flip-up"
+        >
           <Success @close="successClose" />
         </q-dialog>
       </q-step>

@@ -20,11 +20,11 @@
               class="text-blue q-ma-md"
             /> -->
             <div
-              class="row text-h2 text-weight-bold q-mb-md usage-color"
+              class="row text-h3 text-weight-bold q-mb-md usage-color"
             >
               {{ timestampsUsed }}
             </div>
-            <div class="row text-h6 text-weight-bold">
+            <div class="row text-h7 text-weight-bold">
               Stamps Used
             </div>
             <div class="row text-h12">
@@ -38,11 +38,11 @@
 
           <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
             <div
-              class="row text-h2 text-weight-bold q-mb-md usage-color"
+              class="row text-h3 text-weight-bold q-mb-md usage-color"
             >
               {{ allowedTimestamps }}
             </div>
-            <div class="row text-h6 text-weight-bold">
+            <div class="row text-h7 text-weight-bold">
               Stamps Allowed
             </div>
             <div class="row text-h12">
@@ -54,10 +54,10 @@
             inset
           />
           <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
-            <div class="row text-h2 text-weight-bold q-mb-md usage-color">
+            <div class="row text-h3 text-weight-bold q-mb-md usage-color">
               {{ totalUsage }}
             </div>
-            <div class="row text-h6 text-weight-bold">
+            <div class="row text-h7 text-weight-bold">
               Stamps Used
             </div>
             <div class="row text-h12">
