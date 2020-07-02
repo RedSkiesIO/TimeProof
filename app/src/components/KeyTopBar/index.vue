@@ -81,7 +81,7 @@
             v-model="password"
             dense
             mask="######"
-            :label="$t('enterPassword')"
+            :label="$t('enterPin')"
             :type="isPwd ? 'password' : 'text'"
             :error="!isValid"
             class="q-my-sm signing-key"

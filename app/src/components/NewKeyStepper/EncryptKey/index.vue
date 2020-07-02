@@ -6,14 +6,15 @@
     >
     <div class="text-box">
       <div class="text-h6 text-secondary">
-        Choose a password to encrypt your signing key
+        6-digit PIN
       </div>
       <div class="encrypt-desc">
-        To maintain security,
-        we strongly recommend that you choose a password different from your account password.
+        Please set a PIN to protect your signing key.
         <br>
-        <strong>Please record this password</strong>
-        as it cannot be reset/retrieved once it has been setup.
+        <strong>Make sure to note down your PIN as it
+          cannot be reset or recreated if you lose it.
+        </strong>
+        You will require your PIN for creating asset evidences.
       </div>
     </div>
     <div class="row justify-center text-center q-mt-md">
@@ -25,7 +26,7 @@
         filled
         autofocus
         data-test-key="encryptKeyPassword"
-        :label="$t('enterPassword')"
+        :label="$t('choosePin')"
         style="width: 25vw"
         :rules="[val => val && val.length === 6 || $t('invalidPinLength')]"
       >

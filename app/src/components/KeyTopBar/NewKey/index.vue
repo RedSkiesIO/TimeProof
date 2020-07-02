@@ -43,7 +43,7 @@
         v-model="password"
         autofocus
         mask="######"
-        :label="$t('enterPassword')"
+        :label="$t('enterPin')"
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"
         :rules="[val => val && val.length === 6 || $t('invalidPinLength')]"
