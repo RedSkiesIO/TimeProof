@@ -32,7 +32,7 @@
         icon="fas fa-thumbs-up"
       >
         <q-dialog v-model="successMode">
-          <Success />
+          <Success @close="successClose" />
         </q-dialog>
       </q-step>
 
@@ -159,6 +159,11 @@ export default {
     downloadKeystore() {
       this.disableButton = false;
       this.$crypto.createKeystore(this.user);
+    },
+
+    successClose() {
+      this.successMode = false;
+      this.$router.push('/dashboard');
     },
   },
 };
