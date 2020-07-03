@@ -6,6 +6,6 @@
 
         public const string AutomatedEmailFromAddress = "noreply@atlas3t.com";
 
-        public const string WelcomeEmailSubject = "Welcome to Timescribe";
+        public const string WelcomeEmailSubject = "Account Activation Successful";
     }
 }
