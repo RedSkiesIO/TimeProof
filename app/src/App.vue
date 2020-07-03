@@ -81,7 +81,8 @@ export default {
                 membershipRenewDate: verifyResult.membershipRenewDate,
                 remainingTimeStamps: verifyResult.remainingTimeStamps,
                 pendingPricePlanId: verifyResult.pendingPricePlanId,
-                secretKey: verifyResult.keyValue,
+                secretKey: verifyResult.keyValue
+                  ? JSON.parse(verifyResult.keyValue).cipher : null,
               },
             });
 

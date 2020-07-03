@@ -15,7 +15,7 @@
         <EncryptKey ref="form" />
       </q-step>
 
-      <q-step
+      <!-- <q-step
         :name="2"
         title="Backup your key file"
         icon="fas fa-file-download"
@@ -24,10 +24,10 @@
         <SaveKeystore
           :button-action="downloadKeystore"
         />
-      </q-step>
+      </q-step> -->
 
       <q-step
-        :name="3"
+        :name="2"
         title="Signing key created"
         icon="fas fa-thumbs-up"
       >
@@ -42,22 +42,22 @@
       </q-step>
 
       <template
-        v-if="step < 3"
+        v-if="step === 1"
         v-slot:navigation
       >
         <q-stepper-navigation>
           <div class="text-center">
-            <q-btn
+            <!-- <q-btn
               v-if="step > 1"
               flat
               label="Back"
               class="q-mr-md shade-color"
               @click="$refs.stepper.previous()"
-            />
+            /> -->
             <q-btn
               class="shade-color"
               data-test-key="newKeyContinue"
-              :disable="(disableButton && step === 2) || (!isFilledInput && step === 1)"
+              :disable="!isFilledInput && step === 1"
               label="Continue"
               @click="clickAction"
             />
@@ -69,7 +69,7 @@
 </template>
 <script>
 import EncryptKey from './EncryptKey';
-import SaveKeystore from './SaveKeystore';
+// import SaveKeystore from './SaveKeystore';
 import Success from './Success';
 import User from '../../store/User';
 
@@ -78,14 +78,14 @@ export default {
   name: 'NewKeyStepper',
   components: {
     EncryptKey,
-    SaveKeystore,
+    // SaveKeystore,
     Success,
   },
 
   data() {
     return {
       step: 1,
-      disableButton: true,
+      // disableButton: true,
       successMode: false,
       mounted: false,
     };
@@ -122,11 +122,12 @@ export default {
       switch (this.step) {
         case 1:
           this.addKey();
-          break;
-        case 2:
-          this.$refs.stepper.next();
           this.successMode = true;
           break;
+        // case 2:
+        //   this.$refs.stepper.next();
+        //   this.successMode = true;
+        //   break;
         default:
       }
     },
@@ -150,6 +151,8 @@ export default {
         });
 
         await this.unlockKey(input.value);
+
+        this.$crypto.createKeystore(this.user);
       }
     },
 
@@ -161,10 +164,10 @@ export default {
       this.$refs.stepper.next();
     },
 
-    downloadKeystore() {
-      this.disableButton = false;
-      this.$crypto.createKeystore(this.user);
-    },
+    // downloadKeystore() {
+    //   this.disableButton = false;
+    //   this.$crypto.createKeystore(this.user);
+    // },
 
     successClose() {
       this.successMode = false;

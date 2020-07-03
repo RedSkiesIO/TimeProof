@@ -37,8 +37,9 @@ class UserServer extends Server {
       const account = this.getAccount();
 
       if (account) {
-        let result = await this.axios.get(`${process.env.API}/user`);
-        console.log('vvvvvvvvvvvv');
+        let result = await this.axios.get(`${process.env.API}/user`,
+          { headers: { 'Cache-Control': 'no-cache' } });
+        console.log('VERIFY USER RESULT');
         console.log(result);
         if (!result || !result.data) {
           let address;
