@@ -35,8 +35,15 @@ namespace AtlasCity.TimeProof.Api.Controllers
         [HttpGet]
         public IActionResult Get(CancellationToken cancellationToken)
         {
-            var user = _userService.GetUserById(User.GetUserId(), cancellationToken).GetAwaiter().GetResult();
-            return new SuccessActionResult(user.ToResponse());
+            var userId = User.GetUserId();
+            var user = _userService.GetUserById(userId, cancellationToken).GetAwaiter().GetResult();
+            var response = user.ToResponse();
+
+            var userKey = _userService.GetUserKey(userId, cancellationToken).GetAwaiter().GetResult();
+            if (userKey != null)
+                response.KeyValue = userKey.KeyDetails;
+
+            return new SuccessActionResult(response);
         }
 
         [Route("user")]
@@ -124,7 +131,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
             try
             {
-                _userService.SendKeyAsEmailAttachment(User.GetUserId(), keyStore.ToString(), cancellationToken).GetAwaiter().GetResult();
+                _userService.SendWelcomeEmailAndStoreKey(User.GetUserId(), keyStore.ToString(), cancellationToken).GetAwaiter().GetResult();
                 return new OkResult();
             }
             catch (UserException ex)

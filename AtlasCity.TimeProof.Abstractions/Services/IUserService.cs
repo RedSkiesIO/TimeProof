@@ -1,6 +1,6 @@
-﻿using System.Threading;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
+using System.Threading;
 using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO;
 
 namespace AtlasCity.TimeProof.Abstractions.Services
 {
@@ -12,6 +12,8 @@ namespace AtlasCity.TimeProof.Abstractions.Services
 
         Task DeleteUser(string userId, CancellationToken cancellationToken);
 
-        Task SendKeyAsEmailAttachment(string userId, string attachmentText, CancellationToken cancellationToken);
+        Task SendWelcomeEmailAndStoreKey(string userId, string keyDetail, CancellationToken cancellationToken);
+
+        Task<KeyDao> GetUserKey(string userId, CancellationToken cancellationToken);
     }
 }
