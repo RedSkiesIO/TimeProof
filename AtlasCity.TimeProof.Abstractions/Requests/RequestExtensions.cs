@@ -68,7 +68,6 @@ namespace AtlasCity.TimeProof.Abstractions.Requests
                 PendingPricePlanId = user.PendingPricePlanId,
                 PaymentIntentId = user.PaymentIntentId,
                 MembershipRenewDate = user.MembershipRenewDate,
-                KeyEmailDate = user.KeyEmailSentDate
             };
         }
 

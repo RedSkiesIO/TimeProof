@@ -1,10 +1,10 @@
-﻿using System;
+﻿using AtlasCity.TimeProof.Abstractions.Helpers;
+using Dawn;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.Helpers;
-using Dawn;
 
 namespace AtlasCity.TimeProof.Common.Lib.Helpers
 {
@@ -42,16 +42,14 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
             Guard.Argument(fileText, nameof(fileText)).NotNull().NotEmpty().NotWhiteSpace();
             Guard.Argument(fileName, nameof(fileName)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var folder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Guid.NewGuid().ToString());
+            var folder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, Guid.NewGuid().ToString());
 
             if(!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
             var filePath = Path.Combine(folder, fileName);
-            using (var file = new StreamWriter(filePath))
-            {
-                await file.WriteAsync(fileText);
-            }
+            await using var file = new StreamWriter(filePath);
+            await file.WriteAsync(fileText);
 
             return filePath;
         }
@@ -70,7 +68,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
         {
             Guard.Argument(fileName, nameof(fileName)).NotNull().NotEmpty().NotWhiteSpace();
 
-            var filePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), EmailTemplateFolder, fileName);
+            var filePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, EmailTemplateFolder, fileName);
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"Missing file at {filePath}.");
 

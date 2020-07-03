@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions;
+﻿using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
@@ -10,14 +7,17 @@ using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Serilog;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AtlasCity.TimeProof.Common.Lib.Services
 {
     public class UserService : IUserService
     {
-        private const string Key_File_Name = "timescribe-keystore.txt";
         private readonly ILogger _logger;
         private readonly IUserRepository _userRepository;
+        private readonly IKeyRepository _keyRepository;
         private readonly IPricePlanRepository _pricePlanRepository;
         private readonly IPaymentService _paymentService;
         private readonly IEmailService _emailService;
@@ -26,6 +26,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         public UserService(
             ILogger logger,
             IUserRepository userRepository,
+            IKeyRepository keyRepository,
             IPricePlanRepository pricePlanRepository,
             IPaymentService paymentService,
             IEmailService emailService,
@@ -33,6 +34,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         {
             Guard.Argument(logger, nameof(logger)).NotNull();
             Guard.Argument(userRepository, nameof(userRepository)).NotNull();
+            Guard.Argument(keyRepository, nameof(keyRepository)).NotNull();
             Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
             Guard.Argument(paymentService, nameof(paymentService)).NotNull();
             Guard.Argument(emailService, nameof(emailService)).NotNull();
@@ -40,6 +42,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             _logger = logger;
             _userRepository = userRepository;
+            _keyRepository = keyRepository;
             _pricePlanRepository = pricePlanRepository;
             _paymentService = paymentService;
             _emailService = emailService;
@@ -50,6 +53,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
             var user = await _userRepository.GetUserById(userId, cancellationToken);
+
             return user;
         }
 
@@ -60,11 +64,13 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             var existingUser = await _userRepository.GetUserById(user.Id, cancellationToken);
             if (existingUser != null)
-                throw new UserException($"User with identifier '{user.Id}' already exists with an email '{user.Email}'.");
+                throw new UserException(
+                    $"User with identifier '{user.Id}' already exists with an email '{user.Email}'.");
 
             if (!string.IsNullOrWhiteSpace(user.PaymentCustomerId))
             {
-                _logger.Warning($"When creating user with '{user.Id}', payment user should not exists, but found '{user.PaymentCustomerId}'.");
+                _logger.Warning(
+                    $"When creating user with '{user.Id}', payment user should not exists, but found '{user.PaymentCustomerId}'.");
                 user.PaymentCustomerId = string.Empty;
             }
 
@@ -79,7 +85,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 throw;
             }
 
-            var freePricePlan = await _pricePlanRepository.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken);
+            var freePricePlan =
+                await _pricePlanRepository.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken);
             user.CurrentPricePlanId = freePricePlan.Id;
             user.RemainingTimeStamps = freePricePlan.NoOfStamps;
             user.MembershipStartDate = DateTime.UtcNow;
@@ -123,20 +130,25 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             }
         }
 
-        public async Task SendKeyAsEmailAttachment(string userId, string attachmentText, CancellationToken cancellationToken)
+        public async Task SendWelcomeEmailAndStoreKey(string userId, string keyDetail, CancellationToken cancellationToken)
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
-            Guard.Argument(attachmentText, nameof(attachmentText)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(keyDetail, nameof(keyDetail)).NotNull().NotEmpty().NotWhiteSpace();
 
             var user = await _userRepository.GetUserById(userId, cancellationToken);
             if (user == null)
                 throw new UserException($"User does not exists '{userId}'. Cannot send the welcome email with key as attachment");
 
-            if (user.KeyEmailSentDate > DateTime.MinValue)
+            var userKey = await _keyRepository.GetByUserId(userId, cancellationToken);
+            if (userKey != null)
             {
-                _logger.Warning($"Key Email already sent for user '{userId}' on '{user.KeyEmailSentDate.ToLongDateTimeString()}'");
-                throw new UserException($"Key Email already sent.");
+                _logger.Warning($"Key already recorded for an '{userId}'");
+                throw new UserException($"Key already recorded for an '{userId}'");
             }
+
+            await _keyRepository.CreateKey(
+                new KeyDao {Id = Guid.NewGuid().ToString(), UserId = userId, KeyDetails = keyDetail},
+                cancellationToken);
 
             var emailBody = await _emailTemplateHelper.GetWelcomeEmailBody(user.FirstName, cancellationToken);
             var emailMessage = new EmailDao
@@ -148,17 +160,16 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 HtmlBody = emailBody,
             };
 
-            var filePath = await _emailTemplateHelper.CreateFileFromText(attachmentText, Key_File_Name, cancellationToken);
-            _logger.Information($"Created key file '{filePath}' for user '{userId}'");
+            await _emailService.SendEmail(emailMessage, cancellationToken);
+            _logger.Information($"Welcome email sent for user '{user.Id}'");
+        }
 
-            await _emailService.SendEmail(emailMessage, filePath, cancellationToken);
-            _logger.Information($"Sent email with key file as attachment for user '{user.Id}'");
+        public async Task<KeyDao> GetUserKey(string userId, CancellationToken cancellationToken)
+        {
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
 
-            user.KeyEmailSentDate = DateTime.UtcNow;
-            await _userRepository.UpdateUser(user, cancellationToken);
-
-            _emailTemplateHelper.DeleteFileDirectory(filePath);
-            _logger.Information($"Deleted key file '{filePath}'");
+            var userKey = await _keyRepository.GetByUserId(userId, cancellationToken);
+            return userKey;
         }
     }
 }
