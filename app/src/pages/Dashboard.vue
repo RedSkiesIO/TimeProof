@@ -42,7 +42,7 @@
     </div>
     <q-dialog
       v-if="user"
-      v-model="firstTimeDialog"
+      v-model="user.firstTimeDialog"
     >
       <CreateFirstTimestampPopup
         @closeDialog="closeTimestampDialog"
@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import moment from 'moment';
 import Timestamps from '../components/Timestamps';
 import Usage from '../components/Usage';
 import User from '../store/User';
@@ -84,28 +83,14 @@ export default {
     },
   },
 
-  created() {
-    this.checkFirstTimeDialog();
-  },
-
   methods: {
     async closeTimestampDialog() {
-      const verifyResult = await
-      this.$userServer.verifyUserDetails();
-      if (verifyResult) {
-        await User.update({
-          data: {
-            accountIdentifier: this.account.accountIdentifier,
-            keyEmailDate: verifyResult.keyEmailDate,
-          },
-        });
-        this.checkFirstTimeDialog();
-      }
-    },
-
-    checkFirstTimeDialog() {
-      const keyMoment = moment(this.user.keyEmailDate, 'YYYY-MM-DD');
-      this.firstTimeDialog = keyMoment.year() === 1;
+      await User.update({
+        data: {
+          accountIdentifier: this.account.accountIdentifier,
+          firstTimeDialog: false,
+        },
+      });
     },
   },
 };

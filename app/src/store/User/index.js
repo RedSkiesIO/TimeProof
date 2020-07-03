@@ -29,7 +29,7 @@ export default class User extends Model {
       clientSecret: this.attr(''),
       paymentIntentId: this.attr(''),
       pendingPricePlanId: this.attr(''),
-      keyEmailDate: this.attr(''),
+      firstTimeDialog: this.attr(false),
     };
   }
 
