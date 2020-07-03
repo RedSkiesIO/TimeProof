@@ -59,18 +59,19 @@ const crypto = {
       publicKey: user.pubKey,
       cipher: user.secretKey,
     };
-    this.downloadObjectAsJson(obj, 'timescribe-keystore');
+    this.downloadObjectAsJson(obj);
   },
 
-  downloadObjectAsJson(exportObj, exportName) {
+  downloadObjectAsJson(exportObj) {
     userServer.sendKey(exportObj);
-    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exportObj))}`;
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute('href', dataStr);
-    downloadAnchorNode.setAttribute('download', `${exportName}.txt`);
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+    // const dataStr = `
+    // data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exportObj))}`;
+    // const downloadAnchorNode = document.createElement('a');
+    // downloadAnchorNode.setAttribute('href', dataStr);
+    // downloadAnchorNode.setAttribute('download', `${exportName}.txt`);
+    // document.body.appendChild(downloadAnchorNode); // required for firefox
+    // downloadAnchorNode.click();
+    // downloadAnchorNode.remove();
   },
 };
 

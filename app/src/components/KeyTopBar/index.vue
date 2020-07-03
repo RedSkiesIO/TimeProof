@@ -136,7 +136,7 @@
       <div class="row justify-end" />
     </q-card>
 
-    <q-card
+    <!-- <q-card
       v-if="!user.secretKey"
       flat
       class="top-box"
@@ -163,9 +163,6 @@
         <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
           <div>{{ $t('importKey') }}</div>
         </div>
-        <!-- <div class="row justify-center text-center">
-          {{ $t('importKeyContent') }}
-        </div> -->
         <div
           class="row justify-center text-blue q-mb-sm q-pt-md cursor-pointer"
           @click="openImportDialog"
@@ -175,7 +172,7 @@
       </template>
 
       <div class="row justify-end" />
-    </q-card>
+    </q-card> -->
     <q-dialog
       v-model="newKey"
     >
@@ -196,7 +193,6 @@
   </div>
 </template>
 <script>
-import moment from 'moment';
 import User from '../../store/User';
 import NewKey from './NewKey';
 import Backup from './DownloadKey';
@@ -232,11 +228,6 @@ export default {
 
     key() {
       return this.$store.state.settings.authenticatedAccount;
-    },
-
-    userHasSavedKeyBefore() {
-      const keyMoment = moment(this.user.keyEmailDate, 'YYYY-MM-DD');
-      return keyMoment.year() !== 1;
     },
 
   },

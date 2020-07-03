@@ -8,9 +8,9 @@
   </div>
 </template>
 <script>
-import moment from 'moment';
 import SigningKeyIntro from '../../components/SigningKeyIntro';
 import NewKeyStepper from '../../components/NewKeyStepper';
+import User from '../../store/User';
 
 export default {
   name: 'CreateKey',
@@ -25,9 +25,15 @@ export default {
   },
   created() {
     const user = this.$auth.user();
-    const keyMoment = moment(user.keyEmailDate, 'YYYY-MM-DD');
-    if ((user && user.secretKey) || keyMoment.year() !== 1) {
+    if (user && user.secretKey) {
       this.$router.push('/dashboard');
+    } else {
+      User.update({
+        data: {
+          accountIdentifier: this.$auth.account().accountIdentifier,
+          firstTimeDialog: true,
+        },
+      });
     }
   },
 };
