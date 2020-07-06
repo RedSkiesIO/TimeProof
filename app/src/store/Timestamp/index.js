@@ -25,7 +25,7 @@ export default class Timestamp extends Model {
   }
 
   get timestampDate() {
-    const stampDate = new Date(this.date);
+    const stampDate = new Date(this.date ? this.date.split('Z')[0] : '');
     return `${stampDate.toLocaleDateString()} ${stampDate.toLocaleTimeString('en-GB')}`;
   }
 

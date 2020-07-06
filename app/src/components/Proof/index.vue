@@ -70,7 +70,7 @@
           <template v-if="scope.dialog">
             <div class="col">
               <q-input
-                v-model="getDate"
+                :value="proof.timestampDate+' UTC'"
                 filled
                 :bg-color="bgColor"
                 readonly
@@ -101,7 +101,7 @@
               v-if="ready && proof.status !== 0"
               class="col-auto"
             >
-              {{ getDate }}
+              {{ proof.timestampDate }}
             </div>
           </template>
         </div>
@@ -239,34 +239,47 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-center column text-center q-pt-lg q-pb-md">
-      <q-btn
-        v-if="!scope.dialog"
-        no-caps
-        text-color="white"
-        class="shade-color"
-        :label="$t('stampAnotherFile')"
-        @click="selectAnotherFile(scope)"
-      />
+    <div
+      v-else
+      class="text-italic flex flex-center column text-center q-pt-md q-pb-md"
+    >
+      “Please ensure to store a copy of the file you just stamped.<br>
+      If you edit the file, you will have to create a new stamp.”
     </div>
-    <div class="q-pb-lg flex flex-center column text-center q-pt-lg">
-      <template v-if="scope.dialog">
+
+    <div v-if="scope.dialog">
+      <div class="row q-pb-md justify-center q-pt-md">
         <q-btn
           v-if="proof.status !== 0 && ready"
+          no-caps
           class="shade-color"
           label="Download Certificate"
           @click="getCertificate"
         />
-      </template>
-      <template v-else>
-        <q-btn
-          v-if="proof.status !== 0 && ready"
-          flat
-          class="shade-color"
-          label="Download Certificate"
-          @click="getCertificate"
-        />
-      </template>
+      </div>
+    </div>
+    <div v-else>
+      <div class="row q-pb-md justify-center q-pt-md">
+        <template>
+          <q-btn
+            no-caps
+            text-color="white"
+            :class="proof.status !== 0 && ready ? 'shade-color q-mr-md': 'shade-color'"
+            :label="$t('stampAnotherFile')"
+            @click="selectAnotherFile(scope)"
+          />
+        </template>
+        <template>
+          <q-btn
+            v-if="proof.status !== 0 && ready"
+            flat
+            no-caps
+            class="shade-color q-ml-md"
+            label="Download Certificate"
+            @click="getCertificate"
+          />
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -323,12 +336,6 @@ export default {
 
     signedBy() {
       return !this.proof.verify ? `${this.user.name}(${this.user.email})` : this.proof.pubKey.toLowerCase();
-    },
-
-    getDate() {
-      const date = new Date(this.proof.date);
-
-      return `${date.toLocaleTimeString()} ${date.toLocaleDateString('en-GB')}`;
     },
 
     icon() {
@@ -461,11 +468,11 @@ export default {
 
 @media screen and (max-width: 575px) {
   .proof-dialog-item{
-    width: 11rem !important;
+    width: 20rem !important;
   }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 540px) {
   .proof{
     width: 100%;
   }
