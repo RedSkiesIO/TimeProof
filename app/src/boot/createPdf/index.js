@@ -6,6 +6,8 @@ import {
 import fontkit from '@pdf-lib/fontkit';
 import pixelWidth from 'string-pixel-width';
 
+const threshold = 500;
+const fontSize = 8;
 class PdfUtil {
   downloadURL = (data, fileName) => {
     const a = document.createElement('a');
@@ -43,20 +45,19 @@ class PdfUtil {
 
       // Draw a string of text diagonally across the first page
       if (proof.file) {
-        const lengWidth = pixelWidth(proof.file, { font: 'Verdana', size: 12 });
+        const lengWidth = pixelWidth(proof.file, { font: 'Verdana', size: fontSize });
 
         if (lengWidth) {
-          let y = 505;
-          if (lengWidth <= 358) {
+          let y = 485;
+          if (lengWidth <= threshold) {
             y -= 20;
           }
-
-          this.drawTextAccordingToPixels(proof.file, firstPage, montserratFont, 175, y);
+          this.drawTextAccordingToPixels(proof.file, firstPage, montserratFont, 50, y);
         } else {
           firstPage.drawText(proof.file, {
-            x: 175,
-            y: 500,
-            size: 12,
+            x: 50,
+            y: 480,
+            size: fontSize,
             font: montserratFont,
             color: rgb(0, 0, 0),
           });
@@ -64,17 +65,17 @@ class PdfUtil {
       }
 
       this.drawTextAccordingToPixels(proof.proofId.one + proof.proofId.two,
-        firstPage, montserratFont, 175, 560);
+        firstPage, montserratFont, 50, 573);
 
-      this.drawTextAccordingToPixels(proof.timestamp, firstPage, montserratFont, 175, 405);
+      this.drawTextAccordingToPixels(proof.timestamp, firstPage, montserratFont, 50, 375);
 
-      this.drawTextAccordingToPixels(proof.user, firstPage, montserratFont, 175, 345);
-
-      this.drawTextAccordingToPixels(proof.signature.one + proof.signature.two,
-        firstPage, montserratFont, 175, 235);
+      this.drawTextAccordingToPixels(proof.user, firstPage, montserratFont, 50, 293);
 
       this.drawTextAccordingToPixels(proof.hash.one + proof.hash.two,
-        firstPage, montserratFont, 175, 295);
+        firstPage, montserratFont, 50, 217);
+
+      this.drawTextAccordingToPixels(proof.signature.one + proof.signature.two,
+        firstPage, montserratFont, 50, 130);
 
       const output = await doc.save(); // Save the doc already replacement
       this.saveDataToFile(output, name, 'application/pdf');
@@ -91,16 +92,16 @@ class PdfUtil {
         let str = '';
         let index = 0;
 
-        let width = pixelWidth(data, { font: 'Verdana', size: 12 });
+        let width = pixelWidth(data, { font: 'Verdana', size: fontSize });
         if (width) {
           for (let i = 0; i < data.length; i += 1) {
             str += data[i];
-            width = pixelWidth(str, { font: 'Verdana', size: 12 });
-            if (width > 358) {
+            width = pixelWidth(str, { font: 'Verdana', size: fontSize });
+            if (width > threshold) {
               firstPage.drawText(str, {
                 x,
                 y: y - index * 15,
-                size: 12,
+                size: fontSize,
                 font: montserratFont,
                 color: rgb(0, 0, 0),
               });
@@ -110,7 +111,7 @@ class PdfUtil {
               firstPage.drawText(str, {
                 x,
                 y: y - index * 15,
-                size: 12,
+                size: fontSize,
                 font: montserratFont,
                 color: rgb(0, 0, 0),
               });
@@ -120,7 +121,7 @@ class PdfUtil {
           firstPage.drawText(data, {
             x,
             y,
-            size: 12,
+            size: fontSize,
             font: montserratFont,
             color: rgb(0, 0, 0),
           });
