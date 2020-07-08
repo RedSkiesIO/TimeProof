@@ -14,27 +14,11 @@
     <div
       class="q-mt-lg justify-center"
     >
-      <!-- <div class="column justify-start  text-left text-secondary">
-       <div class="col text-h4  text-weight-bold justify-center">
-          {{ $t('createTimestamp') }}
-        </div>
-        <div class="col text-h6 q-mb-sm text-weight-bold">
-          <q-icon
-            class="q-mr-sm"
-            name="fas fa-stamp"
-            size="22px"
-          />
-          Stamp File
-        </div>
-      </div> -->
       <div v-if="!needUpgrade">
         <div class="column q-mb-md justify-center text-center text-secondary">
           <div class="col text-h5 text-weight-bold justify-center">
             Create a timestamp
           </div>
-          <!-- <div class="col text-h6">
-            Check if a timstamp exists on the blockchain
-          </div> -->
         </div>
         <div
           v-if="!key"

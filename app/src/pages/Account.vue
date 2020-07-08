@@ -10,9 +10,6 @@
         <AccountDetails
           class="col-xs-12 q-mt-sm col-md-7 col-lg-7"
         />
-        <!-- <AccountKey
-          class="col-xs-12 q-mt-sm col-md-4 col-lg-4"
-        /> -->
       </div>
       <div class="row justify-center q-mt-sm q-gutter-x-md">
         <AccountSubscription

@@ -10,15 +10,6 @@
       >
         <div class="col-auto row justify-between">
           <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
-            <!-- <q-knob
-              v-model="usedPercentage"
-              readonly
-              size="70px"
-              :thickness="0.22"
-              color="blue"
-              track-color="blue-3"
-              class="text-blue q-ma-md"
-            /> -->
             <div
               class="row text-h3 text-weight-bold q-mb-md usage-color"
             >

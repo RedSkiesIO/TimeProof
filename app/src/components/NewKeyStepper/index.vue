@@ -15,17 +15,6 @@
         <EncryptKey ref="form" />
       </q-step>
 
-      <!-- <q-step
-        :name="2"
-        title="Backup your key file"
-        icon="fas fa-file-download"
-        :done="step > 2"
-      >
-        <SaveKeystore
-          :button-action="downloadKeystore"
-        />
-      </q-step> -->
-
       <q-step
         :name="2"
         title="Signing key created"
@@ -47,13 +36,6 @@
       >
         <q-stepper-navigation>
           <div class="text-center">
-            <!-- <q-btn
-              v-if="step > 1"
-              flat
-              label="Back"
-              class="q-mr-md shade-color"
-              @click="$refs.stepper.previous()"
-            /> -->
             <q-btn
               class="shade-color"
               data-test-key="newKeyContinue"
