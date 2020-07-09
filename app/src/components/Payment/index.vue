@@ -996,15 +996,14 @@ export default {
     },
 
     activateCheckoutPage() {
-      this.paymentResultUpdate(false, false, false, false, false, true);
+      this.paymentResultUpdate(false, false, false, false, false, false, true);
       this.updateButtonLabel(this.paymentType);
     },
 
     async downgradeToFreePlan() {
-      this.paymentResultUpdate(false, true, false, false, false, false);
+      this.paymentResultUpdate(false, true, false, false, false, false, false);
       const response = await this.$paymentServer
-        .subscribeToPackage(null, this.user,
-          null, null, this.getSellingProduct.id);
+        .subscribeToPackage(null, this.user, null, null, this.getSellingProduct.id);
       this.completePayment(response);
     },
 

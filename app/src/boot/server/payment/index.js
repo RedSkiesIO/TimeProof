@@ -27,7 +27,7 @@ class PaymentServer extends Server {
       const addressResult = Address.query()
         .where('accountIdentifier', user.accountIdentifier).last();
 
-      console.log('UPDATE PAYMENT ADDRESS');
+      console.log('UPDATE PAYMENT LAST ADDRESS');
       console.log(addressResult);
 
       let userResult;
@@ -82,14 +82,33 @@ class PaymentServer extends Server {
     return paymentIntentResult;
   }
 
-  async upgradePackage(pricePlanId) {
+  async upgradePackage(pricePlanId, billingDetails) {
     let upgradeResult = {};
     console.log('BEFORE PAYMENT UPGRADE');
     console.log({
       pricePlanId,
     });
     try {
-      upgradeResult = await this.axios.put(`${process.env.API}/user/upgrade/${pricePlanId}`);
+      if (billingDetails) {
+        const {
+          data: pmData, status: pmStatus,
+          error: pmError,
+        } = await this.axios.get(`${process.env.API}/user/paymentmethod`);
+
+        if (pmStatus === 200 && pmData && !pmError) {
+          const {
+            data: pmUpdateData, status: pmUpdateStatus,
+            error: pmUpdateError,
+          } = await this.axios.put(`${process.env.API}/user/paymentmethod/${pmData.id}`, billingDetails);
+
+          if (pmUpdateStatus === 200 && pmUpdateData && !pmUpdateError) {
+            upgradeResult = await this.axios.put(`${process.env.API}/user/upgrade/${pricePlanId}`);
+          }
+        }
+      } else {
+        upgradeResult = await this.axios.put(`${process.env.API}/user/upgrade/${pricePlanId}`);
+      }
+
       console.log('AFTER PAYMENT UPGRADE');
       console.log(upgradeResult);
     } catch (err) {
@@ -156,8 +175,7 @@ class PaymentServer extends Server {
         const {
           data: paymentIntentData, status,
           error: paymentIntentError,
-        } = await
-        this.getPaymentIntent(pricePlanId);
+        } = await this.getPaymentIntent(pricePlanId);
 
         if (status === 200 && paymentIntentData && !paymentIntentError) {
           const { paymentIntent, error: confirmPaymentIntentError } = await
@@ -186,7 +204,7 @@ class PaymentServer extends Server {
         }
       } else { // upgrade and downgrade
         const { status, error } = await
-        this.upgradePackage(pricePlanId);
+        this.upgradePackage(pricePlanId, billingDetails);
         if (status === 200 && !error) {
           response.status = 'succeeded';
         } else if (status === 409) {
