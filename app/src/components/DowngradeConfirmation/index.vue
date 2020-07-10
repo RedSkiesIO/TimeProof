@@ -30,14 +30,14 @@
           flat
           data-test-key="cancelDowngrade"
           :label="$t('cancel')"
-          class="shade-color"
+          class="shade-color q-mr-md"
           @click="buttonClose"
         />
         <q-btn
           flat
           data-test-key="confirmDowngrade"
           :label="$t('confirm')"
-          class="shade-color"
+          class="shade-color q-ml-md"
           @click="buttonAction"
         />
       </div>
