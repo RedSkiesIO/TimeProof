@@ -32,3 +32,27 @@ export const formatPrice = (amount, currency) => {
   });
   return numberFormat.format(price);
 };
+
+
+// eslint-disable-next-line class-methods-use-this
+function localCompareEquals(a, b) {
+  return a.localeCompare(b, 'en', { sensitivity: 'accent' }) === 0;
+}
+
+export function compare(a, b) {
+  try {
+    if (!a || !b) {
+      return false;
+    }
+
+    if (typeof a === 'string' && typeof b === 'string') {
+      if (localCompareEquals('A', 'a')) {
+        return localCompareEquals(a, b);
+      }
+      return a.toUpperCase() === b.toUpperCase();
+    }
+  } catch (e) {
+    return a.toUpperCase() === b.toUpperCase();
+  }
+  return false;
+}

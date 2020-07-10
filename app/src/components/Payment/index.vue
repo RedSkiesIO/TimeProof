@@ -371,6 +371,8 @@ export default {
       receiverInfo: null,
       uiPaymentTypeList,
       style: config.paymentButtonStyle,
+      prevBillingAddress: null,
+      pmMethodId: null,
     };
   },
 
@@ -408,6 +410,7 @@ export default {
 
   },
   created() {
+    this.loadAddressAndCardFields();
     if (!this.getSellingProduct) {
       this.$router.push('/upgrade');
     }
@@ -716,25 +719,21 @@ export default {
 
       if (addressFound) {
         const {
-          name, email, line, city, state, postalCode, country,
+          line, city, state, postalCode, country,
         } = addressData;
         const billingDetails = {
-          name,
-          email,
-          address: {
-            line1: line,
-            city,
-            postal_code: postalCode,
-            state,
-            country,
-          },
+          line1: line,
+          city,
+          postcode: postalCode,
+          state,
+          country,
         };
 
         if (this.user.userId) {
           if (this.paymentType === 'card') {
             const response = await this.$paymentServer
-              .subscribeToPackage(stripe, this.user,
-                billingDetails, this.card, this.getSellingProduct.id);
+              .subscribeToPackage(stripe, this.user, this.pmMethodId,
+                billingDetails, this.prevBillingAddress, this.card, this.getSellingProduct.id);
 
             this.completePayment(response);
           } else if (this.paymentType === 'sepa_debit') {
@@ -960,16 +959,38 @@ export default {
     },
 
     activateCheckoutPage() {
-      this.paymentResultUpdate(false, false, false, false, false, true);
+      this.paymentResultUpdate(false, false, false, false, false, false, true);
       this.updateButtonLabel(this.paymentType);
     },
 
     async downgradeToFreePlan() {
-      this.paymentResultUpdate(false, true, false, false, false, false);
+      this.paymentResultUpdate(false, true, false, false, false, false, false);
       const response = await this.$paymentServer
-        .subscribeToPackage(null, this.user,
-          null, null, this.getSellingProduct.id);
+        .subscribeToPackage(null, this.user, null, null, this.getSellingProduct.id);
       this.completePayment(response);
+    },
+
+    async loadAddressAndCardFields() {
+      const {
+        data: pmData, status: pmStatus,
+        error: pmError,
+      } = await this.$paymentServer.getPaymentDetails();
+
+      if (pmStatus === 200 && pmData && !pmError) {
+        this.pmMethodId = pmData.id;
+        if (pmData.address) {
+          this.prevBillingAddress = pmData.address;
+          const {
+            line1, line2, city, state, postcode, country,
+          } = pmData.address;
+
+          this.$refs.paymentBilling.address = line2 ? line1 + line2 : line1;
+          this.$refs.paymentBilling.city = city;
+          this.$refs.paymentBilling.state = state;
+          this.$refs.paymentBilling.postalCode = postcode;
+          this.$refs.paymentBilling.country = country;
+        }
+      }
     },
 
   },

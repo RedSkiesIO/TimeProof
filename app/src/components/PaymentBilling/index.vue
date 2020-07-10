@@ -113,9 +113,9 @@
         </div>
       </label>
     </fieldset>
-    <p class="tip">
+    <!-- <p class="tip">
       Select another country to see different payment options.
-    </p>
+    </p> -->
   </div>
 </template>
 
