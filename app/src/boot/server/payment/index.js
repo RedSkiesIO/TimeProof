@@ -5,6 +5,7 @@ import User from '../../../store/User';
 import Address from '../../../store/Address';
 import userServer from '../user';
 import Server from '../index';
+import { compare } from '../../../util';
 
 class PaymentServer extends Server {
   async listAllPriceplans() {
@@ -82,37 +83,69 @@ class PaymentServer extends Server {
     return paymentIntentResult;
   }
 
-  async upgradePackage(pricePlanId, billingDetails) {
-    let upgradeResult = {};
-    console.log('BEFORE PAYMENT UPGRADE');
-    console.log({
-      pricePlanId,
-    });
+
+  async getPaymentDetails() {
+    let paymentResult = {};
     try {
-      if (billingDetails) {
+      console.log('BEFORE GET PAYMENT DETAILS');
+
+      paymentResult = await this.axios.get(`${process.env.API}/user/paymentmethod`);
+      console.log('AFTER PAYMENT DETAILS');
+      console.log(paymentResult);
+    } catch (err) {
+      console.log('AFTER PAYMENT DETAILS ERROR');
+      console.error(err);
+      paymentResult.error = err;
+    }
+
+    return paymentResult;
+  }
+
+  compateBillingAddresses(prevBillingAddress, billingDetails) {
+    if (!billingDetails) {
+      return false;
+    }
+
+    if (prevBillingAddress) {
+      const address = prevBillingAddress.line2
+        ? prevBillingAddress.line1 + prevBillingAddress.line2 : prevBillingAddress.line1;
+      if (!compare(billingDetails.line1, address)
+          || !compare(billingDetails.city, prevBillingAddress.city)
+          || !compare(billingDetails.postcode, prevBillingAddress.postcode)
+          || !compare(billingDetails.state, prevBillingAddress.state)
+          || !compare(billingDetails.country, prevBillingAddress.country)) {
+        return true;
+      }
+      return false;
+    }
+
+    return true;
+  }
+
+  async upgradePackage(pricePlanId, pmMethodId, billingDetails, prevBillingAddress) {
+    let upgradeResult = {};
+    try {
+      console.log('BEFORE PAYMENT METHOD UPDATE');
+      const compResult = this.compateBillingAddresses(prevBillingAddress, billingDetails);
+      if (compResult) {
         const {
-          data: pmData, status: pmStatus,
-          error: pmError,
-        } = await this.axios.get(`${process.env.API}/user/paymentmethod`);
-
-        if (pmStatus === 200 && pmData && !pmError) {
-          const {
-            data: pmUpdateData, status: pmUpdateStatus,
-            error: pmUpdateError,
-          } = await this.axios.put(`${process.env.API}/user/paymentmethod/${pmData.id}`, billingDetails);
-
-          if (pmUpdateStatus === 200 && pmUpdateData && !pmUpdateError) {
-            upgradeResult = await this.axios.put(`${process.env.API}/user/upgrade/${pricePlanId}`);
-          }
+          status: pmUpdateStatus,
+          error: pmUpdateError,
+        } = await this.axios.put(`${process.env.API}/user/paymentmethod/${pmMethodId}`, billingDetails);
+        console.log('PAYMENT METHOD UPDATE');
+        if (pmUpdateStatus === 200 && !pmUpdateError) {
+          upgradeResult = await this.axios.put(`${process.env.API}/user/upgrade/${pricePlanId}`);
+        } else {
+          upgradeResult.error = pmUpdateError;
         }
       } else {
         upgradeResult = await this.axios.put(`${process.env.API}/user/upgrade/${pricePlanId}`);
       }
 
-      console.log('AFTER PAYMENT UPGRADE');
+      console.log('AFTER PAYMENT METHOD UPDATE');
       console.log(upgradeResult);
     } catch (err) {
-      console.log('AFTER PAYMENT UPGRADE ERROR');
+      console.log('PAYMENT METHOD UPDATE ERROR');
       console.error(err);
       upgradeResult.error = err;
     }
@@ -163,7 +196,8 @@ class PaymentServer extends Server {
     }
   }
 
-  async subscribeToPackage(stripe, user, billingDetails, card, pricePlanId) {
+  async subscribeToPackage(stripe, user, pmMethodId,
+    billingDetails, prevBillingAddress, card, pricePlanId) {
     const response = {};
 
     try {
@@ -204,7 +238,7 @@ class PaymentServer extends Server {
         }
       } else { // upgrade and downgrade
         const { status, error } = await
-        this.upgradePackage(pricePlanId, billingDetails);
+        this.upgradePackage(pricePlanId, pmMethodId, billingDetails, prevBillingAddress);
         if (status === 200 && !error) {
           response.status = 'succeeded';
         } else if (status === 409) {
