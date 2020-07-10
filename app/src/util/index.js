@@ -36,7 +36,7 @@ export const formatPrice = (amount, currency) => {
 
 // eslint-disable-next-line class-methods-use-this
 function localCompareEquals(a, b) {
-  return a.localeCompare(b, 'gb', { sensitivity: 'accent' }) === 0;
+  return a.localeCompare(b, 'en', { sensitivity: 'accent' }) === 0;
 }
 
 export function compare(a, b) {
