@@ -45,13 +45,6 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         public int MembershipRenewEpoch { get; set; }
 
         [JsonIgnore]
-        public string FullName
-        {
-            get
-            {
-                return $"{FirstName} {LastName}".TrimEnd(" ".ToCharArray());
-            }
-        }
-
+        public string FullName => $"{FirstName} {LastName}".TrimEnd(" ".ToCharArray());
     }
 }
