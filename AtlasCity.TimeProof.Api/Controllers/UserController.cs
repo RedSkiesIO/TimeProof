@@ -40,7 +40,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             var response = user.ToResponse();
 
             var userKey = _userService.GetUserKey(userId, cancellationToken).GetAwaiter().GetResult();
-            if (userKey != null)
+            if (response != null && userKey != null)
                 response.KeyValue = userKey.KeyDetails;
 
             return new SuccessActionResult(response);
