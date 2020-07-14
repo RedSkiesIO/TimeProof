@@ -1,4 +1,5 @@
-﻿using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
+﻿using System.Linq;
+using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
 using Stripe;
 
 namespace AtlasCity.TimeProof.Common.Lib.Extensions
@@ -27,8 +28,13 @@ namespace AtlasCity.TimeProof.Common.Lib.Extensions
             {
                 Id = paymentIntent.Id,
                 ClientSecret = paymentIntent.ClientSecret,
-                Amount = paymentIntent.Amount.HasValue ? paymentIntent.Amount.Value : 0,
+                Amount = paymentIntent.Amount ?? 0,
                 Created = paymentIntent.Created,
+
+                CarIssuer = paymentIntent.Charges?.FirstOrDefault()?.PaymentMethodDetails?.Card?.Brand,
+                Last4 = paymentIntent.Charges?.FirstOrDefault()?.PaymentMethodDetails?.Card?.Last4,
+
+                Address = paymentIntent.Charges?.FirstOrDefault()?.BillingDetails?.Address.ToAddress()
             };
         }
     }

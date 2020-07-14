@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
 
 namespace AtlasCity.TimeProof.Abstractions.PaymentServiceObjects
 {
@@ -12,6 +12,6 @@ namespace AtlasCity.TimeProof.Abstractions.PaymentServiceObjects
 
         public string LastName { get; set; }
 
-        public PaymentAddress Address { get; set; }
+        public AddressDao Address { get; set; }
     }
 }

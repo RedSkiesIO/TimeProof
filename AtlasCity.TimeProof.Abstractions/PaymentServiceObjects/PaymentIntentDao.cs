@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
+using System;
 
 namespace AtlasCity.TimeProof.Abstractions.PaymentServiceObjects
 {
@@ -11,5 +12,11 @@ namespace AtlasCity.TimeProof.Abstractions.PaymentServiceObjects
         public long Amount { get; set; }
 
         public DateTime Created { get; set; }
+
+        public string CarIssuer { get; set; }
+
+        public string Last4 { get; set; }
+
+        public AddressDao Address { get; set; }
     }
 }

@@ -12,5 +12,8 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
 
         [JsonProperty(PropertyName = "card")]
         public CardResponse Card { get; set; }
+
+        [JsonProperty(PropertyName = "address")]
+        public AddressResponse Address { get; set; }
     }
 }
