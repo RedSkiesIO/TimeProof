@@ -5,7 +5,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
     public class KeyDao : DaoBase
     {
       
-        [JsonProperty(PropertyName = "userId`")]
+        [JsonProperty(PropertyName = "userId")]
         public string UserId { get; set; }
 
         [JsonProperty(PropertyName = "key")]
