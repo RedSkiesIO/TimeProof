@@ -760,7 +760,7 @@ export default {
         const billingDetails = {
           line1: line,
           city,
-          postcode: postalCode,
+          postal_code: postalCode,
           state,
           country,
         };
