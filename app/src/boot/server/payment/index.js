@@ -217,7 +217,7 @@ class PaymentServer extends Server {
             {
               payment_method: {
                 card,
-                billing_details: billingDetails,
+                billing_details: { address: billingDetails },
               },
             });
 
