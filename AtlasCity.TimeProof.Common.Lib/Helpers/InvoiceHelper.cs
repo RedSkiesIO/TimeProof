@@ -113,7 +113,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
             var addressLine5 = address?.Country;
 
             var fontColour = XBrushes.Gray;
-            const string fontName = "Montserrat";
+            const string fontName = "PlatformDefault";
             var billedToNameRectangle = new XRect(55, 240, 50, 0);
             var billedToAddressLine1Rectangle = new XRect(55, 255, 50, 0);
             var billedToAddressLine2Rectangle = new XRect(55, 270, 50, 0);

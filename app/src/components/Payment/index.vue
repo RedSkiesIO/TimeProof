@@ -214,7 +214,7 @@
               <h1>You have successfully changed your plan!</h1>
             </template>
             <button
-              style="width: 20vh; height: 5vh"
+              style="width: 25vh; height: 5vh"
               @click="$router.push('/dashboard')"
             >
               Go to Dashboard
@@ -260,7 +260,7 @@
 
               <button
                 class="col-md-5 col-sm-5 col-xs-5"
-                style="width: 20vh; height: 5vh; margin-left:2rem"
+                style="width: 25vh; height: 5vh; margin-left:2rem"
                 @click="$router.push('/dashboard')"
               >
                 Go to Dashboard
