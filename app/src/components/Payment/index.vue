@@ -1002,7 +1002,7 @@ export default {
     async downgradeToFreePlan() {
       this.paymentResultUpdate(false, true, false, false, false, false, false);
       const response = await this.$paymentServer
-        .subscribeToPackage(null, this.user, null, null, this.getSellingProduct.id);
+        .subscribeToPackage(null, this.user, null, null, null, null, this.getSellingProduct.id);
       this.completePayment(response);
     },
 
