@@ -78,15 +78,15 @@ namespace AtlasCity.TimeProof.Common.Lib.Helpers
 
             if (ethGasStationPrice != null)
             {
-                if (ethGasStationPrice.SafeLowGwei < ethGasStationPrice.AverageGwei / 2)
+                var average70Percentage = Math.Ceiling(ethGasStationPrice.AverageGwei * .7);
+
+                if (average70Percentage > ethGasStationPrice.SafeLowGwei)
                 {
                     _logger.Information($"FastGwei: '{ethGasStationPrice.FastGwei}', AverageGwei: '{ethGasStationPrice.AverageGwei}', SafeLowGwei: '{ethGasStationPrice.SafeLowGwei}'");
-                    return new EthCharge { Gwei = ethGasStationPrice.AverageGwei, WaitTime = ethGasStationPrice.AverageWaitTime };
+                    return new EthCharge { Gwei = average70Percentage, WaitTime = ethGasStationPrice.AverageWaitTime };
                 }
-                else
-                {
-                    return new EthCharge { Gwei = ethGasStationPrice.SafeLowGwei, WaitTime = ethGasStationPrice.SafeLowWaitTime };
-                }
+
+                return new EthCharge { Gwei = ethGasStationPrice.SafeLowGwei, WaitTime = ethGasStationPrice.SafeLowWaitTime };
             }
 
             return null;

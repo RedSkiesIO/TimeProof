@@ -67,22 +67,22 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Helpers
         }
 
         [TestMethod]
-        public void Calling_GetFreePlanGwei_SafeLow_Below_50Percent_Of_Average_HappyPath()
+        public void Calling_GetFreePlanGwei_SafeLow_Below_70Percent_Of_Average_As_of_100_HappyPath()
         {
-            var ethGasStationPrice = new EthGasStationPrice { Fast = "36", FastWait = "1", Average = "36", AverageWait = "4", SafeLow = "6", SafeLowWait = "25" };
+            var ethGasStationPrice = new EthGasStationPrice { Fast = "36", FastWait = "1", Average = "100", AverageWait = "4", SafeLow = "69", SafeLowWait = "25" };
             ethClientMock.Setup(s => s.GetJsonResponseContent(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(JsonConvert.SerializeObject(ethGasStationPrice)));
 
             var actualResult = etheHelper.GetFreePlanGwei("dummyEndPoint", default).GetAwaiter().GetResult();
 
-            Assert.AreEqual(ethGasStationPrice.AverageGwei, actualResult.Gwei);
+            Assert.AreEqual(Math.Ceiling(ethGasStationPrice.AverageGwei*.7), actualResult.Gwei);
             Assert.AreEqual(new TimeSpan(0, ethGasStationPrice.AverageWait.AsInt(), 0), actualResult.WaitTime);
             loggerMock.Verify(s => s.Information($"FastGwei: '{ethGasStationPrice.FastGwei}', AverageGwei: '{ethGasStationPrice.AverageGwei}', SafeLowGwei: '{ethGasStationPrice.SafeLowGwei}'"), Times.Once);
         }
 
         [TestMethod]
-        public void Calling_GetFreePlanGwei_SafeLow_Exact_50Percent_Of_Average_HappyPath()
+        public void Calling_GetFreePlanGwei_SafeLow_Exact_70Percent_Of_Average_As_of_100_HappyPath()
         {
-            var ethGasStationPrice = new EthGasStationPrice { Fast = "36", FastWait = "1", Average = "36", AverageWait = "4", SafeLow = "18", SafeLowWait = "25" };
+            var ethGasStationPrice = new EthGasStationPrice { Fast = "36", FastWait = "1", Average = "100", AverageWait = "4", SafeLow = "70", SafeLowWait = "25" };
             ethClientMock.Setup(s => s.GetJsonResponseContent(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(JsonConvert.SerializeObject(ethGasStationPrice)));
 
             var actualResult = etheHelper.GetFreePlanGwei("dummyEndPoint", default).GetAwaiter().GetResult();
@@ -92,9 +92,34 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Helpers
         }
 
         [TestMethod]
-        public void Calling_GetFreePlanGwei_SafeLow_Above_50Percent_Of_Average_HappyPath()
+        public void Calling_GetFreePlanGwei_SafeLow_Above_70Percent_Of_Average_As_of_100_HappyPath()
         {
-            var ethGasStationPrice = new EthGasStationPrice { Fast = "36", FastWait = "1", Average = "36", AverageWait = "4", SafeLow = "19", SafeLowWait = "25" };
+            var ethGasStationPrice = new EthGasStationPrice { Fast = "36", FastWait = "1", Average = "100", AverageWait = "4", SafeLow = "71", SafeLowWait = "25" };
+            ethClientMock.Setup(s => s.GetJsonResponseContent(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(JsonConvert.SerializeObject(ethGasStationPrice)));
+
+            var actualResult = etheHelper.GetFreePlanGwei("dummyEndPoint", default).GetAwaiter().GetResult();
+
+            Assert.AreEqual(ethGasStationPrice.SafeLowGwei, actualResult.Gwei);
+            Assert.AreEqual(new TimeSpan(0, ethGasStationPrice.SafeLowWait.AsInt(), 0), actualResult.WaitTime);
+        }
+
+        [TestMethod]
+        public void Calling_GetFreePlanGwei_SafeLow_Below_70Percent_Of_Average_HappyPath()
+        {
+            var ethGasStationPrice = new EthGasStationPrice { Fast = "36", FastWait = "1", Average = "89", AverageWait = "4", SafeLow = "62", SafeLowWait = "25" };
+            ethClientMock.Setup(s => s.GetJsonResponseContent(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(JsonConvert.SerializeObject(ethGasStationPrice)));
+
+            var actualResult = etheHelper.GetFreePlanGwei("dummyEndPoint", default).GetAwaiter().GetResult();
+
+            Assert.AreEqual(Math.Ceiling(ethGasStationPrice.AverageGwei * .7), actualResult.Gwei);
+            Assert.AreEqual(new TimeSpan(0, ethGasStationPrice.AverageWait.AsInt(), 0), actualResult.WaitTime);
+            loggerMock.Verify(s => s.Information($"FastGwei: '{ethGasStationPrice.FastGwei}', AverageGwei: '{ethGasStationPrice.AverageGwei}', SafeLowGwei: '{ethGasStationPrice.SafeLowGwei}'"), Times.Once);
+        }
+
+        [TestMethod]
+        public void Calling_GetFreePlanGwei_SafeLow_Above_70Percent_Of_Average_HappyPath()
+        {
+            var ethGasStationPrice = new EthGasStationPrice { Fast = "36", FastWait = "1", Average = "73", AverageWait = "4", SafeLow = "61", SafeLowWait = "25" };
             ethClientMock.Setup(s => s.GetJsonResponseContent(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(JsonConvert.SerializeObject(ethGasStationPrice)));
 
             var actualResult = etheHelper.GetFreePlanGwei("dummyEndPoint", default).GetAwaiter().GetResult();
@@ -113,7 +138,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Helpers
             Assert.AreEqual(null, actualResult);
             loggerMock.Verify(s => s.Information(It.IsAny<string>()), Times.Never);
         }
-
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
