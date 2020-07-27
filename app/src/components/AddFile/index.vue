@@ -186,11 +186,6 @@
           @closeUnlock="dialog=false"
           @sign="signHash"
         />
-        <!-- <NewKey
-          v-if="newKey"
-          @close="dialog=false"
-          @sign="signHash"
-        /> -->
         <Import
           v-if="newKey"
           @close="signHash"

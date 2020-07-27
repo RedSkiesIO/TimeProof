@@ -14,18 +14,6 @@
       >
         <EncryptKey ref="form" />
       </q-step>
-
-      <!-- <q-step
-        :name="2"
-        title="Backup your key file"
-        icon="fas fa-file-download"
-        :done="step > 2"
-      >
-        <SaveKeystore
-          :button-action="downloadKeystore"
-        />
-      </q-step> -->
-
       <q-step
         :name="2"
         title="Signing key created"
