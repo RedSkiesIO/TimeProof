@@ -88,7 +88,6 @@ class PaymentServer extends Server {
     let paymentResult = {};
     try {
       console.log('BEFORE GET PAYMENT DETAILS');
-
       paymentResult = await this.axios.get(`${process.env.API}/user/paymentmethod`);
       console.log('AFTER PAYMENT DETAILS');
       console.log(paymentResult);
@@ -128,6 +127,8 @@ class PaymentServer extends Server {
       console.log('BEFORE PAYMENT METHOD UPDATE');
       const compResult = this.compateBillingAddresses(prevBillingAddress, billingDetails);
       if (compResult) {
+        console.log('MAMAMAMAM');
+        console.log(billingDetails);
         const {
           status: pmUpdateStatus,
           error: pmUpdateError,
