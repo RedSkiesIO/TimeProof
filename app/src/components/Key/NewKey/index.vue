@@ -65,6 +65,7 @@
     </div>
     <div class="row justify-center q-mb-sm">
       <q-btn
+        id="newKeyActionBtn"
         flat
         :label="buttonLabel"
         class="shade-color"

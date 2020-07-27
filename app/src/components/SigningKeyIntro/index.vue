@@ -23,6 +23,7 @@
 
     <div class="row justify-center q-mt-md">
       <q-btn
+        id="signingKeyIntroCreateYourSigningKeyBtn"
         flat
         class="shade-color"
         label="Create your signing key"
