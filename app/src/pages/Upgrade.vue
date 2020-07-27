@@ -61,6 +61,8 @@
                 <q-btn
                   id="pagesUpgradeCancelFuturePlanBtn"
                   flat
+                  rounded
+                  size="0.8rem"
                   data-test-key="cancelFuturePlan"
                   class="shade-color"
                   @click.stop="cancelPlan"

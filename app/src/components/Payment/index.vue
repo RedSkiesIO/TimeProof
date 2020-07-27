@@ -282,42 +282,6 @@
         </div>
         <div id="order-items" />
         <div id="order-total">
-          <!-- <div class="line-item demo">
-            <div id="demo">
-              <p class="label">
-                Demo in test mode
-              </p>
-              <p class="note">
-                You can copy and paste the following test cards to trigger different scenarios:
-              </p>
-              <table class="note">
-                <tr>
-                  <td>Default UK card:</td>
-                  <td class="card-number">
-                    4000<span />0082<span />6000<span />0000
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a
-                      href="https://stripe.com/guides/strong-customer-authentication"
-                      target="_blank"
-                    >Authentication</a> required:
-                  </td>
-                  <td class="card-number">
-                    4000<span />0027<span />6000<span />3184
-                  </td>
-                </tr>
-              </table>
-              <p class="note">
-                See the <a
-                  href="https://stripe.com/docs/testing#cards"
-                  target="_blank"
-                >docs</a> for a full list of test cards.
-                Non-card payments will redirect to test pages.
-              </p>
-            </div>
-          </div> -->
           <div class="line-item">
             <img
               class="image"

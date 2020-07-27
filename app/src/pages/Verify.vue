@@ -15,9 +15,6 @@
         <div class="col text-h5 text-weight-bold justify-center">
           {{ $t('verifyTimestamp') }}
         </div>
-        <!-- <div class="col text-h6">
-          Check if a timstamp exists on the blockchain
-        </div> -->
       </div>
 
       <div

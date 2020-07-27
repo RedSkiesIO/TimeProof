@@ -17,10 +17,6 @@
           src="~assets/tick-animate.gif"
           style="height: 8vw; width: 8vw"
         >
-        <!-- <img
-          src="~assets/success.svg"
-          style="height: 10vw"
-        > -->
         <div class="text-box">
           <div class="text-h5 text-weight-bold text-secondary q-mt-md">
             Your signing key has been created
