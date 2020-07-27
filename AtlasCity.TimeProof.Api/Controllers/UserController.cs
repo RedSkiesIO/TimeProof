@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using AtlasCity.TimeProof.Abstractions.Requests;
+﻿using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
 using AtlasCity.TimeProof.Api.Extensions;
@@ -8,6 +7,7 @@ using Dawn;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System.Threading;
 
 namespace AtlasCity.TimeProof.Api.Controllers
 {
@@ -40,7 +40,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
             var response = user.ToResponse();
 
             var userKey = _userService.GetUserKey(userId, cancellationToken).GetAwaiter().GetResult();
-            if (userKey != null)
+            if (response != null && userKey != null)
                 response.KeyValue = userKey.KeyDetails;
 
             return new SuccessActionResult(response);
@@ -96,9 +96,27 @@ namespace AtlasCity.TimeProof.Api.Controllers
             return new SuccessActionResult(response);
         }
 
+        [Route("user/paymentmethod/{pmid}")]
+        [HttpPut]
+        public IActionResult UpdateCustomerPaymentMethod([FromBody] AddressRequest newAddress, [FromRoute] string pmid, CancellationToken cancellationToken)
+        {
+            if (newAddress == null)
+                return BadRequest();
+
+            try
+            {
+                _userSubscriptionService.UpdateCustomerPaymentMethod(User.GetUserId(), pmid, newAddress.ToDao(), cancellationToken).GetAwaiter().GetResult();
+                return new OkResult();
+            }
+            catch (SubscriptionException ex)
+            {
+                return new ConflictActionResult(ex.Message);
+            }
+        }
+
         [Route("user/upgrade/{ppid}")]
         [HttpPut]
-        public IActionResult ChanePricePlan([FromRoute] string ppid, CancellationToken cancellationToken)
+        public IActionResult ChangePricePlan([FromRoute] string ppid, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(ppid))
                 return BadRequest();

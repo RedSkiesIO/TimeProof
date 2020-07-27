@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Stripe;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AtlasCity.TimeProof.Common.Lib.Services
 {
@@ -19,8 +19,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private readonly CustomerService _customerService;
         private readonly PaymentMethodService _paymentMethodService;
         private readonly SetupIntentService _setupIntentService;
-
-        public PaymentMethodService PaymentMethodService => _paymentMethodService;
 
         public StripePaymentService(PaymentIntentService paymentIntentService, CustomerService customerService, PaymentMethodService paymentMethodService, SetupIntentService setupIntentService)
         {
@@ -65,7 +63,6 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             throw new PaymentServiceException($"Unable to find customer with '{paymentCustomerId}' identifier in stripe payment system.");
         }
 
-
         public async Task<PaymentMethodDao> GetCustomerPaymentMethod(string paymentCustomerId, CancellationToken cancellationToken)
         {
             Guard.Argument(paymentCustomerId, nameof(paymentCustomerId)).NotNull().NotEmpty().NotWhiteSpace();
@@ -79,6 +76,30 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             var customerCards = await _paymentMethodService.ListAsync(options: options, cancellationToken: cancellationToken);
 
             return customerCards.FirstOrDefault().ToPaymentMethodDao();
+        }
+
+        public async Task UpdateCustomerPaymentMethod(string paymentMethodId, AddressDao newAddress, CancellationToken cancellationToken)
+        {
+            Guard.Argument(paymentMethodId, nameof(paymentMethodId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(newAddress, nameof(newAddress)).NotNull();
+
+            var options = new PaymentMethodUpdateOptions
+            {
+                BillingDetails = new BillingDetailsOptions
+                {
+                    Address = new AddressOptions
+                    {
+                        Line1 = newAddress.Line1,
+                        Line2 = newAddress.Line2,
+                        City = newAddress.City,
+                        State = newAddress.State,
+                        PostalCode = newAddress.Postcode,
+                        Country = newAddress.Country,
+                    }
+                }
+            };
+
+            await _paymentMethodService.UpdateAsync(paymentMethodId, options, cancellationToken: cancellationToken);
         }
 
         public async Task<SetupIntentDao> GetSetupIntent(string setupIntentId, CancellationToken cancellationToken)
@@ -118,7 +139,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             try
             {
                 var deletedCustomer = await _customerService.DeleteAsync(paymentCustomerId, cancellationToken: cancellationToken);
-                if (!deletedCustomer.Deleted.Value)
+                if (deletedCustomer.Deleted != null && !deletedCustomer.Deleted.Value)
                 {
                     throw new PaymentServiceException($"Unable to delete user '{paymentCustomerId}' from stripe payment service.");
                 }
@@ -149,10 +170,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             var paymentIntent = await _paymentIntentService.ListAsync(options: options, cancellationToken: cancellationToken);
 
-            if (paymentIntent != null)
-                return paymentIntent.FirstOrDefault().ToPaymentIntentDao();
-
-            return null;
+            return paymentIntent?.FirstOrDefault().ToPaymentIntentDao();
         }
 
         public async Task<PaymentIntentDao> CreatePaymentIntent(string paymentCustomerId, long amount, CancellationToken cancellationToken)
@@ -214,7 +232,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                         // Error code will be authentication_required if authentication is needed
                         throw new PaymentServiceException($"Unable to take payment customer '{paymentCustomerId}'. Error code: {ex.StripeError.Code}, PaymentIntentId '{ex.StripeError.PaymentIntent.Id}'", ex);
                     default:
-                        throw ex;
+                        throw;
                 }
             }
             catch (Exception ex)

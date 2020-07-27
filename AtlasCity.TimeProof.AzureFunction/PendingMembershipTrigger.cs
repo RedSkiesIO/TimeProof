@@ -1,14 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Microsoft.Azure.WebJobs;
 using Serilog;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace AtlasCity.TimeProof.AzureFunction
 {
@@ -20,6 +22,8 @@ namespace AtlasCity.TimeProof.AzureFunction
         private readonly IPricePlanRepository _pricePlanRepository;
         private readonly IPaymentRepository _paymentRepository;
         private readonly IPaymentService _paymentService;
+        private readonly IInvoiceHelper _invoiceHelper;
+        private readonly IInvoiceNumberRepository _invoiceNumberRepository;
 
         public PendingMembershipTrigger(
             ILogger logger,
@@ -27,7 +31,9 @@ namespace AtlasCity.TimeProof.AzureFunction
             IUserRepository userRepository,
             IPricePlanRepository pricePlanRepository,
             IPaymentRepository paymentRepository,
-            IPaymentService paymentService
+            IPaymentService paymentService,
+            IInvoiceHelper invoiceHelper,
+            IInvoiceNumberRepository invoiceNumberRepository
             )
         {
             Guard.Argument(logger, nameof(logger)).NotNull();
@@ -36,6 +42,8 @@ namespace AtlasCity.TimeProof.AzureFunction
             Guard.Argument(pricePlanRepository, nameof(pricePlanRepository)).NotNull();
             Guard.Argument(paymentRepository, nameof(paymentRepository)).NotNull();
             Guard.Argument(paymentService, nameof(paymentService)).NotNull();
+            Guard.Argument(invoiceHelper, nameof(invoiceHelper)).NotNull();
+            Guard.Argument(invoiceNumberRepository, nameof(invoiceNumberRepository)).NotNull();
 
             _logger = logger;
             _pendingMembershipChangeRepository = pendingMembershipChangeRepository;
@@ -43,20 +51,22 @@ namespace AtlasCity.TimeProof.AzureFunction
             _pricePlanRepository = pricePlanRepository;
             _paymentRepository = paymentRepository;
             _paymentService = paymentService;
+            _invoiceHelper = invoiceHelper;
+            _invoiceNumberRepository = invoiceNumberRepository;
         }
 
         [FunctionName("PendingMembershipFunction")]
-        public async Task Run([TimerTrigger("0 00 6 * * *", RunOnStartup = false)]TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 00 6 * * *", RunOnStartup = true)]TimerInfo myTimer, ExecutionContext executionContext)
         {
-            await ProcessPendingMemberships();
-            await ProcessRenewingMemberships();
+            await ProcessPendingMemberships(executionContext.FunctionAppDirectory);
+            await ProcessRenewingMemberships(executionContext.FunctionAppDirectory);
         }
 
-        private async Task ProcessPendingMemberships()
+        private async Task ProcessPendingMemberships(string functionAppDirectory)
         {
             var cancellationToken = new CancellationToken();
             var currentDate = DateTime.UtcNow;
-            var pendingMembershipChanges = await _pendingMembershipChangeRepository.GetByDate(currentDate, cancellationToken);
+            var pendingMembershipChanges = (await _pendingMembershipChangeRepository.GetByDate(currentDate, cancellationToken)).ToList();
             if (!pendingMembershipChanges.Any())
             {
                 _logger.Information($"Unable to find any message at '{currentDate}'.");
@@ -69,7 +79,7 @@ namespace AtlasCity.TimeProof.AzureFunction
             {
                 try
                 {
-                    await ChangePricePlan(pendingChanges.UserId, pendingChanges.NewPricePlanId, cancellationToken);
+                    await ChangePricePlan(pendingChanges.UserId, pendingChanges.NewPricePlanId, functionAppDirectory, cancellationToken);
                     await _pendingMembershipChangeRepository.DeleteByUser(pendingChanges.UserId, cancellationToken);
                     _logger.Information($"Removed all pending plan update for user '{pendingChanges.UserId}'.");
                 }
@@ -86,11 +96,11 @@ namespace AtlasCity.TimeProof.AzureFunction
             }
         }
 
-        private async Task ProcessRenewingMemberships()
+        private async Task ProcessRenewingMemberships(string functionAppDirectory)
         {
             var cancellationToken = new CancellationToken();
             var currentDate = DateTime.UtcNow;
-            var pendingMembershipsToRenew = await _userRepository.GetRenewalMembershipByDate(currentDate, cancellationToken);
+            var pendingMembershipsToRenew = (await _userRepository.GetRenewalMembershipByDate(currentDate, cancellationToken)).ToList();
             if (!pendingMembershipsToRenew.Any())
             {
                 _logger.Information($"There is no pending renew membership on  '{currentDate}'.");
@@ -103,7 +113,7 @@ namespace AtlasCity.TimeProof.AzureFunction
             {
                 try
                 {
-                    await ChangePricePlan(pendingChanges.Id, pendingChanges.CurrentPricePlanId, cancellationToken);
+                    await ChangePricePlan(pendingChanges.Id, pendingChanges.CurrentPricePlanId, functionAppDirectory, cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -112,7 +122,7 @@ namespace AtlasCity.TimeProof.AzureFunction
             }
         }
 
-        private async Task ChangePricePlan(string userId, string newPricePlanId, CancellationToken cancellationToken)
+        private async Task ChangePricePlan(string userId, string newPricePlanId, string rootFolder, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(newPricePlanId))
                 throw new Exception($"Unable to change the membership as either UserId: '{userId}' is missing or NewPricePlan '{newPricePlanId}' is missing");
@@ -132,6 +142,17 @@ namespace AtlasCity.TimeProof.AzureFunction
 
                 _logger.Information($"Collected payment of '{paymentIntent.Amount}' in minimum unit for user '{user.Id}'.");
 
+                var nextInvoiceNumberDao = await _invoiceNumberRepository.GetNextInvoiceNumber(cancellationToken);
+                var invoiceNumber = _invoiceHelper.CalculateInvoiceNumber(nextInvoiceNumberDao.Number);
+                try
+                {
+                    await _invoiceHelper.SendInvoiceAsEmailAttachment(user, paymentIntent, newPricePlan.Title, user.MembershipRenewDate, paymentIntent.Amount, invoiceNumber, rootFolder, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Unable to send and invoice for an user {user.Id}. Exception: {ex.Message}");
+                }
+
                 var paymentDao = new ProcessedPaymentDao
                 {
                     UserId = user.Id,
@@ -140,6 +161,7 @@ namespace AtlasCity.TimeProof.AzureFunction
                     PricePlanId = newPricePlan.Id,
                     NoOfStamps = newPricePlan.NoOfStamps,
                     Created = paymentIntent.Created,
+                    InvoiceNumber = invoiceNumber
                 };
 
                 await _paymentRepository.CreatePaymentReceived(paymentDao, cancellationToken);

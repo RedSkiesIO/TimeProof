@@ -8,6 +8,8 @@ using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Serilog;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -150,7 +152,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 new KeyDao {Id = Guid.NewGuid().ToString(), UserId = userId, KeyDetails = keyDetail},
                 cancellationToken);
 
-            var emailBody = await _emailTemplateHelper.GetWelcomeEmailBody(user.FirstName, cancellationToken);
+            var emailBody = _emailTemplateHelper.GetWelcomeEmailBody(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), user.FirstName);
             var emailMessage = new EmailDao
             {
                 ToAddress = user.Email,

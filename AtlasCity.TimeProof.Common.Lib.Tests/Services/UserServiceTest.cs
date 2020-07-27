@@ -217,7 +217,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Tests.Services
             _userRepositoryMock.Setup(s => s.GetUserById(user.Id, _cancellationToken)).Returns(Task.FromResult((UserDao) null));
             _paymentServiceMock.Setup(s => s.GetCustomerById(paymentCustomerId, _cancellationToken)).Returns(Task.FromResult(new PaymentCustomerDao { Id = paymentCustomerId, Email = "test@example.com" }));
             _pricePlanRepositoryMock.Setup(s => s.GetPricePlanByTitle(Constants.FreePricePlanTitle, _cancellationToken)).Returns(Task.FromResult(new PricePlanDao{ Id = "freePricePlanTestId", Title = Constants.FreePricePlanTitle, Price = 0 }));
-            _emailTemplateHelperMock.Setup(s => s.GetWelcomeEmailBody(user.FullName, _cancellationToken)).Returns(Task.FromResult("Test Email Body"));
+            _emailTemplateHelperMock.Setup(s => s.GetWelcomeEmailBody(It.IsAny<string>(), user.FullName)).Returns("Test Email Body");
 
             await _userService.CreateUser(user, _cancellationToken);
 

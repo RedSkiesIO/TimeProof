@@ -1,6 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Responses;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AtlasCity.TimeProof.Abstractions.Services
 {
@@ -13,6 +14,8 @@ namespace AtlasCity.TimeProof.Abstractions.Services
         Task ProcessPayment(string userId, string paymentMethodId, string pricePlanId, CancellationToken cancellationToken);
 
         Task<PaymentMethodResponse> GetCustomerPaymentMethod(string userId, CancellationToken cancellationToken);
+
+        Task UpdateCustomerPaymentMethod(string userId, string paymentMethodId, AddressDao newAddress, CancellationToken cancellationToken);
 
         Task ChangePricePlan(string userId, string pricePlanId, CancellationToken cancellationToken);
 

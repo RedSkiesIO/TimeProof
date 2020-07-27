@@ -22,5 +22,8 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
 
         [JsonProperty(PropertyName = "created")]
         public DateTime Created { get; set; }
+
+        [JsonProperty(PropertyName = "invoiceNo")]
+        public string InvoiceNumber { get; set; }
     }
 }
