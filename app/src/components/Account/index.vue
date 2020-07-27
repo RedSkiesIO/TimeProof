@@ -6,6 +6,7 @@
     <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
       <div class="row">
         <q-btn
+          id="editProfileBtn"
           flat
           class="shade-color q-mb-md"
           label="Edit Profile"
@@ -14,6 +15,7 @@
       </div>
       <div class="row">
         <q-btn
+          id="changePasswordBtn"
           flat
           class="shade-color"
           label="change password"

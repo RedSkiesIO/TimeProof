@@ -65,6 +65,7 @@
             >
               <div>
                 <q-btn
+                  id="timestampsCopyProofIdBtn"
                   flat
                   rounded
                   size="sm"

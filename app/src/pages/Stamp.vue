@@ -66,6 +66,7 @@
           Please upgrade from your current plan to create more timestamps.
           <template v-slot:action>
             <q-btn
+              id="pagesStampUpgradeBtn"
               flat
               class="shade-color"
               label="Upgrade"

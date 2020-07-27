@@ -17,6 +17,7 @@
         </div>
         <div class="row justify-center q-mt-sm">
           <q-btn
+            id="keyTopBarBackupBtn"
             outline
             class="shade-color"
             :label="$t('backup')"
@@ -41,29 +42,6 @@
           </template>
         </q-input>
       </div>
-      <!-- <div class="row justify-center q-mb-sm">
-        <q-btn
-          flat
-          round
-          class="shade-color"
-          icon="lock"
-          @click="lockKey"
-        />
-      </div> -->
-      <!-- <div class="row">
-        <div
-          class="text-blue q-mb-sm"
-          @click="openImportDialog"
-        >
-          {{ $t('importKey') }}
-        </div> -->
-      <!-- <div
-          class=" text-blue"
-          @click="openNewKeyDialog"
-        >
-          {{ $t('newKey') }}
-        </div> -->
-      <!-- </div> -->
       <div class="row justify-end" />
     </q-card>
 
@@ -102,6 +80,7 @@
         </div>
         <div class="col-2 q-ml-lg unlock-button">
           <q-btn
+            id="keyTopBarUnlockBtn"
             flat
             :label="$t('unlock')"
             class="shade-color"
@@ -109,70 +88,9 @@
           />
         </div>
       </div>
-      <!-- <div class="row justify-center q-mb-sm">
-        <q-btn
-          flat
-          :label="$t('unlock')"
-          color="secondary"
-          @click="unlockKey(password)"
-        />
-      </div> -->
-      <!-- <div class="row justify-center q-gutter-x-xs">
-        <q-btn
-          flat
-          color="blue"
-          size="md"
-          label="import key"
-          @click="openImportDialog"
-        /> -->
-      <!-- <q-btn
-          flat
-          color="blue"
-          size="md"
-          label="new key"
-          @click="openNewKeyDialog"
-        /> -->
-      <!-- </div> -->
       <div class="row justify-end" />
     </q-card>
 
-    <!-- <q-card
-      v-if="!user.secretKey"
-      flat
-      class="top-box"
-    >
-      <template v-if="!userHasSavedKeyBefore">
-        <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
-          <div>{{ $t('createKey') }}</div>
-        </div>
-        <div class="row justify-center text-center">
-          {{ $t('createKeyDesc') }}
-        </div>
-        <div
-          class="row justify-center q-my-sm"
-        >
-          <q-btn
-            outline
-            :label="$t('createKeyLabel')"
-            class="shade-color"
-            @click="newKey=true"
-          />
-        </div>
-      </template>
-      <template v-else>
-        <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
-          <div>{{ $t('importKey') }}</div>
-        </div>
-        <div
-          class="row justify-center text-blue q-mb-sm q-pt-md cursor-pointer"
-          @click="openImportDialog"
-        >
-          {{ $t('importKey') }}
-        </div>
-      </template>
-
-      <div class="row justify-end" />
-    </q-card> -->
     <q-dialog
       v-model="newKey"
     >

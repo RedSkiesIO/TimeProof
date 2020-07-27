@@ -33,6 +33,7 @@
             <div class="column q-gutter-y-sm">
               <div>{{ $t('moreTimestamps') }}</div>
               <q-btn
+                id="usageClientUpgradeBtn"
                 outline
                 color="secondary"
                 :label="$t('upgrade')"

@@ -47,14 +47,8 @@
       >
         <q-stepper-navigation>
           <div class="text-center">
-            <!-- <q-btn
-              v-if="step > 1"
-              flat
-              label="Back"
-              class="q-mr-md shade-color"
-              @click="$refs.stepper.previous()"
-            /> -->
             <q-btn
+              id="newKeyStepperContinueBtn"
               class="shade-color"
               data-test-key="newKeyContinue"
               :disable="!isFilledInput && step === 1"

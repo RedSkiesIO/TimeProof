@@ -150,6 +150,7 @@
               </div>
             </section>
             <button
+              id="paymentBtn"
               class="payment-button"
               data-test-key="paymentButton"
               type="submit"
@@ -214,6 +215,7 @@
               <h1>You have successfully changed your plan!</h1>
             </template>
             <button
+              id="paymentSuccessGoDashboardBtn"
               style="width: 25vh; height: 5vh"
               @click="$router.push('/dashboard')"
             >
@@ -251,6 +253,7 @@
             </p>
             <div class="col-md-12 col-sm-12 row">
               <button
+                id="paymentErrorTryAgainBtn"
                 class="col-md-5 col-sm-5 col-xs-5"
                 style="width: 18vh; height: 5vh"
                 @click="tryAgain"
@@ -259,6 +262,7 @@
               </button>
 
               <button
+                id="patmentErrorGoDashboardBtn"
                 class="col-md-5 col-sm-5 col-xs-5"
                 style="width: 25vh; height: 5vh; margin-left:2rem"
                 @click="$router.push('/dashboard')"

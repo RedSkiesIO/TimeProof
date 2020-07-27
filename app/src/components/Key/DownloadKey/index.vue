@@ -8,6 +8,7 @@
     </div>
     <div class="row justify-center">
       <q-btn
+        id="keyDownloadKeyBackupBtn"
         outline
         class="shade-color"
         label="Download Keystore file"
