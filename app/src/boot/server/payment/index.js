@@ -105,6 +105,9 @@ class PaymentServer extends Server {
       return false;
     }
 
+    billingDetails.postcode = billingDetails.postal_code;
+    delete billingDetails.postal_code;
+
     if (prevBillingAddress) {
       const address = prevBillingAddress.line2
         ? prevBillingAddress.line1 + prevBillingAddress.line2 : prevBillingAddress.line1;
@@ -127,8 +130,6 @@ class PaymentServer extends Server {
       console.log('BEFORE PAYMENT METHOD UPDATE');
       const compResult = this.compateBillingAddresses(prevBillingAddress, billingDetails);
       if (compResult) {
-        console.log('MAMAMAMAM');
-        console.log(billingDetails);
         const {
           status: pmUpdateStatus,
           error: pmUpdateError,
