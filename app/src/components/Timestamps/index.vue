@@ -107,6 +107,9 @@
                 square
                 color="orange"
                 text-color="white"
+                class="cursor-pointer"
+                clickable
+                @click="openTransaction(stamp.txId)"
               >
                 pending
               </q-chip>
@@ -245,6 +248,10 @@ export default {
     getCertificate(stamp) {
       const name = `Timescribe Certificate ${stamp.date}.pdf`;
       this.$pdf.create(name, stamp.certificate);
+    },
+
+    openTransaction(txId) {
+      window.open(`${process.env.ETHERSCAN}/${txId}`, '_blank');
     },
   },
 };
