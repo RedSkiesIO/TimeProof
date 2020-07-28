@@ -416,8 +416,13 @@ export default {
     ...mapGetters({
       getSellingProduct: 'settings/getSellingProduct',
     }),
+    ...mapGetters({
+      products: 'settings/getProducts',
+    }),
     isFreePlan() {
-      return this.getSellingProduct && this.getSellingProduct.price === 0;
+      return (this.getSellingProduct && this.getSellingProduct.price === 0)
+      || (this.products[this.user.tier]
+      && this.getSellingProduct.price < this.products[this.user.tier].price);
     },
     user() {
       return this.$auth.user(true);

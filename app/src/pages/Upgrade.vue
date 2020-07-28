@@ -155,7 +155,8 @@ export default {
     },
     choosePlan(item) {
       this.setSellingProduct(item);
-      if (item.price === 0) {
+      if ((item && item.price === 0) || (this.products[this.currentMemberShip]
+      && item.price < this.products[this.currentMemberShip].price)) {
         this.downgradeConfirmationDialog = true;
       } else {
         this.$router.push('/payment');

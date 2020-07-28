@@ -236,7 +236,7 @@ class PaymentServer extends Server {
         } else {
           response.error = paymentIntentError;
         }
-      } else { // upgrade and downgrade
+      } else { // upgrade and downgrade(not included address = null)
         const { status, error } = await
         this.upgradePackage(pricePlanId, pmMethodId, billingDetails, prevBillingAddress);
         if (status === 200 && !error) {
