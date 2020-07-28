@@ -80,6 +80,7 @@
               autogrow
             >
               <q-btn
+                id="verifyResultProofIdCopyBtn"
                 flat
                 rounded
                 size="sm"
@@ -109,6 +110,7 @@
               autogrow
             >
               <q-btn
+                id="verifyResultHashCopyBtn"
                 flat
                 rounded
                 size="sm"
@@ -138,6 +140,7 @@
               autogrow
             >
               <q-btn
+                id="verifyResultSignatureCopyBtn"
                 flat
                 rounded
                 size="sm"
@@ -157,6 +160,7 @@
     <div class="flex flex-center column text-center q-pt-lg q-pb-md">
       <q-btn
         v-if="!scope.dialog"
+        id="verifyResultVerifyAnotherFileBtn"
         no-caps
         class="shade-color"
         :label="$t('verifyAnotherFile')"

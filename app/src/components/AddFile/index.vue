@@ -121,6 +121,7 @@
             {{ $t('size') }}: {{ file.size }}</span>
           <q-btn
             v-if="mode==='sign'"
+            id="signBtn"
             :disabled="fileIsLoading"
             unelevated
             size="lg"
@@ -145,6 +146,7 @@
             />
             <div class="row justify-center q-pa-md">
               <q-btn
+                id="verifyBtn"
                 unelevated
                 :disable="!proofId"
                 class="shade-color"
@@ -184,11 +186,6 @@
           @closeUnlock="dialog=false"
           @sign="signHash"
         />
-        <!-- <NewKey
-          v-if="newKey"
-          @close="dialog=false"
-          @sign="signHash"
-        /> -->
         <Import
           v-if="newKey"
           @close="signHash"

@@ -88,7 +88,6 @@ class PaymentServer extends Server {
     let paymentResult = {};
     try {
       console.log('BEFORE GET PAYMENT DETAILS');
-
       paymentResult = await this.axios.get(`${process.env.API}/user/paymentmethod`);
       console.log('AFTER PAYMENT DETAILS');
       console.log(paymentResult);
@@ -105,6 +104,9 @@ class PaymentServer extends Server {
     if (!billingDetails) {
       return false;
     }
+
+    billingDetails.postcode = billingDetails.postal_code;
+    delete billingDetails.postal_code;
 
     if (prevBillingAddress) {
       const address = prevBillingAddress.line2

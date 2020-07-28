@@ -10,6 +10,7 @@
     >
       <template slot="checkout-button">
         <q-btn
+          id="stripeCheckoutBtn"
           unelevated
           class="shade-color"
           :label="label"

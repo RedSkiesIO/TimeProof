@@ -26,6 +26,7 @@
     <q-card-actions align="center">
       <div class="row justify-center q-mb-sm">
         <q-btn
+          id="cancelDowngradeBtn"
           v-close-popup
           flat
           data-test-key="cancelDowngrade"
@@ -34,6 +35,7 @@
           @click="buttonClose"
         />
         <q-btn
+          id="confirmDowngradeBtn"
           flat
           data-test-key="confirmDowngrade"
           :label="$t('confirm')"
