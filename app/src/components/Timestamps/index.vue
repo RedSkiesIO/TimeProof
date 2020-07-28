@@ -15,9 +15,6 @@
       <div
         v-if="user.orderedTimestamps.length > 0"
       >
-        <!-- <div class="row text-weight-bold justify-end q-mr-sm">
-          {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
-        </div> -->
         <q-scroll-area
           style="height: 15rem;"
           :thumb-style="thumbStyle"
@@ -65,6 +62,7 @@
             >
               <div>
                 <q-btn
+                  id="timestampsCopyProofIdBtn"
                   flat
                   rounded
                   size="sm"

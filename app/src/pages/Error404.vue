@@ -10,6 +10,7 @@
       Sorry, nothing here...<strong>(404)</strong>
     </p>
     <q-btn
+      id="pagesNotFoundGoBackBtn"
       class="shade-color"
       style="width:200px;"
       to="/"

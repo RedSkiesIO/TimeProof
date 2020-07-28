@@ -122,7 +122,7 @@ export default {
   later: 'Later',
   confirm: 'Confirm',
   certificate: 'Certificate',
-  upgradeToCreateMoreProofs: 'Upgrade to create more proofs',
+  upgradeToCreateMoreProofs: 'Upgrade Now!',
   loadingLoginSignupPage: 'Building your space...',
   browseFileErrorMessage: 'file name must not exceed 200 characters.',
 };

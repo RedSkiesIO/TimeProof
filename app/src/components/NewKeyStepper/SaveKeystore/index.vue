@@ -17,6 +17,7 @@
     </div>
     <div class="row justify-center">
       <q-btn
+        id="newKeyStepperSaveKeyStoreDownloadBtn"
         flat
         label="download keystore file"
         style="width: 250px"

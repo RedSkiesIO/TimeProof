@@ -967,7 +967,7 @@
 
   #summary {
     position: fixed;
-    top: 15%;
+    top: 8%;
     right: -450px;
     bottom: 0;
     width: 450px;
@@ -984,6 +984,7 @@
 
   #summary .header {
     background: #fff;
+    padding-top: 3rem;
   }
 
   #summary h1 {
@@ -1005,7 +1006,7 @@
   #summary .line-item {
     display: flex;
     flex-direction: row;
-    padding: 30px 30px 0 30px;
+    padding: 70px 30px 0 30px;
   }
 
   #summary .line-item .image {
