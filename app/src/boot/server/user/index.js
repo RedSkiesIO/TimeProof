@@ -41,9 +41,12 @@ class UserServer extends Server {
           { headers: { 'Cache-Control': 'no-cache' } });
         console.log('VERIFY USER RESULT');
         console.log(result);
+        let data = {
+          firstName: account.idToken.given_name,
+          lastName: account.idToken.family_name,
+        };
         if (!result || !result.data) {
           let address;
-          let data;
           if (user) {
             if (user.address) {
               address = {
@@ -63,23 +66,24 @@ class UserServer extends Server {
               address,
             };
           } else {
-            data = {
-              email: account.idToken.emails[0],
-              firstName: account.idToken.given_name,
-              lastName: account.idToken.family_name,
-            };
+            const [accEmail] = account.idToken.emails;
+            data.email = accEmail;
           }
           console.log(data);
           result = await this.axios.post(`${process.env.API}/user`, data);
           console.log('New User created on Timeproof API');
           console.log(result);
+          if (!result && !result.data) {
+            throw new Error('user data not found');
+          }
         } else {
-          console.log('User is already exist in timeproof api');
-          console.log(result.data);
-        }
-
-        if (!result || !result.data) {
-          throw new Error('user data not found');
+          const { status, error } = await this.axios.put(`${process.env.API}/user`, data);
+          if (status === 200 && !error) {
+            result.data.firstName = data.firstName;
+            result.data.lastName = data.lastName;
+          }
+          console.log('User is already exist and update in timeproof api');
+          console.log(result);
         }
 
         return result.data;
