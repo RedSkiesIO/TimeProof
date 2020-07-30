@@ -7,6 +7,7 @@
     >
       <q-toolbar>
         <q-btn
+          id="loggedInMenuDrawerBtn"
           flat
           round
           dense
@@ -141,6 +142,7 @@
                 {{ $t('editProfile') }}
               </div>
               <q-btn
+                id="loggedInLogoutBtn"
                 flat
                 :label="$t('logout')"
                 @click.prevent="logOut"

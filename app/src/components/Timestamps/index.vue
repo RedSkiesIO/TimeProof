@@ -15,9 +15,6 @@
       <div
         v-if="user.orderedTimestamps.length > 0"
       >
-        <!-- <div class="row text-weight-bold justify-end q-mr-sm">
-          {{ $t('totalTimestamps') }}: {{ user.timestamps.length }}
-        </div> -->
         <q-scroll-area
           style="height: 15rem;"
           :thumb-style="thumbStyle"
@@ -65,6 +62,7 @@
             >
               <div>
                 <q-btn
+                  id="timestampsCopyProofIdBtn"
                   flat
                   rounded
                   size="sm"
@@ -109,6 +107,9 @@
                 square
                 color="orange"
                 text-color="white"
+                class="cursor-pointer"
+                clickable
+                @click="openTransaction(stamp.txId)"
               >
                 pending
               </q-chip>
@@ -247,6 +248,10 @@ export default {
     getCertificate(stamp) {
       const name = `Timescribe Certificate ${stamp.date}.pdf`;
       this.$pdf.create(name, stamp.certificate);
+    },
+
+    openTransaction(txId) {
+      window.open(`${process.env.ETHERSCAN}/${txId}`, '_blank');
     },
   },
 };

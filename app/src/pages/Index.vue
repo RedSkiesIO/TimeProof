@@ -53,6 +53,7 @@
                     {{ $t('pleaseUpgrade') }}
                   </div>
                   <q-btn
+                    id="pagesIndexUpgradeBtn"
                     outline
                     class="shade-color"
                     :label="$t('upgrade')"
@@ -87,6 +88,7 @@
         {{ $t('notSignedIn') }}
       </div>
       <q-btn
+        id="pagesIndexSignUpSignInBtn"
         unelevated
         flat
         :label="$t('signUpSignIn')"

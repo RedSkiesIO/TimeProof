@@ -88,7 +88,6 @@ class PaymentServer extends Server {
     let paymentResult = {};
     try {
       console.log('BEFORE GET PAYMENT DETAILS');
-
       paymentResult = await this.axios.get(`${process.env.API}/user/paymentmethod`);
       console.log('AFTER PAYMENT DETAILS');
       console.log(paymentResult);
@@ -105,6 +104,9 @@ class PaymentServer extends Server {
     if (!billingDetails) {
       return false;
     }
+
+    billingDetails.postcode = billingDetails.postal_code;
+    delete billingDetails.postal_code;
 
     if (prevBillingAddress) {
       const address = prevBillingAddress.line2
@@ -236,7 +238,7 @@ class PaymentServer extends Server {
         } else {
           response.error = paymentIntentError;
         }
-      } else { // upgrade and downgrade
+      } else { // upgrade and downgrade(not included address = null)
         const { status, error } = await
         this.upgradePackage(pricePlanId, pmMethodId, billingDetails, prevBillingAddress);
         if (status === 200 && !error) {

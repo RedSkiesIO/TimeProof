@@ -33,6 +33,7 @@
         {{ $t('notSignedIn') }}
       </div>
       <q-btn
+        id="pagesDashboardSignUpSignInBtn"
         unelevated
         flat
         :label="$t('signUpSignIn')"

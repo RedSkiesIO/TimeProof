@@ -156,6 +156,7 @@
               autogrow
             >
               <q-btn
+                id="proofTxIdCopyBtn"
                 flat
                 rounded
                 size="sm"
@@ -193,6 +194,7 @@
               autogrow
             >
               <q-btn
+                id="proofHashCopyBtn"
                 flat
                 rounded
                 size="sm"
@@ -223,6 +225,7 @@
               autogrow
             >
               <q-btn
+                id="proofSignatureCopyBtn"
                 flat
                 rounded
                 size="sm"
@@ -251,6 +254,7 @@
       <div class="row q-pb-md justify-center q-pt-md">
         <q-btn
           v-if="proof.status !== 0 && ready"
+          id="proofDownloadCertificateBtn"
           no-caps
           class="shade-color"
           label="Download Certificate"
@@ -262,6 +266,7 @@
       <div class="row q-pb-md justify-center q-pt-md">
         <template>
           <q-btn
+            id="proofStampAnotherFileBtn"
             no-caps
             text-color="white"
             :class="proof.status !== 0 && ready ? 'shade-color q-mr-md': 'shade-color'"
@@ -272,6 +277,7 @@
         <template>
           <q-btn
             v-if="proof.status !== 0 && ready"
+            id="proofDownloadCertificateBtn"
             flat
             no-caps
             class="shade-color q-ml-md"
