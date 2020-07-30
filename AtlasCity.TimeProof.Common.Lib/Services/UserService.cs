@@ -101,6 +101,22 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             return newUser;
         }
 
+        public async Task UpdateUser(string userId, string firstName, string lastName, CancellationToken cancellationToken)
+        {
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(firstName, nameof(firstName)).NotNull().NotEmpty().NotWhiteSpace();
+
+            var existingUser = await _userRepository.GetUserById(userId, cancellationToken);
+            if (existingUser == null)
+                throw new UserException("User does not exists.");
+
+            existingUser.FirstName = firstName;
+            existingUser.LastName = lastName;
+
+            await _userRepository.UpdateUser(existingUser, cancellationToken);
+            _logger.Information($"Successfully updated user details with email '{existingUser.Email}'");
+        }
+
         public async Task DeleteUser(string userId, CancellationToken cancellationToken)
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();

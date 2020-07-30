@@ -59,6 +59,26 @@ namespace AtlasCity.TimeProof.Api.Controllers
             return new CreatedActionResult(newUser.ToResponse());
         }
 
+
+        [Route("user")]
+        [HttpPut]
+        public IActionResult UpdateUser([FromBody] UpdateUserRequest user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                return BadRequest();
+
+            try
+            {
+                _userService.UpdateUser(User.GetUserId(), user.FirstName, user.LastName, cancellationToken).GetAwaiter().GetResult();
+                return new OkResult();
+            }
+            catch (SubscriptionException ex)
+            {
+                return new ConflictActionResult(ex.Message);
+            }
+
+        }
+
         [Route("user/paymentintent/{planId}")]
         [HttpGet]
         public IActionResult GetPaymentIntent([FromRoute] string planId, CancellationToken cancellationToken)
