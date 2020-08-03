@@ -53,8 +53,9 @@
                     {{ $t('pleaseUpgrade') }}
                   </div>
                   <q-btn
+                    id="pagesIndexUpgradeBtn"
                     outline
-                    color="secondary"
+                    class="shade-color"
                     :label="$t('upgrade')"
                   />
                 </div>
@@ -87,11 +88,11 @@
         {{ $t('notSignedIn') }}
       </div>
       <q-btn
+        id="pagesIndexSignUpSignInBtn"
         unelevated
         flat
-        color="blue"
         :label="$t('signUpSignIn')"
-        class="q-mt-md"
+        class="q-mt-md shade-color"
         @click="$auth.signIn()"
       />
     </div>

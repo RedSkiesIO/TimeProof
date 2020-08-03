@@ -1,7 +1,7 @@
 {
   "name": "timescribe",
   "version": "0.0.1",
-  "description": "Time stamping app",
+  "description": "Blockchain-based timestamping technology that records time and ownership for all your files.",
   "productName": "Timescribe",
   "cordovaId": "org.upgradedgiggle.atlascity.app",
   "capacitorId": "",
@@ -15,9 +15,9 @@
     "build:prod": "cross-env prod=true quasar build"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.10.1",
     "@pdf-lib/fontkit": "0.0.4",
     "@quasar/app": "^1.9.6",
+    "@quasar/babel-preset-app": "^2.0.0",
     "@quasar/extras": "^1.8.1",
     "@stripe/stripe-js": "^1.5.0",
     "@vue/cli-service": "^4.3.1",
@@ -26,6 +26,7 @@
     "base32-decode": "^1.0.0",
     "base32-encode": "^1.1.1",
     "blake2b": "^2.1.3",
+    "core-js": "^3.6.5",
     "dotenv": "^8.2.0",
     "html-webpack-plugin": "^4.2.1",
     "identicon.js": "^2.3.3",
@@ -33,6 +34,7 @@
     "jspdf": "^1.5.3",
     "moment": "^2.24.0",
     "msal": "^1.3.0",
+    "node-sass": "^4.14.1",
     "pdf-lib": "^1.5.0",
     "pdf-templater": "^0.1.9",
     "quasar": "^1.11.2",
@@ -53,6 +55,7 @@
     "@quasar/quasar-app-extension-qpdfviewer": "^1.0.0-beta.5",
     "@quasar/quasar-app-extension-testing": "^1.0.0",
     "@quasar/quasar-app-extension-testing-unit-jest": "^1.1.0-beta.0",
+    "@vue/babel-preset-app": "^4.4.1",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.33",
     "babel-eslint": "^10.0.1",

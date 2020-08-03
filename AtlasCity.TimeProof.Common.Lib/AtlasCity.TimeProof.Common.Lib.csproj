@@ -5,11 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="EmailTemplates\Welcome.html" />
+    <None Remove="Templates\Invoice.html" />
+    <None Remove="Templates\Timescribe_Receipt_Template.pdf" />
+    <None Remove="Templates\Welcome.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="EmailTemplates\Welcome.html">
+    <Content Include="Templates\Timescribe_Receipt_Template.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Invoice.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Welcome.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -19,6 +27,7 @@
     <PackageReference Include="Microsoft.Azure.Storage.Queue" Version="11.1.3" />
     <PackageReference Include="Nethereum.Web3" Version="3.7.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="PdfSharpCore" Version="1.2.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageReference Include="Stripe.net" Version="36.2.0" />
     <PackageReference Include="TheDotNetLeague.MultiFormats.MultiBase" Version="0.0.2" />

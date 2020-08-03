@@ -4,7 +4,6 @@
 // const HtmlWebpackPlugin = require('@quasar/app/node_modules/html-webpack-plugin')
 // const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const fs = require('fs');
-const glob = require('glob');
 const appConfig = require('./app.config');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
@@ -66,7 +65,15 @@ module.exports = function (ctx) {
       directives: [],
 
       // Quasar plugins
-      plugins: ['Loading','Notify'],
+      plugins: ['Loading','Notify','LoadingBar'],
+      config: {
+        loadingBar: { 
+          color: 'cyan-4',
+          size: '15px',
+          position: 'bottom',
+          skipHijack: true,
+        }
+      },
     },
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
     supportIE: true,

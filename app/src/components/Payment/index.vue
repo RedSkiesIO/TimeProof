@@ -150,6 +150,7 @@
               </div>
             </section>
             <button
+              id="paymentBtn"
               class="payment-button"
               data-test-key="paymentButton"
               type="submit"
@@ -160,14 +161,14 @@
             <div
               id="card-errors"
               class="element-errors"
-              :class="{ visible: cardErrorVisible}"
+              :class="{visible: cardErrorVisible}"
             >
               {{ cardErrorContent }}
             </div>
             <div
               id="iban-errors"
               class="element-errors"
-              :class="{ visible: ibanErrorVisible}"
+              :class="{visible: ibanErrorVisible}"
             >
               {{ ibanErrorContent }}
             </div>
@@ -214,7 +215,8 @@
               <h1>You have successfully changed your plan!</h1>
             </template>
             <button
-              style="width: 20vh; height: 5vh"
+              id="paymentSuccessGoDashboardBtn"
+              style="width: 25vh; height: 5vh"
               @click="$router.push('/dashboard')"
             >
               Go to Dashboard
@@ -251,6 +253,7 @@
             </p>
             <div class="col-md-12 col-sm-12 row">
               <button
+                id="paymentErrorTryAgainBtn"
                 class="col-md-5 col-sm-5 col-xs-5"
                 style="width: 18vh; height: 5vh"
                 @click="tryAgain"
@@ -259,8 +262,9 @@
               </button>
 
               <button
+                id="patmentErrorGoDashboardBtn"
                 class="col-md-5 col-sm-5 col-xs-5"
-                style="width: 20vh; height: 5vh; margin-left:2rem"
+                style="width: 25vh; height: 5vh; margin-left:2rem"
                 @click="$router.push('/dashboard')"
               >
                 Go to Dashboard
@@ -278,42 +282,6 @@
         </div>
         <div id="order-items" />
         <div id="order-total">
-          <!-- <div class="line-item demo">
-            <div id="demo">
-              <p class="label">
-                Demo in test mode
-              </p>
-              <p class="note">
-                You can copy and paste the following test cards to trigger different scenarios:
-              </p>
-              <table class="note">
-                <tr>
-                  <td>Default UK card:</td>
-                  <td class="card-number">
-                    4000<span />0082<span />6000<span />0000
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a
-                      href="https://stripe.com/guides/strong-customer-authentication"
-                      target="_blank"
-                    >Authentication</a> required:
-                  </td>
-                  <td class="card-number">
-                    4000<span />0027<span />6000<span />3184
-                  </td>
-                </tr>
-              </table>
-              <p class="note">
-                See the <a
-                  href="https://stripe.com/docs/testing#cards"
-                  target="_blank"
-                >docs</a> for a full list of test cards.
-                Non-card payments will redirect to test pages.
-              </p>
-            </div>
-          </div> -->
           <div class="line-item">
             <img
               class="image"
@@ -407,6 +375,8 @@ export default {
       receiverInfo: null,
       uiPaymentTypeList,
       style: config.paymentButtonStyle,
+      prevBillingAddress: null,
+      pmMethodId: null,
     };
   },
 
@@ -414,8 +384,13 @@ export default {
     ...mapGetters({
       getSellingProduct: 'settings/getSellingProduct',
     }),
+    ...mapGetters({
+      products: 'settings/getProducts',
+    }),
     isFreePlan() {
-      return this.getSellingProduct && this.getSellingProduct.price === 0;
+      return (this.getSellingProduct && this.getSellingProduct.price === 0)
+      || (this.products[this.user.tier]
+      && this.getSellingProduct.price < this.products[this.user.tier].price);
     },
     user() {
       return this.$auth.user(true);
@@ -444,6 +419,7 @@ export default {
 
   },
   created() {
+    this.loadAddressAndCardFields();
     if (!this.getSellingProduct) {
       this.$router.push('/upgrade');
     }
@@ -752,25 +728,21 @@ export default {
 
       if (addressFound) {
         const {
-          name, email, line, city, state, postalCode, country,
+          line, city, state, postalCode, country,
         } = addressData;
         const billingDetails = {
-          name,
-          email,
-          address: {
-            line1: line,
-            city,
-            postal_code: postalCode,
-            state,
-            country,
-          },
+          line1: line,
+          city,
+          postal_code: postalCode,
+          state,
+          country,
         };
 
         if (this.user.userId) {
           if (this.paymentType === 'card') {
             const response = await this.$paymentServer
-              .subscribeToPackage(stripe, this.user,
-                billingDetails, this.card, this.getSellingProduct.id);
+              .subscribeToPackage(stripe, this.user, this.pmMethodId,
+                billingDetails, this.prevBillingAddress, this.card, this.getSellingProduct.id);
 
             this.completePayment(response);
           } else if (this.paymentType === 'sepa_debit') {
@@ -996,16 +968,38 @@ export default {
     },
 
     activateCheckoutPage() {
-      this.paymentResultUpdate(false, false, false, false, false, true);
+      this.paymentResultUpdate(false, false, false, false, false, false, true);
       this.updateButtonLabel(this.paymentType);
     },
 
     async downgradeToFreePlan() {
-      this.paymentResultUpdate(false, true, false, false, false, false);
+      this.paymentResultUpdate(false, true, false, false, false, false, false);
       const response = await this.$paymentServer
-        .subscribeToPackage(null, this.user,
-          null, null, this.getSellingProduct.id);
+        .subscribeToPackage(null, this.user, null, null, null, null, this.getSellingProduct.id);
       this.completePayment(response);
+    },
+
+    async loadAddressAndCardFields() {
+      const {
+        data: pmData, status: pmStatus,
+        error: pmError,
+      } = await this.$paymentServer.getPaymentDetails();
+
+      if (pmStatus === 200 && pmData && !pmError) {
+        this.pmMethodId = pmData.id;
+        if (pmData.address) {
+          this.prevBillingAddress = pmData.address;
+          const {
+            line1, line2, city, state, postcode, country,
+          } = pmData.address;
+
+          this.$refs.paymentBilling.address = line2 ? line1 + line2 : line1;
+          this.$refs.paymentBilling.city = city;
+          this.$refs.paymentBilling.state = state;
+          this.$refs.paymentBilling.postalCode = postcode;
+          this.$refs.paymentBilling.country = country;
+        }
+      }
     },
 
   },

@@ -26,18 +26,20 @@
     <q-card-actions align="center">
       <div class="row justify-center q-mb-sm">
         <q-btn
+          id="cancelCreateFirstTimeStampBtn"
           v-close-popup
           flat
           data-test-key="cancelCreateFirstTimeStamp"
           :label="$t('later')"
-          color="blue"
+          class="shade-color"
           @click="buttonClose"
         />
         <q-btn
+          id="continueCreateFirstTimeStampBtn"
           flat
           data-test-key="continueCreateFirstTimeStamp"
           :label="$t('sign')"
-          color="blue"
+          class="shade-color q-ml-md"
           @click="buttonAction"
         />
       </div>

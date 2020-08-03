@@ -44,17 +44,7 @@ namespace AtlasCity.TimeProof.Abstractions.DAO
         [JsonProperty(PropertyName = "renewEpoch")]
         public int MembershipRenewEpoch { get; set; }
 
-        [JsonProperty(PropertyName = "keyEmailDate")]
-        public DateTime KeyEmailSentDate { get; set; }
-
         [JsonIgnore]
-        public string FullName
-        {
-            get
-            {
-                return $"{FirstName} {LastName}".TrimEnd(" ".ToCharArray());
-            }
-        }
-
+        public string FullName => $"{FirstName} {LastName}".TrimEnd(" ".ToCharArray());
     }
 }

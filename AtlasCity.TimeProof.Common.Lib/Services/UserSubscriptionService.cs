@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions;
+﻿using AtlasCity.TimeProof.Abstractions;
 using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Helpers;
 using AtlasCity.TimeProof.Abstractions.Repository;
@@ -12,6 +8,11 @@ using AtlasCity.TimeProof.Common.Lib.Exceptions;
 using AtlasCity.TimeProof.Common.Lib.Extensions;
 using Dawn;
 using Serilog;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AtlasCity.TimeProof.Common.Lib.Services
 {
@@ -24,6 +25,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
         private readonly IPendingMembershipChangeRepository _pendingMembershipChangeRepository;
         private readonly IPaymentService _paymentService;
         private readonly ISystemDateTime _systemDateTime;
+        private readonly IInvoiceHelper _invoiceHelper;
+        private readonly IInvoiceNumberRepository _invoiceNumberRepository;
 
         public UserSubscriptionService(
             ILogger logger,
@@ -32,7 +35,10 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             IPricePlanRepository pricePlanRepository,
             IPendingMembershipChangeRepository pendingMembershipChangeRepository,
             IPaymentService paymentService,
-            ISystemDateTime systemDateTime)
+            ISystemDateTime systemDateTime,
+            IInvoiceHelper invoiceHelper,
+            IInvoiceNumberRepository invoiceNumberRepository
+        )
         {
             Guard.Argument(logger, nameof(logger)).NotNull();
             Guard.Argument(userRepository, nameof(userRepository)).NotNull();
@@ -41,6 +47,8 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             Guard.Argument(pendingMembershipChangeRepository, nameof(pendingMembershipChangeRepository)).NotNull();
             Guard.Argument(paymentService, nameof(paymentService)).NotNull();
             Guard.Argument(systemDateTime, nameof(systemDateTime)).NotNull();
+            Guard.Argument(invoiceHelper, nameof(invoiceHelper)).NotNull();
+            Guard.Argument(invoiceNumberRepository, nameof(invoiceNumberRepository)).NotNull();
 
             _logger = logger;
             _userRepository = userRepository;
@@ -49,7 +57,10 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             _pendingMembershipChangeRepository = pendingMembershipChangeRepository;
             _paymentService = paymentService;
             _systemDateTime = systemDateTime;
+            _invoiceHelper = invoiceHelper;
+            _invoiceNumberRepository = invoiceNumberRepository;
         }
+
         public async Task<PaymentIntentResponse> GetPaymentIntent(string userId, string pricePlanId, CancellationToken cancellationToken)
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
@@ -68,8 +79,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             if (paymentIntent != null && paymentIntent.Amount != pricePlan.Price)
                 throw new SubscriptionException($"Payment Intent already exists with mismatch amount. Expected '{pricePlan.Price}' and actual '{paymentIntent.Amount}'");
 
-            if (paymentIntent == null)
-                paymentIntent = await _paymentService.CreatePaymentIntent(user.PaymentCustomerId, pricePlan.Price, cancellationToken);
+            paymentIntent ??= await _paymentService.CreatePaymentIntent(user.PaymentCustomerId, pricePlan.Price, cancellationToken);
 
             return paymentIntent.ToResponse();
         }
@@ -98,6 +108,17 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             _logger.Information($"Collected payment of '{paymentIntent.Amount}' in minimum unit for user '{user.Id}'.");
 
+            var nextInvoiceNumberDao = await _invoiceNumberRepository.GetNextInvoiceNumber(cancellationToken);
+            var invoiceNumber = _invoiceHelper.CalculateInvoiceNumber(nextInvoiceNumberDao.Number);
+            try
+            {
+                await _invoiceHelper.SendInvoiceAsEmailAttachment(user, paymentIntent, pricePlan.Title, _systemDateTime.GetUtcDateTime(), paymentIntent.Amount, invoiceNumber, Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Unable to send and invoice for an user {user.Id}. Exception: {ex.Message}");
+            }
+
             var paymentDao = new ProcessedPaymentDao
             {
                 UserId = user.Id,
@@ -106,6 +127,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 PricePlanId = pricePlan.Id,
                 NoOfStamps = pricePlan.NoOfStamps,
                 Created = paymentIntent.Created,
+                InvoiceNumber = invoiceNumber
             };
 
             await _paymentRepository.CreatePaymentReceived(paymentDao, cancellationToken);
@@ -145,9 +167,23 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             if (string.IsNullOrWhiteSpace(user.PaymentCustomerId))
                 throw new UserException("PaymentCustomerId is missing. Please create the user first.");
 
-            var payemtnMethod = await _paymentService.GetCustomerPaymentMethod(user.PaymentCustomerId, cancellationToken);
+            var paymentMethod = await _paymentService.GetCustomerPaymentMethod(user.PaymentCustomerId, cancellationToken);
 
-            return payemtnMethod.ToResponse();
+            return paymentMethod.ToResponse();
+        }
+
+
+        public async Task UpdateCustomerPaymentMethod(string userId, string paymentMethodId, AddressDao newAddress, CancellationToken cancellationToken)
+        {
+            Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(paymentMethodId, nameof(paymentMethodId)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(newAddress, nameof(newAddress)).NotNull();
+
+            var user = await _userRepository.GetUserById(userId, cancellationToken);
+            if (user == null)
+                throw new UserException("Please create the user first.");
+
+            await _paymentService.UpdateCustomerPaymentMethod(paymentMethodId, newAddress, cancellationToken);
         }
 
         public async Task ChangePricePlan(string userId, string pricePlanId, CancellationToken cancellationToken)
@@ -211,6 +247,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 await _userRepository.UpdateUser(user, cancellationToken);
             }
         }
+
         public async Task CancelPendingPricePlan(string userId, string pendingPricePlanId, CancellationToken cancellationToken)
         {
             Guard.Argument(userId, nameof(userId)).NotNull().NotEmpty().NotWhiteSpace();

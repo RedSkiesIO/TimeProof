@@ -8,7 +8,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-import moment from 'moment';
 import User from './store/User';
 import { disableLog } from './util/log';
 
@@ -42,6 +41,11 @@ export default {
   },
 
   async created() {
+    if (this.account) {
+      localStorage.setItem('loggedOut', '');
+    } else {
+      localStorage.setItem('loggedOut', true);
+    }
     this.setProducts(await this.$paymentServer.listAllPriceplans());
   },
   mounted() {
@@ -60,7 +64,7 @@ export default {
           const verifyResult = await
           this.$userServer.verifyUserDetails();
 
-          console.log('WOWOWOWOOWOWOWw');
+          console.log('START APP CHECK USER');
           console.log(verifyResult);
           if (verifyResult) {
             User.insertOrUpdate({
@@ -77,16 +81,17 @@ export default {
                 membershipRenewDate: verifyResult.membershipRenewDate,
                 remainingTimeStamps: verifyResult.remainingTimeStamps,
                 pendingPricePlanId: verifyResult.pendingPricePlanId,
-                keyEmailDate: verifyResult.keyEmailDate,
+                pubKey: verifyResult.keyValue
+                  ? JSON.parse(verifyResult.keyValue).publicKey : null,
+                secretKey: verifyResult.keyValue
+                  ? JSON.parse(verifyResult.keyValue).cipher : null,
               },
             });
 
             console.log('USERERRR');
             console.log(this.user);
 
-            // 0001-01-01T00:00:00 for new user
-            const keyMoment = moment(this.user.keyEmailDate, 'YYYY-MM-DD');
-            if (!this.user.secretKey && keyMoment.year() === 1) {
+            if (!this.user.secretKey) {
               this.$router.push('/new-key');
             }
 
@@ -104,10 +109,7 @@ export default {
           console.log(e);
         }
       } else {
-        setTimeout(() => {
-          this.$auth.signIn();
-          localStorage.setItem('loggedOut', '');
-        }, 5000);
+        this.$auth.signIn();
       }
 
       this.ready = true;

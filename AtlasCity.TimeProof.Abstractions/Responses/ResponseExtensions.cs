@@ -1,4 +1,5 @@
-﻿using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
+using AtlasCity.TimeProof.Abstractions.PaymentServiceObjects;
 
 namespace AtlasCity.TimeProof.Abstractions.Responses
 {
@@ -39,7 +40,8 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
             {
                 Id = source.Id,
                 PaymentCustomerId = source.PaymentCustomerId,
-                Card = source.Card.ToResponse()
+                Card = source.Card.ToResponse(),
+                Address = source.Address.ToResponse()
             };
         }
 
@@ -55,6 +57,22 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
                 ExpMonth = source.ExpMonth,
                 ExpYear = source.ExpYear,
                 Issuer = source.Issuer,
+                Country = source.Country,
+            };
+        }
+
+        public static AddressResponse ToResponse(this AddressDao source)
+        {
+            if (source == null)
+                return null;
+
+            return new AddressResponse
+            {
+                Line1 = source.Line1,
+                Line2 = source.Line2,
+                City = source.City,
+                State = source.State,
+                Postcode = source.Postcode,
                 Country = source.Country,
             };
         }

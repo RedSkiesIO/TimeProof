@@ -9,7 +9,7 @@
           data-test-key="paymentBillingName"
           name="name"
           class="field"
-          placeholder="Name Surname"
+          placeholder="First and Last Name(s)"
           required
         >
       </label>
@@ -19,8 +19,8 @@
           name="email"
           type="email"
           data-test-key="paymentBillingEmail"
-          class="field"
-          placeholder="contact@atlascity.io"
+          class="field text-black"
+          placeholder="Email"
           :value="email"
           disabled="true"
           required
@@ -33,7 +33,7 @@
           data-test-key="paymentBillingAddress"
           name="address"
           class="field"
-          placeholder="5 Merchant Square"
+          placeholder="Address Line"
         >
       </label>
       <label>
@@ -43,7 +43,7 @@
           name="city"
           data-test-key="paymentBillingCity"
           class="field"
-          placeholder="London"
+          placeholder="City"
         >
       </label>
       <label class="state">
@@ -53,7 +53,7 @@
           data-test-key="paymentBillingState"
           name="state"
           class="field"
-          placeholder="London"
+          placeholder="State"
         >
       </label>
       <label class="zip">
@@ -63,7 +63,7 @@
           data-test-key="paymentBillingPostCode"
           name="postal_code"
           class="field"
-          placeholder="W2 1AY"
+          placeholder="Postcode"
         >
       </label>
       <label class="select">
@@ -113,9 +113,9 @@
         </div>
       </label>
     </fieldset>
-    <p class="tip">
+    <!-- <p class="tip">
       Select another country to see different payment options.
-    </p>
+    </p> -->
   </div>
 </template>
 

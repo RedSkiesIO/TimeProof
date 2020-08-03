@@ -90,10 +90,12 @@ namespace AtlasCity.TimeProof.Api
             var authorizationKey = Configuration.GetValue("TransationDbAuthorizationKey");
             services.AddSingleton<ITimestampRepository>(new TimestampRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IUserRepository>(new UserRepository(endpointUrl, authorizationKey));
+            services.AddSingleton<IKeyRepository>(new KeyRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPricePlanRepository>(new PricePlanRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IAddressNonceRepository>(new AddressNonceRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPaymentRepository>(new PaymentRepository(endpointUrl, authorizationKey));
             services.AddSingleton<IPendingMembershipChangeRepository>(new PendingMembershipChangeRepository(endpointUrl, authorizationKey));
+            services.AddSingleton<IInvoiceNumberRepository>(new InvoiceNumberRepository(endpointUrl, authorizationKey));
 
             var client = new SmtpClient(Configuration.GetValue("SMTPEmail:HostName"), int.Parse(Configuration.GetValue("SMTPEmail:Port")))
             {
@@ -105,6 +107,7 @@ namespace AtlasCity.TimeProof.Api
 
             services.AddSingleton<IEmailService>(new EmailService(client, Log.Logger));
             services.AddSingleton<IEthClient, EthClient>();
+            services.AddSingleton<IFileHelper, FileHelper>();
 
             var basicAccountSecretKey = Configuration.GetValue("NetheriumBasicAccountSecretKey");
             var premiumAccountSecretKey = Configuration.GetValue("NetheriumPremiumAccountSecretKey");
@@ -126,6 +129,7 @@ namespace AtlasCity.TimeProof.Api
             services.AddSingleton(new PaymentMethodService(stripeClient));
             services.AddSingleton(new SetupIntentService(stripeClient));
 
+            services.AddSingleton<IInvoiceHelper, InvoiceHelper>();
             services.AddSingleton<IPaymentService, StripePaymentService>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IUserSubscriptionService, UserSubscriptionService>();

@@ -175,9 +175,9 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
 
             if (estimateGasPrice > MaxGwei)
             {
-                var message = $"Cannot send transaction with '{estimateGasPrice}' Gwei. Maximum set to '{MaxGwei}' Gwei.";
+                estimateGasPrice = MaxGwei;
+                var message = $"Setting to max transaction price of '{MaxGwei}' Gwei.";
                 _logger.Error(message);
-                throw new TimestampException(message);
             }
 
             if (isFreePlan)

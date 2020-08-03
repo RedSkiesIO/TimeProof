@@ -10,25 +10,15 @@
       >
         <div class="col-auto row justify-between">
           <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
-            <!-- <q-knob
-              v-model="usedPercentage"
-              readonly
-              size="70px"
-              :thickness="0.22"
-              color="blue"
-              track-color="blue-3"
-              class="text-blue q-ma-md"
-            /> -->
             <div
-              class="row text-h4 text-weight-bold q-mb-md"
-              :class="usedClass"
+              class="row text-h3 text-weight-bold q-mb-md usage-color"
             >
               {{ timestampsUsed }}
             </div>
-            <div class="row text-h8 text-weight-bold q-mb-md">
+            <div class="row text-h7 text-weight-bold">
               Stamps Used
             </div>
-            <div class="row text-h12 q-mb-md">
+            <div class="row text-h12">
               This Month
             </div>
           </div>
@@ -39,14 +29,14 @@
 
           <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
             <div
-              class="text-brown row text-h4 text-weight-bold q-mb-md"
+              class="row text-h3 text-weight-bold q-mb-md usage-color"
             >
               {{ allowedTimestamps }}
             </div>
-            <div class="row text-h8 text-weight-bold q-mb-md">
+            <div class="row text-h7 text-weight-bold">
               Stamps Allowed
             </div>
-            <div class="row text-h12 q-mb-md">
+            <div class="row text-h12">
               This Month
             </div>
           </div>
@@ -55,13 +45,13 @@
             inset
           />
           <div class="col-md-3 col-sm-2 col-xs-2 column flex-center q-mr-md q-ml-md">
-            <div class="text-blue row text-h4 text-weight-bold q-mb-md">
+            <div class="row text-h3 text-weight-bold q-mb-md usage-color">
               {{ totalUsage }}
             </div>
-            <div class="row text-h8 text-weight-bold q-mb-md">
+            <div class="row text-h7 text-weight-bold">
               Stamps Used
             </div>
-            <div class="row text-h12 q-mb-md">
+            <div class="row text-h12">
               All Time
             </div>
           </div>
@@ -73,9 +63,21 @@
         />
         <div class="row justify-center items-center">
           <q-btn
+            v-if="!upgradeIsNeeded"
+            id="usageUpgradeBtn"
+            flat
+            no-caps
+            class="shade-color"
+            data-test-key="upgradeButton"
+            :label="upgradeButtonLabel"
+            @click.prevent="upgradeUser"
+          />
+          <q-btn
+            v-else
+            id="usageUpgradeBtn"
             outline
             no-caps
-            :color="upgradeButtonColor"
+            color="red"
             data-test-key="upgradeButton"
             :label="upgradeButtonLabel"
             @click.prevent="upgradeUser"
@@ -107,11 +109,8 @@ export default {
     totalUsage() {
       return this.user.totalTimestamps;
     },
-    usedClass() {
-      return this.user.remainingTimeStamps <= 0 ? 'text-red' : 'text-green';
-    },
-    upgradeButtonColor() {
-      return this.user.remainingTimeStamps <= 0 ? 'red' : 'secondary';
+    upgradeIsNeeded() {
+      return this.user.remainingTimeStamps <= 0;
     },
     upgradeButtonLabel() {
       return this.user.remainingTimeStamps <= 0 ? this.$t('upgradeToCreateMoreProofs') : this.$t('needAnUpgrade');
@@ -130,5 +129,8 @@ export default {
 .usage-summary {
     border: 2px solid rgba(0, 0, 0, 0.12);
     max-width: 400px;
+}
+.usage-color{
+  color:#4cbbc2;
 }
 </style>

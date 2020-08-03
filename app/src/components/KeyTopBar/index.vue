@@ -17,8 +17,9 @@
         </div>
         <div class="row justify-center q-mt-sm">
           <q-btn
+            id="keyTopBarBackupBtn"
             outline
-            color="black"
+            class="shade-color"
             :label="$t('backup')"
             @click="openBackupdialog"
           />
@@ -41,29 +42,6 @@
           </template>
         </q-input>
       </div>
-      <div class="row justify-center q-mb-sm">
-        <q-btn
-          outline
-          round
-          color="secondary"
-          icon="lock"
-          @click="lockKey"
-        />
-      </div>
-      <!-- <div class="row">
-        <div
-          class="text-blue q-mb-sm"
-          @click="openImportDialog"
-        >
-          {{ $t('importKey') }}
-        </div> -->
-      <!-- <div
-          class=" text-blue"
-          @click="openNewKeyDialog"
-        >
-          {{ $t('newKey') }}
-        </div> -->
-      <!-- </div> -->
       <div class="row justify-end" />
     </q-card>
 
@@ -75,18 +53,17 @@
       <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
         <div>{{ $t('signingKeyLocked') }}</div>
       </div>
-      <!-- <div class="row justify-center">
-        {{ $t('signingKeyLockedDesc') }}
-      </div> -->
       <div class="row justify-center">
         <div class="col-5">
           <q-input
             v-model="password"
             dense
-            :label="$t('enterPassword')"
+            mask="######"
+            :label="$t('enterPin')"
             :type="isPwd ? 'password' : 'text'"
             :error="!isValid"
             class="q-my-sm signing-key"
+            :rules="[val => val && val.length === 6 || $t('invalidPinLength')]"
             @keyup.enter="unlockKey(password)"
           >
             <template v-slot:append>
@@ -101,82 +78,19 @@
             </template>
           </q-input>
         </div>
-        <div class="col-2 q-ml-sm unlock-button">
+        <div class="col-2 q-ml-lg unlock-button">
           <q-btn
-            outline
+            id="keyTopBarUnlockBtn"
+            flat
             :label="$t('unlock')"
-            color="secondary"
+            class="shade-color"
             @click="unlockKey(password)"
           />
         </div>
       </div>
-      <!-- <div class="row justify-center q-mb-sm">
-        <q-btn
-          outline
-          :label="$t('unlock')"
-          color="secondary"
-          @click="unlockKey(password)"
-        />
-      </div> -->
-      <!-- <div class="row justify-center q-gutter-x-xs">
-        <q-btn
-          flat
-          color="blue"
-          size="md"
-          label="import key"
-          @click="openImportDialog"
-        /> -->
-      <!-- <q-btn
-          flat
-          color="blue"
-          size="md"
-          label="new key"
-          @click="openNewKeyDialog"
-        /> -->
-      <!-- </div> -->
       <div class="row justify-end" />
     </q-card>
 
-    <q-card
-      v-if="!user.secretKey"
-      flat
-      class="top-box"
-    >
-      <template v-if="!userHasSavedKeyBefore">
-        <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
-          <div>{{ $t('createKey') }}</div>
-        </div>
-        <div class="row justify-center text-center">
-          {{ $t('createKeyDesc') }}
-        </div>
-        <div
-          class="row justify-center q-my-sm"
-        >
-          <q-btn
-            outline
-            :label="$t('createKeyLabel')"
-            color="secondary"
-            @click="newKey=true"
-          />
-        </div>
-      </template>
-      <template v-else>
-        <div class="row justify-center text-weight-bold text-h6 q-mb-xs">
-          <div>{{ $t('importKey') }}</div>
-        </div>
-        <!-- <div class="row justify-center text-center">
-          {{ $t('importKeyContent') }}
-        </div> -->
-        <div
-          class="row justify-center text-blue q-mb-sm q-pt-md cursor-pointer"
-          @click="openImportDialog"
-        >
-          {{ $t('importKey') }}
-        </div>
-      </template>
-
-      <div class="row justify-end" />
-    </q-card>
     <q-dialog
       v-model="newKey"
     >
@@ -197,7 +111,6 @@
   </div>
 </template>
 <script>
-import moment from 'moment';
 import User from '../../store/User';
 import NewKey from './NewKey';
 import Backup from './DownloadKey';
@@ -233,11 +146,6 @@ export default {
 
     key() {
       return this.$store.state.settings.authenticatedAccount;
-    },
-
-    userHasSavedKeyBefore() {
-      const keyMoment = moment(this.user.keyEmailDate, 'YYYY-MM-DD');
-      return keyMoment.year() !== 1;
     },
 
   },

@@ -42,11 +42,11 @@
         ref="passwordInput"
         v-model="password"
         autofocus
-        :label="$t('enterPassword')"
+        mask="######"
+        :label="$t('enterPin')"
         :type="isPwd ? 'password' : 'text'"
         :error="!isValid"
-        :rules="mode !=='unlock' ?
-          [ val => val && val.length >= 8 || $t('invalidPasswordLength')] : []"
+        :rules="[val => val && val.length === 6 || $t('invalidPinLength')]"
         class="q-ma-sm signing-key"
         @keyup.enter="buttonAction"
       >
@@ -64,9 +64,10 @@
     </div>
     <div class="row justify-center q-mb-sm">
       <q-btn
-        outline
+        id="keyTopBarNewKeyActionBtn"
+        flat
         :label="buttonLabel"
-        color="secondary"
+        class="shade-color"
         @click="buttonAction"
       />
     </div>

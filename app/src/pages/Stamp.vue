@@ -1,29 +1,24 @@
 <template>
   <q-page class="flex justify-center">
     <div
+      class="q-pa-md"
+    >
+      <a
+        class="go-dashboard q-pb-sm cursor-pointer"
+        @click="backToDashboard"
+      >
+        <span style="color:#336699">&nbsp;Go back to the dashboard</span>
+      </a>
+    </div>
+
+    <div
       class="q-mt-lg justify-center"
     >
-      <!-- <div class="column justify-start  text-left text-secondary">
-       <div class="col text-h4  text-weight-bold justify-center">
-          {{ $t('createTimestamp') }}
-        </div>
-        <div class="col text-h6 q-mb-sm text-weight-bold">
-          <q-icon
-            class="q-mr-sm"
-            name="fas fa-stamp"
-            size="22px"
-          />
-          Stamp File
-        </div>
-      </div> -->
       <div v-if="!needUpgrade">
         <div class="column q-mb-md justify-center text-center text-secondary">
-          <div class="col text-h4 text-weight-bold justify-center">
+          <div class="col text-h5 text-weight-bold justify-center">
             Create a timestamp
           </div>
-          <!-- <div class="col text-h6">
-            Check if a timstamp exists on the blockchain
-          </div> -->
         </div>
         <div
           v-if="!key"
@@ -46,7 +41,7 @@
         <q-banner class="bg-grey-3 fixed-center absolute-center">
           <template v-slot:avatar>
             <q-icon
-              name="signal_wifi_off"
+              name="warning"
               color="primary"
             />
           </template>
@@ -55,8 +50,9 @@
           Please upgrade from your current plan to create more timestamps.
           <template v-slot:action>
             <q-btn
+              id="pagesStampUpgradeBtn"
               flat
-              color="primary"
+              class="shade-color"
               label="Upgrade"
               @click="$router.push('/upgrade')"
             />
@@ -101,6 +97,12 @@ export default {
     this.needUpgrade = this.user.remainingTimeStamps <= 0;
   },
 
+  methods: {
+    backToDashboard() {
+      this.$router.push('/dashboard');
+    },
+  },
+
 };
 </script>
 <style lang="scss">
@@ -108,11 +110,23 @@ export default {
   padding: 0;
 }
 
-.sign .q-uploader__list {
-    border: 0px dashed lightgrey;
-    background-color: white;
-    // padding: 0;
-    margin-top: 0;
+.go-dashboard:before{
+  content: url('../statics/icons/left-arrow.svg');
 }
+
+.go-dashboard {
+  display: flex;
+  position: fixed;
+  top: 12%;
+  left: 15%;
+  right: 0;
+  color: #4cbbc2;
+}
+.sign .q-uploader__list {
+  border: 0px dashed lightgrey;
+  background-color: white;
+  margin-top: 0;
+}
+
 
 </style>

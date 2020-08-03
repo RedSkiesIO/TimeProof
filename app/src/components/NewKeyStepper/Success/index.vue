@@ -1,24 +1,38 @@
 <template>
-  <div class="flex column justify-center text-center">
-    <img
-      src="~assets/success.svg"
-      style="height: 15vw"
-    >
-    <div class="text-box">
-      <div class="text-h4 text-weight-bold text-secondary">
-        You're all set!
-      </div>
-      <div class="encrypt-desc text-body2">
-        You can now head to the dashboard and start making timestamps
-      </div>
+  <q-card
+    flat
+    class="q-pa-sm"
+  >
+    <div class="row justify-end">
+      <q-icon
+        size="md"
+        name="close"
+        class="cursor-pointer"
+        @click="$emit('close')"
+      />
     </div>
-    <div class="row justify-center text-center" />
-  </div>
+    <q-card-section class="row items-center">
+      <div class="flex justify-center text-center">
+        <img
+          src="~assets/tick-animate.gif"
+          style="height: 8vw; width: 8vw"
+        >
+        <div class="text-box">
+          <div class="text-h5 text-weight-bold text-secondary q-mt-md">
+            Your signing key has been created
+          </div>
+          <div class="encrypt-desc text-body2 q-mt-md">
+            You can now head to the dashboard and start making timestamps
+          </div>
+        </div>
+      </div>
+    </q-card-section>
+  </q-card>
 </template>
 <script>
 
 export default {
-  name: 'EncryptKey',
+  name: 'Success',
 
   data() {
     return {

@@ -59,9 +59,12 @@
             >
               <template v-if="user.pendingPricePlanId === item.id">
                 <q-btn
+                  id="pagesUpgradeCancelFuturePlanBtn"
                   flat
+                  rounded
+                  size="0.8rem"
                   data-test-key="cancelFuturePlan"
-                  color="secondary text-weight-bold"
+                  class="shade-color"
                   @click.stop="cancelPlan"
                 >
                   Cancel
@@ -80,15 +83,6 @@
               <template
                 v-else
               >
-                <!-- <q-btn
-                :disable="currentMemberShip === item.id"
-                flat
-                data-test-key="choosePlanButton"
-                color="primary text-weight-bold"
-                @click="choosePlan(item)"
-              >
-                Choose Plan
-              </q-btn> -->
                 <q-badge
                   v-if="currentMemberShip === item.id"
                   outline
@@ -155,7 +149,8 @@ export default {
     },
     choosePlan(item) {
       this.setSellingProduct(item);
-      if (item.price === 0) {
+      if ((item && item.price === 0) || (this.products[this.currentMemberShip]
+      && item.price < this.products[this.currentMemberShip].price)) {
         this.downgradeConfirmationDialog = true;
       } else {
         this.$router.push('/payment');

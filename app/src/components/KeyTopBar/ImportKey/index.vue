@@ -12,14 +12,16 @@
       </div>
       <div class="column q-gutter-y-md justify-center">
         <q-btn
+          id="keyTopBarImportKeykeyStoreFileBtn"
           outline
-          color="secondary"
+          class="shade-color"
           :label="$t('keystoreFile')"
           @click="importKeystore=true"
         />
         <q-btn
+          id="keyTopBarImportKeyprivateKeyFileBtn"
           outline
-          color="secondary"
+          class="shade-color"
           :label="$t('privateKey')"
           @click="importKey=true"
         />
@@ -54,9 +56,10 @@
       </div>
       <div class="row justify-center">
         <q-btn
-          outline
+          id="keyTopBarImportKeyFirstAddKeyBtn"
+          flat
           :label="$t('addKey')"
-          color="secondary"
+          class="shade-color"
           @click="importFromKey()"
         />
       </div>
@@ -88,9 +91,10 @@
       </div>
       <div class="row justify-center">
         <q-btn
-          outline
+          id="keyTopBarImportKeySecondAddKeyBtn"
+          flat
           :label="$t('addKey')"
-          color="secondary"
+          class="shade-color"
           @click="importFromKeystore()"
         />
       </div>

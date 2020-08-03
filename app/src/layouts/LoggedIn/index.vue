@@ -7,6 +7,7 @@
     >
       <q-toolbar>
         <q-btn
+          id="loggedInMenuDrawerBtn"
           flat
           round
           dense
@@ -14,8 +15,8 @@
           @click="drawer = !drawer"
         />
         <div
-          class="logo text-center text-weight-bold q-pt-sm"
-          @click="$router.push('/')"
+          class="logo text-center cursor-pointer text-weight-bold q-pt-sm"
+          @click="mainLogoClick"
         >
           <img
             src="~assets/logo.png"
@@ -141,6 +142,7 @@
                 {{ $t('editProfile') }}
               </div>
               <q-btn
+                id="loggedInLogoutBtn"
                 flat
                 :label="$t('logout')"
                 @click.prevent="logOut"
@@ -254,6 +256,12 @@ export default {
         window.open(url);
       }
     },
+    mainLogoClick() {
+      if (this.user.secretKey) {
+        this.$router.push('/');
+      }
+    },
+
   },
 };
 </script>

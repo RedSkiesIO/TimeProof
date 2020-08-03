@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using AtlasCity.TimeProof.Abstractions.Requests;
+﻿using AtlasCity.TimeProof.Abstractions.Requests;
 using AtlasCity.TimeProof.Abstractions.Services;
 using AtlasCity.TimeProof.Api.ActionResults;
 using AtlasCity.TimeProof.Api.Extensions;
@@ -8,6 +7,7 @@ using Dawn;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using System.Threading;
 
 namespace AtlasCity.TimeProof.Api.Controllers
 {
@@ -35,8 +35,15 @@ namespace AtlasCity.TimeProof.Api.Controllers
         [HttpGet]
         public IActionResult Get(CancellationToken cancellationToken)
         {
-            var user = _userService.GetUserById(User.GetUserId(), cancellationToken).GetAwaiter().GetResult();
-            return new SuccessActionResult(user.ToResponse());
+            var userId = User.GetUserId();
+            var user = _userService.GetUserById(userId, cancellationToken).GetAwaiter().GetResult();
+            var response = user.ToResponse();
+
+            var userKey = _userService.GetUserKey(userId, cancellationToken).GetAwaiter().GetResult();
+            if (response != null && userKey != null)
+                response.KeyValue = userKey.KeyDetails;
+
+            return new SuccessActionResult(response);
         }
 
         [Route("user")]
@@ -50,6 +57,26 @@ namespace AtlasCity.TimeProof.Api.Controllers
             userDao.Id = User.GetUserId();
             var newUser = _userService.CreateUser(userDao, cancellationToken).GetAwaiter().GetResult();
             return new CreatedActionResult(newUser.ToResponse());
+        }
+
+
+        [Route("user")]
+        [HttpPut]
+        public IActionResult UpdateUser([FromBody] UpdateUserRequest user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                return BadRequest();
+
+            try
+            {
+                _userService.UpdateUser(User.GetUserId(), user.FirstName, user.LastName, cancellationToken).GetAwaiter().GetResult();
+                return new OkResult();
+            }
+            catch (SubscriptionException ex)
+            {
+                return new ConflictActionResult(ex.Message);
+            }
+
         }
 
         [Route("user/paymentintent/{planId}")]
@@ -89,9 +116,27 @@ namespace AtlasCity.TimeProof.Api.Controllers
             return new SuccessActionResult(response);
         }
 
+        [Route("user/paymentmethod/{pmid}")]
+        [HttpPut]
+        public IActionResult UpdateCustomerPaymentMethod([FromBody] AddressRequest newAddress, [FromRoute] string pmid, CancellationToken cancellationToken)
+        {
+            if (newAddress == null)
+                return BadRequest();
+
+            try
+            {
+                _userSubscriptionService.UpdateCustomerPaymentMethod(User.GetUserId(), pmid, newAddress.ToDao(), cancellationToken).GetAwaiter().GetResult();
+                return new OkResult();
+            }
+            catch (SubscriptionException ex)
+            {
+                return new ConflictActionResult(ex.Message);
+            }
+        }
+
         [Route("user/upgrade/{ppid}")]
         [HttpPut]
-        public IActionResult ChanePricePlan([FromRoute] string ppid, CancellationToken cancellationToken)
+        public IActionResult ChangePricePlan([FromRoute] string ppid, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(ppid))
                 return BadRequest();
@@ -124,7 +169,7 @@ namespace AtlasCity.TimeProof.Api.Controllers
 
             try
             {
-                _userService.SendKeyAsEmailAttachment(User.GetUserId(), keyStore.ToString(), cancellationToken).GetAwaiter().GetResult();
+                _userService.SendWelcomeEmailAndStoreKey(User.GetUserId(), keyStore.ToString(), cancellationToken).GetAwaiter().GetResult();
                 return new OkResult();
             }
             catch (UserException ex)

@@ -26,13 +26,6 @@ export default class Server {
     const token = await this.auth.getToken();
     // This fails if MSAL requested a new token
     request.headers.common.Authorization = `Bearer ${token.idToken.rawIdToken}`;
-    // User.update({
-    //   data: {
-    //     accountIdentifier: this.account.accountIdentifier,
-    //     tokenExpires: token.idToken.expiration,
-    //   },
-    // });
-    // }
   };
 
   getUser() {

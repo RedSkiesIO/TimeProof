@@ -35,7 +35,7 @@ namespace AtlasCity.TimeProof.Abstractions.Responses
         [JsonProperty(PropertyName = "pendingPricePlanId")]
         public string PendingPricePlanId { get; set; }
 
-        [JsonProperty(PropertyName = "keyEmailDate")]
-        public DateTime KeyEmailDate { get; set; }
+        [JsonProperty(PropertyName = "keyValue")]
+        public string KeyValue { get; set; }
     }
 }

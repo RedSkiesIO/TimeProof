@@ -8,8 +8,9 @@
     </div>
     <div class="row justify-center">
       <q-btn
+        id="keyTopBarDownloadKeyBackupBtn"
         outline
-        color="secondary"
+        class="shade-color"
         label="Download Keystore file"
         @click="$emit('backup')"
       />

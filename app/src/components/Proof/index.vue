@@ -30,7 +30,10 @@
       </a>
     </div>
 
-    <div class="column q-px-md">
+    <div
+      v-if="scope.dialog"
+      class="column q-px-md"
+    >
       <div
         class="row justify-between"
         :class="scope.dialog ? 'proof-dialog-item' : 'proof-item'"
@@ -67,7 +70,7 @@
           <template v-if="scope.dialog">
             <div class="col">
               <q-input
-                v-model="getDate"
+                :value="proof.timestampDate+' UTC'"
                 filled
                 :bg-color="bgColor"
                 readonly
@@ -98,7 +101,7 @@
               v-if="ready && proof.status !== 0"
               class="col-auto"
             >
-              {{ getDate }}
+              {{ proof.timestampDate }}
             </div>
           </template>
         </div>
@@ -153,12 +156,12 @@
               autogrow
             >
               <q-btn
+                id="proofTxIdCopyBtn"
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.txId)"
               >
                 <q-tooltip anchor="top middle">
@@ -191,12 +194,12 @@
               autogrow
             >
               <q-btn
+                id="proofHashCopyBtn"
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.hash)"
               >
                 <q-tooltip anchor="top middle">
@@ -222,12 +225,12 @@
               autogrow
             >
               <q-btn
+                id="proofSignatureCopyBtn"
                 flat
                 rounded
                 size="sm"
-                color="grey"
                 icon="filter_none"
-                class="copy-button absolute-bottom-right"
+                class="copy-button absolute-bottom-right shade-color"
                 @click="copy(proof.signature)"
               >
                 <q-tooltip anchor="top middle">
@@ -240,31 +243,49 @@
       </div>
     </div>
     <div
-      v-if="!scope.dialog"
-      class="q-mt-sm text-blue text-center q-pb-md cursor-pointer"
-      @click="selectAnotherFile(scope)"
+      v-else
+      class="text-italic flex flex-center column text-center q-pt-md q-pb-md"
     >
-      {{ $t('anotherFile') }}
+      “Please ensure to store a copy of the file you just stamped.<br>
+      If you edit the file, you will have to create a new stamp.”
     </div>
-    <div class="q-px-lg flex flex-center column text-center q-pt-lg">
-      <template v-if="scope.dialog">
+
+    <div v-if="scope.dialog">
+      <div class="row q-pb-md justify-center q-pt-md">
         <q-btn
           v-if="proof.status !== 0 && ready"
-          text-color="secondary"
-          color="white"
+          id="proofDownloadCertificateBtn"
+          no-caps
+          class="shade-color"
           label="Download Certificate"
           @click="getCertificate"
         />
-      </template>
-      <template v-else>
-        <q-btn
-          v-if="proof.status !== 0 && ready"
-          outline
-          color="secondary"
-          label="Download Certificate"
-          @click="getCertificate"
-        />
-      </template>
+      </div>
+    </div>
+    <div v-else>
+      <div class="row q-pb-md justify-center q-pt-md">
+        <template>
+          <q-btn
+            id="proofStampAnotherFileBtn"
+            no-caps
+            text-color="white"
+            :class="proof.status !== 0 && ready ? 'shade-color q-mr-md': 'shade-color'"
+            :label="$t('stampAnotherFile')"
+            @click="selectAnotherFile(scope)"
+          />
+        </template>
+        <template>
+          <q-btn
+            v-if="proof.status !== 0 && ready"
+            id="proofDownloadCertificateBtn"
+            flat
+            no-caps
+            class="shade-color q-ml-md"
+            label="Download Certificate"
+            @click="getCertificate"
+          />
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -321,13 +342,6 @@ export default {
 
     signedBy() {
       return !this.proof.verify ? `${this.user.name}(${this.user.email})` : this.proof.pubKey.toLowerCase();
-    },
-
-    getDate() {
-      console.log(this.proof.date);
-      const date = new Date(this.proof.date);
-
-      return `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`;
     },
 
     icon() {
@@ -415,7 +429,7 @@ export default {
 
 @media screen and (max-width: 1500px) {
   .proof{
-    width: 57rem;
+    width: 35rem;
   }
   .text-height-long textarea{
     height: 3rem !important;
@@ -430,7 +444,7 @@ export default {
 
 @media screen and (max-width: 1000px) {
   .proof{
-    width: 40rem;
+    width: 26rem;
   }
   .text-height-long textarea{
     height: 3.5rem !important;
@@ -460,11 +474,11 @@ export default {
 
 @media screen and (max-width: 575px) {
   .proof-dialog-item{
-    width: 17rem !important;
+    width: 20rem !important;
   }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 540px) {
   .proof{
     width: 100%;
   }

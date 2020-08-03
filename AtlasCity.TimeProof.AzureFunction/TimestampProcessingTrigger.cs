@@ -81,7 +81,6 @@ namespace AtlasCity.TimeProof.AzureFunction
             _logger.Information($"Checking ETH transaction with transactionId '{transactionId}' for timestampId '{timestampId}' on '{web3.TransactionManager.Account.Address}'.");
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionId);
 
-
             if (receipt == null || receipt.BlockNumber.Value < 0)
             {
                 _logger.Information($"ETH transaction with transactionId '{transactionId}' still pending.");
@@ -99,6 +98,7 @@ namespace AtlasCity.TimeProof.AzureFunction
                 timestamp.BlockNumber = (long)receipt.BlockNumber.Value;
 
                 timestamp.Status = TimestampState.Succeeded;
+                timestamp.Timestamp = DateTime.UtcNow;
                 _logger.Information($"Transaction successful for an user '{timestamp.UserId}' with transaction identifier '{timestamp.TransactionId}'.");
                 await _timestampRepository.UpdateTimestamp(timestamp, cancellationToken);
             }

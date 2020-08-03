@@ -14,42 +14,33 @@
       >
         <EncryptKey ref="form" />
       </q-step>
-
       <q-step
         :name="2"
-        title="Backup your key file"
-        icon="fas fa-file-download"
-        :done="step > 2"
-      >
-        <SaveKeystore
-          :button-action="downloadKeystore"
-        />
-      </q-step>
-
-      <q-step
-        :name="3"
         title="Signing key created"
         icon="fas fa-thumbs-up"
       >
-        <Success />
+        <q-dialog
+          v-model="successMode"
+          persistent
+          transition-show="flip-down"
+          transition-hide="flip-up"
+        >
+          <Success @close="successClose" />
+        </q-dialog>
       </q-step>
 
-      <template v-slot:navigation>
+      <template
+        v-if="step === 1"
+        v-slot:navigation
+      >
         <q-stepper-navigation>
           <div class="text-center">
             <q-btn
-              v-if="step > 1"
-              flat
-              color="secondary"
-              label="Back"
-              class="q-ml-sm"
-              @click="$refs.stepper.previous()"
-            />
-            <q-btn
-              color="secondary"
+              id="newKeyStepperContinueBtn"
+              class="shade-color"
               data-test-key="newKeyContinue"
-              :disable="step === 2 && disableButton"
-              :label="step === 3 ? 'Go to Dashboard' : 'Continue'"
+              :disable="!isFilledInput && step === 1"
+              label="Continue"
               @click="clickAction"
             />
           </div>
@@ -60,7 +51,7 @@
 </template>
 <script>
 import EncryptKey from './EncryptKey';
-import SaveKeystore from './SaveKeystore';
+// import SaveKeystore from './SaveKeystore';
 import Success from './Success';
 import User from '../../store/User';
 
@@ -69,14 +60,16 @@ export default {
   name: 'NewKeyStepper',
   components: {
     EncryptKey,
-    SaveKeystore,
+    // SaveKeystore,
     Success,
   },
 
   data() {
     return {
       step: 1,
-      disableButton: true,
+      // disableButton: true,
+      successMode: false,
+      mounted: false,
     };
   },
 
@@ -87,6 +80,22 @@ export default {
     user() {
       return this.$auth.user();
     },
+    isFilledInput() {
+      if (this.mounted) {
+        const { input } = this.$refs.form.$refs;
+        input.validate();
+
+        if (!input.hasError) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+  },
+
+  mounted() {
+    this.mounted = true;
   },
 
   methods: {
@@ -95,12 +104,13 @@ export default {
       switch (this.step) {
         case 1:
           this.addKey();
+          this.successMode = true;
           break;
-        case 3:
-          this.$router.push('/dashboard');
-          break;
+        // case 2:
+        //   this.$refs.stepper.next();
+        //   this.successMode = true;
+        //   break;
         default:
-          this.$refs.stepper.next();
       }
     },
 
@@ -123,6 +133,8 @@ export default {
         });
 
         await this.unlockKey(input.value);
+
+        this.$crypto.createKeystore(this.user);
       }
     },
 
@@ -134,10 +146,14 @@ export default {
       this.$refs.stepper.next();
     },
 
-    downloadKeystore() {
-      console.log('called');
-      this.disableButton = false;
-      this.$crypto.createKeystore(this.user);
+    // downloadKeystore() {
+    //   this.disableButton = false;
+    //   this.$crypto.createKeystore(this.user);
+    // },
+
+    successClose() {
+      this.successMode = false;
+      this.$router.push('/dashboard');
     },
   },
 };

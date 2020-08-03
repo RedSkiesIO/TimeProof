@@ -4,8 +4,14 @@
     {
         public const string FreePricePlanTitle = "Basic";
 
-        public const string AutomatedEmailFromAddress = "noreply@atlascity.io";
+        public const string AutomatedEmailFromAddress = "noreply@atlas3t.com";
 
-        public const string WelcomeEmailSubject = "Welcome to Timescribe";
+        public const string WelcomeEmailSubject = "Account Activation Successful";
+
+        public const string InvoiceEmailSubject = "Your Timescribe Receipt";
+
+        public const string TemplateFolder = "Templates";
+
+        public const long MaxInvoiceNumberCycle = 6759999;
     }
 }

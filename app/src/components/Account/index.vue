@@ -4,20 +4,24 @@
     class="row bg-grey-2 flex flex-center"
   >
     <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
-      <q-btn
-        flat
-        class="col-xs-6"
-        color="blue"
-        label="Edit Profile"
-        @click="editProfile"
-      />
-      <q-btn
-        flat
-        class="col-xs-6"
-        color="blue"
-        label="change password"
-        @click="forgotPassword"
-      />
+      <div class="row">
+        <q-btn
+          id="editProfileBtn"
+          flat
+          class="shade-color q-mb-md"
+          label="Edit Profile"
+          @click="editProfile"
+        />
+      </div>
+      <div class="row">
+        <q-btn
+          id="changePasswordBtn"
+          flat
+          class="shade-color"
+          label="change password"
+          @click="forgotPassword"
+        />
+      </div>
     </div>
 
     <div
