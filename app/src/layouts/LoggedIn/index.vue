@@ -15,7 +15,7 @@
           @click="drawer = !drawer"
         />
         <div
-          class="logo text-center text-weight-bold q-pt-sm"
+          class="logo text-center cursor-pointer text-weight-bold q-pt-sm"
           @click="mainLogoClick"
         >
           <img
