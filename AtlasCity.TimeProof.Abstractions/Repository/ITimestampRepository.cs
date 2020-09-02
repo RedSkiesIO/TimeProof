@@ -1,8 +1,8 @@
-﻿using System;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO;
 
 namespace AtlasCity.TimeProof.Abstractions.Repository
 {
@@ -17,5 +17,7 @@ namespace AtlasCity.TimeProof.Abstractions.Repository
         public Task<TimestampDao> GetTimestampById(string timestampId, CancellationToken cancellationToken);
 
         public Task<TimestampDao> UpdateTimestamp(TimestampDao timestamp, CancellationToken cancellationToken);
+
+        public Task<TimestampDao> GetTimestampByKeyAndHash(string pubKey, string fileHash, CancellationToken cancellationToken);
     }
 }

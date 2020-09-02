@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using AtlasCity.TimeProof.Abstractions.DAO;
+﻿using AtlasCity.TimeProof.Abstractions.DAO;
 using AtlasCity.TimeProof.Abstractions.Repository;
 using Dawn;
 using Microsoft.Azure.Documents.Client;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AtlasCity.TimeProof.Repository.CosmosDb
 {
@@ -70,6 +70,16 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb
 
             var updatedTimestamp = JsonConvert.DeserializeObject<TimestampDao>(response.Resource.ToString());
             return updatedTimestamp;
+        }
+
+        public async Task<TimestampDao> GetTimestampByKeyAndHash(string pubKey, string fileHash, CancellationToken cancellationToken)
+        {
+            Guard.Argument(pubKey, nameof(pubKey)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(fileHash, nameof(fileHash)).NotNull().NotEmpty().NotWhiteSpace();
+
+            var option = new FeedOptions { EnableCrossPartitionQuery = true };
+            var response = Client.CreateDocumentQuery<TimestampDao>(_documentCollectionUri, option).Where(s => s.PublicKey.ToLower() == pubKey.ToLower() && s.FileHash.ToLower() == fileHash.ToLower()).AsEnumerable().FirstOrDefault();
+            return response;
         }
     }
 }

@@ -162,6 +162,22 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
             return timestamp;
         }
 
+        public async Task<TimestampDao> VerifyTimestamp(string pubKey, string fileHash, CancellationToken cancellationToken)
+        {
+            Guard.Argument(pubKey, nameof(pubKey)).NotNull().NotEmpty().NotWhiteSpace();
+            Guard.Argument(fileHash, nameof(fileHash)).NotNull().NotEmpty().NotWhiteSpace();
+
+            var timestamp = await _timestampRepository.GetTimestampByKeyAndHash(pubKey, fileHash, cancellationToken);
+            if (timestamp == null)
+            {
+                var message = $"Unable to find time stamp for public key'{pubKey}' and file hash '{fileHash}'";
+                _logger.Warning(message);
+                throw new TimestampException(message);
+            }
+
+            return timestamp;
+        }
+
         private async Task SendTransaction(TimestampDao timestamp, double gasPrice, bool isFreePlan, CancellationToken cancellationToken)
         {
             var ethSettings = _ethHelper.GetEthSettings();

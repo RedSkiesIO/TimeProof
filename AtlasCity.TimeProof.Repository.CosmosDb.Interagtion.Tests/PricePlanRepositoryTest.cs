@@ -29,9 +29,9 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
             var basicPricePlan= new PricePlanDao
             {
                 Title = Constants.FreePricePlanTitle,
-                Description = "Slow confirmation",
+                Description = "Slow transaction",
                 Price = 0,
-                NoOfStamps = 10,
+                NoOfStamps = 2,
                 TransactionPrice = 1,
                 GasPrice = 2,
                 PaymentFrquencyDescription = "Per month"
@@ -39,10 +39,10 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
 
             var standardPricePlan = new PricePlanDao
             {
-                Title = "Standard",
-                Description = "Faster confirmation",
-                Price = 499,
-                NoOfStamps = 40,
+                Title = "Startups",
+                Description = "Fast transaction",
+                Price = 799,
+                NoOfStamps = 10,
                 TransactionPrice = 5,
                 GasPrice = 10,
                 PaymentFrquencyDescription = "Per month, billed monthly"
@@ -50,18 +50,31 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
 
             var premiumPricePlan = new PricePlanDao
             {
-                Title = "Premium",
-                Description = "Faster confirmation",
-                Price = 2499,
-                NoOfStamps = 250,
+                Title = "Content Creators",
+                Description = "Fast transaction",
+                Price = 2399,
+                NoOfStamps = 30,
                 TransactionPrice = 5,
                 GasPrice = 10,
                 PaymentFrquencyDescription = "Per month, billed monthly"
             };
 
+            var powerUserPricePlan = new PricePlanDao
+            {
+                Title = "Power Users",
+                Description = "Fast transaction",
+                Price = 4499,
+                NoOfStamps = 60,
+                TransactionPrice = 5,
+                GasPrice = 10,
+                PaymentFrquencyDescription = "Per month, billed monthly"
+            };
+
+
             AddPricePlanIfNotExists(basicPricePlan);
             AddPricePlanIfNotExists(standardPricePlan);
             AddPricePlanIfNotExists(premiumPricePlan);
+            AddPricePlanIfNotExists(powerUserPricePlan);
 
             var pricePlans = _pricePlanRepository.GetPricePlans(CancellationToken.None).GetAwaiter().GetResult();
 
@@ -89,7 +102,14 @@ namespace AtlasCity.TimeProof.Repository.CosmosDb.Interagtion.Tests
             Assert.AreEqual(premiumPricePlan.Description, actualPremiumPricePlan.Description, true);
             Assert.AreEqual(premiumPricePlan.Price, actualPremiumPricePlan.Price);
             Assert.AreEqual(premiumPricePlan.NoOfStamps, actualPremiumPricePlan.NoOfStamps);
-            Assert.AreEqual(premiumPricePlan.PaymentFrquencyDescription, actualPremiumPricePlan.PaymentFrquencyDescription);
+
+            var actualPowerUserPricePlan = pricePlans.FirstOrDefault(s => s.Title.Equals(powerUserPricePlan.Title, StringComparison.InvariantCultureIgnoreCase));
+            Assert.IsNotNull(actualPremiumPricePlan);
+            Assert.AreEqual(powerUserPricePlan.Description, actualPowerUserPricePlan.Description, true);
+            Assert.AreEqual(powerUserPricePlan.Price, actualPowerUserPricePlan.Price);
+            Assert.AreEqual(powerUserPricePlan.NoOfStamps, actualPowerUserPricePlan.NoOfStamps);
+            Assert.AreEqual(powerUserPricePlan.PaymentFrquencyDescription, actualPowerUserPricePlan.PaymentFrquencyDescription);
+            Assert.AreEqual(powerUserPricePlan.PaymentFrquencyDescription, actualPowerUserPricePlan.PaymentFrquencyDescription);
         }
 
         private void AddPricePlanIfNotExists(PricePlanDao pricePlan)

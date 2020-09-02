@@ -87,8 +87,7 @@ namespace AtlasCity.TimeProof.Common.Lib.Services
                 throw;
             }
 
-            var freePricePlan =
-                await _pricePlanRepository.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken);
+            var freePricePlan = await _pricePlanRepository.GetPricePlanByTitle(Constants.FreePricePlanTitle, cancellationToken);
             user.CurrentPricePlanId = freePricePlan.Id;
             user.RemainingTimeStamps = freePricePlan.NoOfStamps;
             user.MembershipStartDate = DateTime.UtcNow;

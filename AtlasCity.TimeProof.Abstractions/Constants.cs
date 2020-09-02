@@ -2,7 +2,7 @@
 {
     public static class Constants
     {
-        public const string FreePricePlanTitle = "Basic";
+        public const string FreePricePlanTitle = "Free";
 
         public const string AutomatedEmailFromAddress = "noreply@atlas3t.com";
 
